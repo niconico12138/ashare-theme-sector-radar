@@ -1,43 +1,48 @@
 # run_daily.ps1
-# 每日盘后日报运行脚本
-# 读取配置文件，调用 CLI 生成日报
+# Daily report runner script
+# Reads config file and calls CLI to generate daily report
 
 param(
     [string]$ConfigPath = "config/daily.local.json",
     [string]$FallbackConfigPath = "config/daily.example.json"
 )
 
-# 设置控制台编码
-[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-
-# 获取项目根目录
+# Get project root directory
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
 Push-Location $ProjectRoot
 
 try {
-    # 读取配置文件
+    # Read config file using python to avoid encoding issues
     $ConfigFile = $ConfigPath
     if (-not (Test-Path $ConfigFile)) {
         $ConfigFile = $FallbackConfigPath
-        Write-Host "使用默认配置: $ConfigFile" -ForegroundColor Yellow
+        Write-Host "Using fallback config: $ConfigFile" -ForegroundColor Yellow
     }
 
     if (-not (Test-Path $ConfigFile)) {
-        Write-Host "错误: 找不到配置文件" -ForegroundColor Red
+        Write-Host "ERROR: Config file not found" -ForegroundColor Red
         exit 1
     }
 
-    $Config = Get-Content $ConfigFile | ConvertFrom-Json
+    # Parse config using python
+    $ConfigScript = @"
+import json
+with open(r'$ConfigFile', encoding='utf-8') as f:
+    config = json.load(f)
+print(json.dumps(config))
+"@
+    $ConfigJson = python -c $ConfigScript
+    $Config = $ConfigJson | ConvertFrom-Json
 
-    # 获取当前日期
+    # Get current date
     $AsOfDate = if ($Config.as_of -eq "auto") {
         Get-Date -Format "yyyy-MM-dd"
     } else {
         $Config.as_of
     }
 
-    # 构建命令参数
-    $Args = @(
+    # Build command arguments
+    $CliArgs = @(
         "-m", "theme_sector_radar.cli",
         "--daily",
         "--as-of", $AsOfDate,
@@ -49,100 +54,108 @@ try {
     )
 
     if ($Config.refresh) {
-        $Args += "--refresh"
+        $CliArgs += "--refresh"
     }
 
     if ($Config.offline_fixture) {
-        $Args += "--offline-fixture"
+        $CliArgs += "--offline-fixture"
         if ($Config.fixture_profile) {
-            $Args += "--fixture-profile"
-            $Args += $Config.fixture_profile
+            $CliArgs += "--fixture-profile"
+            $CliArgs += $Config.fixture_profile
         }
     }
 
-    # 记录开始时间
+    # Record start time
     $StartTime = Get-Date
     $StartTimeStr = $StartTime.ToString("yyyy-MM-dd HH:mm:ss")
 
-    Write-Host "=" * 60
-    Write-Host "Theme Sector Radar - 每日日报" -ForegroundColor Cyan
-    Write-Host "=" * 60
-    Write-Host "日期: $AsOfDate"
+    Write-Host "============================================================"
+    Write-Host "Theme Sector Radar - Daily Report" -ForegroundColor Cyan
+    Write-Host "============================================================"
+    Write-Host "Date: $AsOfDate"
     Write-Host "Provider: $($Config.provider)"
-    Write-Host "配置文件: $ConfigFile"
-    Write-Host "开始时间: $StartTimeStr"
-    Write-Host "-" * 60
+    Write-Host "Config: $ConfigFile"
+    Write-Host "Start Time: $StartTimeStr"
+    Write-Host "------------------------------------------------------------"
 
-    # 运行 CLI
-    $Process = Start-Process -FilePath "python" -ArgumentList $Args -NoNewWindow -Wait -PassThru
+    # Run CLI
+    $Process = Start-Process -FilePath "python" -ArgumentList $CliArgs -NoNewWindow -Wait -PassThru
 
-    # 记录结束时间
+    # Record end time
     $EndTime = Get-Date
     $EndTimeStr = $EndTime.ToString("yyyy-MM-dd HH:mm:ss")
     $Duration = ($EndTime - $StartTime).TotalSeconds
 
-    # 获取报告路径
+    # Get report paths
     $ReportDir = Join-Path $Config.report_root $AsOfDate
     $ReportPath = Join-Path $ReportDir "theme_sector_radar.json"
     $RunLogPath = Join-Path $ReportDir "run_log.json"
     $IndexPath = Join-Path $Config.report_root "index.json"
 
-    # 生成脚本日志
+    # Generate script log directory
     $LogDir = Join-Path $Config.log_root $AsOfDate
     if (-not (Test-Path $LogDir)) {
         New-Item -ItemType Directory -Path $LogDir -Force | Out-Null
     }
     $LogFilePath = Join-Path $LogDir "$AsOfDate-run.log"
 
-    # 读取 run_log 获取状态
+    # Read run_log using python to avoid encoding issues
     $Status = "unknown"
     if (Test-Path $RunLogPath) {
-        $RunLog = Get-Content $RunLogPath | ConvertFrom-Json
-        $Status = $RunLog.status
+        $Status = python -c "import json; print(json.load(open(r'$RunLogPath', encoding='utf-8')).get('status', 'unknown'))"
+        $Status = $Status.Trim()
     }
 
-    # 构建日志内容
+    # Build log content
     $LogContent = @"
 Theme Sector Daily Run Log
 ==========================
-日期: $AsOfDate
-开始时间: $StartTimeStr
-结束时间: $EndTimeStr
-耗时: $($Duration.ToString("F1")) 秒
+Date: $AsOfDate
+Start Time: $StartTimeStr
+End Time: $EndTimeStr
+Duration: $($Duration.ToString("F1")) seconds
 Provider: $($Config.provider)
-配置文件: $ConfigFile
-状态: $Status
-退出码: $($Process.ExitCode)
+Config: $ConfigFile
+Status: $Status
+Exit Code: $($Process.ExitCode)
 
-报告路径: $ReportPath
-运行日志: $RunLogPath
-索引文件: $IndexPath
+Report Path: $ReportPath
+Run Log: $RunLogPath
+Index: $IndexPath
 "@
 
-    # 保存日志
-    $LogContent | Out-File -FilePath $LogFilePath -Encoding UTF8
+    # Save log
+    $LogContent | Out-File -FilePath $LogFilePath -Encoding ASCII
 
-    # 输出摘要
-    Write-Host "-" * 60
-    Write-Host "执行摘要" -ForegroundColor Cyan
-    Write-Host "-" * 60
-    Write-Host "状态: $Status" -ForegroundColor $(if ($Status -eq "ok") { "Green" } elseif ($Status -eq "degraded") { "Yellow" } else { "Red" })
-    Write-Host "报告路径: $ReportPath"
-    Write-Host "索引文件: $IndexPath"
-    Write-Host "运行日志: $RunLogPath"
-    Write-Host "脚本日志: $LogFilePath"
-    Write-Host "耗时: $($Duration.ToString("F1")) 秒"
+    # Output summary
+    Write-Host "------------------------------------------------------------"
+    Write-Host "Execution Summary" -ForegroundColor Cyan
+    Write-Host "------------------------------------------------------------"
 
-    # 检查是否成功
+    if ($Status -eq "ok") {
+        Write-Host "Status: $Status" -ForegroundColor Green
+    } elseif ($Status -eq "degraded") {
+        Write-Host "Status: $Status" -ForegroundColor Yellow
+    } else {
+        Write-Host "Status: $Status" -ForegroundColor Red
+    }
+
+    Write-Host "Report Path: $ReportPath"
+    Write-Host "Index: $IndexPath"
+    Write-Host "Run Log: $RunLogPath"
+    Write-Host "Script Log: $LogFilePath"
+    Write-Host "Duration: $($Duration.ToString("F1")) seconds"
+
+    # Check if failed
     if ($Process.ExitCode -ne 0) {
         Write-Host ""
-        Write-Host "错误: 执行失败，退出码 $($Process.ExitCode)" -ForegroundColor Red
-        Write-Host "请查看 run_log: $RunLogPath" -ForegroundColor Yellow
+        Write-Host "ERROR: Execution failed with exit code $($Process.ExitCode)" -ForegroundColor Red
+        Write-Host "Please check run_log: $RunLogPath" -ForegroundColor Yellow
         exit $Process.ExitCode
     }
 
     Write-Host ""
-    Write-Host "执行完成!" -ForegroundColor Green
+    Write-Host "Execution completed!" -ForegroundColor Green
 
 } finally {
     Pop-Location

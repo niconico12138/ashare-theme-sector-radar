@@ -9,9 +9,6 @@ param(
     [string]$FixtureProfile = "full"
 )
 
-# Set console encoding
-[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-
 # Get project root directory
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
 Push-Location $ProjectRoot
@@ -54,11 +51,11 @@ try {
     $ReportPath = Join-Path $ReportDir "theme_sector_radar.json"
     $RunLogPath = Join-Path $ReportDir "run_log.json"
 
-    # Read run_log to get status
+    # Read run_log using python to avoid encoding issues
     $Status = "unknown"
     if (Test-Path $RunLogPath) {
-        $RunLog = Get-Content $RunLogPath | ConvertFrom-Json
-        $Status = $RunLog.status
+        $Status = python -c "import json; print(json.load(open(r'$RunLogPath', encoding='utf-8')).get('status', 'unknown'))"
+        $Status = $Status.Trim()
     }
 
     # Output summary
@@ -85,29 +82,36 @@ try {
         exit $Process.ExitCode
     }
 
-    # Verify report file
+    # Verify report file using python
     if (Test-Path $ReportPath) {
-        try {
-            $ReportContent = Get-Content $ReportPath -Raw
-            $Report = $ReportContent | ConvertFrom-Json
+        Write-Host ""
+        Write-Host "Report Verification:" -ForegroundColor Cyan
 
-            Write-Host ""
-            Write-Host "Report Verification:" -ForegroundColor Cyan
-            Write-Host "  - report_type: $($Report.report_type)"
-            Write-Host "  - fixture_profile: $($Report.fixture_profile)"
-            Write-Host "  - offline_fixture: $($Report.offline_fixture)"
-            Write-Host "  - data_source_mode: $($Report.data_source_mode)"
-            Write-Host "  - industry_top count: $($Report.industry_top.Count)"
-            Write-Host "  - concept_top count: $($Report.concept_top.Count)"
+        # Use python to parse JSON safely
+        $VerifyScript = @"
+import json
+try:
+    with open(r'$ReportPath', encoding='utf-8') as f:
+        data = json.load(f)
+    print('report_type: ' + str(data.get('report_type', 'N/A')))
+    print('fixture_profile: ' + str(data.get('fixture_profile', 'N/A')))
+    print('offline_fixture: ' + str(data.get('offline_fixture', 'N/A')))
+    print('data_source_mode: ' + str(data.get('data_source_mode', 'N/A')))
+    print('industry_top_count: ' + str(len(data.get('industry_top', []))))
+    print('concept_top_count: ' + str(len(data.get('concept_top', []))))
+    fixture_profile = data.get('fixture_profile', '')
+    expected = '$FixtureProfile'
+    if fixture_profile == expected:
+        print('fixture_profile_match: OK')
+    else:
+        print('fixture_profile_match: FAIL (expected ' + expected + ', got ' + str(fixture_profile) + ')')
+except Exception as e:
+    print('error: ' + str(e))
+"@
 
-            # Verify fixture_profile passed correctly
-            if ($Report.fixture_profile -eq $FixtureProfile) {
-                Write-Host "  - fixture_profile pass: OK" -ForegroundColor Green
-            } else {
-                Write-Host "  - fixture_profile pass: FAIL (expected $FixtureProfile, got $($Report.fixture_profile))" -ForegroundColor Red
-            }
-        } catch {
-            Write-Host "  - Report verification failed: $_" -ForegroundColor Yellow
+        $VerifyResult = python -c $VerifyScript
+        foreach ($Line in $VerifyResult) {
+            Write-Host "  - $Line"
         }
     }
 
