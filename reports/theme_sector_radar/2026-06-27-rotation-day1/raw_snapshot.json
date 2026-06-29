@@ -1,0 +1,118 @@
+{
+  "as_of_date": "2026-06-27",
+  "config": {
+    "top_n": 10,
+    "industry_min_count": 20,
+    "concept_min_count": 20,
+    "fallback_cache_days": 7,
+    "retries": 3,
+    "retry_delay": 1.0,
+    "industry_weights": {
+      "trend_strength": 0.25,
+      "capital_flow": 0.25,
+      "sector_breadth": 0.2,
+      "continuity": 0.15,
+      "market_fit": 0.1,
+      "data_quality": 0.05
+    },
+    "concept_weights": {
+      "heat_burst": 0.25,
+      "capital_confirm": 0.2,
+      "constituent_synergy": 0.2,
+      "phase_judgment": 0.2,
+      "catalyst": 0.1,
+      "data_quality": 0.05
+    },
+    "risk_thresholds": {
+      "overheat_short_term_gain": 15.0,
+      "overheat_deviation": 10.0,
+      "overheat_volume_ratio": 3.0,
+      "divergence_advance_ratio": 0.4,
+      "divergence_price_flow_gap": 0.3,
+      "data_quality_min_sources": 2,
+      "data_quality_freshness_hours": 24
+    },
+    "risk_penalty": {
+      "overheat_min": -5,
+      "overheat_max": -20,
+      "divergence_min": -5,
+      "divergence_max": -15,
+      "data_quality_min": -5,
+      "data_quality_max": -10
+    },
+    "focus_level_thresholds": {
+      "focus_min_score": 80,
+      "watch_min_score": 65,
+      "caution_min_score": 45
+    },
+    "resonance_weights": {
+      "constituent_overlap": 0.3,
+      "dual_top_n": 0.25,
+      "flow_alignment": 0.25,
+      "common_core_count": 0.2
+    },
+    "core_constituent_threshold": 5
+  },
+  "raw_data": {
+    "industry_sectors": [],
+    "concept_sectors": [],
+    "market_data": {
+      "advance_count": 0,
+      "decline_count": 0,
+      "limit_up_count": 0,
+      "limit_down_count": 0,
+      "total_turnover": 0,
+      "index_change_pct": 0
+    }
+  },
+  "normalized_data": {
+    "industry": {
+      "sectors": []
+    },
+    "concept": {
+      "sectors": []
+    }
+  },
+  "agent_outputs": {
+    "coverage": {
+      "coverage": {}
+    },
+    "reliability": {
+      "overall_score": 0.0,
+      "sector_scores": {},
+      "issues": []
+    },
+    "market_temperature": {
+      "score": 50.0,
+      "label": "neutral",
+      "description": "市场情绪中性，建议精选板块和个股",
+      "advance_count": 0,
+      "decline_count": 0,
+      "limit_up_count": 0,
+      "limit_down_count": 0
+    },
+    "industry_flow": {
+      "scores": []
+    },
+    "concept_heat": {
+      "scores": []
+    },
+    "risk": {
+      "assessments": []
+    },
+    "ranking": {
+      "industry_top": [],
+      "concept_top": []
+    },
+    "avoidance": {
+      "explanations": []
+    },
+    "overlap": {
+      "resonance": []
+    }
+  },
+  "warnings": [],
+  "data_sources": [],
+  "updated_at": "",
+  "data_quality_score": 0.0
+}

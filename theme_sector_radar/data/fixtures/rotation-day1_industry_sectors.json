@@ -1,0 +1,112 @@
+[
+  {
+    "sector_id": "BK0437",
+    "name": "人工智能",
+    "price_change_pct": 3.56,
+    "turnover": 15000000000,
+    "main_net_inflow": 1800000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 85.0
+  },
+  {
+    "sector_id": "BK0428",
+    "name": "半导体",
+    "price_change_pct": 2.89,
+    "turnover": 12000000000,
+    "main_net_inflow": 1200000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 83.0
+  },
+  {
+    "sector_id": "BK0611",
+    "name": "计算机",
+    "price_change_pct": 2.45,
+    "turnover": 9000000000,
+    "main_net_inflow": 800000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 80.0
+  },
+  {
+    "sector_id": "BK0447",
+    "name": "新能源汽车",
+    "price_change_pct": 1.89,
+    "turnover": 8000000000,
+    "main_net_inflow": 600000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 78.0
+  },
+  {
+    "sector_id": "BK0600",
+    "name": "电子",
+    "price_change_pct": 1.56,
+    "turnover": 7000000000,
+    "main_net_inflow": 500000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 76.0
+  },
+  {
+    "sector_id": "BK0578",
+    "name": "电力设备",
+    "price_change_pct": 1.23,
+    "turnover": 6000000000,
+    "main_net_inflow": 400000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 75.0
+  },
+  {
+    "sector_id": "BK0545",
+    "name": "有色金属",
+    "price_change_pct": 0.98,
+    "turnover": 5000000000,
+    "main_net_inflow": 300000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 74.0
+  },
+  {
+    "sector_id": "BK0456",
+    "name": "锂电池",
+    "price_change_pct": 0.78,
+    "turnover": 4500000000,
+    "main_net_inflow": 250000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 73.0
+  },
+  {
+    "sector_id": "BK0622",
+    "name": "通信",
+    "price_change_pct": 0.56,
+    "turnover": 4000000000,
+    "main_net_inflow": 200000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 72.0
+  },
+  {
+    "sector_id": "BK0633",
+    "name": "传媒",
+    "price_change_pct": 0.45,
+    "turnover": 3500000000,
+    "main_net_inflow": 150000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 71.0
+  }
+]

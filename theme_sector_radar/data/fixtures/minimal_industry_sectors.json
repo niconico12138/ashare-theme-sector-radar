@@ -1,0 +1,57 @@
+[
+  {
+    "sector_id": "BK0428",
+    "name": "半导体",
+    "price_change_pct": 3.21,
+    "turnover": 12345678900,
+    "main_net_inflow": 1234560000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 88.0
+  },
+  {
+    "sector_id": "BK0437",
+    "name": "人工智能",
+    "price_change_pct": 4.56,
+    "turnover": 18765432100,
+    "main_net_inflow": 2345670000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 85.0
+  },
+  {
+    "sector_id": "BK0447",
+    "name": "新能源汽车",
+    "price_change_pct": 2.15,
+    "turnover": 9876543210,
+    "main_net_inflow": 876540000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 82.0
+  },
+  {
+    "sector_id": "BK0476",
+    "name": "光伏",
+    "price_change_pct": -1.23,
+    "turnover": 5432109876,
+    "main_net_inflow": -321000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 78.0
+  },
+  {
+    "sector_id": "BK0493",
+    "name": "医药生物",
+    "price_change_pct": 1.89,
+    "turnover": 7654321098,
+    "main_net_inflow": 543210000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 80.0
+  }
+]

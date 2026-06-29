@@ -1,0 +1,210 @@
+{
+  "as_of_date": "2026-06-28",
+  "generated_at": "2026-06-29T14:47:00.730304",
+  "source": "fixture",
+  "fixture_profile": "full",
+  "industry_sectors": [
+    {
+      "sector_id": "BK0437",
+      "name": "人工智能",
+      "type": "industry",
+      "score": 86.0,
+      "positive_score": 89.0,
+      "risk_penalty": 3.0,
+      "focus_level": "focus",
+      "risk_level": "low"
+    },
+    {
+      "sector_id": "BK0428",
+      "name": "半导体",
+      "type": "industry",
+      "score": 83.0,
+      "positive_score": 86.0,
+      "risk_penalty": 3.0,
+      "focus_level": "focus",
+      "risk_level": "low"
+    },
+    {
+      "sector_id": "BK0462",
+      "name": "芯片",
+      "type": "industry",
+      "score": 70.0,
+      "positive_score": 73.0,
+      "risk_penalty": 3.0,
+      "focus_level": "watch",
+      "risk_level": "low"
+    },
+    {
+      "sector_id": "BK0456",
+      "name": "锂电池",
+      "type": "industry",
+      "score": 69.0,
+      "positive_score": 72.0,
+      "risk_penalty": 3.0,
+      "focus_level": "watch",
+      "risk_level": "low"
+    },
+    {
+      "sector_id": "BK0447",
+      "name": "新能源汽车",
+      "type": "industry",
+      "score": 62.0,
+      "positive_score": 65.0,
+      "risk_penalty": 3.0,
+      "focus_level": "caution",
+      "risk_level": "low"
+    },
+    {
+      "sector_id": "BK0493",
+      "name": "医药生物",
+      "type": "industry",
+      "score": 62.0,
+      "positive_score": 65.0,
+      "risk_penalty": 3.0,
+      "focus_level": "caution",
+      "risk_level": "low"
+    },
+    {
+      "sector_id": "BK0578",
+      "name": "电力设备",
+      "type": "industry",
+      "score": 62.0,
+      "positive_score": 65.0,
+      "risk_penalty": 3.0,
+      "focus_level": "caution",
+      "risk_level": "low"
+    },
+    {
+      "sector_id": "BK0600",
+      "name": "电子",
+      "type": "industry",
+      "score": 62.0,
+      "positive_score": 65.0,
+      "risk_penalty": 3.0,
+      "focus_level": "caution",
+      "risk_level": "low"
+    },
+    {
+      "sector_id": "BK0545",
+      "name": "有色金属",
+      "type": "industry",
+      "score": 58.0,
+      "positive_score": 61.0,
+      "risk_penalty": 3.0,
+      "focus_level": "caution",
+      "risk_level": "low"
+    },
+    {
+      "sector_id": "BK0471",
+      "name": "新能源",
+      "type": "industry",
+      "score": 57.0,
+      "positive_score": 60.0,
+      "risk_penalty": 3.0,
+      "focus_level": "caution",
+      "risk_level": "low"
+    }
+  ],
+  "concept_sectors": [
+    {
+      "sector_id": "BK1038",
+      "name": "CPO概念",
+      "type": "concept",
+      "score": 84.0,
+      "positive_score": 87.0,
+      "risk_penalty": 3.0,
+      "focus_level": "focus",
+      "risk_level": "low"
+    },
+    {
+      "sector_id": "BK1036",
+      "name": "ChatGPT概念",
+      "type": "concept",
+      "score": 78.0,
+      "positive_score": 89.0,
+      "risk_penalty": 11.0,
+      "focus_level": "watch",
+      "risk_level": "medium"
+    },
+    {
+      "sector_id": "BK1054",
+      "name": "人工智能概念",
+      "type": "concept",
+      "score": 67.0,
+      "positive_score": 70.0,
+      "risk_penalty": 3.0,
+      "focus_level": "watch",
+      "risk_level": "low"
+    },
+    {
+      "sector_id": "BK1040",
+      "name": "机器人概念",
+      "type": "concept",
+      "score": 61.0,
+      "positive_score": 64.0,
+      "risk_penalty": 3.0,
+      "focus_level": "caution",
+      "risk_level": "low"
+    },
+    {
+      "sector_id": "BK1052",
+      "name": "芯片概念",
+      "type": "concept",
+      "score": 59.0,
+      "positive_score": 62.0,
+      "risk_penalty": 3.0,
+      "focus_level": "caution",
+      "risk_level": "low"
+    },
+    {
+      "sector_id": "BK1048",
+      "name": "储能",
+      "type": "concept",
+      "score": 53.0,
+      "positive_score": 56.0,
+      "risk_penalty": 3.0,
+      "focus_level": "caution",
+      "risk_level": "low"
+    },
+    {
+      "sector_id": "BK1058",
+      "name": "云计算",
+      "type": "concept",
+      "score": 53.0,
+      "positive_score": 56.0,
+      "risk_penalty": 3.0,
+      "focus_level": "caution",
+      "risk_level": "low"
+    },
+    {
+      "sector_id": "BK1064",
+      "name": "元宇宙",
+      "type": "concept",
+      "score": 53.0,
+      "positive_score": 56.0,
+      "risk_penalty": 3.0,
+      "focus_level": "caution",
+      "risk_level": "low"
+    },
+    {
+      "sector_id": "BK1072",
+      "name": "网络安全",
+      "type": "concept",
+      "score": 53.0,
+      "positive_score": 56.0,
+      "risk_penalty": 3.0,
+      "focus_level": "caution",
+      "risk_level": "low"
+    },
+    {
+      "sector_id": "BK1050",
+      "name": "新能源车",
+      "type": "concept",
+      "score": 48.0,
+      "positive_score": 51.0,
+      "risk_penalty": 3.0,
+      "focus_level": "caution",
+      "risk_level": "low"
+    }
+  ]
+}

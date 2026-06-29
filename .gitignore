@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 配置文件（本地配置不提交）
+config/daily.local.json
+
+# 日志目录
+logs/
+
+# 缓存目录
+data_cache/
+
+# 报告目录（可选，如果需要提交示例报告可注释掉）
+# reports/
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# 临时文件
+*.tmp
+*.bak

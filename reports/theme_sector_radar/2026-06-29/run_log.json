@@ -1,0 +1,25 @@
+{
+  "command_args": "--daily --as-of 2026-06-29 --offline-fixture --fixture-profile full --top-n 10 --lookback-days 5 --report-root reports/theme_sector_radar",
+  "started_at": "2026-06-29T14:12:08.442409",
+  "finished_at": "2026-06-29T14:12:08.462889",
+  "duration_ms": 20,
+  "run_mode": "daily",
+  "provider": "fixture",
+  "offline_fixture": true,
+  "fixture_profile": "full",
+  "data_source_mode": "fixture",
+  "status": "ok",
+  "comparison_status": "ok",
+  "cache_fallback_used": false,
+  "warnings": [],
+  "output_files": [
+    "theme_sector_radar.json",
+    "theme_sector_radar.md",
+    "raw_snapshot.json"
+  ],
+  "report_dir": "reports/theme_sector_radar\\2026-06-29",
+  "report_root": "reports/theme_sector_radar",
+  "index_included": true,
+  "comparison_source": "lookback:5days",
+  "input_snapshot_source": "fixture"
+}

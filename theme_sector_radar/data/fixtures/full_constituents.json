@@ -1,0 +1,136 @@
+{
+  "BK0428": [
+    {
+      "code": "688981",
+      "name": "中芯国际",
+      "change_pct": 5.2,
+      "turnover": 1234567890,
+      "is_core": true
+    },
+    {
+      "code": "002371",
+      "name": "北方华创",
+      "change_pct": 3.8,
+      "turnover": 987654321,
+      "is_core": true
+    },
+    {
+      "code": "603501",
+      "name": "韦尔股份",
+      "change_pct": 2.5,
+      "turnover": 876543210,
+      "is_core": false
+    },
+    {
+      "code": "688012",
+      "name": "中微公司",
+      "change_pct": 4.1,
+      "turnover": 765432109,
+      "is_core": true
+    },
+    {
+      "code": "300661",
+      "name": "圣邦股份",
+      "change_pct": 1.8,
+      "turnover": 654321098,
+      "is_core": false
+    }
+  ],
+  "BK0437": [
+    {
+      "code": "002230",
+      "name": "科大讯飞",
+      "change_pct": 6.5,
+      "turnover": 1567890123,
+      "is_core": true
+    },
+    {
+      "code": "688787",
+      "name": "海天瑞声",
+      "change_pct": 8.2,
+      "turnover": 1234567890,
+      "is_core": true
+    },
+    {
+      "code": "300496",
+      "name": "中科创达",
+      "change_pct": 4.3,
+      "turnover": 987654321,
+      "is_core": false
+    },
+    {
+      "code": "688111",
+      "name": "金山办公",
+      "change_pct": 3.9,
+      "turnover": 876543210,
+      "is_core": true
+    },
+    {
+      "code": "300033",
+      "name": "同花顺",
+      "change_pct": 5.1,
+      "turnover": 765432109,
+      "is_core": false
+    }
+  ],
+  "BK1036": [
+    {
+      "code": "002230",
+      "name": "科大讯飞",
+      "change_pct": 6.5,
+      "turnover": 1567890123,
+      "is_core": true
+    },
+    {
+      "code": "688787",
+      "name": "海天瑞声",
+      "change_pct": 8.2,
+      "turnover": 1234567890,
+      "is_core": true
+    },
+    {
+      "code": "300496",
+      "name": "中科创达",
+      "change_pct": 4.3,
+      "turnover": 987654321,
+      "is_core": false
+    },
+    {
+      "code": "688111",
+      "name": "金山办公",
+      "change_pct": 3.9,
+      "turnover": 876543210,
+      "is_core": true
+    },
+    {
+      "code": "300033",
+      "name": "同花顺",
+      "change_pct": 5.1,
+      "turnover": 765432109,
+      "is_core": true
+    }
+  ],
+  "BK1038": [
+    {
+      "code": "300308",
+      "name": "中际旭创",
+      "change_pct": 7.8,
+      "turnover": 2345678901,
+      "is_core": true
+    },
+    {
+      "code": "002281",
+      "name": "光迅科技",
+      "change_pct": 5.6,
+      "turnover": 1234567890,
+      "is_core": true
+    },
+    {
+      "code": "300502",
+      "name": "新易盛",
+      "change_pct": 6.3,
+      "turnover": 987654321,
+      "is_core": false
+    }
+  ]
+}

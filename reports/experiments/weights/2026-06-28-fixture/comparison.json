@@ -1,0 +1,679 @@
+{
+  "as_of_date": "2026-06-28",
+  "generated_at": "2026-06-29T14:33:56.858511",
+  "input_snapshot_path": "reports/experiments/weights/2026-06-28-fixture\\input_snapshot.json",
+  "input_snapshot_hash": "file_not_found",
+  "weight_configs": [
+    {
+      "name": "baseline",
+      "description": "当前默认权重配置",
+      "industry_weights": {
+        "trend_strength": 0.25,
+        "capital_flow": 0.25,
+        "sector_breadth": 0.2,
+        "continuity": 0.15,
+        "market_fit": 0.1,
+        "data_quality": 0.05
+      },
+      "concept_weights": {
+        "heat_burst": 0.25,
+        "capital_confirm": 0.2,
+        "constituent_synergy": 0.2,
+        "phase_judgment": 0.2,
+        "catalyst": 0.1,
+        "data_quality": 0.05
+      }
+    },
+    {
+      "name": "capital_focused",
+      "description": "资金流权重提高的配置",
+      "industry_weights": {
+        "trend_strength": 0.2,
+        "capital_flow": 0.35,
+        "sector_breadth": 0.15,
+        "continuity": 0.15,
+        "market_fit": 0.1,
+        "data_quality": 0.05
+      },
+      "concept_weights": {
+        "heat_burst": 0.2,
+        "capital_confirm": 0.3,
+        "constituent_synergy": 0.2,
+        "phase_judgment": 0.15,
+        "catalyst": 0.1,
+        "data_quality": 0.05
+      }
+    },
+    {
+      "name": "trend_focused",
+      "description": "趋势强度权重提高的配置",
+      "industry_weights": {
+        "trend_strength": 0.35,
+        "capital_flow": 0.2,
+        "sector_breadth": 0.15,
+        "continuity": 0.15,
+        "market_fit": 0.1,
+        "data_quality": 0.05
+      },
+      "concept_weights": {
+        "heat_burst": 0.35,
+        "capital_confirm": 0.15,
+        "constituent_synergy": 0.15,
+        "phase_judgment": 0.2,
+        "catalyst": 0.1,
+        "data_quality": 0.05
+      }
+    }
+  ],
+  "results": {
+    "baseline": {
+      "industry_top": [
+        {
+          "sector_id": "BK0437",
+          "name": "人工智能",
+          "score": 86.0,
+          "positive_score": 89.0,
+          "risk_penalty": 3.0,
+          "focus_level": "focus",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK0428",
+          "name": "半导体",
+          "score": 83.0,
+          "positive_score": 86.0,
+          "risk_penalty": 3.0,
+          "focus_level": "focus",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK0462",
+          "name": "芯片",
+          "score": 70.0,
+          "positive_score": 73.0,
+          "risk_penalty": 3.0,
+          "focus_level": "watch",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK0456",
+          "name": "锂电池",
+          "score": 69.0,
+          "positive_score": 72.0,
+          "risk_penalty": 3.0,
+          "focus_level": "watch",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK0447",
+          "name": "新能源汽车",
+          "score": 62.0,
+          "positive_score": 65.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK0493",
+          "name": "医药生物",
+          "score": 62.0,
+          "positive_score": 65.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK0578",
+          "name": "电力设备",
+          "score": 62.0,
+          "positive_score": 65.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK0600",
+          "name": "电子",
+          "score": 62.0,
+          "positive_score": 65.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK0545",
+          "name": "有色金属",
+          "score": 58.0,
+          "positive_score": 61.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK0471",
+          "name": "新能源",
+          "score": 57.0,
+          "positive_score": 60.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        }
+      ],
+      "concept_top": [
+        {
+          "sector_id": "BK1038",
+          "name": "CPO概念",
+          "score": 84.0,
+          "positive_score": 87.0,
+          "risk_penalty": 3.0,
+          "focus_level": "focus",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK1036",
+          "name": "ChatGPT概念",
+          "score": 78.0,
+          "positive_score": 89.0,
+          "risk_penalty": 11.0,
+          "focus_level": "watch",
+          "risk_level": "medium"
+        },
+        {
+          "sector_id": "BK1054",
+          "name": "人工智能概念",
+          "score": 67.0,
+          "positive_score": 70.0,
+          "risk_penalty": 3.0,
+          "focus_level": "watch",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK1040",
+          "name": "机器人概念",
+          "score": 61.0,
+          "positive_score": 64.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK1052",
+          "name": "芯片概念",
+          "score": 59.0,
+          "positive_score": 62.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK1048",
+          "name": "储能",
+          "score": 53.0,
+          "positive_score": 56.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK1058",
+          "name": "云计算",
+          "score": 53.0,
+          "positive_score": 56.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK1064",
+          "name": "元宇宙",
+          "score": 53.0,
+          "positive_score": 56.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK1072",
+          "name": "网络安全",
+          "score": 53.0,
+          "positive_score": 56.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK1050",
+          "name": "新能源车",
+          "score": 48.0,
+          "positive_score": 51.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        }
+      ],
+      "overlap": [
+        {
+          "industry": "人工智能",
+          "concept": "ChatGPT概念",
+          "resonance_score": 100.0
+        }
+      ],
+      "status": "ok",
+      "data_quality_score": 66.75
+    },
+    "capital_focused": {
+      "industry_top": [
+        {
+          "sector_id": "BK0437",
+          "name": "人工智能",
+          "score": 86.0,
+          "positive_score": 89.0,
+          "risk_penalty": 3.0,
+          "focus_level": "focus",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK0428",
+          "name": "半导体",
+          "score": 83.0,
+          "positive_score": 86.0,
+          "risk_penalty": 3.0,
+          "focus_level": "focus",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK0462",
+          "name": "芯片",
+          "score": 70.0,
+          "positive_score": 73.0,
+          "risk_penalty": 3.0,
+          "focus_level": "watch",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK0456",
+          "name": "锂电池",
+          "score": 69.0,
+          "positive_score": 72.0,
+          "risk_penalty": 3.0,
+          "focus_level": "watch",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK0447",
+          "name": "新能源汽车",
+          "score": 62.0,
+          "positive_score": 65.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK0493",
+          "name": "医药生物",
+          "score": 62.0,
+          "positive_score": 65.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK0578",
+          "name": "电力设备",
+          "score": 62.0,
+          "positive_score": 65.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK0600",
+          "name": "电子",
+          "score": 62.0,
+          "positive_score": 65.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK0545",
+          "name": "有色金属",
+          "score": 58.0,
+          "positive_score": 61.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK0471",
+          "name": "新能源",
+          "score": 57.0,
+          "positive_score": 60.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        }
+      ],
+      "concept_top": [
+        {
+          "sector_id": "BK1038",
+          "name": "CPO概念",
+          "score": 84.0,
+          "positive_score": 87.0,
+          "risk_penalty": 3.0,
+          "focus_level": "focus",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK1036",
+          "name": "ChatGPT概念",
+          "score": 78.0,
+          "positive_score": 89.0,
+          "risk_penalty": 11.0,
+          "focus_level": "watch",
+          "risk_level": "medium"
+        },
+        {
+          "sector_id": "BK1054",
+          "name": "人工智能概念",
+          "score": 67.0,
+          "positive_score": 70.0,
+          "risk_penalty": 3.0,
+          "focus_level": "watch",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK1040",
+          "name": "机器人概念",
+          "score": 61.0,
+          "positive_score": 64.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK1052",
+          "name": "芯片概念",
+          "score": 59.0,
+          "positive_score": 62.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK1048",
+          "name": "储能",
+          "score": 53.0,
+          "positive_score": 56.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK1058",
+          "name": "云计算",
+          "score": 53.0,
+          "positive_score": 56.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK1064",
+          "name": "元宇宙",
+          "score": 53.0,
+          "positive_score": 56.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK1072",
+          "name": "网络安全",
+          "score": 53.0,
+          "positive_score": 56.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK1050",
+          "name": "新能源车",
+          "score": 48.0,
+          "positive_score": 51.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        }
+      ],
+      "overlap": [
+        {
+          "industry": "人工智能",
+          "concept": "ChatGPT概念",
+          "resonance_score": 100.0
+        }
+      ],
+      "status": "ok",
+      "data_quality_score": 66.75
+    },
+    "trend_focused": {
+      "industry_top": [
+        {
+          "sector_id": "BK0437",
+          "name": "人工智能",
+          "score": 86.0,
+          "positive_score": 89.0,
+          "risk_penalty": 3.0,
+          "focus_level": "focus",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK0428",
+          "name": "半导体",
+          "score": 83.0,
+          "positive_score": 86.0,
+          "risk_penalty": 3.0,
+          "focus_level": "focus",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK0462",
+          "name": "芯片",
+          "score": 70.0,
+          "positive_score": 73.0,
+          "risk_penalty": 3.0,
+          "focus_level": "watch",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK0456",
+          "name": "锂电池",
+          "score": 69.0,
+          "positive_score": 72.0,
+          "risk_penalty": 3.0,
+          "focus_level": "watch",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK0447",
+          "name": "新能源汽车",
+          "score": 62.0,
+          "positive_score": 65.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK0493",
+          "name": "医药生物",
+          "score": 62.0,
+          "positive_score": 65.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK0578",
+          "name": "电力设备",
+          "score": 62.0,
+          "positive_score": 65.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK0600",
+          "name": "电子",
+          "score": 62.0,
+          "positive_score": 65.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK0545",
+          "name": "有色金属",
+          "score": 58.0,
+          "positive_score": 61.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK0471",
+          "name": "新能源",
+          "score": 57.0,
+          "positive_score": 60.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        }
+      ],
+      "concept_top": [
+        {
+          "sector_id": "BK1038",
+          "name": "CPO概念",
+          "score": 84.0,
+          "positive_score": 87.0,
+          "risk_penalty": 3.0,
+          "focus_level": "focus",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK1036",
+          "name": "ChatGPT概念",
+          "score": 78.0,
+          "positive_score": 89.0,
+          "risk_penalty": 11.0,
+          "focus_level": "watch",
+          "risk_level": "medium"
+        },
+        {
+          "sector_id": "BK1054",
+          "name": "人工智能概念",
+          "score": 67.0,
+          "positive_score": 70.0,
+          "risk_penalty": 3.0,
+          "focus_level": "watch",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK1040",
+          "name": "机器人概念",
+          "score": 61.0,
+          "positive_score": 64.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK1052",
+          "name": "芯片概念",
+          "score": 59.0,
+          "positive_score": 62.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK1048",
+          "name": "储能",
+          "score": 53.0,
+          "positive_score": 56.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK1058",
+          "name": "云计算",
+          "score": 53.0,
+          "positive_score": 56.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK1064",
+          "name": "元宇宙",
+          "score": 53.0,
+          "positive_score": 56.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK1072",
+          "name": "网络安全",
+          "score": 53.0,
+          "positive_score": 56.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        },
+        {
+          "sector_id": "BK1050",
+          "name": "新能源车",
+          "score": 48.0,
+          "positive_score": 51.0,
+          "risk_penalty": 3.0,
+          "focus_level": "caution",
+          "risk_level": "low"
+        }
+      ],
+      "overlap": [
+        {
+          "industry": "人工智能",
+          "concept": "ChatGPT概念",
+          "resonance_score": 100.0
+        }
+      ],
+      "status": "ok",
+      "data_quality_score": 66.75
+    }
+  },
+  "diff": {
+    "industry_top_changes": {
+      "overlap_count": 10,
+      "overlap_rate": 1.0,
+      "only_in_baseline": [],
+      "only_in_alternative": []
+    },
+    "concept_top_changes": {
+      "overlap_count": 10,
+      "overlap_rate": 1.0,
+      "only_in_baseline": [],
+      "only_in_alternative": []
+    },
+    "focus_level_changes": [],
+    "risk_level_changes": []
+  },
+  "recommendation": {
+    "recommendation": "need_more_data",
+    "reasons": [
+      "单日 fixture 实验数据量不足",
+      "建议使用多日真实缓存数据进行对比",
+      "当前默认权重保持不变"
+    ]
+  }
+}

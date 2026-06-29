@@ -1,0 +1,3206 @@
+{
+  "as_of_date": "2026-06-28",
+  "config": {
+    "top_n": 10,
+    "industry_weights": {
+      "trend_strength": 0.25,
+      "capital_flow": 0.25,
+      "sector_breadth": 0.2,
+      "continuity": 0.15,
+      "market_fit": 0.1,
+      "data_quality": 0.05
+    },
+    "concept_weights": {
+      "heat_burst": 0.25,
+      "capital_confirm": 0.2,
+      "constituent_synergy": 0.2,
+      "phase_judgment": 0.2,
+      "catalyst": 0.1,
+      "data_quality": 0.05
+    },
+    "risk_thresholds": {
+      "overheat_short_term_gain": 15.0,
+      "overheat_deviation": 10.0,
+      "overheat_volume_ratio": 3.0,
+      "divergence_advance_ratio": 0.4,
+      "divergence_price_flow_gap": 0.3,
+      "data_quality_min_sources": 2,
+      "data_quality_freshness_hours": 24
+    },
+    "risk_penalty": {
+      "overheat_min": -5,
+      "overheat_max": -20,
+      "divergence_min": -5,
+      "divergence_max": -15,
+      "data_quality_min": -5,
+      "data_quality_max": -10
+    },
+    "focus_level_thresholds": {
+      "focus_min_score": 80,
+      "watch_min_score": 65,
+      "caution_min_score": 45
+    },
+    "resonance_weights": {
+      "constituent_overlap": 0.3,
+      "dual_top_n": 0.25,
+      "flow_alignment": 0.25,
+      "common_core_count": 0.2
+    },
+    "core_constituent_threshold": 5
+  },
+  "raw_data": {
+    "industry_sectors": [
+      {
+        "sector_id": "BK0734",
+        "name": "饰品",
+        "type": "industry",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_industry"
+        ],
+        "updated_at": "2026-06-29T09:05:29.832536",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1367",
+        "name": "板材",
+        "type": "industry",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_industry"
+        ],
+        "updated_at": "2026-06-29T09:05:29.832536",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1495",
+        "name": "生活用纸",
+        "type": "industry",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_industry"
+        ],
+        "updated_at": "2026-06-29T09:05:29.832536",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1413",
+        "name": "涤纶",
+        "type": "industry",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_industry"
+        ],
+        "updated_at": "2026-06-29T09:05:29.832536",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1314",
+        "name": "风电整机",
+        "type": "industry",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_industry"
+        ],
+        "updated_at": "2026-06-29T09:05:29.832536",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1554",
+        "name": "商业物业经营",
+        "type": "industry",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_industry"
+        ],
+        "updated_at": "2026-06-29T09:05:29.832536",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1363",
+        "name": "信托",
+        "type": "industry",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_industry"
+        ],
+        "updated_at": "2026-06-29T09:05:29.832536",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1252",
+        "name": "化妆品",
+        "type": "industry",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_industry"
+        ],
+        "updated_at": "2026-06-29T09:05:29.832536",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1390",
+        "name": "水务及水治理",
+        "type": "industry",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_industry"
+        ],
+        "updated_at": "2026-06-29T09:05:29.832536",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK0732",
+        "name": "贵金属",
+        "type": "industry",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_industry"
+        ],
+        "updated_at": "2026-06-29T09:05:29.832536",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1281",
+        "name": "休闲食品",
+        "type": "industry",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_industry"
+        ],
+        "updated_at": "2026-06-29T09:05:29.832536",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1610",
+        "name": "股份制银行Ⅲ",
+        "type": "industry",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_industry"
+        ],
+        "updated_at": "2026-06-29T09:05:29.832536",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1037",
+        "name": "消费电子",
+        "type": "industry",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_industry"
+        ],
+        "updated_at": "2026-06-29T09:05:29.832536",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1483",
+        "name": "高速公路",
+        "type": "industry",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_industry"
+        ],
+        "updated_at": "2026-06-29T09:05:29.832536",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1412",
+        "name": "氨纶",
+        "type": "industry",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_industry"
+        ],
+        "updated_at": "2026-06-29T09:05:29.832536",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1268",
+        "name": "互联网电商",
+        "type": "industry",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_industry"
+        ],
+        "updated_at": "2026-06-29T09:05:29.832536",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1614",
+        "name": "铅锌",
+        "type": "industry",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_industry"
+        ],
+        "updated_at": "2026-06-29T09:05:29.832536",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1262",
+        "name": "乘用车",
+        "type": "industry",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_industry"
+        ],
+        "updated_at": "2026-06-29T09:05:29.832536",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1265",
+        "name": "包装印刷",
+        "type": "industry",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_industry"
+        ],
+        "updated_at": "2026-06-29T09:05:29.832536",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1529",
+        "name": "汽车电子电气系统",
+        "type": "industry",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_industry"
+        ],
+        "updated_at": "2026-06-29T09:05:29.832536",
+        "data_quality_score": 70.0
+      }
+    ],
+    "concept_sectors": [
+      {
+        "sector_id": "BK1717",
+        "name": "题材股",
+        "type": "concept",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_concept"
+        ],
+        "updated_at": "2026-06-29T09:05:35.179082",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1716",
+        "name": "反转股",
+        "type": "concept",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_concept"
+        ],
+        "updated_at": "2026-06-29T09:05:35.179082",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1715",
+        "name": "趋势股",
+        "type": "concept",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_concept"
+        ],
+        "updated_at": "2026-06-29T09:05:35.179082",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1714",
+        "name": "金融地产风格",
+        "type": "concept",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_concept"
+        ],
+        "updated_at": "2026-06-29T09:05:35.179082",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1713",
+        "name": "科技风格",
+        "type": "concept",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_concept"
+        ],
+        "updated_at": "2026-06-29T09:05:35.179082",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1712",
+        "name": "医药医疗风格",
+        "type": "concept",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_concept"
+        ],
+        "updated_at": "2026-06-29T09:05:35.179082",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1711",
+        "name": "消费风格",
+        "type": "concept",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_concept"
+        ],
+        "updated_at": "2026-06-29T09:05:35.179082",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1710",
+        "name": "先进制造风格",
+        "type": "concept",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_concept"
+        ],
+        "updated_at": "2026-06-29T09:05:35.179082",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1682",
+        "name": "2026一季报扭亏",
+        "type": "concept",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_concept"
+        ],
+        "updated_at": "2026-06-29T09:05:35.179082",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1681",
+        "name": "2026一季报预减",
+        "type": "concept",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_concept"
+        ],
+        "updated_at": "2026-06-29T09:05:35.179082",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1680",
+        "name": "2026一季报预增",
+        "type": "concept",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_concept"
+        ],
+        "updated_at": "2026-06-29T09:05:35.180083",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1679",
+        "name": "2025年报扭亏",
+        "type": "concept",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_concept"
+        ],
+        "updated_at": "2026-06-29T09:05:35.180083",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1678",
+        "name": "2025年报预减",
+        "type": "concept",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_concept"
+        ],
+        "updated_at": "2026-06-29T09:05:35.180083",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1677",
+        "name": "2025年报预增",
+        "type": "concept",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_concept"
+        ],
+        "updated_at": "2026-06-29T09:05:35.180083",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1676",
+        "name": "百日新高",
+        "type": "concept",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_concept"
+        ],
+        "updated_at": "2026-06-29T09:05:35.180083",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1675",
+        "name": "历史新高",
+        "type": "concept",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_concept"
+        ],
+        "updated_at": "2026-06-29T09:05:35.180083",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1674",
+        "name": "近期新高",
+        "type": "concept",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_concept"
+        ],
+        "updated_at": "2026-06-29T09:05:35.180083",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1673",
+        "name": "破增发价股",
+        "type": "concept",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_concept"
+        ],
+        "updated_at": "2026-06-29T09:05:35.180083",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1672",
+        "name": "破发股",
+        "type": "concept",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_concept"
+        ],
+        "updated_at": "2026-06-29T09:05:35.180083",
+        "data_quality_score": 70.0
+      },
+      {
+        "sector_id": "BK1671",
+        "name": "超跌股",
+        "type": "concept",
+        "price_change_pct": 0.0,
+        "turnover": 0.0,
+        "main_net_inflow": 0.0,
+        "constituents": [],
+        "data_sources": [
+          "akshare/eastmoney_concept"
+        ],
+        "updated_at": "2026-06-29T09:05:35.180083",
+        "data_quality_score": 70.0
+      }
+    ],
+    "market_data": {
+      "advance_count": 0,
+      "decline_count": 0,
+      "limit_up_count": 0,
+      "limit_down_count": 0,
+      "total_turnover": 0.0,
+      "index_change_pct": 0
+    }
+  },
+  "normalized_data": {
+    "industry": {
+      "sectors": [
+        {
+          "sector_id": "BK0734",
+          "name": "饰品",
+          "type": "industry",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1367",
+          "name": "板材",
+          "type": "industry",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1495",
+          "name": "生活用纸",
+          "type": "industry",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1413",
+          "name": "涤纶",
+          "type": "industry",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1314",
+          "name": "风电整机",
+          "type": "industry",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1554",
+          "name": "商业物业经营",
+          "type": "industry",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1363",
+          "name": "信托",
+          "type": "industry",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1252",
+          "name": "化妆品",
+          "type": "industry",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1390",
+          "name": "水务及水治理",
+          "type": "industry",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK0732",
+          "name": "贵金属",
+          "type": "industry",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1281",
+          "name": "休闲食品",
+          "type": "industry",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1610",
+          "name": "股份制银行Ⅲ",
+          "type": "industry",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1037",
+          "name": "消费电子",
+          "type": "industry",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1483",
+          "name": "高速公路",
+          "type": "industry",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1412",
+          "name": "氨纶",
+          "type": "industry",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1268",
+          "name": "互联网电商",
+          "type": "industry",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1614",
+          "name": "铅锌",
+          "type": "industry",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1262",
+          "name": "乘用车",
+          "type": "industry",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1265",
+          "name": "包装印刷",
+          "type": "industry",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1529",
+          "name": "汽车电子电气系统",
+          "type": "industry",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        }
+      ]
+    },
+    "concept": {
+      "sectors": [
+        {
+          "sector_id": "BK1717",
+          "name": "题材股",
+          "type": "concept",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.179082",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1716",
+          "name": "反转股",
+          "type": "concept",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.179082",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1715",
+          "name": "趋势股",
+          "type": "concept",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.179082",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1714",
+          "name": "金融地产风格",
+          "type": "concept",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.179082",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1713",
+          "name": "科技风格",
+          "type": "concept",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.179082",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1712",
+          "name": "医药医疗风格",
+          "type": "concept",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.179082",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1711",
+          "name": "消费风格",
+          "type": "concept",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.179082",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1710",
+          "name": "先进制造风格",
+          "type": "concept",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.179082",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1682",
+          "name": "2026一季报扭亏",
+          "type": "concept",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.179082",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1681",
+          "name": "2026一季报预减",
+          "type": "concept",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.179082",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1680",
+          "name": "2026一季报预增",
+          "type": "concept",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.180083",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1679",
+          "name": "2025年报扭亏",
+          "type": "concept",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.180083",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1678",
+          "name": "2025年报预减",
+          "type": "concept",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.180083",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1677",
+          "name": "2025年报预增",
+          "type": "concept",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.180083",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1676",
+          "name": "百日新高",
+          "type": "concept",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.180083",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1675",
+          "name": "历史新高",
+          "type": "concept",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.180083",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1674",
+          "name": "近期新高",
+          "type": "concept",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.180083",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1673",
+          "name": "破增发价股",
+          "type": "concept",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.180083",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1672",
+          "name": "破发股",
+          "type": "concept",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.180083",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1671",
+          "name": "超跌股",
+          "type": "concept",
+          "price_change_pct": 0.0,
+          "turnover": 0.0,
+          "main_net_inflow": 0.0,
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.180083",
+          "data_quality_score": 70.0
+        }
+      ]
+    }
+  },
+  "agent_outputs": {
+    "coverage": {
+      "coverage": {
+        "BK0734": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1367": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1495": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1413": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1314": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1554": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1363": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1252": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1390": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK0732": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1281": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1610": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1037": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1483": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1412": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1268": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1614": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1262": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1265": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1529": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1717": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1716": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1715": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1714": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1713": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1712": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1711": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1710": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1682": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1681": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1680": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1679": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1678": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1677": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1676": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1675": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1674": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1673": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1672": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        },
+        "BK1671": {
+          "total_constituents": 0,
+          "available_quotes": 0,
+          "valid_change_pct": 0,
+          "core_count": 0,
+          "coverage_rate": 0.0
+        }
+      }
+    },
+    "reliability": {
+      "overall_score": 65.0,
+      "sector_scores": {
+        "BK0734": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1367": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1495": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1413": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1314": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1554": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1363": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1252": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1390": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK0732": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1281": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1610": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1037": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1483": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1412": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1268": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1614": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1262": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1265": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1529": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1717": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1716": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1715": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1714": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1713": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1712": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1711": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1710": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1682": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1681": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1680": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1679": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1678": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1677": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1676": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1675": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1674": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1673": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1672": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        },
+        "BK1671": {
+          "score": 65.0,
+          "issues": [
+            "数据源不足 (1个)",
+            "无成分股数据"
+          ]
+        }
+      },
+      "issues": [
+        "板块 饰品 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 板材 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 生活用纸 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 涤纶 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 风电整机 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 商业物业经营 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 信托 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 化妆品 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 水务及水治理 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 贵金属 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 休闲食品 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 股份制银行Ⅲ 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 消费电子 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 高速公路 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 氨纶 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 互联网电商 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 铅锌 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 乘用车 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 包装印刷 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 汽车电子电气系统 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 题材股 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 反转股 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 趋势股 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 金融地产风格 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 科技风格 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 医药医疗风格 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 消费风格 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 先进制造风格 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 2026一季报扭亏 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 2026一季报预减 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 2026一季报预增 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 2025年报扭亏 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 2025年报预减 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 2025年报预增 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 百日新高 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 历史新高 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 近期新高 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 破增发价股 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 破发股 数据质量问题: 数据源不足 (1个); 无成分股数据",
+        "板块 超跌股 数据质量问题: 数据源不足 (1个); 无成分股数据"
+      ]
+    },
+    "market_temperature": {
+      "score": 50.0,
+      "label": "neutral",
+      "description": "市场情绪中性，建议精选板块和个股",
+      "advance_count": 0,
+      "decline_count": 0,
+      "limit_up_count": 0,
+      "limit_down_count": 0
+    },
+    "industry_flow": {
+      "scores": [
+        {
+          "sector_id": "BK0734",
+          "name": "饰品",
+          "positive_score": 34.0
+        },
+        {
+          "sector_id": "BK1367",
+          "name": "板材",
+          "positive_score": 34.0
+        },
+        {
+          "sector_id": "BK1495",
+          "name": "生活用纸",
+          "positive_score": 34.0
+        },
+        {
+          "sector_id": "BK1413",
+          "name": "涤纶",
+          "positive_score": 34.0
+        },
+        {
+          "sector_id": "BK1314",
+          "name": "风电整机",
+          "positive_score": 34.0
+        },
+        {
+          "sector_id": "BK1554",
+          "name": "商业物业经营",
+          "positive_score": 34.0
+        },
+        {
+          "sector_id": "BK1363",
+          "name": "信托",
+          "positive_score": 34.0
+        },
+        {
+          "sector_id": "BK1252",
+          "name": "化妆品",
+          "positive_score": 34.0
+        },
+        {
+          "sector_id": "BK1390",
+          "name": "水务及水治理",
+          "positive_score": 34.0
+        },
+        {
+          "sector_id": "BK0732",
+          "name": "贵金属",
+          "positive_score": 34.0
+        },
+        {
+          "sector_id": "BK1281",
+          "name": "休闲食品",
+          "positive_score": 34.0
+        },
+        {
+          "sector_id": "BK1610",
+          "name": "股份制银行Ⅲ",
+          "positive_score": 34.0
+        },
+        {
+          "sector_id": "BK1037",
+          "name": "消费电子",
+          "positive_score": 34.0
+        },
+        {
+          "sector_id": "BK1483",
+          "name": "高速公路",
+          "positive_score": 34.0
+        },
+        {
+          "sector_id": "BK1412",
+          "name": "氨纶",
+          "positive_score": 34.0
+        },
+        {
+          "sector_id": "BK1268",
+          "name": "互联网电商",
+          "positive_score": 34.0
+        },
+        {
+          "sector_id": "BK1614",
+          "name": "铅锌",
+          "positive_score": 34.0
+        },
+        {
+          "sector_id": "BK1262",
+          "name": "乘用车",
+          "positive_score": 34.0
+        },
+        {
+          "sector_id": "BK1265",
+          "name": "包装印刷",
+          "positive_score": 34.0
+        },
+        {
+          "sector_id": "BK1529",
+          "name": "汽车电子电气系统",
+          "positive_score": 34.0
+        }
+      ]
+    },
+    "concept_heat": {
+      "scores": [
+        {
+          "sector_id": "BK1717",
+          "name": "题材股",
+          "positive_score": 30.0,
+          "phase": "divergence"
+        },
+        {
+          "sector_id": "BK1716",
+          "name": "反转股",
+          "positive_score": 30.0,
+          "phase": "divergence"
+        },
+        {
+          "sector_id": "BK1715",
+          "name": "趋势股",
+          "positive_score": 30.0,
+          "phase": "divergence"
+        },
+        {
+          "sector_id": "BK1714",
+          "name": "金融地产风格",
+          "positive_score": 30.0,
+          "phase": "divergence"
+        },
+        {
+          "sector_id": "BK1713",
+          "name": "科技风格",
+          "positive_score": 30.0,
+          "phase": "divergence"
+        },
+        {
+          "sector_id": "BK1712",
+          "name": "医药医疗风格",
+          "positive_score": 30.0,
+          "phase": "divergence"
+        },
+        {
+          "sector_id": "BK1711",
+          "name": "消费风格",
+          "positive_score": 30.0,
+          "phase": "divergence"
+        },
+        {
+          "sector_id": "BK1710",
+          "name": "先进制造风格",
+          "positive_score": 30.0,
+          "phase": "divergence"
+        },
+        {
+          "sector_id": "BK1682",
+          "name": "2026一季报扭亏",
+          "positive_score": 30.0,
+          "phase": "divergence"
+        },
+        {
+          "sector_id": "BK1681",
+          "name": "2026一季报预减",
+          "positive_score": 30.0,
+          "phase": "divergence"
+        },
+        {
+          "sector_id": "BK1680",
+          "name": "2026一季报预增",
+          "positive_score": 30.0,
+          "phase": "divergence"
+        },
+        {
+          "sector_id": "BK1679",
+          "name": "2025年报扭亏",
+          "positive_score": 30.0,
+          "phase": "divergence"
+        },
+        {
+          "sector_id": "BK1678",
+          "name": "2025年报预减",
+          "positive_score": 30.0,
+          "phase": "divergence"
+        },
+        {
+          "sector_id": "BK1677",
+          "name": "2025年报预增",
+          "positive_score": 30.0,
+          "phase": "divergence"
+        },
+        {
+          "sector_id": "BK1676",
+          "name": "百日新高",
+          "positive_score": 30.0,
+          "phase": "divergence"
+        },
+        {
+          "sector_id": "BK1675",
+          "name": "历史新高",
+          "positive_score": 30.0,
+          "phase": "divergence"
+        },
+        {
+          "sector_id": "BK1674",
+          "name": "近期新高",
+          "positive_score": 30.0,
+          "phase": "divergence"
+        },
+        {
+          "sector_id": "BK1673",
+          "name": "破增发价股",
+          "positive_score": 30.0,
+          "phase": "divergence"
+        },
+        {
+          "sector_id": "BK1672",
+          "name": "破发股",
+          "positive_score": 30.0,
+          "phase": "divergence"
+        },
+        {
+          "sector_id": "BK1671",
+          "name": "超跌股",
+          "positive_score": 30.0,
+          "phase": "divergence"
+        }
+      ]
+    },
+    "risk": {
+      "assessments": [
+        {
+          "sector_id": "BK0734",
+          "name": "饰品",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1367",
+          "name": "板材",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1495",
+          "name": "生活用纸",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1413",
+          "name": "涤纶",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1314",
+          "name": "风电整机",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1554",
+          "name": "商业物业经营",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1363",
+          "name": "信托",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1252",
+          "name": "化妆品",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1390",
+          "name": "水务及水治理",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK0732",
+          "name": "贵金属",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1281",
+          "name": "休闲食品",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1610",
+          "name": "股份制银行Ⅲ",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1037",
+          "name": "消费电子",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1483",
+          "name": "高速公路",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1412",
+          "name": "氨纶",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1268",
+          "name": "互联网电商",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1614",
+          "name": "铅锌",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1262",
+          "name": "乘用车",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1265",
+          "name": "包装印刷",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1529",
+          "name": "汽车电子电气系统",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1717",
+          "name": "题材股",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1716",
+          "name": "反转股",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1715",
+          "name": "趋势股",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1714",
+          "name": "金融地产风格",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1713",
+          "name": "科技风格",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1712",
+          "name": "医药医疗风格",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1711",
+          "name": "消费风格",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1710",
+          "name": "先进制造风格",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1682",
+          "name": "2026一季报扭亏",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1681",
+          "name": "2026一季报预减",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1680",
+          "name": "2026一季报预增",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1679",
+          "name": "2025年报扭亏",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1678",
+          "name": "2025年报预减",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1677",
+          "name": "2025年报预增",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1676",
+          "name": "百日新高",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1675",
+          "name": "历史新高",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1674",
+          "name": "近期新高",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1673",
+          "name": "破增发价股",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1672",
+          "name": "破发股",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        },
+        {
+          "sector_id": "BK1671",
+          "name": "超跌股",
+          "risk_penalty": -3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        }
+      ]
+    },
+    "ranking": {
+      "industry_top": [
+        {
+          "sector_id": "BK0734",
+          "name": "饰品",
+          "type": "industry",
+          "score": 31.0,
+          "positive_score": 34.0,
+          "risk_penalty": -3.0,
+          "focus_level": "avoid",
+          "phase": "startup",
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "reasons": [],
+          "downgrade_reasons": [
+            "原始评分过低 (31.0)"
+          ],
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1367",
+          "name": "板材",
+          "type": "industry",
+          "score": 31.0,
+          "positive_score": 34.0,
+          "risk_penalty": -3.0,
+          "focus_level": "avoid",
+          "phase": "startup",
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "reasons": [],
+          "downgrade_reasons": [
+            "原始评分过低 (31.0)"
+          ],
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1495",
+          "name": "生活用纸",
+          "type": "industry",
+          "score": 31.0,
+          "positive_score": 34.0,
+          "risk_penalty": -3.0,
+          "focus_level": "avoid",
+          "phase": "startup",
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "reasons": [],
+          "downgrade_reasons": [
+            "原始评分过低 (31.0)"
+          ],
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1413",
+          "name": "涤纶",
+          "type": "industry",
+          "score": 31.0,
+          "positive_score": 34.0,
+          "risk_penalty": -3.0,
+          "focus_level": "avoid",
+          "phase": "startup",
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "reasons": [],
+          "downgrade_reasons": [
+            "原始评分过低 (31.0)"
+          ],
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1314",
+          "name": "风电整机",
+          "type": "industry",
+          "score": 31.0,
+          "positive_score": 34.0,
+          "risk_penalty": -3.0,
+          "focus_level": "avoid",
+          "phase": "startup",
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "reasons": [],
+          "downgrade_reasons": [
+            "原始评分过低 (31.0)"
+          ],
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1554",
+          "name": "商业物业经营",
+          "type": "industry",
+          "score": 31.0,
+          "positive_score": 34.0,
+          "risk_penalty": -3.0,
+          "focus_level": "avoid",
+          "phase": "startup",
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "reasons": [],
+          "downgrade_reasons": [
+            "原始评分过低 (31.0)"
+          ],
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1363",
+          "name": "信托",
+          "type": "industry",
+          "score": 31.0,
+          "positive_score": 34.0,
+          "risk_penalty": -3.0,
+          "focus_level": "avoid",
+          "phase": "startup",
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "reasons": [],
+          "downgrade_reasons": [
+            "原始评分过低 (31.0)"
+          ],
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1252",
+          "name": "化妆品",
+          "type": "industry",
+          "score": 31.0,
+          "positive_score": 34.0,
+          "risk_penalty": -3.0,
+          "focus_level": "avoid",
+          "phase": "startup",
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "reasons": [],
+          "downgrade_reasons": [
+            "原始评分过低 (31.0)"
+          ],
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1390",
+          "name": "水务及水治理",
+          "type": "industry",
+          "score": 31.0,
+          "positive_score": 34.0,
+          "risk_penalty": -3.0,
+          "focus_level": "avoid",
+          "phase": "startup",
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "reasons": [],
+          "downgrade_reasons": [
+            "原始评分过低 (31.0)"
+          ],
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK0732",
+          "name": "贵金属",
+          "type": "industry",
+          "score": 31.0,
+          "positive_score": 34.0,
+          "risk_penalty": -3.0,
+          "focus_level": "avoid",
+          "phase": "startup",
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "reasons": [],
+          "downgrade_reasons": [
+            "原始评分过低 (31.0)"
+          ],
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_industry"
+          ],
+          "updated_at": "2026-06-29T09:05:29.832536",
+          "data_quality_score": 70.0
+        }
+      ],
+      "concept_top": [
+        {
+          "sector_id": "BK1717",
+          "name": "题材股",
+          "type": "concept",
+          "score": 27.0,
+          "positive_score": 30.0,
+          "risk_penalty": -3.0,
+          "focus_level": "avoid",
+          "phase": "divergence",
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "reasons": [],
+          "downgrade_reasons": [
+            "原始评分过低 (27.0)"
+          ],
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.179082",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1716",
+          "name": "反转股",
+          "type": "concept",
+          "score": 27.0,
+          "positive_score": 30.0,
+          "risk_penalty": -3.0,
+          "focus_level": "avoid",
+          "phase": "divergence",
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "reasons": [],
+          "downgrade_reasons": [
+            "原始评分过低 (27.0)"
+          ],
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.179082",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1715",
+          "name": "趋势股",
+          "type": "concept",
+          "score": 27.0,
+          "positive_score": 30.0,
+          "risk_penalty": -3.0,
+          "focus_level": "avoid",
+          "phase": "divergence",
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "reasons": [],
+          "downgrade_reasons": [
+            "原始评分过低 (27.0)"
+          ],
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.179082",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1714",
+          "name": "金融地产风格",
+          "type": "concept",
+          "score": 27.0,
+          "positive_score": 30.0,
+          "risk_penalty": -3.0,
+          "focus_level": "avoid",
+          "phase": "divergence",
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "reasons": [],
+          "downgrade_reasons": [
+            "原始评分过低 (27.0)"
+          ],
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.179082",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1713",
+          "name": "科技风格",
+          "type": "concept",
+          "score": 27.0,
+          "positive_score": 30.0,
+          "risk_penalty": -3.0,
+          "focus_level": "avoid",
+          "phase": "divergence",
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "reasons": [],
+          "downgrade_reasons": [
+            "原始评分过低 (27.0)"
+          ],
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.179082",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1712",
+          "name": "医药医疗风格",
+          "type": "concept",
+          "score": 27.0,
+          "positive_score": 30.0,
+          "risk_penalty": -3.0,
+          "focus_level": "avoid",
+          "phase": "divergence",
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "reasons": [],
+          "downgrade_reasons": [
+            "原始评分过低 (27.0)"
+          ],
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.179082",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1711",
+          "name": "消费风格",
+          "type": "concept",
+          "score": 27.0,
+          "positive_score": 30.0,
+          "risk_penalty": -3.0,
+          "focus_level": "avoid",
+          "phase": "divergence",
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "reasons": [],
+          "downgrade_reasons": [
+            "原始评分过低 (27.0)"
+          ],
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.179082",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1710",
+          "name": "先进制造风格",
+          "type": "concept",
+          "score": 27.0,
+          "positive_score": 30.0,
+          "risk_penalty": -3.0,
+          "focus_level": "avoid",
+          "phase": "divergence",
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "reasons": [],
+          "downgrade_reasons": [
+            "原始评分过低 (27.0)"
+          ],
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.179082",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1682",
+          "name": "2026一季报扭亏",
+          "type": "concept",
+          "score": 27.0,
+          "positive_score": 30.0,
+          "risk_penalty": -3.0,
+          "focus_level": "avoid",
+          "phase": "divergence",
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "reasons": [],
+          "downgrade_reasons": [
+            "原始评分过低 (27.0)"
+          ],
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.179082",
+          "data_quality_score": 70.0
+        },
+        {
+          "sector_id": "BK1681",
+          "name": "2026一季报预减",
+          "type": "concept",
+          "score": 27.0,
+          "positive_score": 30.0,
+          "risk_penalty": -3.0,
+          "focus_level": "avoid",
+          "phase": "divergence",
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "reasons": [],
+          "downgrade_reasons": [
+            "原始评分过低 (27.0)"
+          ],
+          "constituents": [],
+          "data_sources": [
+            "akshare/eastmoney_concept"
+          ],
+          "updated_at": "2026-06-29T09:05:35.179082",
+          "data_quality_score": 70.0
+        }
+      ]
+    },
+    "avoidance": {
+      "explanations": [
+        {
+          "sector_id": "BK0734",
+          "name": "饰品",
+          "focus_level": "avoid",
+          "downgrade_reasons": [
+            "原始评分过低 (31.0)",
+            "板块正向强度不足"
+          ]
+        },
+        {
+          "sector_id": "BK1367",
+          "name": "板材",
+          "focus_level": "avoid",
+          "downgrade_reasons": [
+            "原始评分过低 (31.0)",
+            "板块正向强度不足"
+          ]
+        },
+        {
+          "sector_id": "BK1495",
+          "name": "生活用纸",
+          "focus_level": "avoid",
+          "downgrade_reasons": [
+            "原始评分过低 (31.0)",
+            "板块正向强度不足"
+          ]
+        },
+        {
+          "sector_id": "BK1413",
+          "name": "涤纶",
+          "focus_level": "avoid",
+          "downgrade_reasons": [
+            "原始评分过低 (31.0)",
+            "板块正向强度不足"
+          ]
+        },
+        {
+          "sector_id": "BK1314",
+          "name": "风电整机",
+          "focus_level": "avoid",
+          "downgrade_reasons": [
+            "原始评分过低 (31.0)",
+            "板块正向强度不足"
+          ]
+        },
+        {
+          "sector_id": "BK1554",
+          "name": "商业物业经营",
+          "focus_level": "avoid",
+          "downgrade_reasons": [
+            "原始评分过低 (31.0)",
+            "板块正向强度不足"
+          ]
+        },
+        {
+          "sector_id": "BK1363",
+          "name": "信托",
+          "focus_level": "avoid",
+          "downgrade_reasons": [
+            "原始评分过低 (31.0)",
+            "板块正向强度不足"
+          ]
+        },
+        {
+          "sector_id": "BK1252",
+          "name": "化妆品",
+          "focus_level": "avoid",
+          "downgrade_reasons": [
+            "原始评分过低 (31.0)",
+            "板块正向强度不足"
+          ]
+        },
+        {
+          "sector_id": "BK1390",
+          "name": "水务及水治理",
+          "focus_level": "avoid",
+          "downgrade_reasons": [
+            "原始评分过低 (31.0)",
+            "板块正向强度不足"
+          ]
+        },
+        {
+          "sector_id": "BK0732",
+          "name": "贵金属",
+          "focus_level": "avoid",
+          "downgrade_reasons": [
+            "原始评分过低 (31.0)",
+            "板块正向强度不足"
+          ]
+        },
+        {
+          "sector_id": "BK1717",
+          "name": "题材股",
+          "focus_level": "avoid",
+          "downgrade_reasons": [
+            "原始评分过低 (27.0)",
+            "板块正向强度不足"
+          ]
+        },
+        {
+          "sector_id": "BK1716",
+          "name": "反转股",
+          "focus_level": "avoid",
+          "downgrade_reasons": [
+            "原始评分过低 (27.0)",
+            "板块正向强度不足"
+          ]
+        },
+        {
+          "sector_id": "BK1715",
+          "name": "趋势股",
+          "focus_level": "avoid",
+          "downgrade_reasons": [
+            "原始评分过低 (27.0)",
+            "板块正向强度不足"
+          ]
+        },
+        {
+          "sector_id": "BK1714",
+          "name": "金融地产风格",
+          "focus_level": "avoid",
+          "downgrade_reasons": [
+            "原始评分过低 (27.0)",
+            "板块正向强度不足"
+          ]
+        },
+        {
+          "sector_id": "BK1713",
+          "name": "科技风格",
+          "focus_level": "avoid",
+          "downgrade_reasons": [
+            "原始评分过低 (27.0)",
+            "板块正向强度不足"
+          ]
+        },
+        {
+          "sector_id": "BK1712",
+          "name": "医药医疗风格",
+          "focus_level": "avoid",
+          "downgrade_reasons": [
+            "原始评分过低 (27.0)",
+            "板块正向强度不足"
+          ]
+        },
+        {
+          "sector_id": "BK1711",
+          "name": "消费风格",
+          "focus_level": "avoid",
+          "downgrade_reasons": [
+            "原始评分过低 (27.0)",
+            "板块正向强度不足"
+          ]
+        },
+        {
+          "sector_id": "BK1710",
+          "name": "先进制造风格",
+          "focus_level": "avoid",
+          "downgrade_reasons": [
+            "原始评分过低 (27.0)",
+            "板块正向强度不足"
+          ]
+        },
+        {
+          "sector_id": "BK1682",
+          "name": "2026一季报扭亏",
+          "focus_level": "avoid",
+          "downgrade_reasons": [
+            "原始评分过低 (27.0)",
+            "板块正向强度不足"
+          ]
+        },
+        {
+          "sector_id": "BK1681",
+          "name": "2026一季报预减",
+          "focus_level": "avoid",
+          "downgrade_reasons": [
+            "原始评分过低 (27.0)",
+            "板块正向强度不足"
+          ]
+        }
+      ]
+    },
+    "overlap": {
+      "resonance": []
+    }
+  },
+  "warnings": [],
+  "data_sources": [],
+  "updated_at": "",
+  "data_quality_score": 65.0
+}

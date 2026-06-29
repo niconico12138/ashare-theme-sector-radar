@@ -1,0 +1,277 @@
+[
+  {
+    "sector_id": "BK1036",
+    "name": "ChatGPT概念",
+    "price_change_pct": 5.67,
+    "turnover": 23456789012,
+    "main_net_inflow": 3456780000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 87.0
+  },
+  {
+    "sector_id": "BK1038",
+    "name": "CPO概念",
+    "price_change_pct": 6.78,
+    "turnover": 15678901234,
+    "main_net_inflow": 2876540000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 84.0
+  },
+  {
+    "sector_id": "BK1040",
+    "name": "机器人概念",
+    "price_change_pct": 3.45,
+    "turnover": 12345678901,
+    "main_net_inflow": 1567890000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 81.0
+  },
+  {
+    "sector_id": "BK1042",
+    "name": "锂矿",
+    "price_change_pct": -0.89,
+    "turnover": 8765432109,
+    "main_net_inflow": -234560000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 76.0
+  },
+  {
+    "sector_id": "BK1044",
+    "name": "白酒",
+    "price_change_pct": 1.23,
+    "turnover": 6543210987,
+    "main_net_inflow": 432100000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 79.0
+  },
+  {
+    "sector_id": "BK1046",
+    "name": "光伏概念",
+    "price_change_pct": 2.34,
+    "turnover": 9876543210,
+    "main_net_inflow": 765430000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 80.0
+  },
+  {
+    "sector_id": "BK1048",
+    "name": "储能",
+    "price_change_pct": 3.56,
+    "turnover": 8765432100,
+    "main_net_inflow": 654320000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 82.0
+  },
+  {
+    "sector_id": "BK1050",
+    "name": "新能源车",
+    "price_change_pct": 2.89,
+    "turnover": 11234567800,
+    "main_net_inflow": 987650000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 83.0
+  },
+  {
+    "sector_id": "BK1052",
+    "name": "芯片概念",
+    "price_change_pct": 4.12,
+    "turnover": 13456789000,
+    "main_net_inflow": 1234560000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 86.0
+  },
+  {
+    "sector_id": "BK1054",
+    "name": "人工智能概念",
+    "price_change_pct": 5.23,
+    "turnover": 15678901200,
+    "main_net_inflow": 1456780000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 88.0
+  },
+  {
+    "sector_id": "BK1056",
+    "name": "大数据",
+    "price_change_pct": 2.67,
+    "turnover": 7654321000,
+    "main_net_inflow": 543210000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 78.0
+  },
+  {
+    "sector_id": "BK1058",
+    "name": "云计算",
+    "price_change_pct": 3.34,
+    "turnover": 8765432100,
+    "main_net_inflow": 654320000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 81.0
+  },
+  {
+    "sector_id": "BK1060",
+    "name": "物联网",
+    "price_change_pct": 1.78,
+    "turnover": 5432109800,
+    "main_net_inflow": 432100000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 77.0
+  },
+  {
+    "sector_id": "BK1062",
+    "name": "区块链",
+    "price_change_pct": 2.45,
+    "turnover": 6543210000,
+    "main_net_inflow": 543210000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 79.0
+  },
+  {
+    "sector_id": "BK1064",
+    "name": "元宇宙",
+    "price_change_pct": 3.89,
+    "turnover": 7654321000,
+    "main_net_inflow": 654320000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 80.0
+  },
+  {
+    "sector_id": "BK1066",
+    "name": "虚拟现实",
+    "price_change_pct": 2.12,
+    "turnover": 5432109800,
+    "main_net_inflow": 432100000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 78.0
+  },
+  {
+    "sector_id": "BK1068",
+    "name": "增强现实",
+    "price_change_pct": 1.56,
+    "turnover": 4321098700,
+    "main_net_inflow": 321090000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 75.0
+  },
+  {
+    "sector_id": "BK1070",
+    "name": "数字货币",
+    "price_change_pct": 2.78,
+    "turnover": 6543210000,
+    "main_net_inflow": 543210000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 79.0
+  },
+  {
+    "sector_id": "BK1072",
+    "name": "网络安全",
+    "price_change_pct": 3.45,
+    "turnover": 7654321000,
+    "main_net_inflow": 654320000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 81.0
+  },
+  {
+    "sector_id": "BK1074",
+    "name": "国产软件",
+    "price_change_pct": 2.89,
+    "turnover": 6543210000,
+    "main_net_inflow": 543210000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 80.0
+  },
+  {
+    "sector_id": "BK1076",
+    "name": "工业互联网",
+    "price_change_pct": 1.98,
+    "turnover": 5432109800,
+    "main_net_inflow": 432100000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 77.0
+  },
+  {
+    "sector_id": "BK1078",
+    "name": "智能制造",
+    "price_change_pct": 2.34,
+    "turnover": 6543210000,
+    "main_net_inflow": 543210000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 79.0
+  },
+  {
+    "sector_id": "BK1080",
+    "name": "碳中和",
+    "price_change_pct": 1.67,
+    "turnover": 5432109800,
+    "main_net_inflow": 432100000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 76.0
+  },
+  {
+    "sector_id": "BK1082",
+    "name": "氢能源",
+    "price_change_pct": 2.89,
+    "turnover": 6543210000,
+    "main_net_inflow": 543210000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 80.0
+  },
+  {
+    "sector_id": "BK1084",
+    "name": "预制菜",
+    "price_change_pct": 1.45,
+    "turnover": 4321098700,
+    "main_net_inflow": 321090000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 74.0
+  }
+]

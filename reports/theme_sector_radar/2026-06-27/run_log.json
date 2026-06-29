@@ -1,0 +1,14 @@
+{
+  "command_args": "--replay-cache --as-of 2026-06-27",
+  "started_at": "2026-06-29T11:26:48.796282",
+  "finished_at": "2026-06-29T11:26:48.796282",
+  "duration_ms": 0,
+  "provider": "replay-cache",
+  "status": "failed",
+  "comparison_status": "none",
+  "cache_fallback_used": false,
+  "warnings": [
+    "无缓存数据"
+  ],
+  "output_files": []
+}

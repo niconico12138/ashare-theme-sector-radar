@@ -1,0 +1,288 @@
+[
+  {
+    "sector_id": "BK0428",
+    "name": "半导体",
+    "price_change_pct": 3.21,
+    "turnover": 12345678900,
+    "main_net_inflow": 1234560000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 88.0
+  },
+  {
+    "sector_id": "BK0437",
+    "name": "人工智能",
+    "price_change_pct": 4.56,
+    "turnover": 18765432100,
+    "main_net_inflow": 2345670000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 85.0
+  },
+  {
+    "sector_id": "BK0447",
+    "name": "新能源汽车",
+    "price_change_pct": 2.15,
+    "turnover": 9876543210,
+    "main_net_inflow": 876540000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 82.0
+  },
+  {
+    "sector_id": "BK0476",
+    "name": "光伏",
+    "price_change_pct": -1.23,
+    "turnover": 5432109876,
+    "main_net_inflow": -321000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 78.0
+  },
+  {
+    "sector_id": "BK0493",
+    "name": "医药生物",
+    "price_change_pct": 1.89,
+    "turnover": 7654321098,
+    "main_net_inflow": 543210000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 80.0
+  },
+  {
+    "sector_id": "BK0456",
+    "name": "锂电池",
+    "price_change_pct": 3.45,
+    "turnover": 8765432100,
+    "main_net_inflow": 987650000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 83.0
+  },
+  {
+    "sector_id": "BK0462",
+    "name": "芯片",
+    "price_change_pct": 2.78,
+    "turnover": 11234567800,
+    "main_net_inflow": 1567800000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 86.0
+  },
+  {
+    "sector_id": "BK0471",
+    "name": "新能源",
+    "price_change_pct": 1.56,
+    "turnover": 6543210000,
+    "main_net_inflow": 432100000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 79.0
+  },
+  {
+    "sector_id": "BK0485",
+    "name": "白酒",
+    "price_change_pct": 0.89,
+    "turnover": 5432100000,
+    "main_net_inflow": 234500000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 77.0
+  },
+  {
+    "sector_id": "BK0498",
+    "name": "银行",
+    "price_change_pct": 0.45,
+    "turnover": 4321000000,
+    "main_net_inflow": 123400000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 75.0
+  },
+  {
+    "sector_id": "BK0501",
+    "name": "保险",
+    "price_change_pct": 0.67,
+    "turnover": 3210000000,
+    "main_net_inflow": 98700000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 74.0
+  },
+  {
+    "sector_id": "BK0512",
+    "name": "证券",
+    "price_change_pct": 1.23,
+    "turnover": 4567000000,
+    "main_net_inflow": 345600000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 76.0
+  },
+  {
+    "sector_id": "BK0523",
+    "name": "房地产",
+    "price_change_pct": -0.34,
+    "turnover": 2345000000,
+    "main_net_inflow": -123000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 72.0
+  },
+  {
+    "sector_id": "BK0534",
+    "name": "钢铁",
+    "price_change_pct": 0.78,
+    "turnover": 3456000000,
+    "main_net_inflow": 234000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 73.0
+  },
+  {
+    "sector_id": "BK0545",
+    "name": "有色金属",
+    "price_change_pct": 2.34,
+    "turnover": 5678000000,
+    "main_net_inflow": 456700000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 81.0
+  },
+  {
+    "sector_id": "BK0556",
+    "name": "煤炭",
+    "price_change_pct": 1.12,
+    "turnover": 4321000000,
+    "main_net_inflow": 321000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 77.0
+  },
+  {
+    "sector_id": "BK0567",
+    "name": "石油石化",
+    "price_change_pct": 0.56,
+    "turnover": 3890000000,
+    "main_net_inflow": 210000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 74.0
+  },
+  {
+    "sector_id": "BK0578",
+    "name": "电力设备",
+    "price_change_pct": 2.89,
+    "turnover": 7890000000,
+    "main_net_inflow": 678000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 84.0
+  },
+  {
+    "sector_id": "BK0589",
+    "name": "机械设备",
+    "price_change_pct": 1.67,
+    "turnover": 5430000000,
+    "main_net_inflow": 432000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 78.0
+  },
+  {
+    "sector_id": "BK0600",
+    "name": "电子",
+    "price_change_pct": 2.45,
+    "turnover": 8760000000,
+    "main_net_inflow": 765000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 82.0
+  },
+  {
+    "sector_id": "BK0611",
+    "name": "计算机",
+    "price_change_pct": 3.12,
+    "turnover": 9870000000,
+    "main_net_inflow": 876000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 85.0
+  },
+  {
+    "sector_id": "BK0622",
+    "name": "通信",
+    "price_change_pct": 1.89,
+    "turnover": 6540000000,
+    "main_net_inflow": 543000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 79.0
+  },
+  {
+    "sector_id": "BK0633",
+    "name": "传媒",
+    "price_change_pct": 2.23,
+    "turnover": 4320000000,
+    "main_net_inflow": 321000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 76.0
+  },
+  {
+    "sector_id": "BK0644",
+    "name": "社会服务",
+    "price_change_pct": 0.98,
+    "turnover": 3210000000,
+    "main_net_inflow": 198000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 73.0
+  },
+  {
+    "sector_id": "BK0655",
+    "name": "食品饮料",
+    "price_change_pct": 1.34,
+    "turnover": 5430000000,
+    "main_net_inflow": 432000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 77.0
+  },
+  {
+    "sector_id": "BK0666",
+    "name": "纺织服饰",
+    "price_change_pct": 0.45,
+    "turnover": 2100000000,
+    "main_net_inflow": 98000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 70.0
+  }
+]

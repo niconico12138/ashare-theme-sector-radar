@@ -1,0 +1,20 @@
+{
+  "name": "capital_focused",
+  "description": "资金流权重提高的配置",
+  "industry_weights": {
+    "trend_strength": 0.20,
+    "capital_flow": 0.35,
+    "sector_breadth": 0.15,
+    "continuity": 0.15,
+    "market_fit": 0.10,
+    "data_quality": 0.05
+  },
+  "concept_weights": {
+    "heat_burst": 0.20,
+    "capital_confirm": 0.30,
+    "constituent_synergy": 0.20,
+    "phase_judgment": 0.15,
+    "catalyst": 0.10,
+    "data_quality": 0.05
+  }
+}

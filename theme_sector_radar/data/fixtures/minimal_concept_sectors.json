@@ -1,0 +1,57 @@
+[
+  {
+    "sector_id": "BK1036",
+    "name": "ChatGPT概念",
+    "price_change_pct": 5.67,
+    "turnover": 23456789012,
+    "main_net_inflow": 3456780000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 87.0
+  },
+  {
+    "sector_id": "BK1038",
+    "name": "CPO概念",
+    "price_change_pct": 6.78,
+    "turnover": 15678901234,
+    "main_net_inflow": 2876540000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 84.0
+  },
+  {
+    "sector_id": "BK1040",
+    "name": "机器人概念",
+    "price_change_pct": 3.45,
+    "turnover": 12345678901,
+    "main_net_inflow": 1567890000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 81.0
+  },
+  {
+    "sector_id": "BK1042",
+    "name": "锂矿",
+    "price_change_pct": -0.89,
+    "turnover": 8765432109,
+    "main_net_inflow": -234560000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 76.0
+  },
+  {
+    "sector_id": "BK1044",
+    "name": "白酒",
+    "price_change_pct": 1.23,
+    "turnover": 6543210987,
+    "main_net_inflow": 432100000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 79.0
+  }
+]

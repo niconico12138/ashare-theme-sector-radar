@@ -1,0 +1,112 @@
+[
+  {
+    "sector_id": "BK1038",
+    "name": "CPO概念",
+    "price_change_pct": 6.78,
+    "turnover": 18000000000,
+    "main_net_inflow": 2800000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 87.0
+  },
+  {
+    "sector_id": "BK1036",
+    "name": "ChatGPT概念",
+    "price_change_pct": 5.23,
+    "turnover": 16000000000,
+    "main_net_inflow": 2400000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 85.0
+  },
+  {
+    "sector_id": "BK1054",
+    "name": "人工智能概念",
+    "price_change_pct": 4.56,
+    "turnover": 14000000000,
+    "main_net_inflow": 2000000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 83.0
+  },
+  {
+    "sector_id": "BK1046",
+    "name": "光伏概念",
+    "price_change_pct": 3.89,
+    "turnover": 12000000000,
+    "main_net_inflow": 1600000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 81.0
+  },
+  {
+    "sector_id": "BK1052",
+    "name": "芯片概念",
+    "price_change_pct": 3.45,
+    "turnover": 10000000000,
+    "main_net_inflow": 1300000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 79.0
+  },
+  {
+    "sector_id": "BK1040",
+    "name": "机器人概念",
+    "price_change_pct": 2.89,
+    "turnover": 9000000000,
+    "main_net_inflow": 1100000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 77.0
+  },
+  {
+    "sector_id": "BK1048",
+    "name": "储能",
+    "price_change_pct": 2.34,
+    "turnover": 8000000000,
+    "main_net_inflow": 950000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 76.0
+  },
+  {
+    "sector_id": "BK1072",
+    "name": "网络安全",
+    "price_change_pct": 1.89,
+    "turnover": 7000000000,
+    "main_net_inflow": 800000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 75.0
+  },
+  {
+    "sector_id": "BK1058",
+    "name": "云计算",
+    "price_change_pct": 1.56,
+    "turnover": 6500000000,
+    "main_net_inflow": 650000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 74.0
+  },
+  {
+    "sector_id": "BK1064",
+    "name": "元宇宙",
+    "price_change_pct": 1.23,
+    "turnover": 5500000000,
+    "main_net_inflow": 500000000,
+    "data_sources": [
+      "akshare"
+    ],
+    "data_quality_score": 73.0
+  }
+]

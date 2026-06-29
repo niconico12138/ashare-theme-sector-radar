@@ -1,0 +1,12 @@
+{
+  "as_of": "auto",
+  "provider": "akshare",
+  "refresh": true,
+  "fallback_cache_days": 7,
+  "lookback_days": 5,
+  "report_root": "reports/theme_sector_radar",
+  "top_n": 10,
+  "offline_fixture": false,
+  "fixture_profile": null,
+  "log_root": "logs/daily_runs"
+}
