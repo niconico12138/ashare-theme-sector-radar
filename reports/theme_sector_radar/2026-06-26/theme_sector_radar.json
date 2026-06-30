@@ -1,8 +1,8 @@
 {
   "report_type": "theme_sector_radar",
   "version": "0.1.0",
-  "as_of_date": "2026-06-29",
-  "updated_at": "2026-06-29T21:49:39.195987",
+  "as_of_date": "2026-06-26",
+  "updated_at": "2026-06-29T22:34:57.364226",
   "data_sources": [
     "akshare/ths_concept",
     "akshare/ths_industry"
@@ -40,7 +40,7 @@
       "data_sources": [
         "akshare/ths_industry"
       ],
-      "updated_at": "2026-06-29T21:44:59.459091",
+      "updated_at": "2026-06-29T22:32:45.776277",
       "data_quality_score": 60.0,
       "score_breakdown": {
         "trend_strength": 17.0,
@@ -91,7 +91,7 @@
       "data_sources": [
         "akshare/ths_industry"
       ],
-      "updated_at": "2026-06-29T21:44:59.459091",
+      "updated_at": "2026-06-29T22:32:45.776277",
       "data_quality_score": 60.0,
       "score_breakdown": {
         "trend_strength": 17.0,
@@ -142,7 +142,7 @@
       "data_sources": [
         "akshare/ths_industry"
       ],
-      "updated_at": "2026-06-29T21:44:59.459091",
+      "updated_at": "2026-06-29T22:32:45.776277",
       "data_quality_score": 60.0,
       "score_breakdown": {
         "trend_strength": 17.0,
@@ -194,7 +194,7 @@
       "data_sources": [
         "akshare/ths_industry"
       ],
-      "updated_at": "2026-06-29T21:44:59.459091",
+      "updated_at": "2026-06-29T22:32:45.776277",
       "data_quality_score": 60.0,
       "score_breakdown": {
         "trend_strength": 14.0,
@@ -246,7 +246,7 @@
       "data_sources": [
         "akshare/ths_industry"
       ],
-      "updated_at": "2026-06-29T21:44:59.459091",
+      "updated_at": "2026-06-29T22:32:45.776277",
       "data_quality_score": 60.0,
       "score_breakdown": {
         "trend_strength": 14.0,
@@ -298,7 +298,7 @@
       "data_sources": [
         "akshare/ths_industry"
       ],
-      "updated_at": "2026-06-29T21:44:59.459091",
+      "updated_at": "2026-06-29T22:32:45.776277",
       "data_quality_score": 60.0,
       "score_breakdown": {
         "trend_strength": 10.0,
@@ -350,7 +350,7 @@
       "data_sources": [
         "akshare/ths_industry"
       ],
-      "updated_at": "2026-06-29T21:44:59.459091",
+      "updated_at": "2026-06-29T22:32:45.776277",
       "data_quality_score": 60.0,
       "score_breakdown": {
         "trend_strength": 10.0,
@@ -402,7 +402,7 @@
       "data_sources": [
         "akshare/ths_industry"
       ],
-      "updated_at": "2026-06-29T21:44:59.460602",
+      "updated_at": "2026-06-29T22:32:45.776277",
       "data_quality_score": 60.0,
       "score_breakdown": {
         "trend_strength": 10.0,
@@ -454,7 +454,7 @@
       "data_sources": [
         "akshare/ths_industry"
       ],
-      "updated_at": "2026-06-29T21:44:59.460602",
+      "updated_at": "2026-06-29T22:32:45.776277",
       "data_quality_score": 60.0,
       "score_breakdown": {
         "trend_strength": 10.0,
@@ -506,7 +506,7 @@
       "data_sources": [
         "akshare/ths_industry"
       ],
-      "updated_at": "2026-06-29T21:44:59.460602",
+      "updated_at": "2026-06-29T22:32:45.776277",
       "data_quality_score": 60.0,
       "score_breakdown": {
         "trend_strength": 10.0,
@@ -560,7 +560,7 @@
       "data_sources": [
         "akshare/ths_concept"
       ],
-      "updated_at": "2026-06-29T21:45:14.174094",
+      "updated_at": "2026-06-29T22:32:59.027373",
       "data_quality_score": 50.0,
       "score_breakdown": {
         "heat_burst": 2.0,
@@ -615,7 +615,7 @@
       "data_sources": [
         "akshare/ths_concept"
       ],
-      "updated_at": "2026-06-29T21:45:14.175605",
+      "updated_at": "2026-06-29T22:32:59.027373",
       "data_quality_score": 50.0,
       "score_breakdown": {
         "heat_burst": 2.0,
@@ -670,7 +670,7 @@
       "data_sources": [
         "akshare/ths_concept"
       ],
-      "updated_at": "2026-06-29T21:45:14.175605",
+      "updated_at": "2026-06-29T22:32:59.027373",
       "data_quality_score": 50.0,
       "score_breakdown": {
         "heat_burst": 2.0,
@@ -725,7 +725,7 @@
       "data_sources": [
         "akshare/ths_concept"
       ],
-      "updated_at": "2026-06-29T21:45:14.175605",
+      "updated_at": "2026-06-29T22:32:59.027373",
       "data_quality_score": 50.0,
       "score_breakdown": {
         "heat_burst": 2.0,
@@ -780,7 +780,7 @@
       "data_sources": [
         "akshare/ths_concept"
       ],
-      "updated_at": "2026-06-29T21:45:14.175605",
+      "updated_at": "2026-06-29T22:32:59.027373",
       "data_quality_score": 50.0,
       "score_breakdown": {
         "heat_burst": 2.0,
@@ -835,7 +835,7 @@
       "data_sources": [
         "akshare/ths_concept"
       ],
-      "updated_at": "2026-06-29T21:45:14.175605",
+      "updated_at": "2026-06-29T22:32:59.027373",
       "data_quality_score": 50.0,
       "score_breakdown": {
         "heat_burst": 2.0,
@@ -890,7 +890,7 @@
       "data_sources": [
         "akshare/ths_concept"
       ],
-      "updated_at": "2026-06-29T21:45:14.175605",
+      "updated_at": "2026-06-29T22:32:59.027373",
       "data_quality_score": 50.0,
       "score_breakdown": {
         "heat_burst": 2.0,
@@ -945,7 +945,7 @@
       "data_sources": [
         "akshare/ths_concept"
       ],
-      "updated_at": "2026-06-29T21:45:14.175605",
+      "updated_at": "2026-06-29T22:32:59.027373",
       "data_quality_score": 50.0,
       "score_breakdown": {
         "heat_burst": 2.0,
@@ -1000,7 +1000,7 @@
       "data_sources": [
         "akshare/ths_concept"
       ],
-      "updated_at": "2026-06-29T21:45:14.175605",
+      "updated_at": "2026-06-29T22:32:59.028376",
       "data_quality_score": 50.0,
       "score_breakdown": {
         "heat_burst": 2.0,
@@ -1055,7 +1055,7 @@
       "data_sources": [
         "akshare/ths_concept"
       ],
-      "updated_at": "2026-06-29T21:45:14.175605",
+      "updated_at": "2026-06-29T22:32:59.028376",
       "data_quality_score": 50.0,
       "score_breakdown": {
         "heat_burst": 2.0,
@@ -1135,7 +1135,7 @@
   "cache_fallback": {
     "is_fallback": false,
     "source_as_of_date": null,
-    "cache_created_at": "2026-06-29T21:45:19.654075"
+    "cache_created_at": "2026-06-29T22:33:03.904906"
   },
   "fund_flow_coverage": {
     "industry_matched": 0,
@@ -1151,36 +1151,14 @@
   },
   "rotation_summary": {
     "industry": {
-      "new_entries": [
-        "生物制品",
-        "医疗服务",
-        "化学制药",
-        "中药",
-        "医疗器械",
-        "半导体",
-        "养殖业",
-        "医药商业",
-        "保险",
-        "美容护理"
-      ],
+      "new_entries": [],
       "dropped_out": [],
       "rising_fast": [],
       "persistent_strength": [],
       "risk_up": []
     },
     "concept": {
-      "new_entries": [
-        "阿尔茨海默概念",
-        "AI PC",
-        "AI手机",
-        "AI语料",
-        "阿里巴巴概念",
-        "安防",
-        "白酒概念",
-        "BC电池",
-        "百度概念",
-        "丙烯酸"
-      ],
+      "new_entries": [],
       "dropped_out": [],
       "rising_fast": [],
       "persistent_strength": [],
@@ -1189,15 +1167,17 @@
   },
   "comparison": {
     "compare_to_date": null,
-    "comparison_source": "lookback:5days",
-    "comparison_status": "ok",
-    "warnings": []
+    "comparison_source": "none",
+    "comparison_status": "no_previous_data",
+    "warnings": [
+      "未找到历史快照，所有板块标记为新晋"
+    ]
   },
   "run_mode": "daily",
   "provider": "akshare",
   "offline_fixture": false,
   "fixture_profile": "full",
   "data_source_mode": "cache_replay",
-  "report_dir": "reports/theme_sector_radar\\2026-06-29",
+  "report_dir": "reports/theme_sector_radar\\2026-06-26",
   "generated_by_command": ""
 }

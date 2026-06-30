@@ -98,7 +98,7 @@ def run_pipeline(
 
     # Phase 1: 数据获取（带缓存和 fallback）
     print("Phase 1: 获取数据...")
-    industry_sectors, concept_sectors, market_data, cache_info = _fetch_data_with_cache(
+    industry_sectors, concept_sectors, market_data, cache_info, provider_status = _fetch_data_with_cache(
         provider=provider,
         as_of_date=as_of_date,
         top_n=top_n,
@@ -226,7 +226,7 @@ def run_pipeline(
     ]
 
     # 确定数据来源和状态
-    data_sources = _get_data_sources(provider_name, offline_fixture)
+    data_sources = _get_data_sources(provider_name, offline_fixture, industry_sectors, concept_sectors)
     report_status = _determine_report_status(
         industry_count=len(industry_sectors),
         concept_count=len(concept_sectors),
@@ -282,6 +282,7 @@ def run_pipeline(
         fixture_profile=fixture_profile,
         report_dir=output_dir,
         command_args="",  # 由 CLI 传递
+        provider_status=provider_status,
     )
 
     # 保存报告
@@ -325,6 +326,7 @@ def run_pipeline(
             offline_fixture=offline_fixture,
             fixture_profile=fixture_profile,
             data_source_mode=data_source_mode,
+            provider_status=provider_status,
         )
 
     return report
@@ -360,12 +362,12 @@ def _fetch_data_with_cache(
     offline_fixture: bool,
     fallback_cache_days: int,
     config: dict,
-) -> Tuple[list, list, dict, dict]:
+) -> Tuple[list, list, dict, dict, Any]:
     """
     带缓存和 fallback 的数据获取
 
     Returns:
-        (industry_sectors, concept_sectors, market_data, cache_info)
+        (industry_sectors, concept_sectors, market_data, cache_info, provider_status)
     """
     cache_key = "raw_snapshot"
     cache_info = {
@@ -373,6 +375,7 @@ def _fetch_data_with_cache(
         "source_as_of_date": None,
         "cache_created_at": None,
     }
+    provider_status = None
 
     # 检查缓存
     if use_cache and not refresh:
@@ -389,12 +392,16 @@ def _fetch_data_with_cache(
                 SectorType.CONCEPT
             )
             market_data = data.get("market_data", {})
-            return industry_sectors, concept_sectors, market_data, cache_info
+            return industry_sectors, concept_sectors, market_data, cache_info, provider_status
 
     # 获取真实数据
     industry_sectors = provider.get_industry_sectors(as_of_date, top_n * 2)
     concept_sectors = provider.get_concept_sectors(as_of_date, top_n * 2)
     market_data = provider.get_market_overview(as_of_date)
+
+    # 获取 provider status（如果 provider 支持）
+    if hasattr(provider, 'get_provider_status'):
+        provider_status = provider.get_provider_status()
 
     # 检查数据完整性，必要时 fallback
     industry_min = config.get("industry_min_count", 20)
@@ -440,6 +447,11 @@ def _fetch_data_with_cache(
             "concept_sectors": [s.model_dump() for s in concept_sectors],
             "market_data": market_data,
         }
+        # 确定实际数据源
+        actual_sources = ["akshare/eastmoney"]
+        if provider_status and provider_status.fallback_used:
+            actual_sources = [provider_status.industry_source, provider_status.concept_source]
+
         cache.set(
             cache_key,
             cache_data,
@@ -448,13 +460,13 @@ def _fetch_data_with_cache(
                 "provider": "akshare",
                 "created_at": datetime.now().isoformat(),
                 "as_of_date": as_of_date,
-                "data_sources": ["akshare/eastmoney"],
+                "data_sources": actual_sources,
                 "is_fallback": False,
             }
         )
         cache_info["cache_created_at"] = datetime.now().isoformat()
 
-    return industry_sectors, concept_sectors, market_data, cache_info
+    return industry_sectors, concept_sectors, market_data, cache_info, provider_status
 
 
 def _dict_list_to_sectors(
@@ -608,11 +620,29 @@ def _determine_report_status(
         return "ok"
 
 
-def _get_data_sources(provider_name: str, offline_fixture: bool) -> List[str]:
+def _get_data_sources(
+    provider_name: str,
+    offline_fixture: bool,
+    industry_sectors: list = None,
+    concept_sectors: list = None,
+) -> List[str]:
     """获取数据来源列表"""
     if offline_fixture or provider_name == "fixture":
         return ["fixture"]
     elif provider_name == "akshare":
+        # 从实际数据中提取来源
+        sources = set()
+        if industry_sectors:
+            for s in industry_sectors:
+                if hasattr(s, 'data_sources') and s.data_sources:
+                    sources.update(s.data_sources)
+        if concept_sectors:
+            for s in concept_sectors:
+                if hasattr(s, 'data_sources') and s.data_sources:
+                    sources.update(s.data_sources)
+        if sources:
+            return list(sources)
+        # 默认
         return ["akshare/eastmoney_industry", "akshare/eastmoney_concept"]
     return ["unknown"]
 
@@ -641,6 +671,7 @@ def _save_reports(
     fixture_profile: str = None,
     data_source_mode: str = "fixture",
     command_args: str = "",
+    provider_status=None,
 ):
     """保存报告文件"""
     os.makedirs(output_dir, exist_ok=True)
@@ -670,6 +701,7 @@ def _save_reports(
         data_source_mode=data_source_mode,
         report_dir=output_dir,
         generated_by_command=command_args,
+        provider_status=provider_status,
     )
     save_json_report(json_report, json_path)
     print(f"JSON 报告已保存: {json_path}")
@@ -691,14 +723,28 @@ def _save_reports(
         concept_count=concept_count,
         rotation_summary=rotation_summary,
         comparison=comparison_info,
+        provider_status=provider_status,
     )
     save_markdown_report(md_report, md_path)
     print(f"Markdown 报告已保存: {md_path}")
 
     # 保存原始快照
     snapshot_path = os.path.join(output_dir, "raw_snapshot.json")
+
+    # 自定义序列化器，处理 dataclass 等不可 JSON 序列化的对象
+    def _default_serializer(obj):
+        """自定义序列化器"""
+        # 处理 dataclass
+        if hasattr(obj, '__dataclass_fields__'):
+            return {k: getattr(obj, k) for k in obj.__dataclass_fields__}
+        # 处理 Pydantic 模型
+        if hasattr(obj, 'model_dump'):
+            return obj.model_dump()
+        # 处理其他不可序列化的对象
+        return str(obj)
+
     with open(snapshot_path, "w", encoding="utf-8") as f:
-        json.dump(context.model_dump(), f, ensure_ascii=False, indent=2)
+        json.dump(context.model_dump(), f, ensure_ascii=False, indent=2, default=_default_serializer)
     print(f"原始快照已保存: {snapshot_path}")
 
 
@@ -724,6 +770,7 @@ def _build_report(
     fixture_profile: str = None,
     report_dir: str = None,
     command_args: str = "",
+    provider_status=None,
 ) -> RadarReport:
     """构建最终报告"""
     from .models import DataCompleteness, ProviderStatus
@@ -749,6 +796,27 @@ def _build_report(
     else:
         data_source_mode = "unknown"
 
+    # 构建 provider_status
+    if provider_status is not None:
+        # 从 AkShareProvider 的 ProviderStatusInfo 转换为 ProviderStatus 模型
+        ps = ProviderStatus(
+            industry_sectors="ok" if provider_status.industry_count > 0 else "failed",
+            concept_sectors="ok" if provider_status.concept_count > 0 else "failed",
+            effective_provider=provider_status.effective_provider,
+            industry_source=provider_status.industry_source,
+            concept_source=provider_status.concept_source,
+            fallback_used=provider_status.fallback_used,
+            fallback_provider=provider_status.fallback_provider,
+            fallback_reason=provider_status.fallback_reason,
+            industry_count=provider_status.industry_count,
+            concept_count=provider_status.concept_count,
+            em_industry_error=provider_status.em_industry_error,
+            em_concept_error=provider_status.em_concept_error,
+            concept_price_change_available=provider_status.concept_price_change_available,
+        )
+    else:
+        ps = ProviderStatus()
+
     return RadarReport(
         as_of_date=as_of_date,
         updated_at=datetime.now().isoformat(),
@@ -759,7 +827,7 @@ def _build_report(
         concept_top=concept_top,
         overlap=overlap,
         status=status,
-        provider_status=ProviderStatus(),
+        provider_status=ps,
         data_completeness=DataCompleteness(
             industry_count=industry_count,
             concept_count=concept_count,

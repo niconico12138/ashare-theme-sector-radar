@@ -79,6 +79,7 @@ class SectorSnapshot(BaseModel):
     data_sources: List[str] = Field(default_factory=list)
     updated_at: str = ""
     data_quality_score: float = 0.0
+    price_change_available: bool = True  # 涨跌幅是否可用
 
 
 class AgentOutput(BaseModel):
@@ -159,6 +160,18 @@ class ProviderStatus(BaseModel):
     concept_sectors: str = "ok"
     fund_flow: str = "ok"
     constituents: str = "ok"
+    # 数据来源追踪字段
+    effective_provider: str = "akshare"  # akshare / ths / mixed / fixture
+    industry_source: str = ""  # akshare/eastmoney_industry / akshare/ths_industry
+    concept_source: str = ""  # akshare/eastmoney_concept / akshare/ths_concept
+    fallback_used: bool = False  # 是否使用了 fallback
+    fallback_provider: str = ""  # fallback 提供者 (ths)
+    fallback_reason: str = ""  # fallback 原因 (EM 失败原因摘要)
+    industry_count: int = 0  # 行业板块实际获取数量
+    concept_count: int = 0  # 概念板块实际获取数量
+    em_industry_error: str = ""  # EM 行业接口错误信息
+    em_concept_error: str = ""  # EM 概念接口错误信息
+    concept_price_change_available: bool = True  # 概念涨跌幅是否可用
 
 
 class DataCompleteness(BaseModel):

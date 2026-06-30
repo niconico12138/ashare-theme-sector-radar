@@ -23,21 +23,25 @@ def calculate_heat_burst_score(snapshot: SectorSnapshot) -> float:
     考虑因素:
     - 当日涨幅
     - 成交额突增
+
+    注意: 当 price_change_available=False 时，涨幅部分得分为 0，仅保留成交额得分
     """
     score = 0.0
 
-    # 涨幅得分 (0-15)
-    change = snapshot.price_change_pct
-    if change >= 8.0:
-        score += 15.0
-    elif change >= 5.0:
-        score += 12.0
-    elif change >= 3.0:
-        score += 9.0
-    elif change >= 1.0:
-        score += 5.0
-    else:
-        score += 1.0
+    # 涨幅得分 (0-15) - 仅当涨跌幅可用时计算
+    if snapshot.price_change_available:
+        change = snapshot.price_change_pct
+        if change >= 8.0:
+            score += 15.0
+        elif change >= 5.0:
+            score += 12.0
+        elif change >= 3.0:
+            score += 9.0
+        elif change >= 1.0:
+            score += 5.0
+        else:
+            score += 1.0
+    # else: 涨跌幅不可用，涨幅部分得分为 0
 
     # 成交额突增得分 (0-10)
     turnover = snapshot.turnover
@@ -173,7 +177,13 @@ def calculate_catalyst_score(snapshot: SectorSnapshot) -> float:
     计算催化剂得分 (0-10)
 
     第一版简化处理，基于涨幅和成交额
+
+    注意: 当 price_change_available=False 时，返回中性默认分 3.0
     """
+    # 涨跌幅不可用时，返回中性默认分
+    if not snapshot.price_change_available:
+        return 3.0
+
     score = 5.0  # 默认
 
     if snapshot.price_change_pct >= 5 and snapshot.turnover >= 10_000_000_000:
@@ -209,7 +219,13 @@ def calculate_concept_phase(snapshot: SectorSnapshot) -> ConceptPhase:
     计算概念阶段
 
     基于涨幅和成交额判断阶段
+
+    注意: 当 price_change_available=False 时，返回 DIVERGENCE（数据不足）
     """
+    # 涨跌幅不可用时，返回 DIVERGENCE（数据不足）
+    if not snapshot.price_change_available:
+        return ConceptPhase.DIVERGENCE
+
     change = snapshot.price_change_pct
     turnover = snapshot.turnover
 
@@ -281,7 +297,7 @@ def calculate_concept_score_breakdown(
         data_quality_score_val
     )
 
-    return {
+    result = {
         "heat_burst": round(heat_score, 2),
         "fund_confirmation": round(capital_score, 2),
         "constituent_linkage": round(synergy_score, 2),
@@ -290,4 +306,14 @@ def calculate_concept_score_breakdown(
         "data_quality": round(data_quality_score_val, 2),
         "positive_score": round(positive_score, 2),
         "final_score": round(min(positive_score, 100.0), 2),
+        "price_change_available": snapshot.price_change_available,
     }
+
+    # 如果涨跌幅不可用，添加警告
+    if not snapshot.price_change_available:
+        result["data_quality_warning"] = "THS 概念缺少涨跌幅数据，热度爆发和催化剂评分偏保守"
+        result["max_possible_score_without_price"] = round(
+            10 + capital_score + synergy_score + phase_score_val + 3 + data_quality_score_val, 2
+        )
+
+    return result

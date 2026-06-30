@@ -28,6 +28,7 @@ def generate_markdown_report(
     concept_count: int = 0,
     rotation_summary: dict = None,
     comparison: dict = None,
+    provider_status=None,
 ) -> str:
     """
     生成 Markdown 报告
@@ -45,6 +46,9 @@ def generate_markdown_report(
         constituent_coverage: 成分股覆盖率
         industry_count: 行业板块数量
         concept_count: 概念板块数量
+        rotation_summary: 轮动摘要
+        comparison: 比较信息
+        provider_status: 数据提供者状态（ProviderStatus 模型）
 
     Returns:
         Markdown 报告字符串
@@ -114,6 +118,39 @@ def generate_markdown_report(
 
     lines.append("")
 
+    # 数据来源说明（THS fallback）
+    if provider_status:
+        lines.append("## 数据来源")
+        lines.append("")
+
+        effective_provider = getattr(provider_status, 'effective_provider', 'akshare')
+        industry_source = getattr(provider_status, 'industry_source', '')
+        concept_source = getattr(provider_status, 'concept_source', '')
+        fallback_used = getattr(provider_status, 'fallback_used', False)
+        fallback_reason = getattr(provider_status, 'fallback_reason', '')
+        em_industry_error = getattr(provider_status, 'em_industry_error', '')
+        em_concept_error = getattr(provider_status, 'em_concept_error', '')
+
+        if fallback_used:
+            lines.append("⚠️ **数据来源说明**: 东方财富接口不可用，已自动降级到同花顺数据源。")
+            lines.append("")
+            if fallback_reason:
+                lines.append(f"- **降级原因**: {fallback_reason}")
+            if em_industry_error:
+                lines.append(f"- **东方财富行业接口错误**: {em_industry_error[:100]}")
+            if em_concept_error:
+                lines.append(f"- **东方财富概念接口错误**: {em_concept_error[:100]}")
+            lines.append(f"- **实际行业数据来源**: {industry_source}")
+            lines.append(f"- **实际概念数据来源**: {concept_source}")
+            lines.append("")
+            lines.append("**注意**: 同花顺概念板块列表暂不包含涨跌幅数据，概念板块评分可能偏低，建议结合行业板块综合判断。")
+            lines.append("")
+        else:
+            lines.append(f"- **数据来源**: {industry_source or concept_source or '东方财富 (EM)'}")
+            lines.append("")
+
+    lines.append("")
+
     # 行业板块 Top N
     lines.append("## 行业板块 Top N")
     lines.append("")
@@ -135,11 +172,19 @@ def generate_markdown_report(
     # 概念板块 Top N
     lines.append("## 概念板块 Top N")
     lines.append("")
-    if concept_top:
-        lines.append("| 排名 | 板块 | 分数 | 关注等级 | 阶段 | 风险 | 核心原因 |")
-        lines.append("|------|------|------|----------|------|------|----------|")
 
-        for i, score in enumerate(concept_top, 1):
+    # 检查概念涨跌幅是否可用
+    concept_price_change_available = True
+    if provider_status:
+        concept_price_change_available = getattr(provider_status, 'concept_price_change_available', True)
+
+    if not concept_price_change_available:
+        lines.append("⚠️ **注意**: 当前概念板块数据来自同花顺，缺少涨跌幅字段。以下评分基于成交额、资金流和成分股联动等可用指标，热度爆发和催化剂维度评分偏保守。")
+        lines.append("")
+        lines.append("**建议**: 概念板块评分仅作为参考排序，不宜作为独立决策依据。请结合行业板块综合判断。")
+        lines.append("")
+
+    if concept_top:
             reasons = "; ".join(score.downgrade_reasons[:2]) if score.downgrade_reasons else "-"
             lines.append(
                 f"| {i} | {score.name} | {score.score:.1f} | "

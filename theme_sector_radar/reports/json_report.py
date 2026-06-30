@@ -39,6 +39,7 @@ def generate_json_report(
     data_source_mode: str = "fixture",
     report_dir: str = "",
     generated_by_command: str = "",
+    provider_status=None,
 ) -> Dict[str, Any]:
     """
     生成 JSON 报告
@@ -57,6 +58,16 @@ def generate_json_report(
         constituent_coverage: 成分股覆盖率
         industry_count: 行业板块数量
         concept_count: 概念板块数量
+        rotation_summary: 轮动摘要
+        comparison: 比较信息
+        run_mode: 运行模式
+        provider: 数据提供者
+        offline_fixture: 是否离线 fixture
+        fixture_profile: fixture profile
+        data_source_mode: 数据来源模式
+        report_dir: 报告目录
+        generated_by_command: 生成命令
+        provider_status: 数据提供者状态（ProviderStatus 模型）
 
     Returns:
         JSON 报告字典
@@ -73,12 +84,22 @@ def generate_json_report(
     )
 
     # 构建 provider_status
-    provider_status = {
-        "industry_sectors": "ok" if industry_count > 0 else "degraded",
-        "concept_sectors": "ok" if concept_count > 0 else "degraded",
-        "fund_flow": fund_flow_coverage.get("status", "ok") if fund_flow_coverage else "ok",
-        "constituents": constituent_coverage.get("status", "ok") if constituent_coverage else "ok",
-    }
+    if provider_status is not None:
+        # 从 ProviderStatus 模型或 dataclass 转换为字典
+        if hasattr(provider_status, 'model_dump'):
+            ps_dict = provider_status.model_dump()
+        elif hasattr(provider_status, '__dataclass_fields__'):
+            ps_dict = {k: getattr(provider_status, k) for k in provider_status.__dataclass_fields__}
+        else:
+            ps_dict = provider_status
+    else:
+        # 默认值
+        ps_dict = {
+            "industry_sectors": "ok" if industry_count > 0 else "degraded",
+            "concept_sectors": "ok" if concept_count > 0 else "degraded",
+            "fund_flow": fund_flow_coverage.get("status", "ok") if fund_flow_coverage else "ok",
+            "constituents": constituent_coverage.get("status", "ok") if constituent_coverage else "ok",
+        }
 
     # 构建 data_completeness
     data_completeness = {
@@ -103,7 +124,7 @@ def generate_json_report(
         "data_quality": data_quality,
         "disclaimer": "本报告仅用于板块强弱筛选和研究复盘，不构成个股推荐、买卖建议或自动交易指令。",
         "status": status,
-        "provider_status": provider_status,
+        "provider_status": ps_dict,
         "data_completeness": data_completeness,
         "cache_fallback": cache_info or {},
         "fund_flow_coverage": fund_flow_coverage or {},

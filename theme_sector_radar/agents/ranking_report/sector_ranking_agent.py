@@ -146,6 +146,7 @@ def generate_sector_ranking(
                 risk_penalty=risk_penalty,
                 risk_level=risk_level,
                 data_quality_score=sector.data_quality_score,
+                price_change_available=sector.price_change_available,
             )
             score.focus_level = focus_level
             score.downgrade_reasons = downgrade_reasons

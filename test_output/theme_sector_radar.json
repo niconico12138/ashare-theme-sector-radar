@@ -1,0 +1,302 @@
+{
+  "report_type": "theme_sector_radar",
+  "version": "0.1.0",
+  "as_of_date": "2026-06-29",
+  "updated_at": "2026-06-29T21:20:26.472487",
+  "data_sources": [
+    "akshare/ths_concept"
+  ],
+  "data_quality_score": 65.0,
+  "market_temperature": {
+    "score": 50.0,
+    "label": "neutral",
+    "description": "市场情绪中性，建议精选板块和个股",
+    "advance_count": 0,
+    "decline_count": 0,
+    "limit_up_count": 0,
+    "limit_down_count": 0
+  },
+  "industry_top": [],
+  "concept_top": [
+    {
+      "sector_id": "ths_concept_阿尔茨海默概念",
+      "name": "阿尔茨海默概念",
+      "type": "concept",
+      "score": 22.0,
+      "positive_score": 29.0,
+      "risk_penalty": 7.0,
+      "focus_level": "avoid",
+      "phase": "divergence",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分过低 (22.0)",
+        "板块正向强度不足"
+      ],
+      "watch_points": [],
+      "constituents": [],
+      "data_sources": [
+        "akshare/ths_concept"
+      ],
+      "updated_at": "2026-06-29T21:19:54.774459",
+      "data_quality_score": 50.0,
+      "score_breakdown": {
+        "heat_burst": 3.0,
+        "fund_confirmation": 5.0,
+        "constituent_linkage": 5.0,
+        "phase_score": 8.0,
+        "catalyst": 5.0,
+        "data_quality": 3.0,
+        "positive_score": 29.0,
+        "final_score": 22.0,
+        "risk_penalty": 7.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 7.0,
+          "total_penalty": 7.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据质量分偏低 (50); 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "ths_concept_AI PC",
+      "name": "AI PC",
+      "type": "concept",
+      "score": 22.0,
+      "positive_score": 29.0,
+      "risk_penalty": 7.0,
+      "focus_level": "avoid",
+      "phase": "divergence",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分过低 (22.0)",
+        "板块正向强度不足"
+      ],
+      "watch_points": [],
+      "constituents": [],
+      "data_sources": [
+        "akshare/ths_concept"
+      ],
+      "updated_at": "2026-06-29T21:19:54.774459",
+      "data_quality_score": 50.0,
+      "score_breakdown": {
+        "heat_burst": 3.0,
+        "fund_confirmation": 5.0,
+        "constituent_linkage": 5.0,
+        "phase_score": 8.0,
+        "catalyst": 5.0,
+        "data_quality": 3.0,
+        "positive_score": 29.0,
+        "final_score": 22.0,
+        "risk_penalty": 7.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 7.0,
+          "total_penalty": 7.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据质量分偏低 (50); 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "ths_concept_AI手机",
+      "name": "AI手机",
+      "type": "concept",
+      "score": 22.0,
+      "positive_score": 29.0,
+      "risk_penalty": 7.0,
+      "focus_level": "avoid",
+      "phase": "divergence",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分过低 (22.0)",
+        "板块正向强度不足"
+      ],
+      "watch_points": [],
+      "constituents": [],
+      "data_sources": [
+        "akshare/ths_concept"
+      ],
+      "updated_at": "2026-06-29T21:19:54.774459",
+      "data_quality_score": 50.0,
+      "score_breakdown": {
+        "heat_burst": 3.0,
+        "fund_confirmation": 5.0,
+        "constituent_linkage": 5.0,
+        "phase_score": 8.0,
+        "catalyst": 5.0,
+        "data_quality": 3.0,
+        "positive_score": 29.0,
+        "final_score": 22.0,
+        "risk_penalty": 7.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 7.0,
+          "total_penalty": 7.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据质量分偏低 (50); 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "ths_concept_AI语料",
+      "name": "AI语料",
+      "type": "concept",
+      "score": 22.0,
+      "positive_score": 29.0,
+      "risk_penalty": 7.0,
+      "focus_level": "avoid",
+      "phase": "divergence",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分过低 (22.0)",
+        "板块正向强度不足"
+      ],
+      "watch_points": [],
+      "constituents": [],
+      "data_sources": [
+        "akshare/ths_concept"
+      ],
+      "updated_at": "2026-06-29T21:19:54.774459",
+      "data_quality_score": 50.0,
+      "score_breakdown": {
+        "heat_burst": 3.0,
+        "fund_confirmation": 5.0,
+        "constituent_linkage": 5.0,
+        "phase_score": 8.0,
+        "catalyst": 5.0,
+        "data_quality": 3.0,
+        "positive_score": 29.0,
+        "final_score": 22.0,
+        "risk_penalty": 7.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 7.0,
+          "total_penalty": 7.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据质量分偏低 (50); 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "ths_concept_阿里巴巴概念",
+      "name": "阿里巴巴概念",
+      "type": "concept",
+      "score": 22.0,
+      "positive_score": 29.0,
+      "risk_penalty": 7.0,
+      "focus_level": "avoid",
+      "phase": "divergence",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分过低 (22.0)",
+        "板块正向强度不足"
+      ],
+      "watch_points": [],
+      "constituents": [],
+      "data_sources": [
+        "akshare/ths_concept"
+      ],
+      "updated_at": "2026-06-29T21:19:54.774459",
+      "data_quality_score": 50.0,
+      "score_breakdown": {
+        "heat_burst": 3.0,
+        "fund_confirmation": 5.0,
+        "constituent_linkage": 5.0,
+        "phase_score": 8.0,
+        "catalyst": 5.0,
+        "data_quality": 3.0,
+        "positive_score": 29.0,
+        "final_score": 22.0,
+        "risk_penalty": 7.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 7.0,
+          "total_penalty": 7.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据质量分偏低 (50); 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    }
+  ],
+  "overlap": [],
+  "risk_summary": {
+    "high_risk_count": 0,
+    "medium_risk_count": 0,
+    "overheat_sectors": [],
+    "divergence_sectors": []
+  },
+  "data_quality": {
+    "overall_score": 65.0,
+    "low_quality_sectors": [
+      "阿尔茨海默概念",
+      "AI PC",
+      "AI手机",
+      "AI语料",
+      "阿里巴巴概念"
+    ],
+    "sector_count": 5
+  },
+  "disclaimer": "本报告仅用于板块强弱筛选和研究复盘，不构成个股推荐、买卖建议或自动交易指令。",
+  "status": "degraded",
+  "provider_status": 

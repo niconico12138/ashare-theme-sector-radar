@@ -135,6 +135,30 @@ def main():
         help="报告根目录"
     )
     parser.add_argument(
+        "--download-sector-history",
+        action="store_true",
+        help="下载板块历史数据"
+    )
+    parser.add_argument(
+        "--sector-type",
+        type=str,
+        choices=["industry", "concept", "both"],
+        default="industry",
+        help="板块类型"
+    )
+    parser.add_argument(
+        "--symbols",
+        type=str,
+        default=None,
+        help="指定板块名称列表，逗号分隔"
+    )
+    parser.add_argument(
+        "--sleep-seconds",
+        type=float,
+        default=1.0,
+        help="请求间 sleep 秒数"
+    )
+    parser.add_argument(
         "--version",
         action="version",
         version=f"%(prog)s {__version__}"
@@ -146,6 +170,11 @@ def main():
     provider_name = args.provider
     if args.offline_fixture:
         provider_name = "fixture"
+
+    # download-sector-history 模式
+    if args.download_sector_history:
+        _run_download(args)
+        return
 
     # replay-cache 模式
     if args.replay_cache:
@@ -214,6 +243,24 @@ def _run_single(args, provider_name: str):
 
         # 生成 run_log
         if args.daily:
+            # 获取 provider_status
+            ps = report.provider_status
+            # 转换为字典（处理 Pydantic 模型）
+            if hasattr(ps, 'model_dump'):
+                ps_dict = ps.model_dump()
+            else:
+                ps_dict = {
+                    "effective_provider": ps.effective_provider,
+                    "industry_source": ps.industry_source,
+                    "concept_source": ps.concept_source,
+                    "fallback_used": ps.fallback_used,
+                    "fallback_provider": ps.fallback_provider,
+                    "fallback_reason": ps.fallback_reason,
+                    "industry_count": ps.industry_count,
+                    "concept_count": ps.concept_count,
+                    "em_industry_error": ps.em_industry_error,
+                    "em_concept_error": ps.em_concept_error,
+                }
             run_log = {
                 "command_args": " ".join(sys.argv[1:]),
                 "started_at": started_at_str,
@@ -238,6 +285,8 @@ def _run_single(args, provider_name: str):
                 "index_included": True,
                 "comparison_source": report.comparison.get('comparison_source', 'none'),
                 "input_snapshot_source": "fixture" if args.offline_fixture else "akshare",
+                # Provider status tracking
+                "provider_status": ps_dict,
             }
             run_log_path = os.path.join(output_dir, "run_log.json")
             os.makedirs(output_dir, exist_ok=True)
@@ -427,6 +476,67 @@ def _save_replay_run_log(
     run_log_path = os.path.join(output_dir, "run_log.json")
     with open(run_log_path, "w", encoding="utf-8") as f:
         json.dump(run_log, f, ensure_ascii=False, indent=2)
+
+
+def _run_download(args):
+    """运行板块历史数据下载"""
+    from .downloader.sector_history_downloader import SectorHistoryDownloader, save_download_summary
+    from .models import SectorType
+
+    # 解析 sector_type
+    if args.sector_type == "both":
+        sector_types = [SectorType.INDUSTRY, SectorType.CONCEPT]
+    elif args.sector_type == "industry":
+        sector_types = [SectorType.INDUSTRY]
+    else:
+        sector_types = [SectorType.CONCEPT]
+
+    # 解析 symbols
+    symbols = None
+    if args.symbols:
+        symbols = [s.strip() for s in args.symbols.split(",")]
+
+    # 创建下载器
+    downloader = SectorHistoryDownloader(sleep_seconds=args.sleep_seconds)
+
+    print("=" * 60)
+    print("Theme Sector Radar - Sector History Download")
+    print("=" * 60)
+    print(f"Sector Type: {args.sector_type}")
+    print(f"Start Date: {args.start_date}")
+    print(f"End Date: {args.end_date}")
+    if symbols:
+        print(f"Symbols: {', '.join(symbols)}")
+    else:
+        print(f"Top N: {args.top_n}")
+    print("-" * 60)
+
+    # 下载数据
+    all_summaries = []
+    for sector_type in sector_types:
+        print(f"\nDownloading {sector_type.value} sectors...")
+
+        summary = downloader.download_sectors(
+            sector_type=sector_type,
+            start_date=args.start_date,
+            end_date=args.end_date,
+            symbols=symbols,
+            top_n=args.top_n,
+            refresh=args.refresh,
+        )
+        all_summaries.append(summary)
+
+        print(f"  Success: {summary['success_count']}")
+        print(f"  Failed: {summary['failed_count']}")
+        print(f"  Skipped: {summary['skipped_count']}")
+
+    # 保存摘要
+    output_dir = os.path.join("reports", "data_downloads", datetime.now().strftime("%Y-%m-%d"))
+    for summary in all_summaries:
+        save_download_summary(summary, output_dir)
+
+    print("-" * 60)
+    print(f"Download complete! Summary saved to: {output_dir}")
 
 
 def _generate_index(report_root: str, dates: List[str], include_experiments: bool = False):

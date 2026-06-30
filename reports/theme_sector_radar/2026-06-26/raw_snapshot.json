@@ -1,5 +1,5 @@
 {
-  "as_of_date": "2026-06-29",
+  "as_of_date": "2026-06-26",
   "config": {
     "top_n": 10,
     "industry_min_count": 20,
@@ -66,7 +66,7 @@
         "data_sources": [
           "akshare/ths_industry"
         ],
-        "updated_at": "2026-06-29T21:44:59.459091",
+        "updated_at": "2026-06-29T22:32:45.776277",
         "data_quality_score": 60.0,
         "price_change_available": true
       },
@@ -81,7 +81,7 @@
         "data_sources": [
           "akshare/ths_industry"
         ],
-        "updated_at": "2026-06-29T21:44:59.459091",
+        "updated_at": "2026-06-29T22:32:45.776277",
         "data_quality_score": 60.0,
         "price_change_available": true
       },
@@ -96,7 +96,7 @@
         "data_sources": [
           "akshare/ths_industry"
         ],
-        "updated_at": "2026-06-29T21:44:59.459091",
+        "updated_at": "2026-06-29T22:32:45.776277",
         "data_quality_score": 60.0,
         "price_change_available": true
       },
@@ -111,7 +111,7 @@
         "data_sources": [
           "akshare/ths_industry"
         ],
-        "updated_at": "2026-06-29T21:44:59.459091",
+        "updated_at": "2026-06-29T22:32:45.776277",
         "data_quality_score": 60.0,
         "price_change_available": true
       },
@@ -126,7 +126,7 @@
         "data_sources": [
           "akshare/ths_industry"
         ],
-        "updated_at": "2026-06-29T21:44:59.459091",
+        "updated_at": "2026-06-29T22:32:45.776277",
         "data_quality_score": 60.0,
         "price_change_available": true
       },
@@ -141,7 +141,7 @@
         "data_sources": [
           "akshare/ths_industry"
         ],
-        "updated_at": "2026-06-29T21:44:59.459091",
+        "updated_at": "2026-06-29T22:32:45.776277",
         "data_quality_score": 60.0,
         "price_change_available": true
       },
@@ -156,7 +156,7 @@
         "data_sources": [
           "akshare/ths_industry"
         ],
-        "updated_at": "2026-06-29T21:44:59.459091",
+        "updated_at": "2026-06-29T22:32:45.776277",
         "data_quality_score": 60.0,
         "price_change_available": true
       },
@@ -171,7 +171,7 @@
         "data_sources": [
           "akshare/ths_industry"
         ],
-        "updated_at": "2026-06-29T21:44:59.460602",
+        "updated_at": "2026-06-29T22:32:45.776277",
         "data_quality_score": 60.0,
         "price_change_available": true
       },
@@ -186,7 +186,7 @@
         "data_sources": [
           "akshare/ths_industry"
         ],
-        "updated_at": "2026-06-29T21:44:59.460602",
+        "updated_at": "2026-06-29T22:32:45.776277",
         "data_quality_score": 60.0,
         "price_change_available": true
       },
@@ -201,7 +201,7 @@
         "data_sources": [
           "akshare/ths_industry"
         ],
-        "updated_at": "2026-06-29T21:44:59.460602",
+        "updated_at": "2026-06-29T22:32:45.776277",
         "data_quality_score": 60.0,
         "price_change_available": true
       },
@@ -216,7 +216,7 @@
         "data_sources": [
           "akshare/ths_industry"
         ],
-        "updated_at": "2026-06-29T21:44:59.460602",
+        "updated_at": "2026-06-29T22:32:45.776277",
         "data_quality_score": 60.0,
         "price_change_available": true
       },
@@ -231,7 +231,7 @@
         "data_sources": [
           "akshare/ths_industry"
         ],
-        "updated_at": "2026-06-29T21:44:59.460602",
+        "updated_at": "2026-06-29T22:32:45.777277",
         "data_quality_score": 60.0,
         "price_change_available": true
       },
@@ -246,7 +246,7 @@
         "data_sources": [
           "akshare/ths_industry"
         ],
-        "updated_at": "2026-06-29T21:44:59.460602",
+        "updated_at": "2026-06-29T22:32:45.777277",
         "data_quality_score": 60.0,
         "price_change_available": true
       },
@@ -261,7 +261,7 @@
         "data_sources": [
           "akshare/ths_industry"
         ],
-        "updated_at": "2026-06-29T21:44:59.460602",
+        "updated_at": "2026-06-29T22:32:45.777277",
         "data_quality_score": 60.0,
         "price_change_available": true
       },
@@ -276,7 +276,7 @@
         "data_sources": [
           "akshare/ths_industry"
         ],
-        "updated_at": "2026-06-29T21:44:59.460602",
+        "updated_at": "2026-06-29T22:32:45.777277",
         "data_quality_score": 60.0,
         "price_change_available": true
       },
@@ -291,7 +291,7 @@
         "data_sources": [
           "akshare/ths_industry"
         ],
-        "updated_at": "2026-06-29T21:44:59.460602",
+        "updated_at": "2026-06-29T22:32:45.777277",
         "data_quality_score": 60.0,
         "price_change_available": true
       },
@@ -306,7 +306,7 @@
         "data_sources": [
           "akshare/ths_industry"
         ],
-        "updated_at": "2026-06-29T21:44:59.460602",
+        "updated_at": "2026-06-29T22:32:45.777277",
         "data_quality_score": 60.0,
         "price_change_available": true
       },
@@ -321,7 +321,7 @@
         "data_sources": [
           "akshare/ths_industry"
         ],
-        "updated_at": "2026-06-29T21:44:59.460602",
+        "updated_at": "2026-06-29T22:32:45.777277",
         "data_quality_score": 60.0,
         "price_change_available": true
       },
@@ -336,7 +336,7 @@
         "data_sources": [
           "akshare/ths_industry"
         ],
-        "updated_at": "2026-06-29T21:44:59.460602",
+        "updated_at": "2026-06-29T22:32:45.777277",
         "data_quality_score": 60.0,
         "price_change_available": true
       },
@@ -351,7 +351,7 @@
         "data_sources": [
           "akshare/ths_industry"
         ],
-        "updated_at": "2026-06-29T21:44:59.460602",
+        "updated_at": "2026-06-29T22:32:45.777277",
         "data_quality_score": 60.0,
         "price_change_available": true
       }
@@ -368,7 +368,7 @@
         "data_sources": [
           "akshare/ths_concept"
         ],
-        "updated_at": "2026-06-29T21:45:14.174094",
+        "updated_at": "2026-06-29T22:32:59.027373",
         "data_quality_score": 50.0,
         "price_change_available": false
       },
@@ -383,7 +383,7 @@
         "data_sources": [
           "akshare/ths_concept"
         ],
-        "updated_at": "2026-06-29T21:45:14.175605",
+        "updated_at": "2026-06-29T22:32:59.027373",
         "data_quality_score": 50.0,
         "price_change_available": false
       },
@@ -398,7 +398,7 @@
         "data_sources": [
           "akshare/ths_concept"
         ],
-        "updated_at": "2026-06-29T21:45:14.175605",
+        "updated_at": "2026-06-29T22:32:59.027373",
         "data_quality_score": 50.0,
         "price_change_available": false
       },
@@ -413,7 +413,7 @@
         "data_sources": [
           "akshare/ths_concept"
         ],
-        "updated_at": "2026-06-29T21:45:14.175605",
+        "updated_at": "2026-06-29T22:32:59.027373",
         "data_quality_score": 50.0,
         "price_change_available": false
       },
@@ -428,7 +428,7 @@
         "data_sources": [
           "akshare/ths_concept"
         ],
-        "updated_at": "2026-06-29T21:45:14.175605",
+        "updated_at": "2026-06-29T22:32:59.027373",
         "data_quality_score": 50.0,
         "price_change_available": false
       },
@@ -443,7 +443,7 @@
         "data_sources": [
           "akshare/ths_concept"
         ],
-        "updated_at": "2026-06-29T21:45:14.175605",
+        "updated_at": "2026-06-29T22:32:59.027373",
         "data_quality_score": 50.0,
         "price_change_available": false
       },
@@ -458,7 +458,7 @@
         "data_sources": [
           "akshare/ths_concept"
         ],
-        "updated_at": "2026-06-29T21:45:14.175605",
+        "updated_at": "2026-06-29T22:32:59.027373",
         "data_quality_score": 50.0,
         "price_change_available": false
       },
@@ -473,7 +473,7 @@
         "data_sources": [
           "akshare/ths_concept"
         ],
-        "updated_at": "2026-06-29T21:45:14.175605",
+        "updated_at": "2026-06-29T22:32:59.027373",
         "data_quality_score": 50.0,
         "price_change_available": false
       },
@@ -488,7 +488,7 @@
         "data_sources": [
           "akshare/ths_concept"
         ],
-        "updated_at": "2026-06-29T21:45:14.175605",
+        "updated_at": "2026-06-29T22:32:59.028376",
         "data_quality_score": 50.0,
         "price_change_available": false
       },
@@ -503,7 +503,7 @@
         "data_sources": [
           "akshare/ths_concept"
         ],
-        "updated_at": "2026-06-29T21:45:14.175605",
+        "updated_at": "2026-06-29T22:32:59.028376",
         "data_quality_score": 50.0,
         "price_change_available": false
       },
@@ -518,7 +518,7 @@
         "data_sources": [
           "akshare/ths_concept"
         ],
-        "updated_at": "2026-06-29T21:45:14.175605",
+        "updated_at": "2026-06-29T22:32:59.028376",
         "data_quality_score": 50.0,
         "price_change_available": false
       },
@@ -533,7 +533,7 @@
         "data_sources": [
           "akshare/ths_concept"
         ],
-        "updated_at": "2026-06-29T21:45:14.175605",
+        "updated_at": "2026-06-29T22:32:59.028376",
         "data_quality_score": 50.0,
         "price_change_available": false
       },
@@ -548,7 +548,7 @@
         "data_sources": [
           "akshare/ths_concept"
         ],
-        "updated_at": "2026-06-29T21:45:14.175605",
+        "updated_at": "2026-06-29T22:32:59.028376",
         "data_quality_score": 50.0,
         "price_change_available": false
       },
@@ -563,7 +563,7 @@
         "data_sources": [
           "akshare/ths_concept"
         ],
-        "updated_at": "2026-06-29T21:45:14.175605",
+        "updated_at": "2026-06-29T22:32:59.028376",
         "data_quality_score": 50.0,
         "price_change_available": false
       },
@@ -578,7 +578,7 @@
         "data_sources": [
           "akshare/ths_concept"
         ],
-        "updated_at": "2026-06-29T21:45:14.175605",
+        "updated_at": "2026-06-29T22:32:59.028376",
         "data_quality_score": 50.0,
         "price_change_available": false
       },
@@ -593,7 +593,7 @@
         "data_sources": [
           "akshare/ths_concept"
         ],
-        "updated_at": "2026-06-29T21:45:14.175605",
+        "updated_at": "2026-06-29T22:32:59.028376",
         "data_quality_score": 50.0,
         "price_change_available": false
       },
@@ -608,7 +608,7 @@
         "data_sources": [
           "akshare/ths_concept"
         ],
-        "updated_at": "2026-06-29T21:45:14.175605",
+        "updated_at": "2026-06-29T22:32:59.028376",
         "data_quality_score": 50.0,
         "price_change_available": false
       },
@@ -623,7 +623,7 @@
         "data_sources": [
           "akshare/ths_concept"
         ],
-        "updated_at": "2026-06-29T21:45:14.175605",
+        "updated_at": "2026-06-29T22:32:59.028376",
         "data_quality_score": 50.0,
         "price_change_available": false
       },
@@ -638,7 +638,7 @@
         "data_sources": [
           "akshare/ths_concept"
         ],
-        "updated_at": "2026-06-29T21:45:14.175605",
+        "updated_at": "2026-06-29T22:32:59.028376",
         "data_quality_score": 50.0,
         "price_change_available": false
       },
@@ -653,7 +653,7 @@
         "data_sources": [
           "akshare/ths_concept"
         ],
-        "updated_at": "2026-06-29T21:45:14.175605",
+        "updated_at": "2026-06-29T22:32:59.028376",
         "data_quality_score": 50.0,
         "price_change_available": false
       }
@@ -681,7 +681,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.459091",
+          "updated_at": "2026-06-29T22:32:45.776277",
           "data_quality_score": 60.0,
           "price_change_available": true
         },
@@ -696,7 +696,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.459091",
+          "updated_at": "2026-06-29T22:32:45.776277",
           "data_quality_score": 60.0,
           "price_change_available": true
         },
@@ -711,7 +711,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.459091",
+          "updated_at": "2026-06-29T22:32:45.776277",
           "data_quality_score": 60.0,
           "price_change_available": true
         },
@@ -726,7 +726,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.459091",
+          "updated_at": "2026-06-29T22:32:45.776277",
           "data_quality_score": 60.0,
           "price_change_available": true
         },
@@ -741,7 +741,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.459091",
+          "updated_at": "2026-06-29T22:32:45.776277",
           "data_quality_score": 60.0,
           "price_change_available": true
         },
@@ -756,7 +756,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.459091",
+          "updated_at": "2026-06-29T22:32:45.776277",
           "data_quality_score": 60.0,
           "price_change_available": true
         },
@@ -771,7 +771,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.459091",
+          "updated_at": "2026-06-29T22:32:45.776277",
           "data_quality_score": 60.0,
           "price_change_available": true
         },
@@ -786,7 +786,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.460602",
+          "updated_at": "2026-06-29T22:32:45.776277",
           "data_quality_score": 60.0,
           "price_change_available": true
         },
@@ -801,7 +801,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.460602",
+          "updated_at": "2026-06-29T22:32:45.776277",
           "data_quality_score": 60.0,
           "price_change_available": true
         },
@@ -816,7 +816,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.460602",
+          "updated_at": "2026-06-29T22:32:45.776277",
           "data_quality_score": 60.0,
           "price_change_available": true
         },
@@ -831,7 +831,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.460602",
+          "updated_at": "2026-06-29T22:32:45.776277",
           "data_quality_score": 60.0,
           "price_change_available": true
         },
@@ -846,7 +846,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.460602",
+          "updated_at": "2026-06-29T22:32:45.777277",
           "data_quality_score": 60.0,
           "price_change_available": true
         },
@@ -861,7 +861,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.460602",
+          "updated_at": "2026-06-29T22:32:45.777277",
           "data_quality_score": 60.0,
           "price_change_available": true
         },
@@ -876,7 +876,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.460602",
+          "updated_at": "2026-06-29T22:32:45.777277",
           "data_quality_score": 60.0,
           "price_change_available": true
         },
@@ -891,7 +891,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.460602",
+          "updated_at": "2026-06-29T22:32:45.777277",
           "data_quality_score": 60.0,
           "price_change_available": true
         },
@@ -906,7 +906,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.460602",
+          "updated_at": "2026-06-29T22:32:45.777277",
           "data_quality_score": 60.0,
           "price_change_available": true
         },
@@ -921,7 +921,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.460602",
+          "updated_at": "2026-06-29T22:32:45.777277",
           "data_quality_score": 60.0,
           "price_change_available": true
         },
@@ -936,7 +936,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.460602",
+          "updated_at": "2026-06-29T22:32:45.777277",
           "data_quality_score": 60.0,
           "price_change_available": true
         },
@@ -951,7 +951,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.460602",
+          "updated_at": "2026-06-29T22:32:45.777277",
           "data_quality_score": 60.0,
           "price_change_available": true
         },
@@ -966,7 +966,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.460602",
+          "updated_at": "2026-06-29T22:32:45.777277",
           "data_quality_score": 60.0,
           "price_change_available": true
         }
@@ -985,7 +985,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.174094",
+          "updated_at": "2026-06-29T22:32:59.027373",
           "data_quality_score": 50.0,
           "price_change_available": true
         },
@@ -1000,7 +1000,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.027373",
           "data_quality_score": 50.0,
           "price_change_available": true
         },
@@ -1015,7 +1015,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.027373",
           "data_quality_score": 50.0,
           "price_change_available": true
         },
@@ -1030,7 +1030,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.027373",
           "data_quality_score": 50.0,
           "price_change_available": true
         },
@@ -1045,7 +1045,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.027373",
           "data_quality_score": 50.0,
           "price_change_available": true
         },
@@ -1060,7 +1060,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.027373",
           "data_quality_score": 50.0,
           "price_change_available": true
         },
@@ -1075,7 +1075,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.027373",
           "data_quality_score": 50.0,
           "price_change_available": true
         },
@@ -1090,7 +1090,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.027373",
           "data_quality_score": 50.0,
           "price_change_available": true
         },
@@ -1105,7 +1105,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.028376",
           "data_quality_score": 50.0,
           "price_change_available": true
         },
@@ -1120,7 +1120,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.028376",
           "data_quality_score": 50.0,
           "price_change_available": true
         },
@@ -1135,7 +1135,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.028376",
           "data_quality_score": 50.0,
           "price_change_available": true
         },
@@ -1150,7 +1150,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.028376",
           "data_quality_score": 50.0,
           "price_change_available": true
         },
@@ -1165,7 +1165,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.028376",
           "data_quality_score": 50.0,
           "price_change_available": true
         },
@@ -1180,7 +1180,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.028376",
           "data_quality_score": 50.0,
           "price_change_available": true
         },
@@ -1195,7 +1195,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.028376",
           "data_quality_score": 50.0,
           "price_change_available": true
         },
@@ -1210,7 +1210,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.028376",
           "data_quality_score": 50.0,
           "price_change_available": true
         },
@@ -1225,7 +1225,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.028376",
           "data_quality_score": 50.0,
           "price_change_available": true
         },
@@ -1240,7 +1240,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.028376",
           "data_quality_score": 50.0,
           "price_change_available": true
         },
@@ -1255,7 +1255,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.028376",
           "data_quality_score": 50.0,
           "price_change_available": true
         },
@@ -1270,7 +1270,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.028376",
           "data_quality_score": 50.0,
           "price_change_available": true
         }
@@ -2634,7 +2634,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.459091",
+          "updated_at": "2026-06-29T22:32:45.776277",
           "data_quality_score": 60.0,
           "score_breakdown": {
             "trend_strength": 17.0,
@@ -2685,7 +2685,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.459091",
+          "updated_at": "2026-06-29T22:32:45.776277",
           "data_quality_score": 60.0,
           "score_breakdown": {
             "trend_strength": 17.0,
@@ -2736,7 +2736,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.459091",
+          "updated_at": "2026-06-29T22:32:45.776277",
           "data_quality_score": 60.0,
           "score_breakdown": {
             "trend_strength": 17.0,
@@ -2787,7 +2787,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.459091",
+          "updated_at": "2026-06-29T22:32:45.776277",
           "data_quality_score": 60.0,
           "score_breakdown": {
             "trend_strength": 14.0,
@@ -2838,7 +2838,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.459091",
+          "updated_at": "2026-06-29T22:32:45.776277",
           "data_quality_score": 60.0,
           "score_breakdown": {
             "trend_strength": 14.0,
@@ -2889,7 +2889,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.459091",
+          "updated_at": "2026-06-29T22:32:45.776277",
           "data_quality_score": 60.0,
           "score_breakdown": {
             "trend_strength": 10.0,
@@ -2940,7 +2940,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.459091",
+          "updated_at": "2026-06-29T22:32:45.776277",
           "data_quality_score": 60.0,
           "score_breakdown": {
             "trend_strength": 10.0,
@@ -2991,7 +2991,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.460602",
+          "updated_at": "2026-06-29T22:32:45.776277",
           "data_quality_score": 60.0,
           "score_breakdown": {
             "trend_strength": 10.0,
@@ -3042,7 +3042,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.460602",
+          "updated_at": "2026-06-29T22:32:45.776277",
           "data_quality_score": 60.0,
           "score_breakdown": {
             "trend_strength": 10.0,
@@ -3093,7 +3093,7 @@
           "data_sources": [
             "akshare/ths_industry"
           ],
-          "updated_at": "2026-06-29T21:44:59.460602",
+          "updated_at": "2026-06-29T22:32:45.776277",
           "data_quality_score": 60.0,
           "score_breakdown": {
             "trend_strength": 10.0,
@@ -3146,7 +3146,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.174094",
+          "updated_at": "2026-06-29T22:32:59.027373",
           "data_quality_score": 50.0,
           "score_breakdown": {
             "heat_burst": 2.0,
@@ -3200,7 +3200,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.027373",
           "data_quality_score": 50.0,
           "score_breakdown": {
             "heat_burst": 2.0,
@@ -3254,7 +3254,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.027373",
           "data_quality_score": 50.0,
           "score_breakdown": {
             "heat_burst": 2.0,
@@ -3308,7 +3308,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.027373",
           "data_quality_score": 50.0,
           "score_breakdown": {
             "heat_burst": 2.0,
@@ -3362,7 +3362,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.027373",
           "data_quality_score": 50.0,
           "score_breakdown": {
             "heat_burst": 2.0,
@@ -3416,7 +3416,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.027373",
           "data_quality_score": 50.0,
           "score_breakdown": {
             "heat_burst": 2.0,
@@ -3470,7 +3470,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.027373",
           "data_quality_score": 50.0,
           "score_breakdown": {
             "heat_burst": 2.0,
@@ -3524,7 +3524,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.027373",
           "data_quality_score": 50.0,
           "score_breakdown": {
             "heat_burst": 2.0,
@@ -3578,7 +3578,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.028376",
           "data_quality_score": 50.0,
           "score_breakdown": {
             "heat_burst": 2.0,
@@ -3632,7 +3632,7 @@
           "data_sources": [
             "akshare/ths_concept"
           ],
-          "updated_at": "2026-06-29T21:45:14.175605",
+          "updated_at": "2026-06-29T22:32:59.028376",
           "data_quality_score": 50.0,
           "score_breakdown": {
             "heat_burst": 2.0,

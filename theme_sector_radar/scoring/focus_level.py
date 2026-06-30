@@ -15,7 +15,8 @@ def calculate_focus_level(
     risk_penalty: float,
     risk_level: RiskLevel,
     data_quality_score: float,
-    config: Dict[str, Any] = None
+    config: Dict[str, Any] = None,
+    price_change_available: bool = True,
 ) -> Tuple[FocusLevel, List[str]]:
     """
     计算关注等级
@@ -25,6 +26,7 @@ def calculate_focus_level(
         risk_penalty: 风险扣分 (正数，例如 3.0)
         risk_level: 风险等级
         data_quality_score: 数据质量分
+        price_change_available: 涨跌幅是否可用
 
     返回: (focus_level, downgrade_reasons)
     """
@@ -36,6 +38,10 @@ def calculate_focus_level(
     final_score = positive_score - risk_penalty
 
     downgrade_reasons = []
+
+    # 涨跌幅不可用时，不能输出高置信 focus
+    if not price_change_available and final_score >= thresholds.get("focus_min_score", 80):
+        downgrade_reasons.append("涨跌幅数据不可用，无法确认板块热度，降级处理")
 
     # 数据质量低时不能输出 focus
     if data_quality_score < 60 and final_score >= thresholds.get("focus_min_score", 80):
