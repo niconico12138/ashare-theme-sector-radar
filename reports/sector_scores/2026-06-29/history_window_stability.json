@@ -1,0 +1,139 @@
+{
+  "report_type": "history_window_stability",
+  "version": "0.1.0",
+  "as_of_date": "2026-06-29",
+  "analysis_date": "2026-06-30",
+  "description": "分析不同历史窗口下的评分稳定性",
+  "windows": {
+    "5d": {
+      "start_date": "2026-06-23",
+      "end_date": "2026-06-30"
+    },
+    "10d": {
+      "start_date": "2026-06-16",
+      "end_date": "2026-06-30"
+    }
+  },
+  "sectors": [
+    {
+      "sector_name": "半导体",
+      "score_5d": null,
+      "score_10d": 51.0,
+      "score_20d": null,
+      "level_5d": null,
+      "level_10d": "neutral",
+      "level_20d": null,
+      "stability_flag": "stable",
+      "explanation": "有足够的历史数据 (9 天)，评分可靠",
+      "history_days": 9
+    },
+    {
+      "sector_name": "医疗服务",
+      "score_5d": null,
+      "score_10d": 40.0,
+      "score_20d": null,
+      "level_5d": null,
+      "level_10d": "cooling",
+      "level_20d": null,
+      "stability_flag": "stable",
+      "explanation": "有足够的历史数据 (9 天)，评分可靠",
+      "history_days": 9
+    },
+    {
+      "sector_name": "化学制药",
+      "score_5d": null,
+      "score_10d": 35.75,
+      "score_20d": null,
+      "level_5d": null,
+      "level_10d": "cooling",
+      "level_20d": null,
+      "stability_flag": "stable",
+      "explanation": "有足够的历史数据 (9 天)，评分可靠",
+      "history_days": 9
+    },
+    {
+      "sector_name": "生物制品",
+      "score_5d": null,
+      "score_10d": 31.25,
+      "score_20d": null,
+      "level_5d": null,
+      "level_10d": "avoid",
+      "level_20d": null,
+      "stability_flag": "stable",
+      "explanation": "有足够的历史数据 (9 天)，评分可靠",
+      "history_days": 9
+    },
+    {
+      "sector_name": "医疗器械",
+      "score_5d": null,
+      "score_10d": 25.0,
+      "score_20d": null,
+      "level_5d": null,
+      "level_10d": "avoid",
+      "level_20d": null,
+      "stability_flag": "stable",
+      "explanation": "有足够的历史数据 (9 天)，评分可靠",
+      "history_days": 9
+    },
+    {
+      "sector_name": "养殖业",
+      "score_5d": null,
+      "score_10d": 18.0,
+      "score_20d": null,
+      "level_5d": null,
+      "level_10d": "avoid",
+      "level_20d": null,
+      "stability_flag": "stable",
+      "explanation": "有足够的历史数据 (9 天)，评分可靠",
+      "history_days": 9
+    },
+    {
+      "sector_name": "中药",
+      "score_5d": null,
+      "score_10d": 17.0,
+      "score_20d": null,
+      "level_5d": null,
+      "level_10d": "avoid",
+      "level_20d": null,
+      "stability_flag": "stable",
+      "explanation": "有足够的历史数据 (9 天)，评分可靠",
+      "history_days": 9
+    },
+    {
+      "sector_name": "医药商业",
+      "score_5d": null,
+      "score_10d": 16.0,
+      "score_20d": null,
+      "level_5d": null,
+      "level_10d": "avoid",
+      "level_20d": null,
+      "stability_flag": "stable",
+      "explanation": "有足够的历史数据 (9 天)，评分可靠",
+      "history_days": 9
+    },
+    {
+      "sector_name": "美容护理",
+      "score_5d": null,
+      "score_10d": 16.0,
+      "score_20d": null,
+      "level_5d": null,
+      "level_10d": "avoid",
+      "level_20d": null,
+      "stability_flag": "stable",
+      "explanation": "有足够的历史数据 (9 天)，评分可靠",
+      "history_days": 9
+    },
+    {
+      "sector_name": "保险",
+      "score_5d": null,
+      "score_10d": 15.0,
+      "score_20d": null,
+      "level_5d": null,
+      "level_10d": "avoid",
+      "level_20d": null,
+      "stability_flag": "stable",
+      "explanation": "有足够的历史数据 (9 天)，评分可靠",
+      "history_days": 9
+    }
+  ]
+}

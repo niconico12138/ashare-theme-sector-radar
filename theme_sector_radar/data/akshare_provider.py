@@ -390,7 +390,7 @@ class AkShareProvider(DataProvider):
             constituents=[],
             data_sources=["akshare/ths_industry"],
             updated_at=datetime.now().isoformat(),
-            data_quality_score=60.0,  # THS 数据质量略低于 EM
+            data_quality_score=80.0,  # THS 行业指数含涨跌幅，作为可用板块级数据
         )
 
     def _normalize_ths_concept_sector(self, row: Dict[str, Any]) -> SectorSnapshot:
@@ -536,17 +536,25 @@ class AkShareProvider(DataProvider):
         Returns:
             ProviderStatusInfo: 包含数据来源、fallback 状态等信息
         """
-        # 确定 effective_provider
-        if self._status_info.fallback_used:
-            if self._status_info.industry_source and self._status_info.concept_source:
-                # 两个都 fallback 了
+        # 确定 effective_provider：基于实际 source 字符串判断，而非仅 fallback_used
+        ind_is_ths = "ths" in self._status_info.industry_source
+        con_is_ths = "ths" in self._status_info.concept_source
+        ind_is_em = "eastmoney" in self._status_info.industry_source
+        con_is_em = "eastmoney" in self._status_info.concept_source
+
+        if self._status_info.industry_source and self._status_info.concept_source:
+            # 两个都有数据：检查实际 source
+            if ind_is_ths and con_is_ths:
                 self._status_info.effective_provider = "ths"
-            elif self._status_info.industry_source:
-                self._status_info.effective_provider = "mixed"
-            elif self._status_info.concept_source:
-                self._status_info.effective_provider = "mixed"
+            elif ind_is_em and con_is_em:
+                self._status_info.effective_provider = "akshare"
             else:
-                self._status_info.effective_provider = "ths"
+                # 一个是 THS，另一个是 EM → 混合
+                self._status_info.effective_provider = "mixed"
+        elif self._status_info.industry_source:
+            self._status_info.effective_provider = "ths" if ind_is_ths else "akshare"
+        elif self._status_info.concept_source:
+            self._status_info.effective_provider = "ths" if con_is_ths else "akshare"
         elif self.prefer_ths:
             self._status_info.effective_provider = "ths"
         else:

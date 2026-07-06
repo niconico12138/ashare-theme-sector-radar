@@ -1,0 +1,995 @@
+{
+  "as_of_date": "2026-07-02",
+  "consensus": [
+    {
+      "sector_name": "电子化学品",
+      "sector_type": "industry",
+      "multi_window_label": "multi_window_confirmed",
+      "consensus_score": 70.9,
+      "window_scores": {
+        "5": 70.9,
+        "10": 70.9,
+        "20": 70.9
+      }
+    },
+    {
+      "sector_name": "化学制药",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 53.6,
+      "window_scores": {
+        "5": 53.6,
+        "10": 53.6,
+        "20": 53.6
+      }
+    },
+    {
+      "sector_name": "化学制品",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 52.5,
+      "window_scores": {
+        "5": 52.5,
+        "10": 52.5,
+        "20": 52.5
+      }
+    },
+    {
+      "sector_name": "物流",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 48.3,
+      "window_scores": {
+        "5": 48.3,
+        "10": 48.3,
+        "20": 48.3
+      }
+    },
+    {
+      "sector_name": "证券",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 54.3,
+      "window_scores": {
+        "5": 54.3,
+        "10": 54.3,
+        "20": 54.3
+      }
+    },
+    {
+      "sector_name": "小金属",
+      "sector_type": "industry",
+      "multi_window_label": "short_mid_strong_long_weak",
+      "consensus_score": 55.6,
+      "window_scores": {
+        "5": 55.6,
+        "10": 55.6,
+        "20": 55.6
+      }
+    },
+    {
+      "sector_name": "游戏",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 50.1,
+      "window_scores": {
+        "5": 50.1,
+        "10": 50.1,
+        "20": 50.1
+      }
+    },
+    {
+      "sector_name": "化学原料",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 49.5,
+      "window_scores": {
+        "5": 49.5,
+        "10": 49.5,
+        "20": 49.5
+      }
+    },
+    {
+      "sector_name": "纺织制造",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 49.3,
+      "window_scores": {
+        "5": 49.3,
+        "10": 49.3,
+        "20": 49.3
+      }
+    },
+    {
+      "sector_name": "中药",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 48.3,
+      "window_scores": {
+        "5": 48.3,
+        "10": 48.3,
+        "20": 48.3
+      }
+    },
+    {
+      "sector_name": "养殖业",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 50.0,
+      "window_scores": {
+        "5": 50.0,
+        "10": 50.0,
+        "20": 50.0
+      }
+    },
+    {
+      "sector_name": "生物制品",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 54.0,
+      "window_scores": {
+        "5": 54.0,
+        "10": 54.0,
+        "20": 54.0
+      }
+    },
+    {
+      "sector_name": "保险",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 53.5,
+      "window_scores": {
+        "5": 53.5,
+        "10": 53.5,
+        "20": 53.5
+      }
+    },
+    {
+      "sector_name": "白色家电",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 49.5,
+      "window_scores": {
+        "5": 49.5,
+        "10": 49.5,
+        "20": 49.5
+      }
+    },
+    {
+      "sector_name": "医疗服务",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 53.7,
+      "window_scores": {
+        "5": 53.7,
+        "10": 53.7,
+        "20": 53.7
+      }
+    },
+    {
+      "sector_name": "塑料制品",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 53.0,
+      "window_scores": {
+        "5": 53.0,
+        "10": 53.0,
+        "20": 53.0
+      }
+    },
+    {
+      "sector_name": "半导体",
+      "sector_type": "industry",
+      "multi_window_label": "multi_window_confirmed",
+      "consensus_score": 65.0,
+      "window_scores": {
+        "5": 65.0,
+        "10": 65.0,
+        "20": 65.0
+      }
+    },
+    {
+      "sector_name": "通用设备",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 51.3,
+      "window_scores": {
+        "5": 51.3,
+        "10": 51.3,
+        "20": 51.3
+      }
+    },
+    {
+      "sector_name": "其他社会服务",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 48.5,
+      "window_scores": {
+        "5": 48.5,
+        "10": 48.5,
+        "20": 48.5
+      }
+    },
+    {
+      "sector_name": "化学纤维",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 48.6,
+      "window_scores": {
+        "5": 48.6,
+        "10": 48.6,
+        "20": 48.6
+      }
+    },
+    {
+      "sector_name": "互联网电商",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 49.1,
+      "window_scores": {
+        "5": 49.1,
+        "10": 49.1,
+        "20": 49.1
+      }
+    },
+    {
+      "sector_name": "橡胶制品",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 48.7,
+      "window_scores": {
+        "5": 48.7,
+        "10": 48.7,
+        "20": 48.7
+      }
+    },
+    {
+      "sector_name": "环保设备",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 49.3,
+      "window_scores": {
+        "5": 49.3,
+        "10": 49.3,
+        "20": 49.3
+      }
+    },
+    {
+      "sector_name": "军工电子",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 51.4,
+      "window_scores": {
+        "5": 51.4,
+        "10": 51.4,
+        "20": 51.4
+      }
+    },
+    {
+      "sector_name": "银行",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 46.8,
+      "window_scores": {
+        "5": 46.8,
+        "10": 46.8,
+        "20": 46.8
+      }
+    },
+    {
+      "sector_name": "服装家纺",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 47.4,
+      "window_scores": {
+        "5": 47.4,
+        "10": 47.4,
+        "20": 47.4
+      }
+    },
+    {
+      "sector_name": "光学光电子",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 53.8,
+      "window_scores": {
+        "5": 53.8,
+        "10": 53.8,
+        "20": 53.8
+      }
+    },
+    {
+      "sector_name": "建筑材料",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 47.4,
+      "window_scores": {
+        "5": 47.4,
+        "10": 47.4,
+        "20": 47.4
+      }
+    },
+    {
+      "sector_name": "专用设备",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 47.9,
+      "window_scores": {
+        "5": 47.9,
+        "10": 47.9,
+        "20": 47.9
+      }
+    },
+    {
+      "sector_name": "包装印刷",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 47.0,
+      "window_scores": {
+        "5": 47.0,
+        "10": 47.0,
+        "20": 47.0
+      }
+    },
+    {
+      "sector_name": "旅游及酒店",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 44.1,
+      "window_scores": {
+        "5": 44.1,
+        "10": 44.1,
+        "20": 44.1
+      }
+    },
+    {
+      "sector_name": "环境治理",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 44.8,
+      "window_scores": {
+        "5": 44.8,
+        "10": 44.8,
+        "20": 44.8
+      }
+    },
+    {
+      "sector_name": "轨交设备",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 48.0,
+      "window_scores": {
+        "5": 48.0,
+        "10": 48.0,
+        "20": 48.0
+      }
+    },
+    {
+      "sector_name": "钢铁",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 45.1,
+      "window_scores": {
+        "5": 45.1,
+        "10": 45.1,
+        "20": 45.1
+      }
+    },
+    {
+      "sector_name": "农化制品",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 45.9,
+      "window_scores": {
+        "5": 45.9,
+        "10": 45.9,
+        "20": 45.9
+      }
+    },
+    {
+      "sector_name": "金属新材料",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 53.1,
+      "window_scores": {
+        "5": 53.1,
+        "10": 53.1,
+        "20": 53.1
+      }
+    },
+    {
+      "sector_name": "美容护理",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 46.9,
+      "window_scores": {
+        "5": 46.9,
+        "10": 46.9,
+        "20": 46.9
+      }
+    },
+    {
+      "sector_name": "医疗器械",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 48.4,
+      "window_scores": {
+        "5": 48.4,
+        "10": 48.4,
+        "20": 48.4
+      }
+    },
+    {
+      "sector_name": "消费电子",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 46.2,
+      "window_scores": {
+        "5": 46.2,
+        "10": 46.2,
+        "20": 46.2
+      }
+    },
+    {
+      "sector_name": "能源金属",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 48.0,
+      "window_scores": {
+        "5": 48.0,
+        "10": 48.0,
+        "20": 48.0
+      }
+    },
+    {
+      "sector_name": "自动化设备",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 51.2,
+      "window_scores": {
+        "5": 51.2,
+        "10": 51.2,
+        "20": 51.2
+      }
+    },
+    {
+      "sector_name": "农产品加工",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 46.7,
+      "window_scores": {
+        "5": 46.7,
+        "10": 46.7,
+        "20": 46.7
+      }
+    },
+    {
+      "sector_name": "机场航运",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 47.4,
+      "window_scores": {
+        "5": 47.4,
+        "10": 47.4,
+        "20": 47.4
+      }
+    },
+    {
+      "sector_name": "影视院线",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 41.7,
+      "window_scores": {
+        "5": 41.7,
+        "10": 41.7,
+        "20": 41.7
+      }
+    },
+    {
+      "sector_name": "公路铁路运输",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 44.8,
+      "window_scores": {
+        "5": 44.8,
+        "10": 44.8,
+        "20": 44.8
+      }
+    },
+    {
+      "sector_name": "医药商业",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 45.6,
+      "window_scores": {
+        "5": 45.6,
+        "10": 45.6,
+        "20": 45.6
+      }
+    },
+    {
+      "sector_name": "工程机械",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 48.5,
+      "window_scores": {
+        "5": 48.5,
+        "10": 48.5,
+        "20": 48.5
+      }
+    },
+    {
+      "sector_name": "建筑装饰",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 45.0,
+      "window_scores": {
+        "5": 45.0,
+        "10": 45.0,
+        "20": 45.0
+      }
+    },
+    {
+      "sector_name": "汽车服务及其他",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 46.4,
+      "window_scores": {
+        "5": 46.4,
+        "10": 46.4,
+        "20": 46.4
+      }
+    },
+    {
+      "sector_name": "港口航运",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 45.4,
+      "window_scores": {
+        "5": 45.4,
+        "10": 45.4,
+        "20": 45.4
+      }
+    },
+    {
+      "sector_name": "综合",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 45.9,
+      "window_scores": {
+        "5": 45.9,
+        "10": 45.9,
+        "20": 45.9
+      }
+    },
+    {
+      "sector_name": "食品加工制造",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 45.1,
+      "window_scores": {
+        "5": 45.1,
+        "10": 45.1,
+        "20": 45.1
+      }
+    },
+    {
+      "sector_name": "计算机设备",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 46.4,
+      "window_scores": {
+        "5": 46.4,
+        "10": 46.4,
+        "20": 46.4
+      }
+    },
+    {
+      "sector_name": "非金属材料",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 52.6,
+      "window_scores": {
+        "5": 52.6,
+        "10": 52.6,
+        "20": 52.6
+      }
+    },
+    {
+      "sector_name": "教育",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 44.1,
+      "window_scores": {
+        "5": 44.1,
+        "10": 44.1,
+        "20": 44.1
+      }
+    },
+    {
+      "sector_name": "汽车零部件",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 45.6,
+      "window_scores": {
+        "5": 45.6,
+        "10": 45.6,
+        "20": 45.6
+      }
+    },
+    {
+      "sector_name": "电力",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 37.1,
+      "window_scores": {
+        "5": 37.1,
+        "10": 37.1,
+        "20": 37.1
+      }
+    },
+    {
+      "sector_name": "饮料制造",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 43.6,
+      "window_scores": {
+        "5": 43.6,
+        "10": 43.6,
+        "20": 43.6
+      }
+    },
+    {
+      "sector_name": "多元金融",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 46.0,
+      "window_scores": {
+        "5": 46.0,
+        "10": 46.0,
+        "20": 46.0
+      }
+    },
+    {
+      "sector_name": "小家电",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 44.5,
+      "window_scores": {
+        "5": 44.5,
+        "10": 44.5,
+        "20": 44.5
+      }
+    },
+    {
+      "sector_name": "电池",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 47.7,
+      "window_scores": {
+        "5": 47.7,
+        "10": 47.7,
+        "20": 47.7
+      }
+    },
+    {
+      "sector_name": "其他电源设备",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 43.4,
+      "window_scores": {
+        "5": 43.4,
+        "10": 43.4,
+        "20": 43.4
+      }
+    },
+    {
+      "sector_name": "工业金属",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 43.0,
+      "window_scores": {
+        "5": 43.0,
+        "10": 43.0,
+        "20": 43.0
+      }
+    },
+    {
+      "sector_name": "通信设备",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 44.8,
+      "window_scores": {
+        "5": 44.8,
+        "10": 44.8,
+        "20": 44.8
+      }
+    },
+    {
+      "sector_name": "黑色家电",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 47.8,
+      "window_scores": {
+        "5": 47.8,
+        "10": 47.8,
+        "20": 47.8
+      }
+    },
+    {
+      "sector_name": "IT服务",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 44.3,
+      "window_scores": {
+        "5": 44.3,
+        "10": 44.3,
+        "20": 44.3
+      }
+    },
+    {
+      "sector_name": "煤炭开采加工",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 36.9,
+      "window_scores": {
+        "5": 36.9,
+        "10": 36.9,
+        "20": 36.9
+      }
+    },
+    {
+      "sector_name": "电机",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 45.7,
+      "window_scores": {
+        "5": 45.7,
+        "10": 45.7,
+        "20": 45.7
+      }
+    },
+    {
+      "sector_name": "通信服务",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 43.7,
+      "window_scores": {
+        "5": 43.7,
+        "10": 43.7,
+        "20": 43.7
+      }
+    },
+    {
+      "sector_name": "厨卫电器",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 45.3,
+      "window_scores": {
+        "5": 45.3,
+        "10": 45.3,
+        "20": 45.3
+      }
+    },
+    {
+      "sector_name": "文化传媒",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 44.3,
+      "window_scores": {
+        "5": 44.3,
+        "10": 44.3,
+        "20": 44.3
+      }
+    },
+    {
+      "sector_name": "汽车整车",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 41.3,
+      "window_scores": {
+        "5": 41.3,
+        "10": 41.3,
+        "20": 41.3
+      }
+    },
+    {
+      "sector_name": "油气开采及服务",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 39.5,
+      "window_scores": {
+        "5": 39.5,
+        "10": 39.5,
+        "20": 39.5
+      }
+    },
+    {
+      "sector_name": "白酒",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 42.6,
+      "window_scores": {
+        "5": 42.6,
+        "10": 42.6,
+        "20": 42.6
+      }
+    },
+    {
+      "sector_name": "石油加工贸易",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 43.7,
+      "window_scores": {
+        "5": 43.7,
+        "10": 43.7,
+        "20": 43.7
+      }
+    },
+    {
+      "sector_name": "造纸",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 46.1,
+      "window_scores": {
+        "5": 46.1,
+        "10": 46.1,
+        "20": 46.1
+      }
+    },
+    {
+      "sector_name": "零售",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 44.2,
+      "window_scores": {
+        "5": 44.2,
+        "10": 44.2,
+        "20": 44.2
+      }
+    },
+    {
+      "sector_name": "元件",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 54.1,
+      "window_scores": {
+        "5": 54.1,
+        "10": 54.1,
+        "20": 54.1
+      }
+    },
+    {
+      "sector_name": "其他电子",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 51.9,
+      "window_scores": {
+        "5": 51.9,
+        "10": 51.9,
+        "20": 51.9
+      }
+    },
+    {
+      "sector_name": "军工装备",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 47.9,
+      "window_scores": {
+        "5": 47.9,
+        "10": 47.9,
+        "20": 47.9
+      }
+    },
+    {
+      "sector_name": "家居用品",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 45.2,
+      "window_scores": {
+        "5": 45.2,
+        "10": 45.2,
+        "20": 45.2
+      }
+    },
+    {
+      "sector_name": "房地产",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 43.0,
+      "window_scores": {
+        "5": 43.0,
+        "10": 43.0,
+        "20": 43.0
+      }
+    },
+    {
+      "sector_name": "燃气",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 42.4,
+      "window_scores": {
+        "5": 42.4,
+        "10": 42.4,
+        "20": 42.4
+      }
+    },
+    {
+      "sector_name": "种植业与林业",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 42.1,
+      "window_scores": {
+        "5": 42.1,
+        "10": 42.1,
+        "20": 42.1
+      }
+    },
+    {
+      "sector_name": "贵金属",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 43.6,
+      "window_scores": {
+        "5": 43.6,
+        "10": 43.6,
+        "20": 43.6
+      }
+    },
+    {
+      "sector_name": "软件开发",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 44.5,
+      "window_scores": {
+        "5": 44.5,
+        "10": 44.5,
+        "20": 44.5
+      }
+    },
+    {
+      "sector_name": "光伏设备",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 46.4,
+      "window_scores": {
+        "5": 46.4,
+        "10": 46.4,
+        "20": 46.4
+      }
+    },
+    {
+      "sector_name": "电网设备",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 41.5,
+      "window_scores": {
+        "5": 41.5,
+        "10": 41.5,
+        "20": 41.5
+      }
+    },
+    {
+      "sector_name": "风电设备",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 42.9,
+      "window_scores": {
+        "5": 42.9,
+        "10": 42.9,
+        "20": 42.9
+      }
+    },
+    {
+      "sector_name": "贸易",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 39.5,
+      "window_scores": {
+        "5": 39.5,
+        "10": 39.5,
+        "20": 39.5
+      }
+    }
+  ]
+}

@@ -1,0 +1,164 @@
+{
+  "metadata": {
+    "replay_source": "sector_history",
+    "signal_date": "2026-06-22",
+    "max_source_record_date": "2026-06-22",
+    "no_lookahead_passed": true
+  },
+  "data": {
+    "industry_sectors": [
+      {
+        "sector_id": "replay_industry_保险",
+        "name": "保险",
+        "type": "industry",
+        "price_change_pct": 7.18,
+        "turnover": 20477847000.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-22",
+        "score": 91,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_小金属",
+        "name": "小金属",
+        "type": "industry",
+        "price_change_pct": 6.64,
+        "turnover": 99260665000.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-22",
+        "score": 91,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_非金属材料",
+        "name": "非金属材料",
+        "type": "industry",
+        "price_change_pct": 7.64,
+        "turnover": 18571839000.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-22",
+        "score": 91,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_农化制品",
+        "name": "农化制品",
+        "type": "industry",
+        "price_change_pct": 3.8,
+        "turnover": 28757224000.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-22",
+        "score": 76,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_化学原料",
+        "name": "化学原料",
+        "type": "industry",
+        "price_change_pct": 3.3,
+        "turnover": 21893512000.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-22",
+        "score": 76,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_多元金融",
+        "name": "多元金融",
+        "type": "industry",
+        "price_change_pct": 3.47,
+        "turnover": 9266371700.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-22",
+        "score": 76,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_工业金属",
+        "name": "工业金属",
+        "type": "industry",
+        "price_change_pct": 4.18,
+        "turnover": 87738182000.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-22",
+        "score": 76,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_游戏",
+        "name": "游戏",
+        "type": "industry",
+        "price_change_pct": 3.18,
+        "turnover": 18614535000.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-22",
+        "score": 76,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_电子化学品",
+        "name": "电子化学品",
+        "type": "industry",
+        "price_change_pct": 3.26,
+        "turnover": 100390181000.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-22",
+        "score": 76,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_能源金属",
+        "name": "能源金属",
+        "type": "industry",
+        "price_change_pct": 3.96,
+        "turnover": 34164457000.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-22",
+        "score": 76,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      }
+    ],
+    "concept_sectors": [],
+    "market_data": {}
+  }
+}

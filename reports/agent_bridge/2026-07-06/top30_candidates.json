@@ -1,0 +1,872 @@
+{
+  "schema_version": "1.0",
+  "as_of": "2026-07-06",
+  "source": "theme-sector-radar-dev",
+  "candidate_count": 20,
+  "rank_hidden": true,
+  "selection_policy": {
+    "industry_top_n": 10,
+    "concept_top_n": 10,
+    "stock_limit": 30,
+    "trend_pool_limit": 15,
+    "burst_pool_limit": 15,
+    "dedupe": true,
+    "exclude_st": true,
+    "exclude_invalid_code": true,
+    "main_board_only": true,
+    "exclude_non_main_board": true
+  },
+  "selection_funnel": {
+    "raw": {
+      "trend_candidates_all": 43,
+      "burst_candidates_all": 52
+    },
+    "trend_pool": {
+      "raw": 43,
+      "filtered_invalid_code": 0,
+      "filtered_empty_name": 0,
+      "filtered_st": 0,
+      "filtered_non_main_board": 9,
+      "eligible": 34,
+      "selected_initial": 15,
+      "backfilled": 0,
+      "selected_final": 15
+    },
+    "burst_pool": {
+      "raw": 52,
+      "filtered_invalid_code": 0,
+      "filtered_empty_name": 0,
+      "filtered_st": 0,
+      "filtered_non_main_board": 13,
+      "eligible": 39,
+      "selected_initial": 15,
+      "backfilled": 0,
+      "selected_final": 15
+    },
+    "merge": {
+      "before_dedup": 30,
+      "duplicates_removed": 10,
+      "after_dedup": 20,
+      "cross_pool_backfilled": 0,
+      "final_count": 20
+    },
+    "top_loss_reasons": [
+      {
+        "reason": "non_main_board",
+        "count": 22
+      }
+    ]
+  },
+  "board_snapshot": {
+    "industry_top": [
+      {
+        "name": "白色家电",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "化学制药",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "医疗服务",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "证券",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "工程机械",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "环保设备",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "生物制品",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "纺织制造",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "造纸",
+        "agent_label": "trend_confirmed_but_strength_limited"
+      },
+      {
+        "name": "汽车零部件",
+        "agent_label": "trend_confirmed_but_strength_limited"
+      }
+    ],
+    "concept_top": [
+      {
+        "name": "动物疫苗",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "合成生物",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "阿尔茨海默概念",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "仿制药一致性评价",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "创新药",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "辅助生殖",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "肝炎概念",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "猴痘概念",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "芬太尼",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "重组蛋白",
+        "agent_label": "trend_confirmed"
+      }
+    ]
+  },
+  "board_resonance_summary": {
+    "total_pairs": 100,
+    "high_confidence_pairs": 8
+  },
+  "candidates": [
+    {
+      "code": "600623",
+      "name": "华谊集团",
+      "boards": [
+        "氟化工概念"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "both",
+      "trend_score": 66.2,
+      "burst_score": 48.8,
+      "relevance_score": 0.8231,
+      "quant_score": 80.8,
+      "final_score": 81.4,
+      "agent_label": "trend_confirmed",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ],
+      "source_resonance_pair": "",
+      "stock_resonance_score": 0,
+      "stock_resonance_bonus": 0,
+      "resonance_type": "",
+      "resonance_industry": "",
+      "resonance_concept": "",
+      "semantic_match_score": 0,
+      "resonance_confidence": "",
+      "resonance_rank_delta": 0,
+      "resonance_reason": "",
+      "resonance_score_breakdown": {}
+    },
+    {
+      "code": "603078",
+      "name": "江化微",
+      "boards": [
+        "氟化工概念"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "both",
+      "trend_score": 66.2,
+      "burst_score": 48.8,
+      "relevance_score": 0.8128,
+      "quant_score": 78.36,
+      "final_score": 79.53,
+      "agent_label": "trend_confirmed",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ],
+      "source_resonance_pair": "",
+      "stock_resonance_score": 0,
+      "stock_resonance_bonus": 0,
+      "resonance_type": "",
+      "resonance_industry": "",
+      "resonance_concept": "",
+      "semantic_match_score": 0,
+      "resonance_confidence": "",
+      "resonance_rank_delta": 0,
+      "resonance_reason": "",
+      "resonance_score_breakdown": {}
+    },
+    {
+      "code": "000062",
+      "name": "深圳华强",
+      "boards": [
+        "光刻胶"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "trend",
+      "trend_score": 62.45,
+      "burst_score": 30.3,
+      "relevance_score": 0.8333,
+      "quant_score": 74.93,
+      "final_score": 78.29,
+      "agent_label": "weak_or_avoid",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ],
+      "source_resonance_pair": "",
+      "stock_resonance_score": 0,
+      "stock_resonance_bonus": 0,
+      "resonance_type": "",
+      "resonance_industry": "",
+      "resonance_concept": "",
+      "semantic_match_score": 0,
+      "resonance_confidence": "",
+      "resonance_rank_delta": 0,
+      "resonance_reason": "",
+      "resonance_score_breakdown": {}
+    },
+    {
+      "code": "600196",
+      "name": "复星医药",
+      "boards": [
+        "动物疫苗"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "both",
+      "trend_score": 59.0,
+      "burst_score": 58.8,
+      "relevance_score": 0.7445,
+      "quant_score": 73.54,
+      "final_score": 73.9,
+      "agent_label": "trend_confirmed",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ],
+      "source_resonance_pair": "",
+      "stock_resonance_score": 0,
+      "stock_resonance_bonus": 0,
+      "resonance_type": "",
+      "resonance_industry": "",
+      "resonance_concept": "",
+      "semantic_match_score": 0,
+      "resonance_confidence": "",
+      "resonance_rank_delta": 0,
+      "resonance_reason": "",
+      "resonance_score_breakdown": {}
+    },
+    {
+      "code": "000830",
+      "name": "鲁西化工",
+      "boards": [
+        "氟化工概念"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "both",
+      "trend_score": 66.2,
+      "burst_score": 48.8,
+      "relevance_score": 0.8026,
+      "quant_score": 67.63,
+      "final_score": 72.68,
+      "agent_label": "trend_confirmed",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ],
+      "source_resonance_pair": "",
+      "stock_resonance_score": 0,
+      "stock_resonance_bonus": 0,
+      "resonance_type": "",
+      "resonance_industry": "",
+      "resonance_concept": "",
+      "semantic_match_score": 0,
+      "resonance_confidence": "",
+      "resonance_rank_delta": 0,
+      "resonance_reason": "",
+      "resonance_score_breakdown": {}
+    },
+    {
+      "code": "000403",
+      "name": "派林生物",
+      "boards": [
+        "芬太尼"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "both",
+      "trend_score": 40.0,
+      "burst_score": 55.8,
+      "relevance_score": 0.7762,
+      "quant_score": 68.86,
+      "final_score": 72.36,
+      "agent_label": "trend_confirmed",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ],
+      "source_resonance_pair": "",
+      "stock_resonance_score": 0,
+      "stock_resonance_bonus": 0,
+      "resonance_type": "",
+      "resonance_industry": "",
+      "resonance_concept": "",
+      "semantic_match_score": 0,
+      "resonance_confidence": "",
+      "resonance_rank_delta": 0,
+      "resonance_reason": "",
+      "resonance_score_breakdown": {}
+    },
+    {
+      "code": "000513",
+      "name": "丽珠集团",
+      "boards": [
+        "芬太尼"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "both",
+      "trend_score": 40.0,
+      "burst_score": 55.8,
+      "relevance_score": 0.6619,
+      "quant_score": 73.16,
+      "final_score": 70.37,
+      "agent_label": "trend_confirmed",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ],
+      "source_resonance_pair": "",
+      "stock_resonance_score": 0,
+      "stock_resonance_bonus": 0,
+      "resonance_type": "",
+      "resonance_industry": "",
+      "resonance_concept": "",
+      "semantic_match_score": 0,
+      "resonance_confidence": "",
+      "resonance_rank_delta": 0,
+      "resonance_reason": "",
+      "resonance_score_breakdown": {}
+    },
+    {
+      "code": "000545",
+      "name": "金浦钛业",
+      "boards": [
+        "丙烯酸"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "trend",
+      "trend_score": 55.0,
+      "burst_score": 45.8,
+      "relevance_score": 0.8333,
+      "quant_score": 60.0,
+      "final_score": 69.33,
+      "agent_label": "trend_confirmed",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ],
+      "source_resonance_pair": "",
+      "stock_resonance_score": 0,
+      "stock_resonance_bonus": 0,
+      "resonance_type": "",
+      "resonance_industry": "",
+      "resonance_concept": "",
+      "semantic_match_score": 0,
+      "resonance_confidence": "",
+      "resonance_rank_delta": 0,
+      "resonance_reason": "",
+      "resonance_score_breakdown": {}
+    },
+    {
+      "code": "002648",
+      "name": "卫星化学",
+      "boards": [
+        "丙烯酸"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "both",
+      "trend_score": 55.0,
+      "burst_score": 55.8,
+      "relevance_score": 0.797,
+      "quant_score": 63.31,
+      "final_score": 69.87,
+      "agent_label": "trend_confirmed",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ],
+      "source_resonance_pair": "",
+      "stock_resonance_score": 0,
+      "stock_resonance_bonus": 0,
+      "resonance_type": "",
+      "resonance_industry": "",
+      "resonance_concept": "",
+      "semantic_match_score": 0,
+      "resonance_confidence": "",
+      "resonance_rank_delta": 0,
+      "resonance_reason": "",
+      "resonance_score_breakdown": {}
+    },
+    {
+      "code": "603379",
+      "name": "三美股份",
+      "boards": [
+        "氟化工概念"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "both",
+      "trend_score": 66.2,
+      "burst_score": 48.8,
+      "relevance_score": 0.6077,
+      "quant_score": 68.97,
+      "final_score": 65.69,
+      "agent_label": "trend_confirmed",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ],
+      "source_resonance_pair": "",
+      "stock_resonance_score": 0,
+      "stock_resonance_bonus": 0,
+      "resonance_type": "",
+      "resonance_industry": "",
+      "resonance_concept": "",
+      "semantic_match_score": 0,
+      "resonance_confidence": "",
+      "resonance_rank_delta": 0,
+      "resonance_reason": "",
+      "resonance_score_breakdown": {}
+    },
+    {
+      "code": "000422",
+      "name": "湖北宜化",
+      "boards": [
+        "氟化工概念"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "both",
+      "trend_score": 66.2,
+      "burst_score": 48.8,
+      "relevance_score": 0.7513,
+      "quant_score": 58.49,
+      "final_score": 65.15,
+      "agent_label": "trend_confirmed",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ],
+      "source_resonance_pair": "",
+      "stock_resonance_score": 0,
+      "stock_resonance_bonus": 0,
+      "resonance_type": "",
+      "resonance_industry": "",
+      "resonance_concept": "",
+      "semantic_match_score": 0,
+      "resonance_confidence": "",
+      "resonance_rank_delta": 0,
+      "resonance_reason": "",
+      "resonance_score_breakdown": {}
+    },
+    {
+      "code": "002007",
+      "name": "华兰生物",
+      "boards": [
+        "动物疫苗"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "both",
+      "trend_score": 59.0,
+      "burst_score": 58.8,
+      "relevance_score": 0.7,
+      "quant_score": 58.11,
+      "final_score": 62.87,
+      "agent_label": "trend_confirmed",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ],
+      "source_resonance_pair": "",
+      "stock_resonance_score": 0,
+      "stock_resonance_bonus": 0,
+      "resonance_type": "",
+      "resonance_industry": "",
+      "resonance_concept": "",
+      "semantic_match_score": 0,
+      "resonance_confidence": "",
+      "resonance_rank_delta": 0,
+      "resonance_reason": "",
+      "resonance_score_breakdown": {}
+    },
+    {
+      "code": "002738",
+      "name": "中矿资源",
+      "boards": [
+        "氟化工概念"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "trend",
+      "trend_score": 66.2,
+      "burst_score": 48.8,
+      "relevance_score": 0.7308,
+      "quant_score": 55.82,
+      "final_score": 62.72,
+      "agent_label": "trend_confirmed",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ],
+      "source_resonance_pair": "",
+      "stock_resonance_score": 0,
+      "stock_resonance_bonus": 0,
+      "resonance_type": "",
+      "resonance_industry": "",
+      "resonance_concept": "",
+      "semantic_match_score": 0,
+      "resonance_confidence": "",
+      "resonance_rank_delta": 0,
+      "resonance_reason": "",
+      "resonance_score_breakdown": {}
+    },
+    {
+      "code": "600673",
+      "name": "东阳光",
+      "boards": [
+        "氟化工概念"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "trend",
+      "trend_score": 66.2,
+      "burst_score": 48.8,
+      "relevance_score": 0.7923,
+      "quant_score": 51.52,
+      "final_score": 62.6,
+      "agent_label": "trend_confirmed",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ],
+      "source_resonance_pair": "",
+      "stock_resonance_score": 0,
+      "stock_resonance_bonus": 0,
+      "resonance_type": "",
+      "resonance_industry": "",
+      "resonance_concept": "",
+      "semantic_match_score": 0,
+      "resonance_confidence": "",
+      "resonance_rank_delta": 0,
+      "resonance_reason": "",
+      "resonance_score_breakdown": {}
+    },
+    {
+      "code": "000423",
+      "name": "东阿阿胶",
+      "boards": [
+        "芬太尼"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "trend",
+      "trend_score": 40.0,
+      "burst_score": 55.8,
+      "relevance_score": 0.6048,
+      "quant_score": 62.89,
+      "final_score": 61.93,
+      "agent_label": "trend_confirmed",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ],
+      "source_resonance_pair": "",
+      "stock_resonance_score": 0,
+      "stock_resonance_bonus": 0,
+      "resonance_type": "",
+      "resonance_industry": "",
+      "resonance_concept": "",
+      "semantic_match_score": 0,
+      "resonance_confidence": "",
+      "resonance_rank_delta": 0,
+      "resonance_reason": "",
+      "resonance_score_breakdown": {}
+    },
+    {
+      "code": "000818",
+      "name": "航锦科技",
+      "boards": [
+        "环氧丙烷"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "burst",
+      "trend_score": 53.0,
+      "burst_score": 55.8,
+      "relevance_score": 0.8151,
+      "quant_score": 90.0,
+      "final_score": 86.6,
+      "agent_label": "conflicted",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ],
+      "source_resonance_pair": "",
+      "stock_resonance_score": 0,
+      "stock_resonance_bonus": 0,
+      "resonance_type": "",
+      "resonance_industry": "",
+      "resonance_concept": "",
+      "semantic_match_score": 0,
+      "resonance_confidence": "",
+      "resonance_rank_delta": 0,
+      "resonance_reason": "",
+      "resonance_score_breakdown": {}
+    },
+    {
+      "code": "000301",
+      "name": "东方盛虹",
+      "boards": [
+        "环氧丙烷"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "burst",
+      "trend_score": 53.0,
+      "burst_score": 55.8,
+      "relevance_score": 0.8333,
+      "quant_score": 74.22,
+      "final_score": 77.86,
+      "agent_label": "conflicted",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ],
+      "source_resonance_pair": "",
+      "stock_resonance_score": 0,
+      "stock_resonance_bonus": 0,
+      "resonance_type": "",
+      "resonance_industry": "",
+      "resonance_concept": "",
+      "semantic_match_score": 0,
+      "resonance_confidence": "",
+      "resonance_rank_delta": 0,
+      "resonance_reason": "",
+      "resonance_score_breakdown": {}
+    },
+    {
+      "code": "601117",
+      "name": "中国化学",
+      "boards": [
+        "环氧丙烷"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "burst",
+      "trend_score": 53.0,
+      "burst_score": 55.8,
+      "relevance_score": 0.7424,
+      "quant_score": 61.11,
+      "final_score": 66.36,
+      "agent_label": "conflicted",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ],
+      "source_resonance_pair": "",
+      "stock_resonance_score": 0,
+      "stock_resonance_bonus": 0,
+      "resonance_type": "",
+      "resonance_industry": "",
+      "resonance_concept": "",
+      "semantic_match_score": 0,
+      "resonance_confidence": "",
+      "resonance_rank_delta": 0,
+      "resonance_reason": "",
+      "resonance_score_breakdown": {}
+    },
+    {
+      "code": "000735",
+      "name": "罗牛山",
+      "boards": [
+        "海南自贸区"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "burst",
+      "trend_score": 34.0,
+      "burst_score": 58.8,
+      "relevance_score": 0.7889,
+      "quant_score": 53.98,
+      "final_score": 63.94,
+      "agent_label": "trend_confirmed_but_strength_limited",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ],
+      "source_resonance_pair": "",
+      "stock_resonance_score": 0,
+      "stock_resonance_bonus": 0,
+      "resonance_type": "",
+      "resonance_industry": "",
+      "resonance_concept": "",
+      "semantic_match_score": 0,
+      "resonance_confidence": "",
+      "resonance_rank_delta": 0,
+      "resonance_reason": "",
+      "resonance_score_breakdown": {}
+    },
+    {
+      "code": "000571",
+      "name": "新大洲A",
+      "boards": [
+        "海南自贸区"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "burst",
+      "trend_score": 34.0,
+      "burst_score": 58.8,
+      "relevance_score": 0.6556,
+      "quant_score": 61.74,
+      "final_score": 63.27,
+      "agent_label": "trend_confirmed_but_strength_limited",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ],
+      "source_resonance_pair": "",
+      "stock_resonance_score": 0,
+      "stock_resonance_bonus": 0,
+      "resonance_type": "",
+      "resonance_industry": "",
+      "resonance_concept": "",
+      "semantic_match_score": 0,
+      "resonance_confidence": "",
+      "resonance_rank_delta": 0,
+      "resonance_reason": "",
+      "resonance_score_breakdown": {}
+    }
+  ]
+}

@@ -1,0 +1,249 @@
+{
+  "report_type": "agent_layer_backtest",
+  "start_date": "2026-06-24",
+  "end_date": "2026-06-30",
+  "sector_type": "industry",
+  "input_summary": {
+    "research_report_count": 7,
+    "sample_count": 140,
+    "skipped_dates": []
+  },
+  "layer_performance": {
+    "L1_data_evidence": {
+      "sample_count": 140,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -2.2277,
+      "avg_forward_5d_return": null,
+      "positive_rate_5d": null
+    },
+    "L2_specialized": {
+      "sample_count": 840,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -2.2277,
+      "avg_forward_5d_return": null,
+      "positive_rate_5d": null
+    }
+  },
+  "agent_performance": {
+    "technical_trend": {
+      "sample_count": 140,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -2.2277,
+      "avg_forward_5d_return": null,
+      "positive_rate_5d": null
+    },
+    "short_term_heat": {
+      "sample_count": 140,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -2.2277,
+      "avg_forward_5d_return": null,
+      "positive_rate_5d": null
+    },
+    "rotation_analysis": {
+      "sample_count": 140,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -2.2277,
+      "avg_forward_5d_return": null,
+      "positive_rate_5d": null
+    },
+    "risk_control": {
+      "sample_count": 140,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -2.2277,
+      "avg_forward_5d_return": null,
+      "positive_rate_5d": null
+    },
+    "data_quality": {
+      "sample_count": 140,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -2.2277,
+      "avg_forward_5d_return": null,
+      "positive_rate_5d": null
+    },
+    "market_context": {
+      "sample_count": 140,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -2.2277,
+      "avg_forward_5d_return": null,
+      "positive_rate_5d": null
+    },
+    "narrative": {
+      "sample_count": 140,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -2.2277,
+      "avg_forward_5d_return": null,
+      "positive_rate_5d": null
+    }
+  },
+  "vote_performance": {
+    "positive": {
+      "sample_count": 0,
+      "avg_forward_1d_return": null,
+      "avg_forward_3d_return": null,
+      "avg_forward_5d_return": null,
+      "avg_forward_10d_return": null,
+      "positive_rate_5d": null
+    },
+    "neutral": {
+      "sample_count": 140,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -2.2277,
+      "avg_forward_5d_return": null,
+      "positive_rate_5d": null
+    },
+    "negative": {
+      "sample_count": 0,
+      "avg_forward_1d_return": null,
+      "avg_forward_3d_return": null,
+      "avg_forward_5d_return": null,
+      "avg_forward_10d_return": null,
+      "positive_rate_5d": null
+    },
+    "veto": {
+      "sample_count": 0,
+      "avg_forward_1d_return": null,
+      "avg_forward_3d_return": null,
+      "avg_forward_5d_return": null,
+      "avg_forward_10d_return": null,
+      "positive_rate_5d": null
+    }
+  },
+  "agent_vote_performance": {
+    "trend_confirmed_but_strength_limited:neutral": {
+      "sample_count": 2,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -4.9289,
+      "avg_forward_5d_return": null,
+      "positive_rate_5d": null
+    },
+    "conflicted:neutral": {
+      "sample_count": 17,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -3.7192,
+      "avg_forward_5d_return": null,
+      "positive_rate_5d": null
+    },
+    "low_signal_noise:neutral": {
+      "sample_count": 115,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -1.7792,
+      "avg_forward_5d_return": null,
+      "positive_rate_5d": null
+    },
+    "weak_or_avoid:neutral": {
+      "sample_count": 6,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": null,
+      "avg_forward_5d_return": null,
+      "positive_rate_5d": null
+    }
+  },
+  "conflict_performance": {
+    "has_conflict": {
+      "sample_count": 140,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -2.2277,
+      "avg_forward_5d_return": null,
+      "positive_rate_5d": null
+    }
+  },
+  "conflict_level_performance": {
+    "high": {
+      "sample_count": 113,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -2.5922,
+      "avg_forward_5d_return": null,
+      "positive_rate_5d": null
+    },
+    "medium": {
+      "sample_count": 27,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": 1.0536,
+      "avg_forward_5d_return": null,
+      "positive_rate_5d": null
+    },
+    "low": {
+      "sample_count": 0,
+      "avg_forward_1d_return": null,
+      "avg_forward_3d_return": null,
+      "avg_forward_5d_return": null,
+      "avg_forward_10d_return": null,
+      "positive_rate_5d": null
+    }
+  },
+  "veto_performance": {
+    "veto_true": {
+      "sample_count": 140,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -2.2277,
+      "avg_forward_5d_return": null,
+      "positive_rate_5d": null
+    },
+    "veto_false": {
+      "sample_count": 0,
+      "avg_forward_1d_return": null,
+      "avg_forward_3d_return": null,
+      "avg_forward_5d_return": null,
+      "avg_forward_10d_return": null,
+      "positive_rate_5d": null
+    }
+  },
+  "confidence_calibration_performance": {
+    "high": {
+      "sample_count": 113,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -2.5922,
+      "avg_forward_5d_return": null,
+      "positive_rate_5d": null
+    },
+    "medium": {
+      "sample_count": 27,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": 1.0536,
+      "avg_forward_5d_return": null,
+      "positive_rate_5d": null
+    },
+    "low": {
+      "sample_count": 0,
+      "avg_forward_1d_return": null,
+      "avg_forward_3d_return": null,
+      "avg_forward_5d_return": null,
+      "avg_forward_10d_return": null,
+      "positive_rate_5d": null
+    }
+  },
+  "opportunity_confidence_matrix": {
+    "medium:high": {
+      "sample_count": 9,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -4.0216,
+      "avg_forward_5d_return": null,
+      "positive_rate_5d": null
+    },
+    "low:high": {
+      "sample_count": 104,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -2.1839,
+      "avg_forward_5d_return": null,
+      "positive_rate_5d": null
+    },
+    "low:medium": {
+      "sample_count": 16,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": 1.0536,
+      "avg_forward_5d_return": null,
+      "positive_rate_5d": null
+    },
+    "medium:medium": {
+      "sample_count": 11,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": null,
+      "avg_forward_5d_return": null,
+      "positive_rate_5d": null
+    }
+  },
+  "false_positive_by_agent": [],
+  "missed_opportunity_by_agent": [],
+  "warnings": [],
+  "disclaimer": "仅用于板块研究、观察和复盘，不构成投资建议。"
+}

@@ -16,19 +16,41 @@ from theme_sector_radar.pipeline import run_pipeline
 class TestRotationReportContract:
     """测试轮动报告契约"""
 
+    def _run_day1_day2(self, tmpdir, top_n=5):
+        """辅助方法：在隔离目录中生成 day1 和 day2"""
+        report_root = os.path.join(tmpdir, "reports", "theme_sector_radar")
+        day1_dir = os.path.join(report_root, "2026-06-27")
+        day2_dir = os.path.join(report_root, "2026-06-28")
+
+        # 先生成 day1
+        run_pipeline(
+            as_of_date="2026-06-27",
+            top_n=top_n,
+            output_dir=day1_dir,
+            offline_fixture=True,
+            fixture_profile="rotation-day1",
+            report_root=report_root,
+        )
+
+        # 再生成 day2
+        run_pipeline(
+            as_of_date="2026-06-28",
+            top_n=top_n,
+            output_dir=day2_dir,
+            offline_fixture=True,
+            fixture_profile="rotation-day2",
+            compare_to="2026-06-27",
+            report_root=report_root,
+        )
+
+        return report_root, day2_dir
+
     def test_json_has_rotation_summary(self):
         """测试 JSON 包含 rotation_summary"""
         with tempfile.TemporaryDirectory() as tmpdir:
-            run_pipeline(
-                as_of_date="2026-06-28",
-                top_n=5,
-                output_dir=tmpdir,
-                offline_fixture=True,
-                fixture_profile="rotation-day2",
-                compare_to="2026-06-27",
-            )
+            report_root, day2_dir = self._run_day1_day2(tmpdir)
 
-            json_path = os.path.join(tmpdir, "theme_sector_radar.json")
+            json_path = os.path.join(day2_dir, "theme_sector_radar.json")
             with open(json_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
 
@@ -39,16 +61,9 @@ class TestRotationReportContract:
     def test_json_has_comparison(self):
         """测试 JSON 包含 comparison"""
         with tempfile.TemporaryDirectory() as tmpdir:
-            run_pipeline(
-                as_of_date="2026-06-28",
-                top_n=5,
-                output_dir=tmpdir,
-                offline_fixture=True,
-                fixture_profile="rotation-day2",
-                compare_to="2026-06-27",
-            )
+            report_root, day2_dir = self._run_day1_day2(tmpdir)
 
-            json_path = os.path.join(tmpdir, "theme_sector_radar.json")
+            json_path = os.path.join(day2_dir, "theme_sector_radar.json")
             with open(json_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
 
@@ -59,16 +74,9 @@ class TestRotationReportContract:
     def test_markdown_has_rotation_section(self):
         """测试 Markdown 包含板块轮动变化章节"""
         with tempfile.TemporaryDirectory() as tmpdir:
-            run_pipeline(
-                as_of_date="2026-06-28",
-                top_n=5,
-                output_dir=tmpdir,
-                offline_fixture=True,
-                fixture_profile="rotation-day2",
-                compare_to="2026-06-27",
-            )
+            report_root, day2_dir = self._run_day1_day2(tmpdir)
 
-            md_path = os.path.join(tmpdir, "theme_sector_radar.md")
+            md_path = os.path.join(day2_dir, "theme_sector_radar.md")
             with open(md_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
@@ -77,16 +85,9 @@ class TestRotationReportContract:
     def test_markdown_has_new_entries_section(self):
         """测试 Markdown 包含新晋 Top N 章节"""
         with tempfile.TemporaryDirectory() as tmpdir:
-            run_pipeline(
-                as_of_date="2026-06-28",
-                top_n=5,
-                output_dir=tmpdir,
-                offline_fixture=True,
-                fixture_profile="rotation-day2",
-                compare_to="2026-06-27",
-            )
+            report_root, day2_dir = self._run_day1_day2(tmpdir)
 
-            md_path = os.path.join(tmpdir, "theme_sector_radar.md")
+            md_path = os.path.join(day2_dir, "theme_sector_radar.md")
             with open(md_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
@@ -96,16 +97,9 @@ class TestRotationReportContract:
     def test_markdown_has_rising_fast_section(self):
         """测试 Markdown 包含快速升温章节"""
         with tempfile.TemporaryDirectory() as tmpdir:
-            run_pipeline(
-                as_of_date="2026-06-28",
-                top_n=5,
-                output_dir=tmpdir,
-                offline_fixture=True,
-                fixture_profile="rotation-day2",
-                compare_to="2026-06-27",
-            )
+            report_root, day2_dir = self._run_day1_day2(tmpdir)
 
-            md_path = os.path.join(tmpdir, "theme_sector_radar.md")
+            md_path = os.path.join(day2_dir, "theme_sector_radar.md")
             with open(md_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
@@ -115,16 +109,9 @@ class TestRotationReportContract:
     def test_markdown_has_persistent_strength_section(self):
         """测试 Markdown 包含连续强势章节"""
         with tempfile.TemporaryDirectory() as tmpdir:
-            run_pipeline(
-                as_of_date="2026-06-28",
-                top_n=5,
-                output_dir=tmpdir,
-                offline_fixture=True,
-                fixture_profile="rotation-day2",
-                compare_to="2026-06-27",
-            )
+            report_root, day2_dir = self._run_day1_day2(tmpdir)
 
-            md_path = os.path.join(tmpdir, "theme_sector_radar.md")
+            md_path = os.path.join(day2_dir, "theme_sector_radar.md")
             with open(md_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
@@ -134,16 +121,9 @@ class TestRotationReportContract:
     def test_markdown_has_dropped_out_section(self):
         """测试 Markdown 包含掉出 Top N 章节"""
         with tempfile.TemporaryDirectory() as tmpdir:
-            run_pipeline(
-                as_of_date="2026-06-28",
-                top_n=5,
-                output_dir=tmpdir,
-                offline_fixture=True,
-                fixture_profile="rotation-day2",
-                compare_to="2026-06-27",
-            )
+            report_root, day2_dir = self._run_day1_day2(tmpdir)
 
-            md_path = os.path.join(tmpdir, "theme_sector_radar.md")
+            md_path = os.path.join(day2_dir, "theme_sector_radar.md")
             with open(md_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
@@ -151,18 +131,11 @@ class TestRotationReportContract:
             assert "掉出" in content or "退出" in content
 
     def test_markdown_no_stock_recommendation(self):
-        """测试 Markdown 不包含个股推荐"""
+        """测试 Markdown 不包含个股操作结论"""
         with tempfile.TemporaryDirectory() as tmpdir:
-            run_pipeline(
-                as_of_date="2026-06-28",
-                top_n=5,
-                output_dir=tmpdir,
-                offline_fixture=True,
-                fixture_profile="rotation-day2",
-                compare_to="2026-06-27",
-            )
+            report_root, day2_dir = self._run_day1_day2(tmpdir)
 
-            md_path = os.path.join(tmpdir, "theme_sector_radar.md")
+            md_path = os.path.join(day2_dir, "theme_sector_radar.md")
             with open(md_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
@@ -174,16 +147,9 @@ class TestRotationReportContract:
     def test_rotation_summary_separates_industry_concept(self):
         """测试 rotation_summary 分开 industry 和 concept"""
         with tempfile.TemporaryDirectory() as tmpdir:
-            run_pipeline(
-                as_of_date="2026-06-28",
-                top_n=5,
-                output_dir=tmpdir,
-                offline_fixture=True,
-                fixture_profile="rotation-day2",
-                compare_to="2026-06-27",
-            )
+            report_root, day2_dir = self._run_day1_day2(tmpdir)
 
-            json_path = os.path.join(tmpdir, "theme_sector_radar.json")
+            json_path = os.path.join(day2_dir, "theme_sector_radar.json")
             with open(json_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
 

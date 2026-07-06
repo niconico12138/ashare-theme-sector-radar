@@ -1,0 +1,13 @@
+{
+  "report_type": "daily_replay_from_sector_history",
+  "start_date": "2026-06-29",
+  "end_date": "2026-06-29",
+  "generated_dates": [
+    "2026-06-29"
+  ],
+  "skipped_dates": [],
+  "failed_dates": [],
+  "reused_dates": [],
+  "warnings": [],
+  "no_lookahead_violations": []
+}

@@ -1,0 +1,294 @@
+{
+  "as_of_date": "2026-06-10",
+  "sector_type": "industry",
+  "report_type": "multi_window_consensus",
+  "trend_weight_profile": "trend_confirmation",
+  "windows": [
+    5,
+    10,
+    20
+  ],
+  "metadata": {
+    "history_start_date": "2026-05-20",
+    "history_end_date": "2026-06-10",
+    "benchmark": "hs300",
+    "top_n": 20
+  },
+  "warnings": [],
+  "disclaimer": "仅用于板块研究、观察和复盘，不构成投资建议。",
+  "consensus": [
+    {
+      "sector_name": "电子化学品",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 41.65,
+      "consensus_strength": "weak",
+      "window_scores": {
+        "5": 49.4,
+        "10": 44.4,
+        "20": 34.4
+      },
+      "window_levels": {
+        "5": "cooling",
+        "10": "cooling",
+        "20": "avoid"
+      },
+      "window_conflicts": [
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "历史数据不足，不能确认趋势共识",
+        "建议积累更多数据后再评估"
+      ],
+      "data_warnings": [
+        "20日窗口覆盖率不足 (80%, 实际16天)"
+      ]
+    },
+    {
+      "sector_name": "保险",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 40.3,
+      "consensus_strength": "weak",
+      "window_scores": {
+        "5": 51.0,
+        "10": 41.0,
+        "20": 33.0
+      },
+      "window_levels": {
+        "5": "neutral",
+        "10": "cooling",
+        "20": "avoid"
+      },
+      "window_conflicts": [
+        "短中期动量强于中期趋势",
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "历史数据不足，不能确认趋势共识",
+        "建议积累更多数据后再评估"
+      ],
+      "data_warnings": [
+        "20日窗口覆盖率不足 (80%, 实际16天)"
+      ]
+    },
+    {
+      "sector_name": "塑料制品",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 38.95,
+      "consensus_strength": "weak",
+      "window_scores": {
+        "5": 54.2,
+        "10": 39.2,
+        "20": 29.2
+      },
+      "window_levels": {
+        "5": "neutral",
+        "10": "cooling",
+        "20": "avoid"
+      },
+      "window_conflicts": [
+        "20日趋势分明显弱于5日和10日",
+        "短中期动量强于中期趋势",
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "历史数据不足，不能确认趋势共识",
+        "建议积累更多数据后再评估"
+      ],
+      "data_warnings": [
+        "20日窗口覆盖率不足 (80%, 实际16天)"
+      ]
+    },
+    {
+      "sector_name": "旅游及酒店",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 31.4,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 35.0,
+        "10": 35.0,
+        "20": 26.0
+      },
+      "window_levels": {
+        "5": "cooling",
+        "10": "cooling",
+        "20": "avoid"
+      },
+      "window_conflicts": [
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "历史数据不足，不能确认趋势共识",
+        "建议积累更多数据后再评估"
+      ],
+      "data_warnings": [
+        "20日窗口覆盖率不足 (80%, 实际16天)"
+      ]
+    },
+    {
+      "sector_name": "机场航运",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 30.85,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 39.0,
+        "10": 26.0,
+        "20": 30.0
+      },
+      "window_levels": {
+        "5": "cooling",
+        "10": "avoid",
+        "20": "avoid"
+      },
+      "window_conflicts": [
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "历史数据不足，不能确认趋势共识",
+        "建议积累更多数据后再评估"
+      ],
+      "data_warnings": [
+        "20日窗口覆盖率不足 (80%, 实际16天)"
+      ]
+    },
+    {
+      "sector_name": "公路铁路运输",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 28.97,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 39.8,
+        "10": 26.0,
+        "20": 24.8
+      },
+      "window_levels": {
+        "5": "cooling",
+        "10": "avoid",
+        "20": "avoid"
+      },
+      "window_conflicts": [
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "历史数据不足，不能确认趋势共识",
+        "建议积累更多数据后再评估"
+      ],
+      "data_warnings": [
+        "20日窗口覆盖率不足 (80%, 实际16天)"
+      ]
+    },
+    {
+      "sector_name": "化学制品",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 28.4,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 42.0,
+        "10": 34.0,
+        "20": 15.0
+      },
+      "window_levels": {
+        "5": "cooling",
+        "10": "avoid",
+        "20": "avoid"
+      },
+      "window_conflicts": [
+        "20日趋势分明显弱于5日和10日",
+        "短中期动量强于中期趋势",
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "历史数据不足，不能确认趋势共识",
+        "建议积累更多数据后再评估"
+      ],
+      "data_warnings": [
+        "20日窗口覆盖率不足 (80%, 实际16天)"
+      ]
+    },
+    {
+      "sector_name": "化学原料",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 27.65,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 39.0,
+        "10": 34.0,
+        "20": 15.0
+      },
+      "window_levels": {
+        "5": "cooling",
+        "10": "avoid",
+        "20": "avoid"
+      },
+      "window_conflicts": [
+        "20日趋势分明显弱于5日和10日",
+        "短中期动量强于中期趋势",
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "历史数据不足，不能确认趋势共识",
+        "建议积累更多数据后再评估"
+      ],
+      "data_warnings": [
+        "20日窗口覆盖率不足 (80%, 实际16天)"
+      ]
+    },
+    {
+      "sector_name": "农产品加工",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 16.45,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 24.0,
+        "10": 15.0,
+        "20": 13.0
+      },
+      "window_levels": {
+        "5": "avoid",
+        "10": "avoid",
+        "20": "avoid"
+      },
+      "window_conflicts": [],
+      "watch_points": [
+        "历史数据不足，不能确认趋势共识",
+        "建议积累更多数据后再评估"
+      ],
+      "data_warnings": [
+        "20日窗口覆盖率不足 (80%, 实际16天)"
+      ]
+    },
+    {
+      "sector_name": "多元金融",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 16.45,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 24.0,
+        "10": 15.0,
+        "20": 13.0
+      },
+      "window_levels": {
+        "5": "avoid",
+        "10": "avoid",
+        "20": "avoid"
+      },
+      "window_conflicts": [],
+      "watch_points": [
+        "历史数据不足，不能确认趋势共识",
+        "建议积累更多数据后再评估"
+      ],
+      "data_warnings": [
+        "20日窗口覆盖率不足 (80%, 实际16天)"
+      ]
+    }
+  ]
+}

@@ -238,10 +238,14 @@ def run_pipeline(
     from .history.snapshot_loader import load_previous_snapshot
     from .history.rotation_tracker import calculate_rotation
 
+    # 确定报告目录
+    report_dirs = [report_root] if report_root else ["reports/theme_sector_radar"]
+
     previous_snapshot = load_previous_snapshot(
         current_date=as_of_date,
         compare_to=compare_to,
         lookback_days=lookback_days,
+        report_dirs=report_dirs,
     )
 
     rotation_result = calculate_rotation(
@@ -408,6 +412,30 @@ def _fetch_data_with_cache(
     concept_min = config.get("concept_min_count", 20)
 
     if not offline_fixture and len(industry_sectors) < industry_min:
+        history_sectors, history_meta = _load_sector_history_fallback(
+            cache.cache_dir,
+            SectorType.INDUSTRY,
+            as_of_date,
+            top_n * 2,
+        )
+        if len(history_sectors) > len(industry_sectors):
+            print(
+                f"  使用 sector_history fallback 补充行业板块: "
+                f"{len(history_sectors)} 个 (source_as_of_date={history_meta.get('source_as_of_date')})"
+            )
+            industry_sectors = history_sectors
+            cache_info["is_fallback"] = True
+            cache_info["fallback_source"] = "sector_history_cache"
+            cache_info["industry_source_as_of_date"] = history_meta.get("source_as_of_date")
+            cache_info["source_as_of_date"] = history_meta.get("source_as_of_date")
+            if provider_status is not None:
+                provider_status.fallback_used = True
+                provider_status.fallback_provider = "sector_history_cache"
+                provider_status.fallback_reason = "行业实时接口数据不足，使用 sector_history_cache"
+                provider_status.industry_source = "sector_history/ths_industry_index"
+                provider_status.industry_count = len(industry_sectors)
+
+    if not offline_fixture and len(industry_sectors) < industry_min:
         print(f"  行业板块数量不足 ({len(industry_sectors)}/{industry_min})，尝试缓存 fallback...")
         fallback = cache.find_fallback_cache(
             cache_key, as_of_date, fallback_cache_days, industry_min
@@ -421,7 +449,39 @@ def _fetch_data_with_cache(
             if len(fallback_industry) > len(industry_sectors):
                 industry_sectors = fallback_industry
                 cache_info["is_fallback"] = True
+                cache_info["fallback_source"] = cache_info.get("fallback_source") or "raw_snapshot_cache"
                 cache_info["source_as_of_date"] = fallback.get("metadata", {}).get("source_as_of_date")
+                if provider_status is not None:
+                    provider_status.fallback_used = True
+                    provider_status.fallback_provider = "raw_snapshot_cache"
+                    provider_status.fallback_reason = "行业实时接口数据不足，使用 raw_snapshot_cache"
+                    provider_status.industry_count = len(industry_sectors)
+    if not offline_fixture and len(concept_sectors) < concept_min:
+        history_sectors, history_meta = _load_sector_history_fallback(
+            cache.cache_dir,
+            SectorType.CONCEPT,
+            as_of_date,
+            top_n * 2,
+        )
+        if len(history_sectors) > len(concept_sectors):
+            print(
+                f"  使用 sector_history fallback 补充概念板块: "
+                f"{len(history_sectors)} 个 (source_as_of_date={history_meta.get('source_as_of_date')})"
+            )
+            concept_sectors = history_sectors
+            cache_info["is_fallback"] = True
+            cache_info["fallback_source"] = "sector_history_cache"
+            cache_info["concept_source_as_of_date"] = history_meta.get("source_as_of_date")
+            if not cache_info.get("source_as_of_date"):
+                cache_info["source_as_of_date"] = history_meta.get("source_as_of_date")
+            if provider_status is not None:
+                provider_status.fallback_used = True
+                provider_status.fallback_provider = "sector_history_cache"
+                if not provider_status.fallback_reason:
+                    provider_status.fallback_reason = "概念实时接口数据不足，使用 sector_history_cache"
+                provider_status.concept_source = "sector_history/ths_concept_index"
+                provider_status.concept_count = len(concept_sectors)
+                provider_status.concept_price_change_available = True
 
     if not offline_fixture and len(concept_sectors) < concept_min:
         print(f"  概念板块数量不足 ({len(concept_sectors)}/{concept_min})，尝试缓存 fallback...")
@@ -437,10 +497,16 @@ def _fetch_data_with_cache(
             if len(fallback_concept) > len(concept_sectors):
                 concept_sectors = fallback_concept
                 cache_info["is_fallback"] = True
+                cache_info["fallback_source"] = cache_info.get("fallback_source") or "raw_snapshot_cache"
                 if not cache_info["source_as_of_date"]:
                     cache_info["source_as_of_date"] = fallback.get("metadata", {}).get("source_as_of_date")
+                if provider_status is not None:
+                    provider_status.fallback_used = True
+                    provider_status.fallback_provider = "raw_snapshot_cache"
+                    if not provider_status.fallback_reason:
+                        provider_status.fallback_reason = "概念实时接口数据不足，使用 raw_snapshot_cache"
+                    provider_status.concept_count = len(concept_sectors)
 
-    # 写入缓存
     if not offline_fixture:
         cache_data = {
             "industry_sectors": [s.model_dump() for s in industry_sectors],
@@ -476,6 +542,104 @@ def _dict_list_to_sectors(
     """将字典列表转换为 SectorSnapshot 列表"""
     from .models import SectorSnapshot
     return [SectorSnapshot(**d) for d in dict_list]
+
+
+def _load_sector_history_fallback(
+    cache_dir: str,
+    sector_type: SectorType,
+    as_of_date: str,
+    top_n: int,
+) -> Tuple[List[Any], Dict[str, Any]]:
+    """Load sector history cache as daily fallback without lookahead."""
+    from .models import SectorSnapshot
+
+    type_dir = "industry" if sector_type == SectorType.INDUSTRY else "concept"
+    history_dir = os.path.join(cache_dir, "sector_history", type_dir)
+    meta = {
+        "fallback_source": "sector_history_cache",
+        "source_as_of_date": None,
+        "available_count": 0,
+    }
+    if not os.path.isdir(history_dir):
+        return [], meta
+
+    def _field(record: Dict[str, Any], *names: str) -> Any:
+        for name in names:
+            if name in record:
+                return record.get(name)
+        return None
+
+    def _to_float(value: Any) -> float:
+        if value is None or value == "":
+            return 0.0
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return 0.0
+
+    source_name = (
+        "sector_history/ths_industry_index"
+        if sector_type == SectorType.INDUSTRY
+        else "sector_history/ths_concept_index"
+    )
+    sector_id_prefix = (
+        "sector_history_industry"
+        if sector_type == SectorType.INDUSTRY
+        else "sector_history_concept"
+    )
+
+    sectors = []
+    source_dates = []
+    for filename in os.listdir(history_dir):
+        if not filename.endswith(".json"):
+            continue
+        path = os.path.join(history_dir, filename)
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                payload = json.load(f)
+        except (OSError, json.JSONDecodeError):
+            continue
+
+        records = payload.get("records", [])
+        usable_records = [
+            record for record in records
+            if str(_field(record, "日期", "date", "trade_date") or "") <= as_of_date
+        ]
+        if not usable_records:
+            continue
+
+        latest = usable_records[-1]
+        previous = usable_records[-2] if len(usable_records) >= 2 else None
+        latest_date = str(_field(latest, "日期", "date", "trade_date") or "")
+        latest_close = _to_float(_field(latest, "收盘价", "close", "收盘"))
+        previous_close = _to_float(_field(previous, "收盘价", "close", "收盘")) if previous else 0.0
+        change_pct = 0.0
+        if previous_close:
+            change_pct = round((latest_close - previous_close) / previous_close * 100, 4)
+        turnover = _to_float(_field(latest, "成交额", "amount", "turnover"))
+        name = str(payload.get("sector_name") or os.path.splitext(filename)[0])
+        sectors.append(
+            SectorSnapshot(
+                sector_id=f"{sector_id_prefix}_{name}",
+                name=name,
+                type=sector_type,
+                price_change_pct=change_pct,
+                turnover=turnover,
+                main_net_inflow=0.0,
+                constituents=[],
+                data_sources=[source_name],
+                updated_at=latest_date,
+                data_quality_score=85.0 if latest_date == as_of_date else 80.0,
+                price_change_available=True,
+            )
+        )
+        source_dates.append(latest_date)
+
+    sectors.sort(key=lambda s: s.price_change_pct, reverse=True)
+    meta["available_count"] = len(sectors)
+    if source_dates:
+        meta["source_as_of_date"] = max(source_dates)
+    return sectors[:top_n], meta
 
 
 def _enrich_fund_flow(

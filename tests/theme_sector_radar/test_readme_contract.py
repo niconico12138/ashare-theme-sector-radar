@@ -21,8 +21,8 @@ class TestReadmeContract:
         with open("README.md", "r", encoding="utf-8") as f:
             content = f.read()
 
-        # 检查包含不做个股推荐的说明
-        assert "不做个股推荐" in content or "不输出个股推荐" in content
+        # 检查包含研究边界说明
+        assert "不作为个股操作依据" in content
 
     def test_readme_has_fixture_smoke_test(self):
         """测试 README 包含 fixture smoke test 命令"""

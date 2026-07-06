@@ -1,0 +1,127 @@
+{
+  "report_type": "catalyst_event_backtest",
+  "start_date": "2026-06-01",
+  "end_date": "2026-06-29",
+  "sector_type": "industry",
+  "total_samples": 280,
+  "cache_coverage": 1.0,
+  "data_status_counts": {
+    "fixture": 280
+  },
+  "catalyst_label_performance": {
+    "no_catalyst_observed": {
+      "sample_count": 277,
+      "avg_forward_5d": 0.53,
+      "positive_rate": 0.51
+    },
+    "catalyst_observed": {
+      "sample_count": 3,
+      "avg_forward_5d": 1.67,
+      "positive_rate": 0.5
+    }
+  },
+  "event_count_performance": {
+    "0_events": {
+      "sample_count": 277,
+      "avg_forward_5d": 0.53,
+      "positive_rate": 0.51
+    },
+    "1_event": {
+      "sample_count": 0
+    },
+    "2_3_events": {
+      "sample_count": 3,
+      "avg_forward_5d": 1.67,
+      "positive_rate": 0.5
+    },
+    "4_plus_events": {
+      "sample_count": 0
+    }
+  },
+  "freshness_performance": {
+    "unknown": {
+      "sample_count": 280,
+      "avg_forward_5d": 0.54,
+      "positive_rate": 0.51
+    }
+  },
+  "confidence_performance": {
+    "high": {
+      "sample_count": 0
+    },
+    "medium": {
+      "sample_count": 0
+    },
+    "low": {
+      "sample_count": 280,
+      "avg_forward_5d": 0.54,
+      "positive_rate": 0.51
+    }
+  },
+  "heat_overlap": {
+    "catalyst_observed + heat_positive": {
+      "sample_count": 1,
+      "avg_forward_5d": -0.79,
+      "positive_rate": 0.0
+    },
+    "catalyst_observed + heat_non_positive": {
+      "sample_count": 1,
+      "avg_forward_5d": 4.13,
+      "positive_rate": 1.0
+    },
+    "no_catalyst + heat_positive": {
+      "sample_count": 31,
+      "avg_forward_5d": 3.55,
+      "positive_rate": 0.81
+    }
+  },
+  "persistence_overlap": {
+    "catalyst_observed + persistence_neutral": {
+      "sample_count": 2,
+      "avg_forward_5d": 1.67,
+      "positive_rate": 0.5
+    },
+    "no_catalyst + persistence_positive": {
+      "sample_count": 4,
+      "avg_forward_5d": 7.38,
+      "positive_rate": 1.0
+    }
+  },
+  "regime_performance": {
+    "choppy_market_no_catalyst_observed": {
+      "sample_count": 90,
+      "avg_forward_5d": -0.48,
+      "positive_rate": 0.42
+    },
+    "risk_off_no_catalyst_observed": {
+      "sample_count": 10,
+      "avg_forward_5d": -0.26,
+      "positive_rate": 0.4
+    },
+    "risk_on_no_catalyst_observed": {
+      "sample_count": 29,
+      "avg_forward_5d": 3.37,
+      "positive_rate": 0.76
+    },
+    "weak_rebound_no_catalyst_observed": {
+      "sample_count": 9,
+      "avg_forward_5d": 2.37,
+      "positive_rate": 0.78
+    }
+  },
+  "recommendation": {
+    "recommend_vote_calibration": false,
+    "recommended_next_phase": "Phase 47",
+    "recommended_mode": "keep_report_only",
+    "reasons": [
+      "仅有 fixture 数据，标记为 limited_fixture_validation"
+    ],
+    "risks": [
+      "fixture 数据不代表真实事件信号"
+    ],
+    "data_limitations": [
+      "需要真实网络数据验证"
+    ]
+  },
+  "warnings": []
+}

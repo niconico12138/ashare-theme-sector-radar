@@ -17,7 +17,7 @@ class TestDailyNoNetworkContract:
     """测试 Daily 无网络契约"""
 
     def test_daily_report_no_stock_recommendation(self):
-        """测试 daily 报告不包含个股推荐"""
+        """测试 daily 报告不包含个股操作结论"""
         with tempfile.TemporaryDirectory() as tmpdir:
             run_pipeline(
                 as_of_date="2026-06-28",
@@ -60,10 +60,10 @@ class TestDailyNoNetworkContract:
             with open(md_path, "r", encoding="utf-8") as f:
                 md_str = f.read()
 
-            assert "不构成个股推荐、买卖建议或自动交易指令" in md_str
+            assert "不作为个股操作依据或自动交易指令" in md_str
 
     def test_replay_report_no_stock_recommendation(self):
-        """测试 replay 报告不包含个股推荐"""
+        """测试 replay 报告不包含个股操作结论"""
         with tempfile.TemporaryDirectory() as tmpdir:
             # 运行两次模拟 replay
             run_pipeline(

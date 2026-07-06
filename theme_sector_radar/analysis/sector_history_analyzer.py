@@ -549,7 +549,7 @@ def _generate_analysis_md(report: Dict[str, Any]) -> str:
     # Disclaimer
     lines.append("## Disclaimer")
     lines.append("")
-    lines.append("**This report is for sector strength analysis and research review only. It does not constitute individual stock recommendations, buy/sell advice, or automated trading instructions.**")
+    lines.append("**This report is for sector strength analysis and research review only. It does not constitute individual stock observation signals, trading advice, or automated trading instructions.**")
     lines.append("")
 
     return "\n".join(lines)

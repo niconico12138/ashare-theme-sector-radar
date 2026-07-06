@@ -122,7 +122,7 @@ def generate_json_report(
         "overlap": [_format_resonance(r) for r in overlap],
         "risk_summary": risk_summary,
         "data_quality": data_quality,
-        "disclaimer": "本报告仅用于板块强弱筛选和研究复盘，不构成个股推荐、买卖建议或自动交易指令。",
+        "disclaimer": "本报告仅用于板块强弱筛选和研究复盘，不作为个股操作依据或自动交易指令。",
         "status": status,
         "provider_status": ps_dict,
         "data_completeness": data_completeness,

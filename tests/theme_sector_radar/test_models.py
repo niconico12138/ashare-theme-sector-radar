@@ -213,6 +213,5 @@ class TestRadarReport:
         report = RadarReport(
             as_of_date="2026-06-28",
         )
-        assert "不构成个股推荐" in report.disclaimer
-        assert "买卖建议" in report.disclaimer
+        assert "不作为个股操作依据" in report.disclaimer
         assert "自动交易指令" in report.disclaimer

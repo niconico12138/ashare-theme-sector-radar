@@ -96,7 +96,7 @@ class TestJsonReport:
             assert field in report, f"Missing field: {field}"
 
     def test_json_report_no_stock_recommendation(self):
-        """测试 JSON 报告不含个股推荐"""
+        """测试 JSON 报告不含个股操作结论"""
         market_temp, industry_top, concept_top, overlap = self._create_report_data()
 
         report = generate_json_report(
@@ -129,8 +129,7 @@ class TestJsonReport:
             overlap=overlap,
         )
 
-        assert "不构成个股推荐" in report["disclaimer"]
-        assert "买卖建议" in report["disclaimer"]
+        assert "不作为个股操作依据" in report["disclaimer"]
         assert "自动交易指令" in report["disclaimer"]
 
 
@@ -217,10 +216,10 @@ class TestMarkdownReport:
             overlap=overlap,
         )
 
-        assert "不构成个股推荐、买卖建议或自动交易指令" in report
+        assert "不作为个股操作依据或自动交易指令" in report
 
     def test_markdown_report_no_stock_recommendation(self):
-        """测试 Markdown 报告不含个股推荐"""
+        """测试 Markdown 报告不含个股操作结论"""
         market_temp, industry_top, concept_top, overlap = self._create_report_data()
 
         report = generate_markdown_report(

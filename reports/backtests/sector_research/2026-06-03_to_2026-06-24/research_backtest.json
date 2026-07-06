@@ -1,0 +1,466 @@
+{
+  "report_type": "sector_research_backtest",
+  "start_date": "2026-06-03",
+  "end_date": "2026-06-24",
+  "sector_type": "industry",
+  "input_summary": {
+    "research_report_count": 22,
+    "sample_count": 440,
+    "skipped_dates": []
+  },
+  "label_performance": {
+    "weak_or_avoid": {
+      "sample_count": 32,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -0.9324,
+      "avg_forward_5d_return": -2.9954,
+      "avg_forward_10d_return": 8.2986,
+      "avg_forward_20d_return": null,
+      "positive_rate_5d": 0.2069,
+      "positive_rate_10d": 0.6667
+    },
+    "low_signal_noise": {
+      "sample_count": 342,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -0.1218,
+      "avg_forward_5d_return": -0.071,
+      "avg_forward_10d_return": 0.591,
+      "avg_forward_20d_return": null,
+      "positive_rate_5d": 0.4728,
+      "positive_rate_10d": 0.5446
+    },
+    "oversold_rebound_candidate": {
+      "sample_count": 22,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -0.3156,
+      "avg_forward_5d_return": -0.7697,
+      "avg_forward_10d_return": -5.2189,
+      "avg_forward_20d_return": null,
+      "positive_rate_5d": 0.2857,
+      "positive_rate_10d": 0.1429
+    },
+    "trend_confirmed_but_strength_limited": {
+      "sample_count": 3,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -2.9684,
+      "avg_forward_5d_return": -2.6503,
+      "avg_forward_10d_return": null,
+      "avg_forward_20d_return": null,
+      "positive_rate_5d": 0.0,
+      "positive_rate_10d": null
+    },
+    "conflicted": {
+      "sample_count": 27,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -1.9548,
+      "avg_forward_5d_return": -3.9425,
+      "avg_forward_10d_return": null,
+      "avg_forward_20d_return": null,
+      "positive_rate_5d": 0.0455,
+      "positive_rate_10d": null
+    },
+    "insufficient_data": {
+      "sample_count": 14,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -0.8845,
+      "avg_forward_5d_return": -3.577,
+      "avg_forward_10d_return": null,
+      "avg_forward_20d_return": null,
+      "positive_rate_5d": 0.0,
+      "positive_rate_10d": null
+    }
+  },
+  "ranking_score_bucket_performance": {
+    "high": {
+      "sample_count": 0,
+      "avg_forward_1d_return": null,
+      "avg_forward_3d_return": null,
+      "avg_forward_5d_return": null,
+      "avg_forward_10d_return": null,
+      "avg_forward_20d_return": null,
+      "positive_rate_5d": null,
+      "positive_rate_10d": null
+    },
+    "medium": {
+      "sample_count": 25,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -0.634,
+      "avg_forward_5d_return": -0.8552,
+      "avg_forward_10d_return": -5.2189,
+      "avg_forward_20d_return": null,
+      "positive_rate_5d": 0.2727,
+      "positive_rate_10d": 0.1429
+    },
+    "low": {
+      "sample_count": 415,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -0.3293,
+      "avg_forward_5d_return": -0.6506,
+      "avg_forward_10d_return": 0.8887,
+      "avg_forward_20d_return": null,
+      "positive_rate_5d": 0.4101,
+      "positive_rate_10d": 0.5494
+    }
+  },
+  "opportunity_score_bucket_performance": {
+    "high": {
+      "sample_count": 0,
+      "avg_forward_1d_return": null,
+      "avg_forward_3d_return": null,
+      "avg_forward_5d_return": null,
+      "avg_forward_10d_return": null,
+      "avg_forward_20d_return": null,
+      "positive_rate_5d": null,
+      "positive_rate_10d": null
+    },
+    "medium": {
+      "sample_count": 6,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -1.5566,
+      "avg_forward_5d_return": -3.0123,
+      "avg_forward_10d_return": null,
+      "avg_forward_20d_return": null,
+      "positive_rate_5d": 0.0,
+      "positive_rate_10d": null
+    },
+    "low": {
+      "sample_count": 434,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -0.3299,
+      "avg_forward_5d_return": -0.626,
+      "avg_forward_10d_return": 0.7106,
+      "avg_forward_20d_return": null,
+      "positive_rate_5d": 0.4086,
+      "positive_rate_10d": 0.5375
+    }
+  },
+  "confidence_score_bucket_performance": {
+    "high": {
+      "sample_count": 316,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -0.6353,
+      "avg_forward_5d_return": -1.2337,
+      "avg_forward_10d_return": 0.7566,
+      "avg_forward_20d_return": null,
+      "positive_rate_5d": 0.364,
+      "positive_rate_10d": 0.5379
+    },
+    "medium": {
+      "sample_count": 108,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": 0.5418,
+      "avg_forward_5d_return": 1.3057,
+      "avg_forward_10d_return": 0.6404,
+      "avg_forward_20d_return": null,
+      "positive_rate_5d": 0.5631,
+      "positive_rate_10d": 0.5368
+    },
+    "low": {
+      "sample_count": 16,
+      "avg_forward_1d_return": 0.0,
+      "avg_forward_3d_return": -0.6423,
+      "avg_forward_5d_return": -3.577,
+      "avg_forward_10d_return": null,
+      "avg_forward_20d_return": null,
+      "positive_rate_5d": 0.0,
+      "positive_rate_10d": null
+    }
+  },
+  "sample_analysis": {
+    "best_follow_through": [
+      {
+        "date": "2026-06-11",
+        "sector_name": "元件",
+        "sector_type": "industry",
+        "consensus_label": "low_signal_noise",
+        "confirm_level": "medium",
+        "evidence_score": 0.7,
+        "opportunity_score": 0.27,
+        "risk_control_score": 1.0,
+        "confidence_score": 0.7,
+        "ranking_score": 0.26,
+        "forward_returns": {
+          "forward_1d_return": 0.0,
+          "forward_3d_return": 12.52982520750919,
+          "forward_5d_return": 18.769674703429832,
+          "forward_10d_return": 17.869872615433614,
+          "forward_20d_return": null
+        }
+      },
+      {
+        "date": "2026-06-10",
+        "sector_name": "元件",
+        "sector_type": "industry",
+        "consensus_label": "low_signal_noise",
+        "confirm_level": "medium",
+        "evidence_score": 0.7,
+        "opportunity_score": 0.26,
+        "risk_control_score": 1.0,
+        "confidence_score": 0.6,
+        "ranking_score": 0.25,
+        "forward_returns": {
+          "forward_1d_return": 0.0,
+          "forward_3d_return": 8.319239586072044,
+          "forward_5d_return": 16.482373687497297,
+          "forward_10d_return": 20.152136125513135,
+          "forward_20d_return": null
+        }
+      },
+      {
+        "date": "2026-06-11",
+        "sector_name": "其他电子",
+        "sector_type": "industry",
+        "consensus_label": "low_signal_noise",
+        "confirm_level": "medium",
+        "evidence_score": 0.7,
+        "opportunity_score": 0.25,
+        "risk_control_score": 1.0,
+        "confidence_score": 0.6,
+        "ranking_score": 0.25,
+        "forward_returns": {
+          "forward_1d_return": 0.0,
+          "forward_3d_return": 10.24762555157077,
+          "forward_5d_return": 13.692855254736614,
+          "forward_10d_return": 11.531395715066315,
+          "forward_20d_return": null
+        }
+      },
+      {
+        "date": "2026-06-09",
+        "sector_name": "元件",
+        "sector_type": "industry",
+        "consensus_label": "low_signal_noise",
+        "confirm_level": "medium",
+        "evidence_score": 0.7,
+        "opportunity_score": 0.3,
+        "risk_control_score": 1.0,
+        "confidence_score": 0.7,
+        "ranking_score": 0.26,
+        "forward_returns": {
+          "forward_1d_return": 0.0,
+          "forward_3d_return": -0.5254870369138527,
+          "forward_5d_return": 12.004338170595336,
+          "forward_10d_return": 16.85437600350559,
+          "forward_20d_return": null
+        }
+      },
+      {
+        "date": "2026-06-10",
+        "sector_name": "其他电子",
+        "sector_type": "industry",
+        "consensus_label": "low_signal_noise",
+        "confirm_level": "medium",
+        "evidence_score": 0.7,
+        "opportunity_score": 0.21,
+        "risk_control_score": 1.0,
+        "confidence_score": 0.6,
+        "ranking_score": 0.24,
+        "forward_returns": {
+          "forward_1d_return": 0.0,
+          "forward_3d_return": 5.821787254062021,
+          "forward_5d_return": 11.920070451049225,
+          "forward_10d_return": 14.62096219449981,
+          "forward_20d_return": null
+        }
+      }
+    ],
+    "worst_follow_through": [
+      {
+        "date": "2026-06-22",
+        "sector_name": "IT服务",
+        "sector_type": "industry",
+        "consensus_label": "conflicted",
+        "confirm_level": "medium",
+        "evidence_score": 0.7,
+        "opportunity_score": 0.26,
+        "risk_control_score": 1.0,
+        "confidence_score": 0.7,
+        "ranking_score": 0.33,
+        "forward_returns": {
+          "forward_1d_return": 0.0,
+          "forward_3d_return": -4.449376626112105,
+          "forward_5d_return": -9.910934963732357,
+          "forward_10d_return": null,
+          "forward_20d_return": null
+        }
+      },
+      {
+        "date": "2026-06-18",
+        "sector_name": "IT服务",
+        "sector_type": "industry",
+        "consensus_label": "conflicted",
+        "confirm_level": "medium",
+        "evidence_score": 0.7,
+        "opportunity_score": 0.25,
+        "risk_control_score": 1.0,
+        "confidence_score": 0.7,
+        "ranking_score": 0.33,
+        "forward_returns": {
+          "forward_1d_return": 0.0,
+          "forward_3d_return": -2.246938054719372,
+          "forward_5d_return": -9.004710222277334,
+          "forward_10d_return": null,
+          "forward_20d_return": null
+        }
+      },
+      {
+        "date": "2026-06-19",
+        "sector_name": "IT服务",
+        "sector_type": "industry",
+        "consensus_label": "conflicted",
+        "confirm_level": "medium",
+        "evidence_score": 0.7,
+        "opportunity_score": 0.25,
+        "risk_control_score": 1.0,
+        "confidence_score": 0.7,
+        "ranking_score": 0.33,
+        "forward_returns": {
+          "forward_1d_return": 0.0,
+          "forward_3d_return": -2.246938054719372,
+          "forward_5d_return": -9.004710222277334,
+          "forward_10d_return": null,
+          "forward_20d_return": null
+        }
+      },
+      {
+        "date": "2026-06-20",
+        "sector_name": "IT服务",
+        "sector_type": "industry",
+        "consensus_label": "conflicted",
+        "confirm_level": "medium",
+        "evidence_score": 0.7,
+        "opportunity_score": 0.25,
+        "risk_control_score": 1.0,
+        "confidence_score": 0.7,
+        "ranking_score": 0.33,
+        "forward_returns": {
+          "forward_1d_return": 0.0,
+          "forward_3d_return": -2.246938054719372,
+          "forward_5d_return": -9.004710222277334,
+          "forward_10d_return": null,
+          "forward_20d_return": null
+        }
+      },
+      {
+        "date": "2026-06-21",
+        "sector_name": "IT服务",
+        "sector_type": "industry",
+        "consensus_label": "conflicted",
+        "confirm_level": "medium",
+        "evidence_score": 0.7,
+        "opportunity_score": 0.25,
+        "risk_control_score": 1.0,
+        "confidence_score": 0.7,
+        "ranking_score": 0.33,
+        "forward_returns": {
+          "forward_1d_return": 0.0,
+          "forward_3d_return": -2.246938054719372,
+          "forward_5d_return": -9.004710222277334,
+          "forward_10d_return": null,
+          "forward_20d_return": null
+        }
+      }
+    ],
+    "false_positive_candidates": [],
+    "missed_opportunity_candidates": [],
+    "high_confidence_label_checks": [
+      {
+        "date": "2026-06-16",
+        "sector_name": "军工电子",
+        "sector_type": "industry",
+        "consensus_label": "trend_confirmed_but_strength_limited",
+        "confirm_level": "high",
+        "evidence_score": 0.7,
+        "opportunity_score": 0.45,
+        "risk_control_score": 1.0,
+        "confidence_score": 0.9,
+        "ranking_score": 0.59,
+        "forward_returns": {
+          "forward_1d_return": 0.0,
+          "forward_3d_return": -1.5553659799935637,
+          "forward_5d_return": -2.650303438980359,
+          "forward_10d_return": null,
+          "forward_20d_return": null
+        }
+      },
+      {
+        "date": "2026-06-16",
+        "sector_name": "光学光电子",
+        "sector_type": "industry",
+        "consensus_label": "oversold_rebound_candidate",
+        "confirm_level": "high",
+        "evidence_score": 0.7,
+        "opportunity_score": 0.3,
+        "risk_control_score": 1.0,
+        "confidence_score": 0.8,
+        "ranking_score": 0.53,
+        "forward_returns": {
+          "forward_1d_return": 0.0,
+          "forward_3d_return": -1.34803211173562,
+          "forward_5d_return": -1.8298076392718523,
+          "forward_10d_return": null,
+          "forward_20d_return": null
+        }
+      },
+      {
+        "date": "2026-06-16",
+        "sector_name": "其他电源设备",
+        "sector_type": "industry",
+        "consensus_label": "oversold_rebound_candidate",
+        "confirm_level": "high",
+        "evidence_score": 0.7,
+        "opportunity_score": 0.27,
+        "risk_control_score": 1.0,
+        "confidence_score": 0.8,
+        "ranking_score": 0.51,
+        "forward_returns": {
+          "forward_1d_return": 0.0,
+          "forward_3d_return": 0.45094869873096477,
+          "forward_5d_return": -1.796530975575036,
+          "forward_10d_return": null,
+          "forward_20d_return": null
+        }
+      },
+      {
+        "date": "2026-06-16",
+        "sector_name": "元件",
+        "sector_type": "industry",
+        "consensus_label": "oversold_rebound_candidate",
+        "confirm_level": "high",
+        "evidence_score": 0.7,
+        "opportunity_score": 0.24,
+        "risk_control_score": 1.0,
+        "confidence_score": 0.8,
+        "ranking_score": 0.5,
+        "forward_returns": {
+          "forward_1d_return": 0.0,
+          "forward_3d_return": 1.6701710029821004,
+          "forward_5d_return": 0.5304640433948244,
+          "forward_10d_return": null,
+          "forward_20d_return": null
+        }
+      },
+      {
+        "date": "2026-06-16",
+        "sector_name": "其他电子",
+        "sector_type": "industry",
+        "consensus_label": "oversold_rebound_candidate",
+        "confirm_level": "high",
+        "evidence_score": 0.7,
+        "opportunity_score": 0.21,
+        "risk_control_score": 1.0,
+        "confidence_score": 0.8,
+        "ranking_score": 0.48,
+        "forward_returns": {
+          "forward_1d_return": 0.0,
+          "forward_3d_return": 2.8009878537012103,
+          "forward_5d_return": 1.771363774301478,
+          "forward_10d_return": null,
+          "forward_20d_return": null
+        }
+      }
+    ]
+  },
+  "warnings": [],
+  "disclaimer": "仅用于板块研究、观察和复盘，不构成投资建议。"
+}

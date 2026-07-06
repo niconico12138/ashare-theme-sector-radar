@@ -1,0 +1,53 @@
+{
+  "as_of_date": "2026-07-02",
+  "overall_status": "failed",
+  "data_source_mode": "sector_history_replay",
+  "radar_status": "ok",
+  "research_status": "missing",
+  "catalyst_status": "ok",
+  "checks": {
+    "radar": {
+      "exists": true,
+      "run_log_exists": true,
+      "status": "ok",
+      "data_quality_score": 60.0,
+      "provider": "sector_history_replay",
+      "data_source_mode": "sector_history_replay"
+    },
+    "sector_score": {
+      "exists": false,
+      "status": "missing"
+    },
+    "multi_window": {
+      "exists": false,
+      "status": "missing"
+    },
+    "sector_research": {
+      "exists": false,
+      "md_exists": false,
+      "status": "missing"
+    },
+    "research_index": {
+      "exists": false,
+      "status": "missing"
+    },
+    "catalyst_cache": {
+      "exists": true,
+      "status_exists": true,
+      "status": "ok",
+      "event_count": 14,
+      "real_count": 14,
+      "fixture_count": 0
+    },
+    "data_source": {
+      "mode": "sector_history_replay"
+    }
+  },
+  "warnings": [],
+  "key_outputs": {
+    "radar_report": "reports/theme_sector_radar\\theme_sector_radar\\2026-07-02",
+    "sector_research": "reports/theme_sector_radar\\sector_research\\2026-07-02",
+    "research_index": "reports/theme_sector_radar\\sector_research\\index",
+    "health_report": "reports/theme_sector_radar\\daily_health\\2026-07-02"
+  }
+}

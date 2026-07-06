@@ -1,0 +1,216 @@
+{
+  "version": "phase45",
+  "description": "Human-labeled calibration pairs for BoardResonanceAgent. Research observation only.",
+  "labels": [
+    {
+      "industry": "化学制药",
+      "concept": "创新药",
+      "expected_level": "strong",
+      "expected_types": ["industry_trend_plus_concept_trend", "semantic_resonance"],
+      "reason": "医药行业主线与创新药题材高度相关"
+    },
+    {
+      "industry": "化学制药",
+      "concept": "仿制药一致性评价",
+      "expected_level": "strong",
+      "expected_types": ["semantic_resonance"],
+      "reason": "化学制药与仿制药一致性评价强相关"
+    },
+    {
+      "industry": "化学制药",
+      "concept": "芬太尼",
+      "expected_level": "strong",
+      "expected_types": ["semantic_resonance"],
+      "reason": "化学制药与芬太尼题材强相关"
+    },
+    {
+      "industry": "生物制品",
+      "concept": "动物疫苗",
+      "expected_level": "strong",
+      "expected_types": ["semantic_resonance"],
+      "reason": "生物制品与动物疫苗强相关"
+    },
+    {
+      "industry": "生物制品",
+      "concept": "重组蛋白",
+      "expected_level": "strong",
+      "expected_types": ["semantic_resonance"],
+      "reason": "生物制品与重组蛋白强相关"
+    },
+    {
+      "industry": "半导体",
+      "concept": "光刻胶",
+      "expected_level": "strong",
+      "expected_types": ["semantic_resonance"],
+      "reason": "半导体与光刻胶产业链强相关"
+    },
+    {
+      "industry": "半导体",
+      "concept": "存储芯片",
+      "expected_level": "strong",
+      "expected_types": ["semantic_resonance"],
+      "reason": "半导体与存储芯片强相关"
+    },
+    {
+      "industry": "电子化学品",
+      "concept": "光刻胶",
+      "expected_level": "strong",
+      "expected_types": ["semantic_resonance"],
+      "reason": "电子化学品与光刻胶强相关"
+    },
+    {
+      "industry": "化学原料",
+      "concept": "氟化工概念",
+      "expected_level": "strong",
+      "expected_types": ["semantic_resonance"],
+      "reason": "化学原料与氟化工概念强相关"
+    },
+    {
+      "industry": "电池",
+      "concept": "固态电池",
+      "expected_level": "strong",
+      "expected_types": ["semantic_resonance"],
+      "reason": "电池与固态电池强相关"
+    },
+    {
+      "industry": "医疗服务",
+      "concept": "辅助生殖",
+      "expected_level": "medium",
+      "expected_types": ["semantic_resonance"],
+      "reason": "医疗服务与辅助生殖相关但不完全重合"
+    },
+    {
+      "industry": "医疗服务",
+      "concept": "阿尔茨海默概念",
+      "expected_level": "medium",
+      "expected_types": ["semantic_resonance"],
+      "reason": "医疗服务与阿尔茨海默概念部分相关"
+    },
+    {
+      "industry": "元件",
+      "concept": "超级电容",
+      "expected_level": "medium",
+      "expected_types": ["semantic_resonance"],
+      "reason": "元件与超级电容相关但覆盖范围较窄"
+    },
+    {
+      "industry": "光伏设备",
+      "concept": "硅能源",
+      "expected_level": "medium",
+      "expected_types": ["semantic_resonance"],
+      "reason": "光伏设备与硅能源相关"
+    },
+    {
+      "industry": "风电设备",
+      "concept": "海上风电",
+      "expected_level": "medium",
+      "expected_types": ["semantic_resonance"],
+      "reason": "风电设备与海上风电相关"
+    },
+    {
+      "industry": "证券",
+      "concept": "金融科技",
+      "expected_level": "medium",
+      "expected_types": ["semantic_resonance"],
+      "reason": "证券与金融科技相关但业务差异较大"
+    },
+    {
+      "industry": "农化制品",
+      "concept": "丙烯酸",
+      "expected_level": "medium",
+      "expected_types": ["semantic_resonance"],
+      "reason": "农化制品与丙烯酸部分相关"
+    },
+    {
+      "industry": "化学原料",
+      "concept": "环氧丙烷",
+      "expected_level": "medium",
+      "expected_types": ["semantic_resonance"],
+      "reason": "化学原料与环氧丙烷相关"
+    },
+    {
+      "industry": "白色家电",
+      "concept": "超级电容",
+      "expected_level": "weak",
+      "expected_types": [],
+      "reason": "白色家电与超级电容关联度低"
+    },
+    {
+      "industry": "工程机械",
+      "concept": "华为海思概念股",
+      "expected_level": "weak",
+      "expected_types": [],
+      "reason": "工程机械与华为海思概念股几乎无关"
+    },
+    {
+      "industry": "纺织制造",
+      "concept": "合成生物",
+      "expected_level": "weak",
+      "expected_types": [],
+      "reason": "纺织制造与合成生物关联度低"
+    },
+    {
+      "industry": "造纸",
+      "concept": "光刻胶",
+      "expected_level": "weak",
+      "expected_types": [],
+      "reason": "造纸与光刻胶几乎无关"
+    },
+    {
+      "industry": "物流",
+      "concept": "创新药",
+      "expected_level": "weak",
+      "expected_types": [],
+      "reason": "物流与创新药关联度低"
+    },
+    {
+      "industry": "养殖业",
+      "concept": "半导体",
+      "expected_level": "weak",
+      "expected_types": [],
+      "reason": "养殖业与半导体几乎无关"
+    },
+    {
+      "industry": "证券",
+      "concept": "动物疫苗",
+      "expected_level": "unrelated",
+      "expected_types": [],
+      "reason": "证券与动物疫苗完全无关"
+    },
+    {
+      "industry": "煤炭",
+      "concept": "辅助生殖",
+      "expected_level": "unrelated",
+      "expected_types": [],
+      "reason": "煤炭与辅助生殖完全无关"
+    },
+    {
+      "industry": "银行",
+      "concept": "光刻胶",
+      "expected_level": "unrelated",
+      "expected_types": [],
+      "reason": "银行与光刻胶完全无关"
+    },
+    {
+      "industry": "保险",
+      "concept": "氟化工概念",
+      "expected_level": "unrelated",
+      "expected_types": [],
+      "reason": "保险与氟化工概念完全无关"
+    },
+    {
+      "industry": "白色家电",
+      "concept": "芬太尼",
+      "expected_level": "unrelated",
+      "expected_types": [],
+      "reason": "白色家电与芬太尼完全无关"
+    },
+    {
+      "industry": "服装家纺",
+      "concept": "存储芯片",
+      "expected_level": "unrelated",
+      "expected_types": [],
+      "reason": "服装家纺与存储芯片完全无关"
+    }
+  ]
+}

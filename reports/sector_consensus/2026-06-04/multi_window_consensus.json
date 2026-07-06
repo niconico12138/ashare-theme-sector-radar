@@ -1,0 +1,285 @@
+{
+  "as_of_date": "2026-06-04",
+  "sector_type": "industry",
+  "report_type": "multi_window_consensus",
+  "trend_weight_profile": "trend_confirmation",
+  "windows": [
+    5,
+    10,
+    20
+  ],
+  "metadata": {
+    "history_start_date": "2026-05-20",
+    "history_end_date": "2026-06-04",
+    "benchmark": "hs300",
+    "top_n": 20
+  },
+  "warnings": [],
+  "disclaimer": "仅用于板块研究、观察和复盘，不构成投资建议。",
+  "consensus": [
+    {
+      "sector_name": "煤炭开采加工",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 53.65,
+      "consensus_strength": "medium",
+      "window_scores": {
+        "5": 62.2,
+        "10": 57.2,
+        "20": 45.2
+      },
+      "window_levels": {
+        "5": "neutral",
+        "10": "neutral",
+        "20": "cooling"
+      },
+      "window_conflicts": [
+        "20日趋势分明显弱于5日和10日",
+        "短中期动量强于中期趋势",
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "历史数据不足，不能确认趋势共识",
+        "建议积累更多数据后再评估"
+      ],
+      "data_warnings": [
+        "20日窗口覆盖率不足 (60%, 实际12天)"
+      ]
+    },
+    {
+      "sector_name": "元件",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 47.8,
+      "consensus_strength": "weak",
+      "window_scores": {
+        "5": 39.2,
+        "10": 54.4,
+        "20": 47.4
+      },
+      "window_levels": {
+        "5": "cooling",
+        "10": "neutral",
+        "20": "cooling"
+      },
+      "window_conflicts": [
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "历史数据不足，不能确认趋势共识",
+        "建议积累更多数据后再评估"
+      ],
+      "data_warnings": [
+        "20日窗口覆盖率不足 (60%, 实际12天)"
+      ]
+    },
+    {
+      "sector_name": "电子化学品",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 42.5,
+      "consensus_strength": "weak",
+      "window_scores": {
+        "5": 37.65,
+        "10": 52.65,
+        "20": 36.65
+      },
+      "window_levels": {
+        "5": "cooling",
+        "10": "neutral",
+        "20": "cooling"
+      },
+      "window_conflicts": [
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "历史数据不足，不能确认趋势共识",
+        "建议积累更多数据后再评估"
+      ],
+      "data_warnings": [
+        "20日窗口覆盖率不足 (60%, 实际12天)"
+      ]
+    },
+    {
+      "sector_name": "光学光电子",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 33.35,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 24.2,
+        "10": 41.2,
+        "20": 32.2
+      },
+      "window_levels": {
+        "5": "avoid",
+        "10": "cooling",
+        "20": "avoid"
+      },
+      "window_conflicts": [
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "历史数据不足，不能确认趋势共识",
+        "建议积累更多数据后再评估"
+      ],
+      "data_warnings": [
+        "20日窗口覆盖率不足 (60%, 实际12天)"
+      ]
+    },
+    {
+      "sector_name": "其他电子",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 29.35,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 17.4,
+        "10": 42.4,
+        "20": 25.4
+      },
+      "window_levels": {
+        "5": "avoid",
+        "10": "cooling",
+        "20": "avoid"
+      },
+      "window_conflicts": [
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "历史数据不足，不能确认趋势共识",
+        "建议积累更多数据后再评估"
+      ],
+      "data_warnings": [
+        "20日窗口覆盖率不足 (60%, 实际12天)"
+      ]
+    },
+    {
+      "sector_name": "其他电源设备",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 27.45,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 27.0,
+        "10": 37.2,
+        "20": 19.2
+      },
+      "window_levels": {
+        "5": "avoid",
+        "10": "cooling",
+        "20": "avoid"
+      },
+      "window_conflicts": [
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "历史数据不足，不能确认趋势共识",
+        "建议积累更多数据后再评估"
+      ],
+      "data_warnings": [
+        "20日窗口覆盖率不足 (60%, 实际12天)"
+      ]
+    },
+    {
+      "sector_name": "通用设备",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 25.77,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 34.0,
+        "10": 24.2,
+        "20": 22.0
+      },
+      "window_levels": {
+        "5": "avoid",
+        "10": "avoid",
+        "20": "avoid"
+      },
+      "window_conflicts": [],
+      "watch_points": [
+        "历史数据不足，不能确认趋势共识",
+        "建议积累更多数据后再评估"
+      ],
+      "data_warnings": [
+        "20日窗口覆盖率不足 (60%, 实际12天)"
+      ]
+    },
+    {
+      "sector_name": "半导体",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 24.3,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 19.4,
+        "10": 33.4,
+        "20": 19.4
+      },
+      "window_levels": {
+        "5": "avoid",
+        "10": "avoid",
+        "20": "avoid"
+      },
+      "window_conflicts": [],
+      "watch_points": [
+        "历史数据不足，不能确认趋势共识",
+        "建议积累更多数据后再评估"
+      ],
+      "data_warnings": [
+        "20日窗口覆盖率不足 (60%, 实际12天)"
+      ]
+    },
+    {
+      "sector_name": "塑料制品",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 19.05,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 20.0,
+        "10": 26.2,
+        "20": 12.2
+      },
+      "window_levels": {
+        "5": "avoid",
+        "10": "avoid",
+        "20": "avoid"
+      },
+      "window_conflicts": [],
+      "watch_points": [
+        "历史数据不足，不能确认趋势共识",
+        "建议积累更多数据后再评估"
+      ],
+      "data_warnings": [
+        "20日窗口覆盖率不足 (60%, 实际12天)"
+      ]
+    },
+    {
+      "sector_name": "光伏设备",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 18.0,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 20.0,
+        "10": 20.0,
+        "20": 15.0
+      },
+      "window_levels": {
+        "5": "avoid",
+        "10": "avoid",
+        "20": "avoid"
+      },
+      "window_conflicts": [],
+      "watch_points": [
+        "历史数据不足，不能确认趋势共识",
+        "建议积累更多数据后再评估"
+      ],
+      "data_warnings": [
+        "20日窗口覆盖率不足 (60%, 实际12天)"
+      ]
+    }
+  ]
+}

@@ -215,7 +215,7 @@ def generate_markdown_report(
     # 高分板块成分股
     lines.append("## 高分板块成分股")
     lines.append("")
-    lines.append("仅列成分股用于验证板块强度，不输出个股推荐。")
+    lines.append("仅列成分股用于验证板块强度，不输出个股操作结论。")
     lines.append("")
 
     top_sectors = industry_top[:3] + concept_top[:3]
@@ -323,7 +323,7 @@ def generate_markdown_report(
                     lines.append(f"- {name}")
                 lines.append("")
 
-        lines.append("*以上轮动变化仅用于复盘观察，不构成推荐。*")
+        lines.append("*以上轮动变化仅用于复盘观察，仅用于复盘观察。*")
         lines.append("")
 
     # 风险提示
@@ -352,7 +352,7 @@ def generate_markdown_report(
     # 声明
     lines.append("## 声明")
     lines.append("")
-    lines.append("本报告仅用于板块强弱筛选和研究复盘，不构成个股推荐、买卖建议或自动交易指令。")
+    lines.append("本报告仅用于板块强弱筛选和研究复盘，不作为个股操作依据或自动交易指令。")
     lines.append("")
 
     return "\n".join(lines)

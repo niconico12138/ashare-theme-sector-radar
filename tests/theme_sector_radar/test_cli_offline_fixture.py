@@ -47,12 +47,12 @@ class TestCliOfflineFixture:
                 json_data = json.load(f)
             assert json_data["report_type"] == "theme_sector_radar"
             assert "disclaimer" in json_data
-            assert "不构成个股推荐" in json_data["disclaimer"]
+            assert "不作为个股操作依据" in json_data["disclaimer"]
 
             # 验证 Markdown 内容
             with open(md_path, "r", encoding="utf-8") as f:
                 md_content = f.read()
-            assert "不构成个股推荐、买卖建议或自动交易指令" in md_content
+            assert "不作为个股操作依据或自动交易指令" in md_content
 
     def test_pipeline_market_temperature(self):
         """测试市场温度计算"""

@@ -1,0 +1,443 @@
+{
+  "report_type": "market_regime_analysis",
+  "start_date": "2026-06-01",
+  "end_date": "2026-06-29",
+  "sector_type": "industry",
+  "benchmark": "hs300",
+  "input_summary": {
+    "research_report_count": 28,
+    "sample_count": 280
+  },
+  "regime_distribution": {
+    "benchmark_trend": {
+      "benchmark_sideways": 150,
+      "benchmark_downtrend": 60,
+      "benchmark_uptrend": 70
+    },
+    "market_temperature_regime": {
+      "market_cold": 170,
+      "market_warm": 40,
+      "market_hot": 50,
+      "market_cool": 20
+    },
+    "breadth_regime": {
+      "broad_rising": 240,
+      "broad_falling": 40
+    },
+    "volatility_regime": {
+      "low_volatility": 70,
+      "normal_volatility": 210
+    },
+    "regime_composite_label": {
+      "choppy_market": 230,
+      "risk_off": 40,
+      "risk_on": 10
+    }
+  },
+  "label_regime_performance": {
+    "oversold_rebound_candidate": {
+      "choppy_market": {
+        "sample_count": 78,
+        "avg_forward_5d_return": 0.09,
+        "avg_forward_10d_return": 2.47,
+        "positive_rate_5d": 0.48
+      },
+      "risk_off": {
+        "sample_count": 1,
+        "avg_forward_5d_return": -1.78,
+        "avg_forward_10d_return": -2.52,
+        "positive_rate_5d": 0.0
+      },
+      "risk_on": {
+        "sample_count": 2,
+        "avg_forward_5d_return": -6.66,
+        "avg_forward_10d_return": null,
+        "positive_rate_5d": 0.0
+      }
+    },
+    "weak_or_avoid": {
+      "choppy_market": {
+        "sample_count": 54,
+        "avg_forward_5d_return": 0.8,
+        "avg_forward_10d_return": 1.96,
+        "positive_rate_5d": 0.56
+      },
+      "risk_off": {
+        "sample_count": 4,
+        "avg_forward_5d_return": -2.73,
+        "avg_forward_10d_return": -4.08,
+        "positive_rate_5d": 0.0
+      }
+    },
+    "short_term_active_unconfirmed": {
+      "choppy_market": {
+        "sample_count": 25,
+        "avg_forward_5d_return": 4.69,
+        "avg_forward_10d_return": 5.77,
+        "positive_rate_5d": 0.84
+      },
+      "risk_on": {
+        "sample_count": 1,
+        "avg_forward_5d_return": -5.81,
+        "avg_forward_10d_return": null,
+        "positive_rate_5d": 0.0
+      }
+    },
+    "low_signal_noise": {
+      "choppy_market": {
+        "sample_count": 1,
+        "avg_forward_5d_return": -3.56,
+        "avg_forward_10d_return": -1.25,
+        "positive_rate_5d": 0.0
+      },
+      "risk_off": {
+        "sample_count": 11,
+        "avg_forward_5d_return": 0.25,
+        "avg_forward_10d_return": 5.15,
+        "positive_rate_5d": 0.5
+      }
+    },
+    "early_repair_watch": {
+      "choppy_market": {
+        "sample_count": 22,
+        "avg_forward_5d_return": -0.67,
+        "avg_forward_10d_return": 0.62,
+        "positive_rate_5d": 0.4
+      },
+      "risk_on": {
+        "sample_count": 5,
+        "avg_forward_5d_return": -7.6,
+        "avg_forward_10d_return": null,
+        "positive_rate_5d": 0.0
+      }
+    },
+    "trend_confirmed": {
+      "choppy_market": {
+        "sample_count": 8,
+        "avg_forward_5d_return": 2.59,
+        "avg_forward_10d_return": null,
+        "positive_rate_5d": 1.0
+      },
+      "risk_on": {
+        "sample_count": 1,
+        "avg_forward_5d_return": 3.38,
+        "avg_forward_10d_return": null,
+        "positive_rate_5d": 1.0
+      }
+    },
+    "conflicted": {
+      "choppy_market": {
+        "sample_count": 25,
+        "avg_forward_5d_return": 2.14,
+        "avg_forward_10d_return": null,
+        "positive_rate_5d": 0.5
+      },
+      "risk_off": {
+        "sample_count": 6,
+        "avg_forward_5d_return": null,
+        "avg_forward_10d_return": null,
+        "positive_rate_5d": null
+      }
+    },
+    "trend_confirmed_but_strength_limited": {
+      "choppy_market": {
+        "sample_count": 8,
+        "avg_forward_5d_return": 2.26,
+        "avg_forward_10d_return": null,
+        "positive_rate_5d": 0.33
+      }
+    },
+    "defensive_stable_watch": {
+      "choppy_market": {
+        "sample_count": 9,
+        "avg_forward_5d_return": -2.18,
+        "avg_forward_10d_return": null,
+        "positive_rate_5d": 0.0
+      },
+      "risk_off": {
+        "sample_count": 18,
+        "avg_forward_5d_return": null,
+        "avg_forward_10d_return": null,
+        "positive_rate_5d": null
+      }
+    },
+    "strong_consensus": {
+      "risk_on": {
+        "sample_count": 1,
+        "avg_forward_5d_return": -7.63,
+        "avg_forward_10d_return": null,
+        "positive_rate_5d": 0.0
+      }
+    }
+  },
+  "score_bucket_regime_performance": {
+    "ranking": {
+      "medium": {
+        "choppy_market": {
+          "sample_count": 159,
+          "avg_forward_5d_return": 1.34,
+          "avg_forward_10d_return": 3.08,
+          "positive_rate_5d": 0.55
+        },
+        "risk_off": {
+          "sample_count": 22,
+          "avg_forward_5d_return": -1.78,
+          "avg_forward_10d_return": -2.52,
+          "positive_rate_5d": 0.0
+        },
+        "risk_on": {
+          "sample_count": 7,
+          "avg_forward_5d_return": -6.95,
+          "avg_forward_10d_return": null,
+          "positive_rate_5d": 0.0
+        }
+      },
+      "low": {
+        "choppy_market": {
+          "sample_count": 60,
+          "avg_forward_5d_return": 0.57,
+          "avg_forward_10d_return": 1.87,
+          "positive_rate_5d": 0.53
+        },
+        "risk_off": {
+          "sample_count": 18,
+          "avg_forward_5d_return": -0.09,
+          "avg_forward_10d_return": 4.12,
+          "positive_rate_5d": 0.44
+        }
+      },
+      "high": {
+        "choppy_market": {
+          "sample_count": 11,
+          "avg_forward_5d_return": 3.6,
+          "avg_forward_10d_return": null,
+          "positive_rate_5d": 1.0
+        },
+        "risk_on": {
+          "sample_count": 3,
+          "avg_forward_5d_return": -4.25,
+          "avg_forward_10d_return": null,
+          "positive_rate_5d": 0.33
+        }
+      }
+    },
+    "opportunity": {
+      "low": {
+        "choppy_market": {
+          "sample_count": 179,
+          "avg_forward_5d_return": 0.81,
+          "avg_forward_10d_return": 2.4,
+          "positive_rate_5d": 0.55
+        },
+        "risk_off": {
+          "sample_count": 37,
+          "avg_forward_5d_return": -0.26,
+          "avg_forward_10d_return": 3.46,
+          "positive_rate_5d": 0.4
+        },
+        "risk_on": {
+          "sample_count": 7,
+          "avg_forward_5d_return": -6.95,
+          "avg_forward_10d_return": null,
+          "positive_rate_5d": 0.0
+        }
+      },
+      "medium": {
+        "choppy_market": {
+          "sample_count": 51,
+          "avg_forward_5d_return": 2.52,
+          "avg_forward_10d_return": 4.3,
+          "positive_rate_5d": 0.6
+        },
+        "risk_on": {
+          "sample_count": 2,
+          "avg_forward_5d_return": -2.56,
+          "avg_forward_10d_return": null,
+          "positive_rate_5d": 0.5
+        },
+        "risk_off": {
+          "sample_count": 3,
+          "avg_forward_5d_return": null,
+          "avg_forward_10d_return": null,
+          "positive_rate_5d": null
+        }
+      },
+      "high": {
+        "risk_on": {
+          "sample_count": 1,
+          "avg_forward_5d_return": -7.63,
+          "avg_forward_10d_return": null,
+          "positive_rate_5d": 0.0
+        }
+      }
+    },
+    "confidence": {
+      "high": {
+        "choppy_market": {
+          "sample_count": 145,
+          "avg_forward_5d_return": 0.55,
+          "avg_forward_10d_return": 2.45,
+          "positive_rate_5d": 0.48
+        },
+        "risk_off": {
+          "sample_count": 25,
+          "avg_forward_5d_return": -2.73,
+          "avg_forward_10d_return": -4.08,
+          "positive_rate_5d": 0.0
+        },
+        "risk_on": {
+          "sample_count": 10,
+          "avg_forward_5d_return": -6.14,
+          "avg_forward_10d_return": null,
+          "positive_rate_5d": 0.1
+        }
+      },
+      "medium": {
+        "choppy_market": {
+          "sample_count": 82,
+          "avg_forward_5d_return": 2.13,
+          "avg_forward_10d_return": 2.61,
+          "positive_rate_5d": 0.68
+        },
+        "risk_off": {
+          "sample_count": 15,
+          "avg_forward_5d_return": 0.02,
+          "avg_forward_10d_return": 4.3,
+          "positive_rate_5d": 0.44
+        }
+      },
+      "low": {
+        "choppy_market": {
+          "sample_count": 3,
+          "avg_forward_5d_return": null,
+          "avg_forward_10d_return": null,
+          "positive_rate_5d": null
+        }
+      }
+    }
+  },
+  "missed_opportunity_by_regime": {
+    "total_missed": 11,
+    "by_regime": {
+      "choppy_market": {
+        "count": 10,
+        "avg_forward_5d_return": 5.16,
+        "samples": [
+          {
+            "signal_date": "2026-06-02",
+            "sector_name": "电子化学品",
+            "consensus_label": "weak_or_avoid",
+            "forward_5d_return": 5.284273109333717
+          },
+          {
+            "signal_date": "2026-06-03",
+            "sector_name": "元件",
+            "consensus_label": "weak_or_avoid",
+            "forward_5d_return": 3.920508466237658
+          },
+          {
+            "signal_date": "2026-06-10",
+            "sector_name": "电子化学品",
+            "consensus_label": "weak_or_avoid",
+            "forward_5d_return": 9.49997472861229
+          },
+          {
+            "signal_date": "2026-06-10",
+            "sector_name": "塑料制品",
+            "consensus_label": "weak_or_avoid",
+            "forward_5d_return": 4.53902596373821
+          },
+          {
+            "signal_date": "2026-06-10",
+            "sector_name": "机场航运",
+            "consensus_label": "weak_or_avoid",
+            "forward_5d_return": 5.542760627737057
+          }
+        ]
+      },
+      "risk_off": {
+        "count": 1,
+        "avg_forward_5d_return": 7.91,
+        "samples": [
+          {
+            "signal_date": "2026-06-08",
+            "sector_name": "保险",
+            "consensus_label": "low_signal_noise",
+            "forward_5d_return": 7.911764625896276
+          }
+        ]
+      }
+    }
+  },
+  "failed_rebound_by_regime": {
+    "total_failed": 27,
+    "by_regime": {
+      "choppy_market": {
+        "count": 24,
+        "avg_forward_5d_return": -3.24,
+        "samples": [
+          {
+            "signal_date": "2026-06-02",
+            "sector_name": "贵金属",
+            "forward_5d_return": -8.611958453771456
+          },
+          {
+            "signal_date": "2026-06-02",
+            "sector_name": "工业金属",
+            "forward_5d_return": -8.798036402436185
+          },
+          {
+            "signal_date": "2026-06-03",
+            "sector_name": "油气开采及服务",
+            "forward_5d_return": -6.0136300077939495
+          },
+          {
+            "signal_date": "2026-06-03",
+            "sector_name": "小金属",
+            "forward_5d_return": -4.104689102247373
+          },
+          {
+            "signal_date": "2026-06-03",
+            "sector_name": "通信设备",
+            "forward_5d_return": -0.24701827927444536
+          }
+        ]
+      },
+      "risk_off": {
+        "count": 1,
+        "avg_forward_5d_return": -1.78,
+        "samples": [
+          {
+            "signal_date": "2026-06-08",
+            "sector_name": "工程机械",
+            "forward_5d_return": -1.7846469488602466
+          }
+        ]
+      },
+      "risk_on": {
+        "count": 2,
+        "avg_forward_5d_return": -6.66,
+        "samples": [
+          {
+            "signal_date": "2026-06-22",
+            "sector_name": "小金属",
+            "forward_5d_return": -8.503081615032336
+          },
+          {
+            "signal_date": "2026-06-22",
+            "sector_name": "化学原料",
+            "forward_5d_return": -4.814494360859465
+          }
+        ]
+      }
+    }
+  },
+  "no_lookahead_check": {
+    "violations": [],
+    "violation_count": 0,
+    "total_samples": 280,
+    "passed": true
+  },
+  "warnings": [],
+  "disclaimer": "仅用于板块研究、观察和复盘，不构成投资建议。"
+}

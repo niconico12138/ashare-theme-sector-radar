@@ -104,3 +104,31 @@ class TestRiskScore:
         sector = self._create_sector()
         penalty, _, _, _ = calculate_risk_penalty(sector)
         assert 0 <= penalty <= 30  # 正数范围
+
+    def test_ths_industry_index_source_not_data_quality_low(self):
+        sector = self._create_sector(
+            data_sources=["akshare/ths_industry"],
+            data_quality_score=80.0,
+            price_change_available=True,
+            updated_at="2026-07-01T15:30:00",
+            constituents=[],
+        )
+
+        penalty, level, flags, reasons = calculate_risk_penalty(sector)
+
+        assert "data_quality_low" not in flags
+
+    def test_ths_concept_without_price_change_remains_data_quality_low(self):
+        sector = self._create_sector(
+            type=SectorType.CONCEPT,
+            data_sources=["akshare/ths_concept"],
+            data_quality_score=50.0,
+            price_change_available=False,
+            updated_at="2026-07-01T15:30:00",
+            constituents=[],
+        )
+
+        penalty, level, flags, reasons = calculate_risk_penalty(sector)
+
+        assert "data_quality_low" in flags
+

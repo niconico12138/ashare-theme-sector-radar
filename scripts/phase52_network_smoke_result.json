@@ -1,0 +1,151 @@
+{
+  "test_name": "phase52_network_smoke_test",
+  "timestamp": "2026-07-01T23:56:13.686833",
+  "akshare_import": true,
+  "network_connectivity": true,
+  "stock_news_em_test": true,
+  "sample_data": [
+    {
+      "symbol": "600519",
+      "title": "A股白酒板块震荡反弹，酒鬼酒盘中触及涨停，科技股却突发跳水",
+      "source": "akshare_stock_news_em",
+      "columns": [
+        "关键词",
+        "新闻标题",
+        "新闻内容",
+        "发布时间",
+        "文章来源",
+        "新闻链接"
+      ]
+    },
+    {
+      "symbol": "600519",
+      "title": "每10股派280.24元，贵州茅台今日分红",
+      "source": "akshare_stock_news_em",
+      "columns": [
+        "关键词",
+        "新闻标题",
+        "新闻内容",
+        "发布时间",
+        "文章来源",
+        "新闻链接"
+      ]
+    },
+    {
+      "symbol": "000001",
+      "title": "15.55亿元资金今日流出银行股",
+      "source": "akshare_stock_news_em",
+      "columns": [
+        "关键词",
+        "新闻标题",
+        "新闻内容",
+        "发布时间",
+        "文章来源",
+        "新闻链接"
+      ]
+    },
+    {
+      "symbol": "000001",
+      "title": "中国金茂：非执行董事王葳辞任，杨列辉接任",
+      "source": "akshare_stock_news_em",
+      "columns": [
+        "关键词",
+        "新闻标题",
+        "新闻内容",
+        "发布时间",
+        "文章来源",
+        "新闻链接"
+      ]
+    },
+    {
+      "symbol": "300750",
+      "title": "14只个股大宗交易超5000万元",
+      "source": "akshare_stock_news_em",
+      "columns": [
+        "关键词",
+        "新闻标题",
+        "新闻内容",
+        "发布时间",
+        "文章来源",
+        "新闻链接"
+      ]
+    },
+    {
+      "symbol": "300750",
+      "title": "宁德时代：董事会审议通过制定高管薪酬管理制度及开展期货衍生品交易等议案",
+      "source": "akshare_stock_news_em",
+      "columns": [
+        "关键词",
+        "新闻标题",
+        "新闻内容",
+        "发布时间",
+        "文章来源",
+        "新闻链接"
+      ]
+    },
+    {
+      "symbol": "002594",
+      "title": "比亚迪：公司正加快提升第二代刀片电池产能 以满足闪充车型的订单需求",
+      "source": "akshare_stock_news_em",
+      "columns": [
+        "关键词",
+        "新闻标题",
+        "新闻内容",
+        "发布时间",
+        "文章来源",
+        "新闻链接"
+      ]
+    },
+    {
+      "symbol": "002594",
+      "title": "比亚迪注册“迪迪虾”商标",
+      "source": "akshare_stock_news_em",
+      "columns": [
+        "关键词",
+        "新闻标题",
+        "新闻内容",
+        "发布时间",
+        "文章来源",
+        "新闻链接"
+      ]
+    },
+    {
+      "symbol": "300059",
+      "title": "80只股中线走稳 站上半年线",
+      "source": "akshare_stock_news_em",
+      "columns": [
+        "关键词",
+        "新闻标题",
+        "新闻内容",
+        "发布时间",
+        "文章来源",
+        "新闻链接"
+      ]
+    },
+    {
+      "symbol": "300059",
+      "title": "互联网保险概念涨5.34%，主力资金净流入16股",
+      "source": "akshare_stock_news_em",
+      "columns": [
+        "关键词",
+        "新闻标题",
+        "新闻内容",
+        "发布时间",
+        "文章来源",
+        "新闻链接"
+      ]
+    }
+  ],
+  "error_type": null,
+  "error_message": null,
+  "source_status": "network_available",
+  "akshare_version": "1.18.64",
+  "failed_symbols": [],
+  "success_symbols": [
+    "600519",
+    "000001",
+    "300750",
+    "002594",
+    "300059"
+  ]
+}

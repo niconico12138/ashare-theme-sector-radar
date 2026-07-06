@@ -204,7 +204,7 @@ class TestSectorHistoryAnalyzer:
             assert "Disclaimer" in md
 
     def test_analysis_md_no_stock_recommendation(self):
-        """测试分析 Markdown 不包含个股推荐"""
+        """测试分析 Markdown 不包含个股操作结论"""
         with tempfile.TemporaryDirectory() as tmpdir:
             from theme_sector_radar.analysis.sector_history_analyzer import _generate_analysis_md
 
@@ -224,5 +224,5 @@ class TestSectorHistoryAnalyzer:
             md = _generate_analysis_md(report)
 
             # 检查包含免责声明
-            assert "does not constitute individual stock recommendations" in md.lower()
-            assert "buy/sell advice" in md.lower()
+            assert "does not constitute individual stock observation signals" in md.lower()
+            assert "trading advice" in md.lower()

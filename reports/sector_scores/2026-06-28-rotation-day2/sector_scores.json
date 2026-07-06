@@ -1,0 +1,23 @@
+{
+  "report_type": "sector_scores",
+  "version": "0.1.0",
+  "as_of_date": "2026-06-28-rotation-day2",
+  "updated_at": "2026-07-02T14:49:28.571469",
+  "scores": [],
+  "metadata": {
+    "sector_type": "industry",
+    "history_start_date": null,
+    "history_end_date": null,
+    "top_n": 10,
+    "history_source": "sector_history_cache",
+    "history_warnings": [],
+    "score_mode": "dual",
+    "benchmark_id": null,
+    "benchmark_name": null,
+    "benchmark_status": "none",
+    "trend_weight_profile": "trend_confirmation",
+    "trend_window": 10,
+    "trend_window_description": "10 个交易日窗口"
+  },
+  "disclaimer": "本报告仅用于板块强弱筛选和研究复盘，不作为个股操作依据或自动交易指令。"
+}

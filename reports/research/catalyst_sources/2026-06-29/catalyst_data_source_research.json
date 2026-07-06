@@ -1,0 +1,100 @@
+{
+  "report_type": "catalyst_data_source_research",
+  "as_of_date": "2026-06-29",
+  "sector_type": "industry",
+  "total_sources": 5,
+  "available_count": 1,
+  "partial_count": 2,
+  "unavailable_count": 2,
+  "sources": [
+    {
+      "name": "AkShare Stock News (stock_news_em)",
+      "category": "news",
+      "status": "available",
+      "fields": [
+        "关键词",
+        "新闻标题",
+        "新闻内容",
+        "发布时间",
+        "文章来源",
+        "新闻链接"
+      ],
+      "sample_count": 10,
+      "history_coverage": "recent only",
+      "stability": "moderate",
+      "notes": [
+        "获取到 10 条新闻",
+        "需要按股票代码查询，非板块级"
+      ]
+    },
+    {
+      "name": "AkShare Stock Notice (stock_notice_report)",
+      "category": "notice",
+      "status": "unavailable",
+      "fields": [],
+      "sample_count": 0,
+      "history_coverage": "unknown",
+      "stability": "unknown",
+      "notes": [
+        "访问失败: '000001'"
+      ]
+    },
+    {
+      "name": "AkShare Board Info (stock_board_concept_info_ths)",
+      "category": "board_info",
+      "status": "partial",
+      "fields": [
+        "项目",
+        "值"
+      ],
+      "sample_count": 10,
+      "history_coverage": "current snapshot only",
+      "stability": "moderate",
+      "notes": [
+        "获取到 10 个概念板块信息",
+        "仅当前快照，无历史事件数据"
+      ]
+    },
+    {
+      "name": "CNINFO Announcements",
+      "category": "announcement",
+      "status": "unavailable",
+      "fields": [],
+      "sample_count": 0,
+      "history_coverage": "unknown",
+      "stability": "unknown",
+      "notes": [
+        "访问失败: stock_individual_notice_report() missing 1 required positional argument: 'security'"
+      ]
+    },
+    {
+      "name": "Macro Economic News (news_economic_baidu)",
+      "category": "macro_news",
+      "status": "partial",
+      "fields": [
+        "日期",
+        "时间",
+        "地区",
+        "事件",
+        "公布",
+        "预期",
+        "前值",
+        "重要性"
+      ],
+      "sample_count": 10,
+      "history_coverage": "recent only",
+      "stability": "low",
+      "notes": [
+        "获取到 99 条宏观新闻",
+        "非结构化，需要 NLP 处理"
+      ]
+    }
+  ],
+  "recommendations": [
+    "可用数据源: AkShare Stock News (stock_news_em)",
+    "部分可用数据源: AkShare Board Info (stock_board_concept_info_ths), Macro Economic News (news_economic_baidu)",
+    "建议: 先接入可用数据源，逐步扩展到部分可用数据源",
+    "注意: 所有外部数据需经过缓存层，避免网络依赖"
+  ],
+  "disclaimer": "仅用于数据源研究，不构成投资建议。"
+}

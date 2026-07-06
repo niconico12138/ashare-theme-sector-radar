@@ -1,0 +1,1352 @@
+{
+  "report_type": "theme_sector_radar",
+  "version": "0.1.0",
+  "as_of_date": "2026-06-28",
+  "updated_at": "2026-07-03T21:10:04.712949",
+  "data_sources": [
+    "fixture"
+  ],
+  "data_quality_score": 66.75,
+  "market_temperature": {
+    "score": 75.0,
+    "label": "hot",
+    "description": "市场情绪偏热，短线机会较多但需注意追高风险",
+    "advance_count": 2800,
+    "decline_count": 1800,
+    "limit_up_count": 65,
+    "limit_down_count": 8
+  },
+  "industry_top": [
+    {
+      "sector_id": "BK0437",
+      "name": "人工智能",
+      "type": "industry",
+      "score": 86.0,
+      "positive_score": 89.0,
+      "risk_penalty": 3.0,
+      "focus_level": "focus",
+      "phase": "startup",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [],
+      "watch_points": [
+        "趋势强度高，可继续关注",
+        "资金流入明显，注意持续性",
+        "风险等级低，可适度参与"
+      ],
+      "constituents": [
+        {
+          "code": "002230",
+          "name": "科大讯飞",
+          "change_pct": 6.5,
+          "is_core": true
+        },
+        {
+          "code": "688787",
+          "name": "海天瑞声",
+          "change_pct": 8.2,
+          "is_core": true
+        },
+        {
+          "code": "300496",
+          "name": "中科创达",
+          "change_pct": 4.3,
+          "is_core": false
+        },
+        {
+          "code": "688111",
+          "name": "金山办公",
+          "change_pct": 3.9,
+          "is_core": true
+        },
+        {
+          "code": "300033",
+          "name": "同花顺",
+          "change_pct": 5.1,
+          "is_core": false
+        }
+      ],
+      "data_sources": [
+        "akshare"
+      ],
+      "updated_at": "2026-06-28T15:30:00+08:00",
+      "data_quality_score": 85.0,
+      "score_breakdown": {
+        "trend_strength": 22.0,
+        "fund_flow": 25.0,
+        "breadth": 17.0,
+        "persistence": 12.0,
+        "market_fit": 8.0,
+        "data_quality": 5.0,
+        "positive_score": 89.0,
+        "final_score": 86.0,
+        "risk_penalty": 3.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 3.0,
+          "total_penalty": 3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "BK0428",
+      "name": "半导体",
+      "type": "industry",
+      "score": 83.0,
+      "positive_score": 86.0,
+      "risk_penalty": 3.0,
+      "focus_level": "focus",
+      "phase": "startup",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [],
+      "watch_points": [
+        "趋势强度高，可继续关注",
+        "资金流入明显，注意持续性",
+        "风险等级低，可适度参与"
+      ],
+      "constituents": [
+        {
+          "code": "688981",
+          "name": "中芯国际",
+          "change_pct": 5.2,
+          "is_core": true
+        },
+        {
+          "code": "002371",
+          "name": "北方华创",
+          "change_pct": 3.8,
+          "is_core": true
+        },
+        {
+          "code": "603501",
+          "name": "韦尔股份",
+          "change_pct": 2.5,
+          "is_core": false
+        },
+        {
+          "code": "688012",
+          "name": "中微公司",
+          "change_pct": 4.1,
+          "is_core": true
+        },
+        {
+          "code": "300661",
+          "name": "圣邦股份",
+          "change_pct": 1.8,
+          "is_core": false
+        }
+      ],
+      "data_sources": [
+        "akshare"
+      ],
+      "updated_at": "2026-06-28T15:30:00+08:00",
+      "data_quality_score": 88.0,
+      "score_breakdown": {
+        "trend_strength": 22.0,
+        "fund_flow": 22.0,
+        "breadth": 17.0,
+        "persistence": 12.0,
+        "market_fit": 8.0,
+        "data_quality": 5.0,
+        "positive_score": 86.0,
+        "final_score": 83.0,
+        "risk_penalty": 3.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 3.0,
+          "total_penalty": 3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "BK0462",
+      "name": "芯片",
+      "type": "industry",
+      "score": 70.0,
+      "positive_score": 73.0,
+      "risk_penalty": 3.0,
+      "focus_level": "watch",
+      "phase": "startup",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [],
+      "watch_points": [
+        "板块宽度不足，关注成分股联动"
+      ],
+      "constituents": [],
+      "data_sources": [
+        "akshare"
+      ],
+      "updated_at": "2026-06-28T15:30:00+08:00",
+      "data_quality_score": 86.0,
+      "score_breakdown": {
+        "trend_strength": 18.0,
+        "fund_flow": 25.0,
+        "breadth": 5.0,
+        "persistence": 12.0,
+        "market_fit": 8.0,
+        "data_quality": 5.0,
+        "positive_score": 73.0,
+        "final_score": 70.0,
+        "risk_penalty": 3.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 3.0,
+          "total_penalty": 3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "BK0456",
+      "name": "锂电池",
+      "type": "industry",
+      "score": 69.0,
+      "positive_score": 72.0,
+      "risk_penalty": 3.0,
+      "focus_level": "watch",
+      "phase": "startup",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [],
+      "watch_points": [
+        "板块宽度不足，关注成分股联动"
+      ],
+      "constituents": [],
+      "data_sources": [
+        "akshare"
+      ],
+      "updated_at": "2026-06-28T15:30:00+08:00",
+      "data_quality_score": 83.0,
+      "score_breakdown": {
+        "trend_strength": 20.0,
+        "fund_flow": 22.0,
+        "breadth": 5.0,
+        "persistence": 12.0,
+        "market_fit": 8.0,
+        "data_quality": 5.0,
+        "positive_score": 72.0,
+        "final_score": 69.0,
+        "risk_penalty": 3.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 3.0,
+          "total_penalty": 3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "BK0447",
+      "name": "新能源汽车",
+      "type": "industry",
+      "score": 62.0,
+      "positive_score": 65.0,
+      "risk_penalty": 3.0,
+      "focus_level": "caution",
+      "phase": "startup",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分偏低 (62.0)"
+      ],
+      "watch_points": [],
+      "constituents": [],
+      "data_sources": [
+        "akshare"
+      ],
+      "updated_at": "2026-06-28T15:30:00+08:00",
+      "data_quality_score": 82.0,
+      "score_breakdown": {
+        "trend_strength": 16.0,
+        "fund_flow": 19.0,
+        "breadth": 5.0,
+        "persistence": 12.0,
+        "market_fit": 8.0,
+        "data_quality": 5.0,
+        "positive_score": 65.0,
+        "final_score": 62.0,
+        "risk_penalty": 3.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 3.0,
+          "total_penalty": 3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "BK0493",
+      "name": "医药生物",
+      "type": "industry",
+      "score": 62.0,
+      "positive_score": 65.0,
+      "risk_penalty": 3.0,
+      "focus_level": "caution",
+      "phase": "startup",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分偏低 (62.0)"
+      ],
+      "watch_points": [],
+      "constituents": [],
+      "data_sources": [
+        "akshare"
+      ],
+      "updated_at": "2026-06-28T15:30:00+08:00",
+      "data_quality_score": 80.0,
+      "score_breakdown": {
+        "trend_strength": 16.0,
+        "fund_flow": 19.0,
+        "breadth": 5.0,
+        "persistence": 12.0,
+        "market_fit": 8.0,
+        "data_quality": 5.0,
+        "positive_score": 65.0,
+        "final_score": 62.0,
+        "risk_penalty": 3.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 3.0,
+          "total_penalty": 3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "BK0578",
+      "name": "电力设备",
+      "type": "industry",
+      "score": 62.0,
+      "positive_score": 65.0,
+      "risk_penalty": 3.0,
+      "focus_level": "caution",
+      "phase": "startup",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分偏低 (62.0)"
+      ],
+      "watch_points": [],
+      "constituents": [],
+      "data_sources": [
+        "akshare"
+      ],
+      "updated_at": "2026-06-28T15:30:00+08:00",
+      "data_quality_score": 84.0,
+      "score_breakdown": {
+        "trend_strength": 16.0,
+        "fund_flow": 19.0,
+        "breadth": 5.0,
+        "persistence": 12.0,
+        "market_fit": 8.0,
+        "data_quality": 5.0,
+        "positive_score": 65.0,
+        "final_score": 62.0,
+        "risk_penalty": 3.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 3.0,
+          "total_penalty": 3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "BK0600",
+      "name": "电子",
+      "type": "industry",
+      "score": 62.0,
+      "positive_score": 65.0,
+      "risk_penalty": 3.0,
+      "focus_level": "caution",
+      "phase": "startup",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分偏低 (62.0)"
+      ],
+      "watch_points": [],
+      "constituents": [],
+      "data_sources": [
+        "akshare"
+      ],
+      "updated_at": "2026-06-28T15:30:00+08:00",
+      "data_quality_score": 82.0,
+      "score_breakdown": {
+        "trend_strength": 16.0,
+        "fund_flow": 19.0,
+        "breadth": 5.0,
+        "persistence": 12.0,
+        "market_fit": 8.0,
+        "data_quality": 5.0,
+        "positive_score": 65.0,
+        "final_score": 62.0,
+        "risk_penalty": 3.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 3.0,
+          "total_penalty": 3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "BK0545",
+      "name": "有色金属",
+      "type": "industry",
+      "score": 58.0,
+      "positive_score": 61.0,
+      "risk_penalty": 3.0,
+      "focus_level": "caution",
+      "phase": "startup",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分偏低 (58.0)",
+        "正向信号强度不足"
+      ],
+      "watch_points": [
+        "正向信号强度不足，观望为主"
+      ],
+      "constituents": [],
+      "data_sources": [
+        "akshare"
+      ],
+      "updated_at": "2026-06-28T15:30:00+08:00",
+      "data_quality_score": 81.0,
+      "score_breakdown": {
+        "trend_strength": 16.0,
+        "fund_flow": 15.0,
+        "breadth": 5.0,
+        "persistence": 12.0,
+        "market_fit": 8.0,
+        "data_quality": 5.0,
+        "positive_score": 61.0,
+        "final_score": 58.0,
+        "risk_penalty": 3.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 3.0,
+          "total_penalty": 3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "BK0471",
+      "name": "新能源",
+      "type": "industry",
+      "score": 57.0,
+      "positive_score": 60.0,
+      "risk_penalty": 3.0,
+      "focus_level": "caution",
+      "phase": "startup",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分偏低 (57.0)",
+        "正向信号强度不足"
+      ],
+      "watch_points": [
+        "正向信号强度不足，观望为主"
+      ],
+      "constituents": [],
+      "data_sources": [
+        "akshare"
+      ],
+      "updated_at": "2026-06-28T15:30:00+08:00",
+      "data_quality_score": 79.0,
+      "score_breakdown": {
+        "trend_strength": 16.0,
+        "fund_flow": 15.0,
+        "breadth": 5.0,
+        "persistence": 12.0,
+        "market_fit": 8.0,
+        "data_quality": 4.0,
+        "positive_score": 60.0,
+        "final_score": 57.0,
+        "risk_penalty": 3.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 3.0,
+          "total_penalty": 3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    }
+  ],
+  "concept_top": [
+    {
+      "sector_id": "BK1038",
+      "name": "CPO概念",
+      "type": "concept",
+      "score": 84.0,
+      "positive_score": 87.0,
+      "risk_penalty": 3.0,
+      "focus_level": "focus",
+      "phase": "acceleration",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [],
+      "watch_points": [
+        "风险等级低，可适度参与"
+      ],
+      "constituents": [
+        {
+          "code": "300308",
+          "name": "中际旭创",
+          "change_pct": 7.8,
+          "is_core": true
+        },
+        {
+          "code": "002281",
+          "name": "光迅科技",
+          "change_pct": 5.6,
+          "is_core": true
+        },
+        {
+          "code": "300502",
+          "name": "新易盛",
+          "change_pct": 6.3,
+          "is_core": false
+        }
+      ],
+      "data_sources": [
+        "akshare"
+      ],
+      "updated_at": "2026-06-28T15:30:00+08:00",
+      "data_quality_score": 84.0,
+      "score_breakdown": {
+        "heat_burst": 20.0,
+        "fund_confirmation": 20.0,
+        "constituent_linkage": 16.0,
+        "phase_score": 18.0,
+        "catalyst": 8.0,
+        "data_quality": 5.0,
+        "positive_score": 87.0,
+        "final_score": 84.0,
+        "price_change_available": true,
+        "risk_penalty": 3.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 3.0,
+          "total_penalty": 3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "BK1036",
+      "name": "ChatGPT概念",
+      "type": "concept",
+      "score": 78.0,
+      "positive_score": 89.0,
+      "risk_penalty": 11.0,
+      "focus_level": "watch",
+      "phase": "acceleration",
+      "risk_level": "medium",
+      "risk_flags": [
+        "overheat",
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [],
+      "watch_points": [
+        "持续性待确认，观察后续表现",
+        "板块宽度不足，关注成分股联动",
+        "存在中等风险，需谨慎观察"
+      ],
+      "constituents": [
+        {
+          "code": "002230",
+          "name": "科大讯飞",
+          "change_pct": 6.5,
+          "is_core": true
+        },
+        {
+          "code": "688787",
+          "name": "海天瑞声",
+          "change_pct": 8.2,
+          "is_core": true
+        },
+        {
+          "code": "300496",
+          "name": "中科创达",
+          "change_pct": 4.3,
+          "is_core": false
+        },
+        {
+          "code": "688111",
+          "name": "金山办公",
+          "change_pct": 3.9,
+          "is_core": true
+        },
+        {
+          "code": "300033",
+          "name": "同花顺",
+          "change_pct": 5.1,
+          "is_core": true
+        }
+      ],
+      "data_sources": [
+        "akshare"
+      ],
+      "updated_at": "2026-06-28T15:30:00+08:00",
+      "data_quality_score": 87.0,
+      "score_breakdown": {
+        "heat_burst": 22.0,
+        "fund_confirmation": 18.0,
+        "constituent_linkage": 18.0,
+        "phase_score": 18.0,
+        "catalyst": 8.0,
+        "data_quality": 5.0,
+        "positive_score": 89.0,
+        "final_score": 78.0,
+        "price_change_available": true,
+        "risk_penalty": 11.0,
+        "risk_breakdown": {
+          "overheat_penalty": 8.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 3.0,
+          "total_penalty": 11.0,
+          "risk_level": "medium",
+          "risk_flags": [
+            "overheat",
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "过热: 成交额异常放大 (235亿)",
+            "数据质量: 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "BK1054",
+      "name": "人工智能概念",
+      "type": "concept",
+      "score": 67.0,
+      "positive_score": 70.0,
+      "risk_penalty": 3.0,
+      "focus_level": "watch",
+      "phase": "acceleration",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [],
+      "watch_points": [
+        "持续性待确认，观察后续表现",
+        "板块宽度不足，关注成分股联动"
+      ],
+      "constituents": [],
+      "data_sources": [
+        "akshare"
+      ],
+      "updated_at": "2026-06-28T15:30:00+08:00",
+      "data_quality_score": 88.0,
+      "score_breakdown": {
+        "heat_burst": 20.0,
+        "fund_confirmation": 14.0,
+        "constituent_linkage": 5.0,
+        "phase_score": 18.0,
+        "catalyst": 8.0,
+        "data_quality": 5.0,
+        "positive_score": 70.0,
+        "final_score": 67.0,
+        "price_change_available": true,
+        "risk_penalty": 3.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 3.0,
+          "total_penalty": 3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "BK1040",
+      "name": "机器人概念",
+      "type": "concept",
+      "score": 61.0,
+      "positive_score": 64.0,
+      "risk_penalty": 3.0,
+      "focus_level": "caution",
+      "phase": "fermentation",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分偏低 (61.0)",
+        "正向信号强度不足"
+      ],
+      "watch_points": [
+        "正向信号强度不足，观望为主"
+      ],
+      "constituents": [],
+      "data_sources": [
+        "akshare"
+      ],
+      "updated_at": "2026-06-28T15:30:00+08:00",
+      "data_quality_score": 81.0,
+      "score_breakdown": {
+        "heat_burst": 17.0,
+        "fund_confirmation": 16.0,
+        "constituent_linkage": 5.0,
+        "phase_score": 15.0,
+        "catalyst": 6.0,
+        "data_quality": 5.0,
+        "positive_score": 64.0,
+        "final_score": 61.0,
+        "price_change_available": true,
+        "risk_penalty": 3.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 3.0,
+          "total_penalty": 3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "BK1052",
+      "name": "芯片概念",
+      "type": "concept",
+      "score": 59.0,
+      "positive_score": 62.0,
+      "risk_penalty": 3.0,
+      "focus_level": "caution",
+      "phase": "fermentation",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分偏低 (59.0)",
+        "正向信号强度不足"
+      ],
+      "watch_points": [
+        "正向信号强度不足，观望为主"
+      ],
+      "constituents": [],
+      "data_sources": [
+        "akshare"
+      ],
+      "updated_at": "2026-06-28T15:30:00+08:00",
+      "data_quality_score": 86.0,
+      "score_breakdown": {
+        "heat_burst": 17.0,
+        "fund_confirmation": 14.0,
+        "constituent_linkage": 5.0,
+        "phase_score": 15.0,
+        "catalyst": 6.0,
+        "data_quality": 5.0,
+        "positive_score": 62.0,
+        "final_score": 59.0,
+        "price_change_available": true,
+        "risk_penalty": 3.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 3.0,
+          "total_penalty": 3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "BK1048",
+      "name": "储能",
+      "type": "concept",
+      "score": 53.0,
+      "positive_score": 56.0,
+      "risk_penalty": 3.0,
+      "focus_level": "caution",
+      "phase": "fermentation",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分偏低 (53.0)",
+        "正向信号强度不足"
+      ],
+      "watch_points": [
+        "正向信号强度不足，观望为主"
+      ],
+      "constituents": [],
+      "data_sources": [
+        "akshare"
+      ],
+      "updated_at": "2026-06-28T15:30:00+08:00",
+      "data_quality_score": 82.0,
+      "score_breakdown": {
+        "heat_burst": 14.0,
+        "fund_confirmation": 11.0,
+        "constituent_linkage": 5.0,
+        "phase_score": 15.0,
+        "catalyst": 6.0,
+        "data_quality": 5.0,
+        "positive_score": 56.0,
+        "final_score": 53.0,
+        "price_change_available": true,
+        "risk_penalty": 3.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 3.0,
+          "total_penalty": 3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "BK1058",
+      "name": "云计算",
+      "type": "concept",
+      "score": 53.0,
+      "positive_score": 56.0,
+      "risk_penalty": 3.0,
+      "focus_level": "caution",
+      "phase": "fermentation",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分偏低 (53.0)",
+        "正向信号强度不足"
+      ],
+      "watch_points": [
+        "正向信号强度不足，观望为主"
+      ],
+      "constituents": [],
+      "data_sources": [
+        "akshare"
+      ],
+      "updated_at": "2026-06-28T15:30:00+08:00",
+      "data_quality_score": 81.0,
+      "score_breakdown": {
+        "heat_burst": 14.0,
+        "fund_confirmation": 11.0,
+        "constituent_linkage": 5.0,
+        "phase_score": 15.0,
+        "catalyst": 6.0,
+        "data_quality": 5.0,
+        "positive_score": 56.0,
+        "final_score": 53.0,
+        "price_change_available": true,
+        "risk_penalty": 3.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 3.0,
+          "total_penalty": 3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "BK1064",
+      "name": "元宇宙",
+      "type": "concept",
+      "score": 53.0,
+      "positive_score": 56.0,
+      "risk_penalty": 3.0,
+      "focus_level": "caution",
+      "phase": "fermentation",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分偏低 (53.0)",
+        "正向信号强度不足"
+      ],
+      "watch_points": [
+        "正向信号强度不足，观望为主"
+      ],
+      "constituents": [],
+      "data_sources": [
+        "akshare"
+      ],
+      "updated_at": "2026-06-28T15:30:00+08:00",
+      "data_quality_score": 80.0,
+      "score_breakdown": {
+        "heat_burst": 14.0,
+        "fund_confirmation": 11.0,
+        "constituent_linkage": 5.0,
+        "phase_score": 15.0,
+        "catalyst": 6.0,
+        "data_quality": 5.0,
+        "positive_score": 56.0,
+        "final_score": 53.0,
+        "price_change_available": true,
+        "risk_penalty": 3.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 3.0,
+          "total_penalty": 3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "BK1072",
+      "name": "网络安全",
+      "type": "concept",
+      "score": 53.0,
+      "positive_score": 56.0,
+      "risk_penalty": 3.0,
+      "focus_level": "caution",
+      "phase": "fermentation",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分偏低 (53.0)",
+        "正向信号强度不足"
+      ],
+      "watch_points": [
+        "正向信号强度不足，观望为主"
+      ],
+      "constituents": [],
+      "data_sources": [
+        "akshare"
+      ],
+      "updated_at": "2026-06-28T15:30:00+08:00",
+      "data_quality_score": 81.0,
+      "score_breakdown": {
+        "heat_burst": 14.0,
+        "fund_confirmation": 11.0,
+        "constituent_linkage": 5.0,
+        "phase_score": 15.0,
+        "catalyst": 6.0,
+        "data_quality": 5.0,
+        "positive_score": 56.0,
+        "final_score": 53.0,
+        "price_change_available": true,
+        "risk_penalty": 3.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 3.0,
+          "total_penalty": 3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "BK1050",
+      "name": "新能源车",
+      "type": "concept",
+      "score": 48.0,
+      "positive_score": 51.0,
+      "risk_penalty": 3.0,
+      "focus_level": "caution",
+      "phase": "startup",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分偏低 (48.0)",
+        "正向信号强度不足"
+      ],
+      "watch_points": [
+        "正向信号强度不足，观望为主"
+      ],
+      "constituents": [],
+      "data_sources": [
+        "akshare"
+      ],
+      "updated_at": "2026-06-28T15:30:00+08:00",
+      "data_quality_score": 83.0,
+      "score_breakdown": {
+        "heat_burst": 13.0,
+        "fund_confirmation": 11.0,
+        "constituent_linkage": 5.0,
+        "phase_score": 12.0,
+        "catalyst": 5.0,
+        "data_quality": 5.0,
+        "positive_score": 51.0,
+        "final_score": 48.0,
+        "price_change_available": true,
+        "risk_penalty": 3.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 3.0,
+          "total_penalty": 3.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    }
+  ],
+  "overlap": [
+    {
+      "industry": "人工智能",
+      "concept": "ChatGPT概念",
+      "resonance_score": 100.0,
+      "overlap_constituent_count": 5,
+      "common_core_count": 3,
+      "flow_alignment": "both_inflow",
+      "both_top_n": true,
+      "focus_level": "focus",
+      "constituents": [
+        {
+          "code": "002230",
+          "name": "科大讯飞",
+          "change_pct": 6.5,
+          "is_core": true
+        },
+        {
+          "code": "688787",
+          "name": "海天瑞声",
+          "change_pct": 8.2,
+          "is_core": true
+        },
+        {
+          "code": "300496",
+          "name": "中科创达",
+          "change_pct": 4.3,
+          "is_core": false
+        },
+        {
+          "code": "688111",
+          "name": "金山办公",
+          "change_pct": 3.9,
+          "is_core": true
+        },
+        {
+          "code": "300033",
+          "name": "同花顺",
+          "change_pct": 5.1,
+          "is_core": false
+        }
+      ]
+    }
+  ],
+  "risk_summary": {
+    "high_risk_count": 0,
+    "medium_risk_count": 1,
+    "overheat_sectors": [
+      "ChatGPT概念"
+    ],
+    "divergence_sectors": []
+  },
+  "data_quality": {
+    "overall_score": 66.75,
+    "low_quality_sectors": [],
+    "sector_count": 20
+  },
+  "disclaimer": "本报告仅用于板块强弱筛选和研究复盘，不作为个股操作依据或自动交易指令。",
+  "status": "ok",
+  "provider_status": {
+    "industry_sectors": "ok",
+    "concept_sectors": "ok",
+    "fund_flow": "ok",
+    "constituents": "ok"
+  },
+  "data_completeness": {
+    "industry_count": 20,
+    "concept_count": 20,
+    "industry_min_count": 20,
+    "concept_min_count": 20
+  },
+  "cache_fallback": {
+    "is_fallback": false,
+    "source_as_of_date": null,
+    "cache_created_at": null
+  },
+  "fund_flow_coverage": {
+    "industry_matched": 0,
+    "concept_matched": 0,
+    "unmatched": 0,
+    "status": "ok"
+  },
+  "constituent_coverage": {
+    "enriched_count": 20,
+    "total_candidates": 20,
+    "coverage_rate": 100.0,
+    "status": "ok"
+  },
+  "rotation_summary": {
+    "industry": {
+      "new_entries": [
+        "人工智能",
+        "半导体",
+        "芯片",
+        "锂电池",
+        "新能源汽车",
+        "医药生物",
+        "电力设备",
+        "电子",
+        "有色金属",
+        "新能源"
+      ],
+      "dropped_out": [
+        "教育",
+        "保险",
+        "光学光电子",
+        "互联网电商",
+        "IT服务",
+        "电子化学品",
+        "元件",
+        "光伏设备",
+        "公路铁路运输",
+        "中药"
+      ],
+      "rising_fast": [],
+      "persistent_strength": [],
+      "risk_up": []
+    },
+    "concept": {
+      "new_entries": [
+        "CPO概念",
+        "ChatGPT概念",
+        "人工智能概念",
+        "机器人概念",
+        "芯片概念",
+        "储能",
+        "云计算",
+        "元宇宙",
+        "网络安全",
+        "新能源车"
+      ],
+      "dropped_out": [],
+      "rising_fast": [],
+      "persistent_strength": [],
+      "risk_up": []
+    }
+  },
+  "comparison": {
+    "compare_to_date": null,
+    "comparison_source": "lookback:5days",
+    "comparison_status": "ok",
+    "warnings": []
+  },
+  "run_mode": "normal",
+  "provider": "fixture",
+  "offline_fixture": true,
+  "fixture_profile": "full",
+  "data_source_mode": "fixture",
+  "report_dir": "reports\\migration_verify_after_move\\theme_fixture",
+  "generated_by_command": ""
+}

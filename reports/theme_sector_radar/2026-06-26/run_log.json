@@ -1,42 +1,8 @@
 {
-  "command_args": "--daily --as-of 2026-06-26 --provider akshare --refresh --fallback-cache-days 7 --lookback-days 5 --report-root reports/theme_sector_radar",
-  "started_at": "2026-06-29T22:32:39.174425",
-  "finished_at": "2026-06-29T22:34:57.383709",
-  "duration_ms": 138209,
-  "run_mode": "daily",
-  "provider": "akshare",
-  "offline_fixture": false,
-  "fixture_profile": "full",
-  "data_source_mode": "cache_replay",
+  "command_args": "--replay-daily-from-sector-history --as-of 2026-06-26",
+  "started_at": "2026-07-01T18:46:57.055053",
+  "finished_at": "2026-07-01T18:46:57.055053",
   "status": "ok",
-  "comparison_status": "no_previous_data",
-  "cache_fallback_used": false,
-  "warnings": [],
-  "output_files": [
-    "theme_sector_radar.json",
-    "theme_sector_radar.md",
-    "raw_snapshot.json"
-  ],
-  "report_dir": "reports/theme_sector_radar\\2026-06-26",
-  "report_root": "reports/theme_sector_radar",
-  "index_included": true,
-  "comparison_source": "none",
-  "input_snapshot_source": "akshare",
-  "provider_status": {
-    "industry_sectors": "ok",
-    "concept_sectors": "ok",
-    "fund_flow": "ok",
-    "constituents": "ok",
-    "effective_provider": "ths",
-    "industry_source": "akshare/ths_industry",
-    "concept_source": "akshare/ths_concept",
-    "fallback_used": true,
-    "fallback_provider": "ths",
-    "fallback_reason": "东方财富行业接口失败: ProxyError",
-    "industry_count": 20,
-    "concept_count": 20,
-    "em_industry_error": "ProxyError: HTTPSConnectionPool(host='17.push2.eastmoney.com', port=443): Max retries exceeded with url: /api/qt",
-    "em_concept_error": "ProxyError: HTTPSConnectionPool(host='79.push2.eastmoney.com', port=443): Max retries exceeded with url: /api/qt",
-    "concept_price_change_available": false
-  }
+  "run_mode": "replay",
+  "data_source_mode": "sector_history_replay"
 }

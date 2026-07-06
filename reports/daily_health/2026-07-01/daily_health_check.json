@@ -1,0 +1,59 @@
+{
+  "as_of_date": "2026-07-01",
+  "overall_status": "ok",
+  "data_source_mode": "cache_replay",
+  "radar_status": "ok",
+  "research_status": "ok",
+  "catalyst_status": "ok",
+  "checks": {
+    "radar": {
+      "exists": true,
+      "run_log_exists": true,
+      "status": "ok",
+      "data_quality_score": 82.5,
+      "provider": "ths",
+      "data_source_mode": "cache_replay"
+    },
+    "sector_score": {
+      "exists": true,
+      "status": "ok",
+      "sector_count": 10
+    },
+    "multi_window": {
+      "exists": true,
+      "status": "ok"
+    },
+    "sector_research": {
+      "exists": true,
+      "md_exists": true,
+      "status": "ok",
+      "sector_count": 10,
+      "has_daily_summary": true,
+      "has_agent_opinions": true
+    },
+    "research_index": {
+      "exists": true,
+      "status": "ok",
+      "total_days": 28,
+      "has_current_date": false
+    },
+    "catalyst_cache": {
+      "exists": true,
+      "status_exists": true,
+      "status": "ok",
+      "event_count": 18,
+      "real_count": 18,
+      "fixture_count": 0
+    },
+    "data_source": {
+      "mode": "cache_replay"
+    }
+  },
+  "warnings": [],
+  "key_outputs": {
+    "radar_report": "reports\\theme_sector_radar\\2026-07-01",
+    "sector_research": "reports\\sector_research\\2026-07-01",
+    "research_index": "reports\\sector_research\\index",
+    "health_report": "reports\\daily_health\\2026-07-01"
+  }
+}

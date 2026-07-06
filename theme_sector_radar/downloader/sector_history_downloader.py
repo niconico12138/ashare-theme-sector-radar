@@ -138,7 +138,12 @@ class SectorHistoryDownloader:
             for _, row in df.iterrows():
                 record = {}
                 for col in df.columns:
-                    record[col] = row[col]
+                    val = row[col]
+                    # 转换 date/datetime 对象为字符串
+                    if hasattr(val, 'isoformat'):
+                        record[col] = val.isoformat()
+                    else:
+                        record[col] = val
                 records.append(record)
 
             return {

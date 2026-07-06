@@ -1,0 +1,173 @@
+{
+  "report_type": "unified_pipeline",
+  "version": "0.1.0",
+  "as_of_date": "2026-07-01",
+  "generated_at": "2026-07-06T18:19:17.089518",
+  "mode": "quick",
+  "trend_top_stocks": [],
+  "burst_top_stocks": [],
+  "trend_candidates_all": [],
+  "burst_candidates_all": [],
+  "bridge_summary": {
+    "trend_sectors": [
+      {
+        "name": "氟化工概念",
+        "trend_score": 70.2,
+        "burst_score": 69.8,
+        "count": 1
+      },
+      {
+        "name": "光刻胶",
+        "trend_score": 74.2,
+        "burst_score": 58.8,
+        "count": 1
+      },
+      {
+        "name": "光刻机",
+        "trend_score": 66.2,
+        "burst_score": 45.8,
+        "count": 1
+      },
+      {
+        "name": "存储芯片",
+        "trend_score": 62.2,
+        "burst_score": 48.8,
+        "count": 1
+      },
+      {
+        "name": "硅能源",
+        "trend_score": 65.0,
+        "burst_score": 58.8,
+        "count": 1
+      }
+    ],
+    "burst_sectors": [
+      {
+        "name": "猴痘概念",
+        "trend_score": 38.45,
+        "burst_score": 72.3,
+        "count": 1
+      },
+      {
+        "name": "氟化工概念",
+        "trend_score": 70.2,
+        "burst_score": 69.8,
+        "count": 1
+      },
+      {
+        "name": "重组蛋白",
+        "trend_score": 44.2,
+        "burst_score": 69.8,
+        "count": 1
+      },
+      {
+        "name": "创新药",
+        "trend_score": 40.2,
+        "burst_score": 69.8,
+        "count": 1
+      },
+      {
+        "name": "合成生物",
+        "trend_score": 41.0,
+        "burst_score": 66.8,
+        "count": 1
+      }
+    ],
+    "cross_sectors": [
+      "氟化工概念"
+    ],
+    "api_status": {
+      "http_constituents": "ok",
+      "tencent_quotes": "ok",
+      "fund_flow": "degraded"
+    },
+    "constituent_source_summary": {
+      "http_em": 0,
+      "http_stale": 0,
+      "http_mapping": 9,
+      "http_local_industry": 0,
+      "http_local_concept_members": 0,
+      "local_emergency_mapping": 0,
+      "unavailable": 0
+    }
+  },
+  "data_source": {
+    "constituent_sources": {
+      "http_em": 0,
+      "http_stale": 0,
+      "http_mapping": 9,
+      "http_local_industry": 0,
+      "http_local_concept_members": 0,
+      "local_emergency_mapping": 0,
+      "unavailable": 0
+    },
+    "quant_score_sources": {},
+    "fund_flow_source": "fund_flow_ths_batch",
+    "stock_info_sources": {
+      "ok": 0,
+      "filtered_st": 2,
+      "filtered_invalid": 0,
+      "unknown": 0
+    },
+    "sector_input_source": "mixed",
+    "has_unavailable_sectors": false,
+    "has_emergency_fallback": false
+  },
+  "run_health": {
+    "status": "warn",
+    "reasons": [
+      "离线映射占比 9/9 >= 50%，实际数据源不足"
+    ],
+    "metrics": {
+      "total_constituent_sectors": 9,
+      "unavailable_sectors": 0,
+      "emergency_fallback_sectors": 0,
+      "http_enhanced_stocks": 0,
+      "fallback_quant_stocks": 0
+    }
+  },
+  "data_quality": {
+    "status": "warn",
+    "summary": {
+      "constituents": {
+        "status": "warn",
+        "coverage": 0.0,
+        "main_source": "http_mapping"
+      },
+      "quant_scores": {
+        "status": "warn",
+        "coverage": 0.0
+      },
+      "fund_flow": {
+        "status": "warn",
+        "coverage": 0.0,
+        "source": "fund_flow_ths_batch"
+      },
+      "stock_info": {
+        "status": "pass",
+        "coverage": 1.0
+      }
+    },
+    "coverage": {
+      "constituents_real_ratio": 0.0,
+      "fund_flow_available_ratio": 0.0,
+      "stock_info_known_ratio": 1.0,
+      "quant_http_ratio": 0.0
+    },
+    "warnings": [
+      "成分股真实源覆盖率 0% < 80%",
+      "量化评分 http_enhanced 覆盖率 0% < 80%",
+      "资金流数据全部 neutral (无可用源)"
+    ]
+  },
+  "scoring_method": {
+    "quant_source": "fallback",
+    "weights": {
+      "quant": 0.6,
+      "relevance": 0.4
+    },
+    "min_relevance": 0.6
+  },
+  "warnings": [],
+  "disclaimer": "本报告仅用于板块研究和选股参考，不作为操作依据。"
+}

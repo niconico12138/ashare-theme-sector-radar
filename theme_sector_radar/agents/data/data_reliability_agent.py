@@ -35,20 +35,31 @@ def calculate_data_reliability(sectors: List[SectorSnapshot]) -> AgentOutput:
 
         # 数据源数量检查
         source_count = len(sector.data_sources)
-        if source_count < 2:
+        has_sector_index_source = any(
+            (source.startswith("sector_history/ths_") and source.endswith("_index"))
+            or source == "akshare/ths_industry"
+            or source in {"akshare/eastmoney_industry", "akshare/eastmoney_concept"}
+            for source in sector.data_sources
+        )
+        has_price_index_data = (
+            has_sector_index_source
+            and sector.price_change_available
+            and bool(sector.updated_at)
+        )
+
+        if source_count < 2 and not has_price_index_data:
             score -= 15
             issues.append(f"数据源不足 ({source_count}个)")
 
-        # 成分股覆盖率检查
         constituent_count = len(sector.constituents)
-        if constituent_count == 0:
+        if constituent_count == 0 and not has_price_index_data:
             score -= 20
             issues.append("无成分股数据")
-        elif constituent_count < 5:
+        elif 0 < constituent_count < 5:
             score -= 10
             issues.append(f"成分股数量偏少 ({constituent_count})")
 
-        # 资金流数据检查
+        # Fund-flow data check
         if sector.main_net_inflow == 0 and constituent_count > 0:
             score -= 10
             issues.append("缺少资金流数据")

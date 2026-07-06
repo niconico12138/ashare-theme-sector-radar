@@ -1,0 +1,712 @@
+{
+  "report_type": "agent_reliability",
+  "start_date": "2026-06-25",
+  "end_date": "2026-06-29",
+  "sector_type": "industry",
+  "total_samples": 450,
+  "agents": {
+    "rotation_analysis": {
+      "agent_id": "rotation_analysis",
+      "layer": "L2_specialized",
+      "signal_profile": "broad_signal",
+      "signal_profile_description": "高覆盖普通信号，大部分样本都有投票，区分度中等",
+      "sample_count": 50,
+      "vote_distribution": {
+        "positive": 11,
+        "neutral": 0,
+        "negative": 39
+      },
+      "vote_performance": {
+        "positive": {
+          "sample_count": 11,
+          "forward_1d_avg": 0.0,
+          "forward_3d_avg": 0.11,
+          "forward_5d_avg": -0.51,
+          "forward_5d_positive_ratio": 0.5
+        },
+        "negative": {
+          "sample_count": 39,
+          "forward_1d_avg": 0.0,
+          "forward_3d_avg": 1.22,
+          "forward_5d_avg": 0.85,
+          "forward_5d_positive_ratio": 0.67
+        }
+      },
+      "regime_performance": {
+        "choppy_market": {
+          "sample_count": 10,
+          "forward_5d_avg": 0.3,
+          "forward_5d_positive_ratio": 0.6
+        },
+        "risk_off": {
+          "sample_count": 30
+        },
+        "weak_rebound": {
+          "sample_count": 10
+        }
+      },
+      "reliability_score": 0.31,
+      "reliability_label": "low_reliability",
+      "diagnosis": "negative vote has higher forward returns (0.85%) than positive (-0.51%)"
+    },
+    "technical_trend": {
+      "agent_id": "technical_trend",
+      "layer": "L2_specialized",
+      "signal_profile": "broad_signal",
+      "signal_profile_description": "高覆盖普通信号，大部分样本都有投票，区分度中等",
+      "sample_count": 50,
+      "vote_distribution": {
+        "positive": 1,
+        "neutral": 17,
+        "negative": 32
+      },
+      "vote_performance": {
+        "neutral": {
+          "sample_count": 17,
+          "forward_1d_avg": 0.0,
+          "forward_3d_avg": 1.27,
+          "forward_5d_avg": -0.12,
+          "forward_5d_positive_ratio": 0.6
+        },
+        "negative": {
+          "sample_count": 32,
+          "forward_1d_avg": 0.0,
+          "forward_3d_avg": 0.73,
+          "forward_5d_avg": 0.72,
+          "forward_5d_positive_ratio": 0.6
+        },
+        "positive": {
+          "sample_count": 1,
+          "forward_1d_avg": 0.0,
+          "forward_3d_avg": 1.65
+        }
+      },
+      "regime_performance": {
+        "choppy_market": {
+          "sample_count": 10,
+          "forward_5d_avg": 0.3,
+          "forward_5d_positive_ratio": 0.6
+        },
+        "risk_off": {
+          "sample_count": 30
+        },
+        "weak_rebound": {
+          "sample_count": 10
+        }
+      },
+      "reliability_score": 0.22,
+      "reliability_label": "low_reliability",
+      "diagnosis": "insufficient data for diagnosis"
+    },
+    "short_term_heat": {
+      "agent_id": "short_term_heat",
+      "layer": "L2_specialized",
+      "signal_profile": "broad_signal",
+      "signal_profile_description": "高覆盖普通信号，大部分样本都有投票，区分度中等",
+      "sample_count": 50,
+      "vote_distribution": {
+        "positive": 1,
+        "neutral": 9,
+        "negative": 40
+      },
+      "vote_performance": {
+        "neutral": {
+          "sample_count": 9,
+          "forward_1d_avg": 0.0,
+          "forward_3d_avg": 1.18,
+          "forward_5d_avg": 0.11,
+          "forward_5d_positive_ratio": 0.5
+        },
+        "negative": {
+          "sample_count": 40,
+          "forward_1d_avg": 0.0,
+          "forward_3d_avg": 0.78,
+          "forward_5d_avg": 0.43,
+          "forward_5d_positive_ratio": 0.67
+        },
+        "positive": {
+          "sample_count": 1,
+          "forward_1d_avg": 0.0,
+          "forward_3d_avg": 2.49
+        }
+      },
+      "regime_performance": {
+        "choppy_market": {
+          "sample_count": 10,
+          "forward_5d_avg": 0.3,
+          "forward_5d_positive_ratio": 0.6
+        },
+        "risk_off": {
+          "sample_count": 30
+        },
+        "weak_rebound": {
+          "sample_count": 10
+        }
+      },
+      "reliability_score": 0.19,
+      "reliability_label": "low_reliability",
+      "diagnosis": "insufficient data for diagnosis"
+    },
+    "data_quality": {
+      "agent_id": "data_quality",
+      "layer": "L1_data_evidence",
+      "signal_profile": "defensive_filter",
+      "signal_profile_description": "防守过滤 Agent，主要识别风险和数据问题",
+      "sample_count": 50,
+      "vote_distribution": {
+        "positive": 44,
+        "neutral": 6,
+        "negative": 0
+      },
+      "vote_performance": {
+        "positive": {
+          "sample_count": 44,
+          "forward_1d_avg": 0.0,
+          "forward_3d_avg": 0.75,
+          "forward_5d_avg": 0.3,
+          "forward_5d_positive_ratio": 0.6
+        },
+        "neutral": {
+          "sample_count": 6,
+          "forward_1d_avg": 0.0,
+          "forward_3d_avg": 2.35
+        }
+      },
+      "regime_performance": {
+        "choppy_market": {
+          "sample_count": 10,
+          "forward_5d_avg": 0.3,
+          "forward_5d_positive_ratio": 0.6
+        },
+        "risk_off": {
+          "sample_count": 30
+        },
+        "weak_rebound": {
+          "sample_count": 10
+        }
+      },
+      "reliability_score": 0.17,
+      "reliability_label": "low_reliability",
+      "diagnosis": "insufficient data for diagnosis"
+    },
+    "risk_control": {
+      "agent_id": "risk_control",
+      "layer": "L2_specialized",
+      "signal_profile": "defensive_filter",
+      "signal_profile_description": "防守过滤 Agent，主要识别风险和数据问题",
+      "sample_count": 50,
+      "vote_distribution": {
+        "positive": 50,
+        "neutral": 0,
+        "negative": 0
+      },
+      "vote_performance": {
+        "positive": {
+          "sample_count": 50,
+          "forward_1d_avg": 0.0,
+          "forward_3d_avg": 0.96,
+          "forward_5d_avg": 0.3,
+          "forward_5d_positive_ratio": 0.6
+        }
+      },
+      "regime_performance": {
+        "choppy_market": {
+          "sample_count": 10,
+          "forward_5d_avg": 0.3,
+          "forward_5d_positive_ratio": 0.6
+        },
+        "risk_off": {
+          "sample_count": 30
+        },
+        "weak_rebound": {
+          "sample_count": 10
+        }
+      },
+      "reliability_score": 0.15,
+      "reliability_label": "low_reliability",
+      "diagnosis": "insufficient data for diagnosis"
+    },
+    "market_context": {
+      "agent_id": "market_context",
+      "layer": "L2_specialized",
+      "signal_profile": "broad_signal",
+      "signal_profile_description": "高覆盖普通信号，大部分样本都有投票，区分度中等",
+      "sample_count": 50,
+      "vote_distribution": {
+        "positive": 0,
+        "neutral": 0,
+        "negative": 50
+      },
+      "vote_performance": {
+        "negative": {
+          "sample_count": 50,
+          "forward_1d_avg": 0.0,
+          "forward_3d_avg": 0.96,
+          "forward_5d_avg": 0.3,
+          "forward_5d_positive_ratio": 0.6
+        }
+      },
+      "regime_performance": {
+        "choppy_market": {
+          "sample_count": 10,
+          "forward_5d_avg": 0.3,
+          "forward_5d_positive_ratio": 0.6
+        },
+        "risk_off": {
+          "sample_count": 30
+        },
+        "weak_rebound": {
+          "sample_count": 10
+        }
+      },
+      "reliability_score": 0.15,
+      "reliability_label": "low_reliability",
+      "diagnosis": "insufficient data for diagnosis"
+    },
+    "narrative": {
+      "agent_id": "narrative",
+      "layer": "L2_specialized",
+      "signal_profile": "low_information",
+      "signal_profile_description": "低信息 Agent，当前数据不足以产生有效信号",
+      "sample_count": 50,
+      "vote_distribution": {
+        "positive": 0,
+        "neutral": 50,
+        "negative": 0
+      },
+      "vote_performance": {
+        "neutral": {
+          "sample_count": 50,
+          "forward_1d_avg": 0.0,
+          "forward_3d_avg": 0.96,
+          "forward_5d_avg": 0.3,
+          "forward_5d_positive_ratio": 0.6
+        }
+      },
+      "regime_performance": {
+        "choppy_market": {
+          "sample_count": 10,
+          "forward_5d_avg": 0.3,
+          "forward_5d_positive_ratio": 0.6
+        },
+        "risk_off": {
+          "sample_count": 30
+        },
+        "weak_rebound": {
+          "sample_count": 10
+        }
+      },
+      "reliability_score": 0.15,
+      "reliability_label": "low_reliability",
+      "diagnosis": "insufficient data for diagnosis"
+    },
+    "persistence_strength": {
+      "agent_id": "persistence_strength",
+      "layer": "L2_specialized",
+      "signal_profile": "sparse_high_precision",
+      "signal_profile_description": "低覆盖高命中信号，少数样本出手但质量很高",
+      "sample_count": 50,
+      "vote_distribution": {
+        "positive": 1,
+        "neutral": 49,
+        "negative": 0
+      },
+      "vote_performance": {
+        "neutral": {
+          "sample_count": 49,
+          "forward_1d_avg": 0.0,
+          "forward_3d_avg": 0.94,
+          "forward_5d_avg": 0.3,
+          "forward_5d_positive_ratio": 0.6
+        },
+        "positive": {
+          "sample_count": 1,
+          "forward_1d_avg": 0.0,
+          "forward_3d_avg": 1.65
+        }
+      },
+      "regime_performance": {
+        "choppy_market": {
+          "sample_count": 10,
+          "forward_5d_avg": 0.3,
+          "forward_5d_positive_ratio": 0.6
+        },
+        "risk_off": {
+          "sample_count": 30
+        },
+        "weak_rebound": {
+          "sample_count": 10
+        }
+      },
+      "reliability_score": 0.15,
+      "reliability_label": "low_reliability",
+      "diagnosis": "insufficient data for diagnosis"
+    },
+    "catalyst_event": {
+      "agent_id": "catalyst_event",
+      "layer": "L2_specialized",
+      "signal_profile": "sparse_event_signal",
+      "signal_profile_description": "低覆盖事件驱动信号，需后续验证命中率",
+      "sample_count": 50,
+      "vote_distribution": {
+        "positive": 0,
+        "neutral": 50,
+        "negative": 0
+      },
+      "vote_performance": {
+        "neutral": {
+          "sample_count": 50,
+          "forward_1d_avg": 0.0,
+          "forward_3d_avg": 0.96,
+          "forward_5d_avg": 0.3,
+          "forward_5d_positive_ratio": 0.6
+        }
+      },
+      "regime_performance": {
+        "choppy_market": {
+          "sample_count": 10,
+          "forward_5d_avg": 0.3,
+          "forward_5d_positive_ratio": 0.6
+        },
+        "risk_off": {
+          "sample_count": 30
+        },
+        "weak_rebound": {
+          "sample_count": 10
+        }
+      },
+      "reliability_score": 0.15,
+      "reliability_label": "low_reliability",
+      "diagnosis": "insufficient data for diagnosis"
+    }
+  },
+  "misidentifications": {
+    "positive_false_signal": [
+      {
+        "signal_date": "2026-06-25",
+        "sector_name": "元件",
+        "agent_id": "rotation_analysis",
+        "forward_5d_return": -6.75
+      },
+      {
+        "signal_date": "2026-06-25",
+        "sector_name": "元件",
+        "agent_id": "risk_control",
+        "forward_5d_return": -6.75
+      },
+      {
+        "signal_date": "2026-06-25",
+        "sector_name": "元件",
+        "agent_id": "data_quality",
+        "forward_5d_return": -6.75
+      },
+      {
+        "signal_date": "2026-06-25",
+        "sector_name": "其他电子",
+        "agent_id": "rotation_analysis",
+        "forward_5d_return": -3.69
+      },
+      {
+        "signal_date": "2026-06-25",
+        "sector_name": "其他电子",
+        "agent_id": "risk_control",
+        "forward_5d_return": -3.69
+      },
+      {
+        "signal_date": "2026-06-25",
+        "sector_name": "其他电子",
+        "agent_id": "data_quality",
+        "forward_5d_return": -3.69
+      }
+    ],
+    "negative_missed_signal": [
+      {
+        "signal_date": "2026-06-25",
+        "sector_name": "半导体",
+        "agent_id": "market_context",
+        "forward_5d_return": 4.71
+      },
+      {
+        "signal_date": "2026-06-25",
+        "sector_name": "电子化学品",
+        "agent_id": "market_context",
+        "forward_5d_return": 3.69
+      }
+    ],
+    "neutral_missed_move": [
+      {
+        "signal_date": "2026-06-25",
+        "sector_name": "元件",
+        "agent_id": "technical_trend",
+        "forward_5d_return": -6.75
+      },
+      {
+        "signal_date": "2026-06-25",
+        "sector_name": "元件",
+        "agent_id": "short_term_heat",
+        "forward_5d_return": -6.75
+      },
+      {
+        "signal_date": "2026-06-25",
+        "sector_name": "元件",
+        "agent_id": "narrative",
+        "forward_5d_return": -6.75
+      },
+      {
+        "signal_date": "2026-06-25",
+        "sector_name": "元件",
+        "agent_id": "persistence_strength",
+        "forward_5d_return": -6.75
+      },
+      {
+        "signal_date": "2026-06-25",
+        "sector_name": "元件",
+        "agent_id": "catalyst_event",
+        "forward_5d_return": -6.75
+      }
+    ]
+  },
+  "regime_performance": {
+    "choppy_market": {
+      "sample_count": 90,
+      "agents": {
+        "technical_trend": {
+          "sample_count": 10,
+          "vote_distribution": {
+            "positive": 0,
+            "neutral": 5,
+            "negative": 5
+          },
+          "forward_5d_avg": 0.3
+        },
+        "short_term_heat": {
+          "sample_count": 10,
+          "vote_distribution": {
+            "positive": 0,
+            "neutral": 4,
+            "negative": 6
+          },
+          "forward_5d_avg": 0.3
+        },
+        "rotation_analysis": {
+          "sample_count": 10,
+          "vote_distribution": {
+            "positive": 4,
+            "neutral": 0,
+            "negative": 6
+          },
+          "forward_5d_avg": 0.3
+        },
+        "risk_control": {
+          "sample_count": 10,
+          "vote_distribution": {
+            "positive": 10,
+            "neutral": 0,
+            "negative": 0
+          },
+          "forward_5d_avg": 0.3
+        },
+        "data_quality": {
+          "sample_count": 10,
+          "vote_distribution": {
+            "positive": 10,
+            "neutral": 0,
+            "negative": 0
+          },
+          "forward_5d_avg": 0.3
+        },
+        "market_context": {
+          "sample_count": 10,
+          "vote_distribution": {
+            "positive": 0,
+            "neutral": 0,
+            "negative": 10
+          },
+          "forward_5d_avg": 0.3
+        },
+        "narrative": {
+          "sample_count": 10,
+          "vote_distribution": {
+            "positive": 0,
+            "neutral": 10,
+            "negative": 0
+          },
+          "forward_5d_avg": 0.3
+        },
+        "persistence_strength": {
+          "sample_count": 10,
+          "vote_distribution": {
+            "positive": 0,
+            "neutral": 10,
+            "negative": 0
+          },
+          "forward_5d_avg": 0.3
+        },
+        "catalyst_event": {
+          "sample_count": 10,
+          "vote_distribution": {
+            "positive": 0,
+            "neutral": 10,
+            "negative": 0
+          },
+          "forward_5d_avg": 0.3
+        }
+      }
+    },
+    "risk_off": {
+      "sample_count": 270,
+      "agents": {
+        "technical_trend": {
+          "sample_count": 30,
+          "vote_distribution": {
+            "positive": 0,
+            "neutral": 9,
+            "negative": 21
+          }
+        },
+        "short_term_heat": {
+          "sample_count": 30,
+          "vote_distribution": {
+            "positive": 0,
+            "neutral": 0,
+            "negative": 30
+          }
+        },
+        "rotation_analysis": {
+          "sample_count": 30,
+          "vote_distribution": {
+            "positive": 6,
+            "neutral": 0,
+            "negative": 24
+          }
+        },
+        "risk_control": {
+          "sample_count": 30,
+          "vote_distribution": {
+            "positive": 30,
+            "neutral": 0,
+            "negative": 0
+          }
+        },
+        "data_quality": {
+          "sample_count": 30,
+          "vote_distribution": {
+            "positive": 27,
+            "neutral": 3,
+            "negative": 0
+          }
+        },
+        "market_context": {
+          "sample_count": 30,
+          "vote_distribution": {
+            "positive": 0,
+            "neutral": 0,
+            "negative": 30
+          }
+        },
+        "narrative": {
+          "sample_count": 30,
+          "vote_distribution": {
+            "positive": 0,
+            "neutral": 30,
+            "negative": 0
+          }
+        },
+        "persistence_strength": {
+          "sample_count": 30,
+          "vote_distribution": {
+            "positive": 0,
+            "neutral": 30,
+            "negative": 0
+          }
+        },
+        "catalyst_event": {
+          "sample_count": 30,
+          "vote_distribution": {
+            "positive": 0,
+            "neutral": 30,
+            "negative": 0
+          }
+        }
+      }
+    },
+    "weak_rebound": {
+      "sample_count": 90,
+      "agents": {
+        "technical_trend": {
+          "sample_count": 10,
+          "vote_distribution": {
+            "positive": 1,
+            "neutral": 3,
+            "negative": 6
+          }
+        },
+        "short_term_heat": {
+          "sample_count": 10,
+          "vote_distribution": {
+            "positive": 1,
+            "neutral": 5,
+            "negative": 4
+          }
+        },
+        "rotation_analysis": {
+          "sample_count": 10,
+          "vote_distribution": {
+            "positive": 1,
+            "neutral": 0,
+            "negative": 9
+          }
+        },
+        "risk_control": {
+          "sample_count": 10,
+          "vote_distribution": {
+            "positive": 10,
+            "neutral": 0,
+            "negative": 0
+          }
+        },
+        "data_quality": {
+          "sample_count": 10,
+          "vote_distribution": {
+            "positive": 7,
+            "neutral": 3,
+            "negative": 0
+          }
+        },
+        "market_context": {
+          "sample_count": 10,
+          "vote_distribution": {
+            "positive": 0,
+            "neutral": 0,
+            "negative": 10
+          }
+        },
+        "narrative": {
+          "sample_count": 10,
+          "vote_distribution": {
+            "positive": 0,
+            "neutral": 10,
+            "negative": 0
+          }
+        },
+        "persistence_strength": {
+          "sample_count": 10,
+          "vote_distribution": {
+            "positive": 1,
+            "neutral": 9,
+            "negative": 0
+          }
+        },
+        "catalyst_event": {
+          "sample_count": 10,
+          "vote_distribution": {
+            "positive": 0,
+            "neutral": 10,
+            "negative": 0
+          }
+        }
+      }
+    }
+  },
+  "warnings": []
+}

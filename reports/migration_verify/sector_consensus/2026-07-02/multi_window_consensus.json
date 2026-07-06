@@ -1,0 +1,537 @@
+{
+  "as_of_date": "2026-07-02",
+  "sector_type": "both",
+  "report_type": "multi_window_consensus",
+  "trend_weight_profile": "trend_confirmation",
+  "windows": [
+    5,
+    10,
+    20
+  ],
+  "metadata": {
+    "history_start_date": "2026-05-20",
+    "history_end_date": "2026-07-02",
+    "history_resolution": {
+      "history_start_date_was_explicit": true,
+      "history_end_date_was_explicit": true,
+      "requested_history_lookback_days": 10,
+      "effective_history_lookback_days": 45,
+      "trend_window": 20
+    },
+    "benchmark": "none",
+    "top_n": 10,
+    "report_root": "reports/theme_sector_radar",
+    "score_output": "reports/migration_verify/sector_scores",
+    "history_root": "data_cache/sector_history",
+    "cache_root": "data_cache"
+  },
+  "warnings": [],
+  "disclaimer": "仅用于板块研究、观察和复盘，不作为操作依据。",
+  "consensus": [
+    {
+      "sector_name": "丙烯酸",
+      "sector_type": "concept",
+      "multi_window_label": "multi_window_confirmed",
+      "consensus_score": 59.51,
+      "consensus_strength": "medium",
+      "window_scores": {
+        "5": 72.41,
+        "10": 58.41,
+        "20": 52.41
+      },
+      "window_levels": {
+        "5": "watch",
+        "10": "neutral",
+        "20": "neutral"
+      },
+      "window_conflicts": [
+        "短中期动量强于中期趋势",
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "趋势跨窗口确认，可作为重点观察对象",
+        "关注资金流入和成交量是否持续放大"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "养殖业",
+      "sector_type": "industry",
+      "multi_window_label": "multi_window_confirmed",
+      "consensus_score": 57.07,
+      "consensus_strength": "medium",
+      "window_scores": {
+        "5": 70.25,
+        "10": 52.25,
+        "20": 53.05
+      },
+      "window_levels": {
+        "5": "watch",
+        "10": "neutral",
+        "20": "neutral"
+      },
+      "window_conflicts": [
+        "短中期动量强于中期趋势",
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "趋势跨窗口确认，可作为重点观察对象",
+        "关注资金流入和成交量是否持续放大"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "纺织制造",
+      "sector_type": "industry",
+      "multi_window_label": "multi_window_confirmed",
+      "consensus_score": 56.0,
+      "consensus_strength": "medium",
+      "window_scores": {
+        "5": 62.05,
+        "10": 55.05,
+        "20": 53.05
+      },
+      "window_levels": {
+        "5": "neutral",
+        "10": "neutral",
+        "20": "neutral"
+      },
+      "window_conflicts": [],
+      "watch_points": [
+        "趋势跨窗口确认，可作为重点观察对象",
+        "关注资金流入和成交量是否持续放大"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "服装家纺",
+      "sector_type": "industry",
+      "multi_window_label": "short_mid_strong_long_weak",
+      "consensus_score": 54.05,
+      "consensus_strength": "medium",
+      "window_scores": {
+        "5": 73.05,
+        "10": 53.05,
+        "20": 43.05
+      },
+      "window_levels": {
+        "5": "watch",
+        "10": "neutral",
+        "20": "cooling"
+      },
+      "window_conflicts": [
+        "短中期动量强于中期趋势",
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "观察20日趋势分是否继续抬升",
+        "若短窗口继续强而20日不跟随，说明趋势确认不足"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "工程机械",
+      "sector_type": "industry",
+      "multi_window_label": "conflicted_windows",
+      "consensus_score": 52.55,
+      "consensus_strength": "medium",
+      "window_scores": {
+        "5": 66.05,
+        "10": 48.05,
+        "20": 48.05
+      },
+      "window_levels": {
+        "5": "watch",
+        "10": "cooling",
+        "20": "cooling"
+      },
+      "window_conflicts": [
+        "短中期动量强于中期趋势",
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "窗口之间分歧较大，暂不形成明确结论",
+        "观察后续走势是否收敛"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "造纸",
+      "sector_type": "industry",
+      "multi_window_label": "short_mid_strong_long_weak",
+      "consensus_score": 52.2,
+      "consensus_strength": "medium",
+      "window_scores": {
+        "5": 66.05,
+        "10": 55.05,
+        "20": 41.05
+      },
+      "window_levels": {
+        "5": "watch",
+        "10": "neutral",
+        "20": "cooling"
+      },
+      "window_conflicts": [
+        "20日趋势分明显弱于5日和10日",
+        "短中期动量强于中期趋势",
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "观察20日趋势分是否继续抬升",
+        "若短窗口继续强而20日不跟随，说明趋势确认不足"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "银行",
+      "sector_type": "industry",
+      "multi_window_label": "conflicted_windows",
+      "consensus_score": 51.95,
+      "consensus_strength": "medium",
+      "window_scores": {
+        "5": 64.05,
+        "10": 50.05,
+        "20": 46.05
+      },
+      "window_levels": {
+        "5": "neutral",
+        "10": "neutral",
+        "20": "cooling"
+      },
+      "window_conflicts": [
+        "短中期动量强于中期趋势",
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "窗口之间分歧较大，暂不形成明确结论",
+        "观察后续走势是否收敛"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "中药",
+      "sector_type": "industry",
+      "multi_window_label": "short_mid_strong_long_weak",
+      "consensus_score": 51.77,
+      "consensus_strength": "medium",
+      "window_scores": {
+        "5": 66.25,
+        "10": 50.25,
+        "20": 44.05
+      },
+      "window_levels": {
+        "5": "watch",
+        "10": "neutral",
+        "20": "cooling"
+      },
+      "window_conflicts": [
+        "短中期动量强于中期趋势",
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "观察20日趋势分是否继续抬升",
+        "若短窗口继续强而20日不跟随，说明趋势确认不足"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "美容护理",
+      "sector_type": "industry",
+      "multi_window_label": "short_mid_strong_long_weak",
+      "consensus_score": 50.75,
+      "consensus_strength": "medium",
+      "window_scores": {
+        "5": 71.05,
+        "10": 53.05,
+        "20": 36.05
+      },
+      "window_levels": {
+        "5": "watch",
+        "10": "neutral",
+        "20": "cooling"
+      },
+      "window_conflicts": [
+        "20日趋势分明显弱于5日和10日",
+        "短中期动量强于中期趋势",
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "观察20日趋势分是否继续抬升",
+        "若短窗口继续强而20日不跟随，说明趋势确认不足"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "化学纤维",
+      "sector_type": "industry",
+      "multi_window_label": "conflicted_windows",
+      "consensus_score": 50.3,
+      "consensus_strength": "medium",
+      "window_scores": {
+        "5": 57.05,
+        "10": 48.05,
+        "20": 48.05
+      },
+      "window_levels": {
+        "5": "neutral",
+        "10": "cooling",
+        "20": "cooling"
+      },
+      "window_conflicts": [
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "窗口之间分歧较大，暂不形成明确结论",
+        "观察后续走势是否收敛"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "阿尔茨海默概念",
+      "sector_type": "concept",
+      "multi_window_label": "short_mid_strong_long_weak",
+      "consensus_score": 49.16,
+      "consensus_strength": "weak",
+      "window_scores": {
+        "5": 55.81,
+        "10": 49.61,
+        "20": 44.61
+      },
+      "window_levels": {
+        "5": "neutral",
+        "10": "cooling",
+        "20": "cooling"
+      },
+      "window_conflicts": [
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "观察20日趋势分是否继续抬升",
+        "若短窗口继续强而20日不跟随，说明趋势确认不足"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "安防",
+      "sector_type": "concept",
+      "multi_window_label": "conflicted_windows",
+      "consensus_score": 40.21,
+      "consensus_strength": "weak",
+      "window_scores": {
+        "5": 46.61,
+        "10": 35.41,
+        "20": 40.41
+      },
+      "window_levels": {
+        "5": "cooling",
+        "10": "cooling",
+        "20": "cooling"
+      },
+      "window_conflicts": [],
+      "watch_points": [
+        "窗口之间分歧较大，暂不形成明确结论",
+        "观察后续走势是否收敛"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "AI PC",
+      "sector_type": "concept",
+      "multi_window_label": "weak_all_windows",
+      "consensus_score": 39.56,
+      "consensus_strength": "weak",
+      "window_scores": {
+        "5": 31.81,
+        "10": 41.61,
+        "20": 42.61
+      },
+      "window_levels": {
+        "5": "avoid",
+        "10": "cooling",
+        "20": "cooling"
+      },
+      "window_conflicts": [
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "全窗口偏弱，建议回避或等待反转信号"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "BC电池",
+      "sector_type": "concept",
+      "multi_window_label": "weak_all_windows",
+      "consensus_score": 38.54,
+      "consensus_strength": "weak",
+      "window_scores": {
+        "5": 41.61,
+        "10": 37.41,
+        "20": 37.61
+      },
+      "window_levels": {
+        "5": "cooling",
+        "10": "cooling",
+        "20": "cooling"
+      },
+      "window_conflicts": [],
+      "watch_points": [
+        "全窗口偏弱，建议回避或等待反转信号"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "阿里巴巴概念",
+      "sector_type": "concept",
+      "multi_window_label": "conflicted_windows",
+      "consensus_score": 36.91,
+      "consensus_strength": "weak",
+      "window_scores": {
+        "5": 46.61,
+        "10": 37.41,
+        "20": 30.41
+      },
+      "window_levels": {
+        "5": "cooling",
+        "10": "cooling",
+        "20": "avoid"
+      },
+      "window_conflicts": [
+        "短中期动量强于中期趋势",
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "窗口之间分歧较大，暂不形成明确结论",
+        "观察后续走势是否收敛"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "百度概念",
+      "sector_type": "concept",
+      "multi_window_label": "conflicted_windows",
+      "consensus_score": 36.91,
+      "consensus_strength": "weak",
+      "window_scores": {
+        "5": 46.61,
+        "10": 37.41,
+        "20": 30.41
+      },
+      "window_levels": {
+        "5": "cooling",
+        "10": "cooling",
+        "20": "avoid"
+      },
+      "window_conflicts": [
+        "短中期动量强于中期趋势",
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "窗口之间分歧较大，暂不形成明确结论",
+        "观察后续走势是否收敛"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "AI手机",
+      "sector_type": "concept",
+      "multi_window_label": "weak_all_windows",
+      "consensus_score": 36.41,
+      "consensus_strength": "weak",
+      "window_scores": {
+        "5": 24.81,
+        "10": 37.61,
+        "20": 42.61
+      },
+      "window_levels": {
+        "5": "avoid",
+        "10": "cooling",
+        "20": "cooling"
+      },
+      "window_conflicts": [
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "全窗口偏弱，建议回避或等待反转信号"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "贵金属",
+      "sector_type": "industry",
+      "multi_window_label": "short_active_only",
+      "consensus_score": 35.75,
+      "consensus_strength": "weak",
+      "window_scores": {
+        "5": 61.85,
+        "10": 27.05,
+        "20": 27.05
+      },
+      "window_levels": {
+        "5": "neutral",
+        "10": "avoid",
+        "20": "avoid"
+      },
+      "window_conflicts": [
+        "短中期动量强于中期趋势",
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "只有短窗口活跃，趋势未确认",
+        "观察10日和20日趋势分是否跟进"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "白酒概念",
+      "sector_type": "concept",
+      "multi_window_label": "short_active_only",
+      "consensus_score": 33.96,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 51.41,
+        "10": 40.41,
+        "20": 17.41
+      },
+      "window_levels": {
+        "5": "neutral",
+        "10": "cooling",
+        "20": "avoid"
+      },
+      "window_conflicts": [
+        "20日趋势分明显弱于5日和10日",
+        "短中期动量强于中期趋势",
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "只有短窗口活跃，趋势未确认",
+        "观察10日和20日趋势分是否跟进"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "AI语料",
+      "sector_type": "concept",
+      "multi_window_label": "weak_all_windows",
+      "consensus_score": 33.46,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 42.61,
+        "10": 33.61,
+        "20": 27.61
+      },
+      "window_levels": {
+        "5": "cooling",
+        "10": "avoid",
+        "20": "avoid"
+      },
+      "window_conflicts": [
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "全窗口偏弱，建议回避或等待反转信号"
+      ],
+      "data_warnings": []
+    }
+  ]
+}

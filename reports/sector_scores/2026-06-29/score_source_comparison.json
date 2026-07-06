@@ -1,0 +1,119 @@
+{
+  "report_type": "score_source_comparison",
+  "version": "0.1.0",
+  "as_of_date": "2026-06-29",
+  "comparison_date": "2026-06-30",
+  "description": "对比 raw_snapshot_fallback 与 sector_history_cache 的评分差异",
+  "sectors": [
+    {
+      "sector_name": "半导体",
+      "score_with_sector_history_cache": 51.0,
+      "score_with_raw_snapshot_fallback": null,
+      "score_delta": null,
+      "level_before": null,
+      "level_after": "neutral",
+      "history_days_before": null,
+      "history_days_after": 9,
+      "main_delta_reason": "sector_history_cache provides more accurate historical data"
+    },
+    {
+      "sector_name": "医疗服务",
+      "score_with_sector_history_cache": 40.0,
+      "score_with_raw_snapshot_fallback": null,
+      "score_delta": null,
+      "level_before": null,
+      "level_after": "cooling",
+      "history_days_before": null,
+      "history_days_after": 9,
+      "main_delta_reason": "sector_history_cache provides more accurate historical data"
+    },
+    {
+      "sector_name": "化学制药",
+      "score_with_sector_history_cache": 35.75,
+      "score_with_raw_snapshot_fallback": null,
+      "score_delta": null,
+      "level_before": null,
+      "level_after": "cooling",
+      "history_days_before": null,
+      "history_days_after": 9,
+      "main_delta_reason": "sector_history_cache provides more accurate historical data"
+    },
+    {
+      "sector_name": "生物制品",
+      "score_with_sector_history_cache": 31.25,
+      "score_with_raw_snapshot_fallback": null,
+      "score_delta": null,
+      "level_before": null,
+      "level_after": "avoid",
+      "history_days_before": null,
+      "history_days_after": 9,
+      "main_delta_reason": "sector_history_cache provides more accurate historical data"
+    },
+    {
+      "sector_name": "医疗器械",
+      "score_with_sector_history_cache": 25.0,
+      "score_with_raw_snapshot_fallback": null,
+      "score_delta": null,
+      "level_before": null,
+      "level_after": "avoid",
+      "history_days_before": null,
+      "history_days_after": 9,
+      "main_delta_reason": "sector_history_cache provides more accurate historical data"
+    },
+    {
+      "sector_name": "养殖业",
+      "score_with_sector_history_cache": 18.0,
+      "score_with_raw_snapshot_fallback": null,
+      "score_delta": null,
+      "level_before": null,
+      "level_after": "avoid",
+      "history_days_before": null,
+      "history_days_after": 9,
+      "main_delta_reason": "sector_history_cache provides more accurate historical data"
+    },
+    {
+      "sector_name": "中药",
+      "score_with_sector_history_cache": 17.0,
+      "score_with_raw_snapshot_fallback": null,
+      "score_delta": null,
+      "level_before": null,
+      "level_after": "avoid",
+      "history_days_before": null,
+      "history_days_after": 9,
+      "main_delta_reason": "sector_history_cache provides more accurate historical data"
+    },
+    {
+      "sector_name": "医药商业",
+      "score_with_sector_history_cache": 16.0,
+      "score_with_raw_snapshot_fallback": null,
+      "score_delta": null,
+      "level_before": null,
+      "level_after": "avoid",
+      "history_days_before": null,
+      "history_days_after": 9,
+      "main_delta_reason": "sector_history_cache provides more accurate historical data"
+    },
+    {
+      "sector_name": "美容护理",
+      "score_with_sector_history_cache": 16.0,
+      "score_with_raw_snapshot_fallback": null,
+      "score_delta": null,
+      "level_before": null,
+      "level_after": "avoid",
+      "history_days_before": null,
+      "history_days_after": 9,
+      "main_delta_reason": "sector_history_cache provides more accurate historical data"
+    },
+    {
+      "sector_name": "保险",
+      "score_with_sector_history_cache": 15.0,
+      "score_with_raw_snapshot_fallback": null,
+      "score_delta": null,
+      "level_before": null,
+      "level_after": "avoid",
+      "history_days_before": null,
+      "history_days_after": 9,
+      "main_delta_reason": "sector_history_cache provides more accurate historical data"
+    }
+  ]
+}

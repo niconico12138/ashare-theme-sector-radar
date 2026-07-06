@@ -196,7 +196,7 @@ class RadarReport(BaseModel):
     overlap: List[ResonanceResult] = Field(default_factory=list)
     risk_summary: Dict[str, Any] = Field(default_factory=dict)
     data_quality: Dict[str, Any] = Field(default_factory=dict)
-    disclaimer: str = "本报告仅用于板块强弱筛选和研究复盘，不构成个股推荐、买卖建议或自动交易指令。"
+    disclaimer: str = "本报告仅用于板块强弱筛选和研究复盘，不作为个股操作依据或自动交易指令。"
     status: str = "ok"
     provider_status: ProviderStatus = Field(default_factory=ProviderStatus)
     data_completeness: DataCompleteness = Field(default_factory=DataCompleteness)
@@ -214,3 +214,8 @@ class RadarReport(BaseModel):
     data_source_mode: str = "fixture"  # fixture / akshare_refresh / cache_replay / cache_fallback
     report_dir: str = ""
     generated_by_command: str = ""
+    # Phase 13: unified pipeline integration
+    unified_observation_pool: Optional[Dict[str, Any]] = None
+    unified_data_source: Optional[Dict[str, Any]] = None
+    unified_run_health: Optional[Dict[str, Any]] = None
+    unified_pipeline_error: Optional[str] = None

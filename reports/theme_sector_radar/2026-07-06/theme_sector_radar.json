@@ -1,0 +1,1918 @@
+{
+  "report_type": "theme_sector_radar",
+  "version": "0.1.0",
+  "as_of_date": "2026-07-06",
+  "updated_at": "2026-07-06T14:43:56.019119",
+  "data_sources": [
+    "akshare/eastmoney_industry",
+    "akshare/ths_concept"
+  ],
+  "data_quality_score": 82.5,
+  "market_temperature": {
+    "score": 50.0,
+    "label": "neutral",
+    "description": "市场情绪中性，建议精选板块和个股",
+    "advance_count": 0,
+    "decline_count": 0,
+    "limit_up_count": 0,
+    "limit_down_count": 0
+  },
+  "industry_top": [
+    {
+      "sector_id": "BK1412",
+      "name": "氨纶",
+      "type": "industry",
+      "score": 45.0,
+      "positive_score": 45.0,
+      "risk_penalty": 0.0,
+      "focus_level": "caution",
+      "phase": "startup",
+      "risk_level": "low",
+      "risk_flags": [],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分偏低 (45.0)",
+        "正向信号强度不足"
+      ],
+      "watch_points": [
+        "正向信号强度不足，观望为主"
+      ],
+      "constituents": [
+        {
+          "code": "002064",
+          "name": "华峰化学",
+          "change_pct": 6.22,
+          "is_core": false
+        }
+      ],
+      "data_sources": [
+        "akshare/eastmoney_industry"
+      ],
+      "updated_at": "2026-07-06T14:42:31.368735",
+      "data_quality_score": 70.0,
+      "score_breakdown": {
+        "trend_strength": 17.0,
+        "fund_flow": 6.0,
+        "breadth": 5.0,
+        "persistence": 8.0,
+        "market_fit": 5.0,
+        "data_quality": 4.0,
+        "positive_score": 45.0,
+        "final_score": 45.0,
+        "risk_penalty": 0.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 0.0,
+          "total_penalty": 0.0,
+          "risk_level": "low",
+          "risk_flags": [],
+          "risk_reasons": []
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "BK1305",
+      "name": "燃料电池",
+      "type": "industry",
+      "score": 45.0,
+      "positive_score": 45.0,
+      "risk_penalty": 0.0,
+      "focus_level": "caution",
+      "phase": "startup",
+      "risk_level": "low",
+      "risk_flags": [],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分偏低 (45.0)",
+        "正向信号强度不足"
+      ],
+      "watch_points": [
+        "正向信号强度不足，观望为主"
+      ],
+      "constituents": [
+        {
+          "code": "688339",
+          "name": "亿华通-U",
+          "change_pct": 5.25,
+          "is_core": false
+        }
+      ],
+      "data_sources": [
+        "akshare/eastmoney_industry"
+      ],
+      "updated_at": "2026-07-06T14:42:31.368735",
+      "data_quality_score": 70.0,
+      "score_breakdown": {
+        "trend_strength": 17.0,
+        "fund_flow": 6.0,
+        "breadth": 5.0,
+        "persistence": 8.0,
+        "market_fit": 5.0,
+        "data_quality": 4.0,
+        "positive_score": 45.0,
+        "final_score": 45.0,
+        "risk_penalty": 0.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 0.0,
+          "total_penalty": 0.0,
+          "risk_level": "low",
+          "risk_flags": [],
+          "risk_reasons": []
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "BK1512",
+      "name": "生猪养殖",
+      "type": "industry",
+      "score": 42.0,
+      "positive_score": 42.0,
+      "risk_penalty": 0.0,
+      "focus_level": "avoid",
+      "phase": "startup",
+      "risk_level": "low",
+      "risk_flags": [],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分过低 (42.0)",
+        "板块正向强度不足"
+      ],
+      "watch_points": [],
+      "constituents": [
+        {
+          "code": "603477",
+          "name": "巨星农牧",
+          "change_pct": 9.99,
+          "is_core": false
+        },
+        {
+          "code": "000876",
+          "name": "新 希 望",
+          "change_pct": 7.82,
+          "is_core": false
+        },
+        {
+          "code": "002124",
+          "name": "天邦食品",
+          "change_pct": 6.17,
+          "is_core": false
+        },
+        {
+          "code": "002714",
+          "name": "牧原股份",
+          "change_pct": 5.26,
+          "is_core": false
+        },
+        {
+          "code": "300498",
+          "name": "温氏股份",
+          "change_pct": 5.21,
+          "is_core": false
+        },
+        {
+          "code": "002157",
+          "name": "正邦科技",
+          "change_pct": 4.5,
+          "is_core": false
+        },
+        {
+          "code": "002100",
+          "name": "天康生物",
+          "change_pct": 4.01,
+          "is_core": false
+        },
+        {
+          "code": "600975",
+          "name": "新五丰",
+          "change_pct": 3.74,
+          "is_core": false
+        },
+        {
+          "code": "605296",
+          "name": "神农集团",
+          "change_pct": 3.4,
+          "is_core": false
+        },
+        {
+          "code": "000048",
+          "name": "京基智农",
+          "change_pct": 2.59,
+          "is_core": false
+        }
+      ],
+      "data_sources": [
+        "akshare/eastmoney_industry"
+      ],
+      "updated_at": "2026-07-06T14:42:31.368735",
+      "data_quality_score": 70.0,
+      "score_breakdown": {
+        "trend_strength": 14.0,
+        "fund_flow": 6.0,
+        "breadth": 5.0,
+        "persistence": 8.0,
+        "market_fit": 5.0,
+        "data_quality": 4.0,
+        "positive_score": 42.0,
+        "final_score": 42.0,
+        "risk_penalty": 0.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 0.0,
+          "total_penalty": 0.0,
+          "risk_level": "low",
+          "risk_flags": [],
+          "risk_reasons": []
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "BK1493",
+      "name": "动力煤",
+      "type": "industry",
+      "score": 42.0,
+      "positive_score": 42.0,
+      "risk_penalty": 0.0,
+      "focus_level": "avoid",
+      "phase": "startup",
+      "risk_level": "low",
+      "risk_flags": [],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分过低 (42.0)",
+        "板块正向强度不足"
+      ],
+      "watch_points": [],
+      "constituents": [
+        {
+          "code": "601918",
+          "name": "新集能源",
+          "change_pct": 8.28,
+          "is_core": false
+        },
+        {
+          "code": "601225",
+          "name": "陕西煤业",
+          "change_pct": 7.01,
+          "is_core": false
+        },
+        {
+          "code": "601101",
+          "name": "昊华能源",
+          "change_pct": 6.93,
+          "is_core": false
+        },
+        {
+          "code": "600188",
+          "name": "兖矿能源",
+          "change_pct": 5.79,
+          "is_core": false
+        },
+        {
+          "code": "601898",
+          "name": "中煤能源",
+          "change_pct": 5.68,
+          "is_core": false
+        },
+        {
+          "code": "000552",
+          "name": "甘肃能化",
+          "change_pct": 5.08,
+          "is_core": false
+        },
+        {
+          "code": "600348",
+          "name": "华阳股份",
+          "change_pct": 4.03,
+          "is_core": false
+        },
+        {
+          "code": "600256",
+          "name": "广汇能源",
+          "change_pct": 3.67,
+          "is_core": false
+        },
+        {
+          "code": "601001",
+          "name": "晋控煤业",
+          "change_pct": 3.49,
+          "is_core": false
+        },
+        {
+          "code": "601088",
+          "name": "中国神华",
+          "change_pct": 2.97,
+          "is_core": false
+        }
+      ],
+      "data_sources": [
+        "akshare/eastmoney_industry"
+      ],
+      "updated_at": "2026-07-06T14:42:31.368735",
+      "data_quality_score": 70.0,
+      "score_breakdown": {
+        "trend_strength": 14.0,
+        "fund_flow": 6.0,
+        "breadth": 5.0,
+        "persistence": 8.0,
+        "market_fit": 5.0,
+        "data_quality": 4.0,
+        "positive_score": 42.0,
+        "final_score": 42.0,
+        "risk_penalty": 0.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 0.0,
+          "total_penalty": 0.0,
+          "risk_level": "low",
+          "risk_flags": [],
+          "risk_reasons": []
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "BK1569",
+      "name": "炼油化工",
+      "type": "industry",
+      "score": 42.0,
+      "positive_score": 42.0,
+      "risk_penalty": 0.0,
+      "focus_level": "avoid",
+      "phase": "startup",
+      "risk_level": "low",
+      "risk_flags": [],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分过低 (42.0)",
+        "板块正向强度不足"
+      ],
+      "watch_points": [],
+      "constituents": [
+        {
+          "code": "000301",
+          "name": "东方盛虹",
+          "change_pct": 10.04,
+          "is_core": false
+        },
+        {
+          "code": "000059",
+          "name": "华锦股份",
+          "change_pct": 5.41,
+          "is_core": false
+        },
+        {
+          "code": "600346",
+          "name": "恒力石化",
+          "change_pct": 5.22,
+          "is_core": false
+        },
+        {
+          "code": "002493",
+          "name": "荣盛石化",
+          "change_pct": 5.05,
+          "is_core": false
+        },
+        {
+          "code": "000703",
+          "name": "恒逸石化",
+          "change_pct": 4.26,
+          "is_core": false
+        },
+        {
+          "code": "600688",
+          "name": "上海石化",
+          "change_pct": 2.74,
+          "is_core": false
+        },
+        {
+          "code": "600028",
+          "name": "中国石化",
+          "change_pct": 2.55,
+          "is_core": false
+        },
+        {
+          "code": "601857",
+          "name": "中国石油",
+          "change_pct": 1.45,
+          "is_core": false
+        },
+        {
+          "code": "600506",
+          "name": "统一股份",
+          "change_pct": -0.21,
+          "is_core": false
+        },
+        {
+          "code": "000698",
+          "name": "ST沈化",
+          "change_pct": -1.79,
+          "is_core": false
+        }
+      ],
+      "data_sources": [
+        "akshare/eastmoney_industry"
+      ],
+      "updated_at": "2026-07-06T14:42:31.368735",
+      "data_quality_score": 70.0,
+      "score_breakdown": {
+        "trend_strength": 14.0,
+        "fund_flow": 6.0,
+        "breadth": 5.0,
+        "persistence": 8.0,
+        "market_fit": 5.0,
+        "data_quality": 4.0,
+        "positive_score": 42.0,
+        "final_score": 42.0,
+        "risk_penalty": 0.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 0.0,
+          "total_penalty": 0.0,
+          "risk_level": "low",
+          "risk_flags": [],
+          "risk_reasons": []
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "BK1250",
+      "name": "煤炭开采",
+      "type": "industry",
+      "score": 42.0,
+      "positive_score": 42.0,
+      "risk_penalty": 0.0,
+      "focus_level": "avoid",
+      "phase": "startup",
+      "risk_level": "low",
+      "risk_flags": [],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分过低 (42.0)",
+        "板块正向强度不足"
+      ],
+      "watch_points": [],
+      "constituents": [
+        {
+          "code": "601918",
+          "name": "新集能源",
+          "change_pct": 8.28,
+          "is_core": false
+        },
+        {
+          "code": "601225",
+          "name": "陕西煤业",
+          "change_pct": 7.01,
+          "is_core": false
+        },
+        {
+          "code": "601101",
+          "name": "昊华能源",
+          "change_pct": 6.93,
+          "is_core": false
+        },
+        {
+          "code": "600188",
+          "name": "兖矿能源",
+          "change_pct": 5.79,
+          "is_core": false
+        },
+        {
+          "code": "601898",
+          "name": "中煤能源",
+          "change_pct": 5.68,
+          "is_core": false
+        },
+        {
+          "code": "000552",
+          "name": "甘肃能化",
+          "change_pct": 5.08,
+          "is_core": false
+        },
+        {
+          "code": "601666",
+          "name": "平煤股份",
+          "change_pct": 4.73,
+          "is_core": false
+        },
+        {
+          "code": "600123",
+          "name": "兰花科创",
+          "change_pct": 4.53,
+          "is_core": false
+        },
+        {
+          "code": "600348",
+          "name": "华阳股份",
+          "change_pct": 4.03,
+          "is_core": false
+        },
+        {
+          "code": "000937",
+          "name": "冀中能源",
+          "change_pct": 3.98,
+          "is_core": false
+        }
+      ],
+      "data_sources": [
+        "akshare/eastmoney_industry"
+      ],
+      "updated_at": "2026-07-06T14:42:31.368735",
+      "data_quality_score": 70.0,
+      "score_breakdown": {
+        "trend_strength": 14.0,
+        "fund_flow": 6.0,
+        "breadth": 5.0,
+        "persistence": 8.0,
+        "market_fit": 5.0,
+        "data_quality": 4.0,
+        "positive_score": 42.0,
+        "final_score": 42.0,
+        "risk_penalty": 0.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 0.0,
+          "total_penalty": 0.0,
+          "risk_level": "low",
+          "risk_flags": [],
+          "risk_reasons": []
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "BK1259",
+      "name": "养殖业",
+      "type": "industry",
+      "score": 42.0,
+      "positive_score": 42.0,
+      "risk_penalty": 0.0,
+      "focus_level": "avoid",
+      "phase": "startup",
+      "risk_level": "low",
+      "risk_flags": [],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分过低 (42.0)",
+        "板块正向强度不足"
+      ],
+      "watch_points": [],
+      "constituents": [
+        {
+          "code": "603477",
+          "name": "巨星农牧",
+          "change_pct": 9.99,
+          "is_core": false
+        },
+        {
+          "code": "000876",
+          "name": "新 希 望",
+          "change_pct": 7.82,
+          "is_core": false
+        },
+        {
+          "code": "002124",
+          "name": "天邦食品",
+          "change_pct": 6.17,
+          "is_core": false
+        },
+        {
+          "code": "002714",
+          "name": "牧原股份",
+          "change_pct": 5.26,
+          "is_core": false
+        },
+        {
+          "code": "300498",
+          "name": "温氏股份",
+          "change_pct": 5.21,
+          "is_core": false
+        },
+        {
+          "code": "002157",
+          "name": "正邦科技",
+          "change_pct": 4.5,
+          "is_core": false
+        },
+        {
+          "code": "002100",
+          "name": "天康生物",
+          "change_pct": 4.01,
+          "is_core": false
+        },
+        {
+          "code": "600975",
+          "name": "新五丰",
+          "change_pct": 3.74,
+          "is_core": false
+        },
+        {
+          "code": "300761",
+          "name": "立华股份",
+          "change_pct": 3.51,
+          "is_core": false
+        },
+        {
+          "code": "605296",
+          "name": "神农集团",
+          "change_pct": 3.4,
+          "is_core": false
+        }
+      ],
+      "data_sources": [
+        "akshare/eastmoney_industry"
+      ],
+      "updated_at": "2026-07-06T14:42:31.368735",
+      "data_quality_score": 70.0,
+      "score_breakdown": {
+        "trend_strength": 14.0,
+        "fund_flow": 6.0,
+        "breadth": 5.0,
+        "persistence": 8.0,
+        "market_fit": 5.0,
+        "data_quality": 4.0,
+        "positive_score": 42.0,
+        "final_score": 42.0,
+        "risk_penalty": 0.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 0.0,
+          "total_penalty": 0.0,
+          "risk_level": "low",
+          "risk_flags": [],
+          "risk_reasons": []
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "BK0437",
+      "name": "煤炭",
+      "type": "industry",
+      "score": 38.0,
+      "positive_score": 38.0,
+      "risk_penalty": 0.0,
+      "focus_level": "avoid",
+      "phase": "startup",
+      "risk_level": "low",
+      "risk_flags": [],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分过低 (38.0)",
+        "板块正向强度不足"
+      ],
+      "watch_points": [],
+      "constituents": [
+        {
+          "code": "601918",
+          "name": "新集能源",
+          "change_pct": 8.28,
+          "is_core": false
+        },
+        {
+          "code": "601225",
+          "name": "陕西煤业",
+          "change_pct": 7.01,
+          "is_core": false
+        },
+        {
+          "code": "601101",
+          "name": "昊华能源",
+          "change_pct": 6.93,
+          "is_core": false
+        },
+        {
+          "code": "600188",
+          "name": "兖矿能源",
+          "change_pct": 5.79,
+          "is_core": false
+        },
+        {
+          "code": "601898",
+          "name": "中煤能源",
+          "change_pct": 5.68,
+          "is_core": false
+        },
+        {
+          "code": "000552",
+          "name": "甘肃能化",
+          "change_pct": 5.51,
+          "is_core": false
+        },
+        {
+          "code": "601666",
+          "name": "平煤股份",
+          "change_pct": 4.73,
+          "is_core": false
+        },
+        {
+          "code": "600123",
+          "name": "兰花科创",
+          "change_pct": 4.53,
+          "is_core": false
+        },
+        {
+          "code": "600348",
+          "name": "华阳股份",
+          "change_pct": 4.03,
+          "is_core": false
+        },
+        {
+          "code": "000937",
+          "name": "冀中能源",
+          "change_pct": 3.98,
+          "is_core": false
+        }
+      ],
+      "data_sources": [
+        "akshare/eastmoney_industry"
+      ],
+      "updated_at": "2026-07-06T14:42:31.368735",
+      "data_quality_score": 70.0,
+      "score_breakdown": {
+        "trend_strength": 10.0,
+        "fund_flow": 6.0,
+        "breadth": 5.0,
+        "persistence": 8.0,
+        "market_fit": 5.0,
+        "data_quality": 4.0,
+        "positive_score": 38.0,
+        "final_score": 38.0,
+        "risk_penalty": 0.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 0.0,
+          "total_penalty": 0.0,
+          "risk_level": "low",
+          "risk_flags": [],
+          "risk_reasons": []
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "BK1494",
+      "name": "焦煤",
+      "type": "industry",
+      "score": 38.0,
+      "positive_score": 38.0,
+      "risk_penalty": 0.0,
+      "focus_level": "avoid",
+      "phase": "startup",
+      "risk_level": "low",
+      "risk_flags": [],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分过低 (38.0)",
+        "板块正向强度不足"
+      ],
+      "watch_points": [],
+      "constituents": [
+        {
+          "code": "601666",
+          "name": "平煤股份",
+          "change_pct": 4.73,
+          "is_core": false
+        },
+        {
+          "code": "600123",
+          "name": "兰花科创",
+          "change_pct": 4.53,
+          "is_core": false
+        },
+        {
+          "code": "000937",
+          "name": "冀中能源",
+          "change_pct": 3.98,
+          "is_core": false
+        },
+        {
+          "code": "601699",
+          "name": "潞安环能",
+          "change_pct": 3.34,
+          "is_core": false
+        },
+        {
+          "code": "000983",
+          "name": "山西焦煤",
+          "change_pct": 3.05,
+          "is_core": false
+        },
+        {
+          "code": "600508",
+          "name": "上海能源",
+          "change_pct": 1.97,
+          "is_core": false
+        },
+        {
+          "code": "600971",
+          "name": "恒源煤电",
+          "change_pct": 1.79,
+          "is_core": false
+        },
+        {
+          "code": "600395",
+          "name": "盘江股份",
+          "change_pct": 1.7,
+          "is_core": false
+        },
+        {
+          "code": "600985",
+          "name": "淮北矿业",
+          "change_pct": 1.54,
+          "is_core": false
+        },
+        {
+          "code": "600758",
+          "name": "辽宁能源",
+          "change_pct": 0.0,
+          "is_core": false
+        }
+      ],
+      "data_sources": [
+        "akshare/eastmoney_industry"
+      ],
+      "updated_at": "2026-07-06T14:42:31.368735",
+      "data_quality_score": 70.0,
+      "score_breakdown": {
+        "trend_strength": 10.0,
+        "fund_flow": 6.0,
+        "breadth": 5.0,
+        "persistence": 8.0,
+        "market_fit": 5.0,
+        "data_quality": 4.0,
+        "positive_score": 38.0,
+        "final_score": 38.0,
+        "risk_penalty": 0.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 0.0,
+          "total_penalty": 0.0,
+          "risk_level": "low",
+          "risk_flags": [],
+          "risk_reasons": []
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "BK1609",
+      "name": "城商行Ⅲ",
+      "type": "industry",
+      "score": 38.0,
+      "positive_score": 38.0,
+      "risk_penalty": 0.0,
+      "focus_level": "avoid",
+      "phase": "startup",
+      "risk_level": "low",
+      "risk_flags": [],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分过低 (38.0)",
+        "板块正向强度不足"
+      ],
+      "watch_points": [],
+      "constituents": [
+        {
+          "code": "002948",
+          "name": "青岛银行",
+          "change_pct": 4.74,
+          "is_core": false
+        },
+        {
+          "code": "600928",
+          "name": "西安银行",
+          "change_pct": 4.36,
+          "is_core": false
+        },
+        {
+          "code": "601838",
+          "name": "成都银行",
+          "change_pct": 3.15,
+          "is_core": false
+        },
+        {
+          "code": "601963",
+          "name": "重庆银行",
+          "change_pct": 3.02,
+          "is_core": false
+        },
+        {
+          "code": "601187",
+          "name": "厦门银行",
+          "change_pct": 2.96,
+          "is_core": false
+        },
+        {
+          "code": "601577",
+          "name": "长沙银行",
+          "change_pct": 2.86,
+          "is_core": false
+        },
+        {
+          "code": "002966",
+          "name": "苏州银行",
+          "change_pct": 2.66,
+          "is_core": false
+        },
+        {
+          "code": "601665",
+          "name": "齐鲁银行",
+          "change_pct": 2.56,
+          "is_core": false
+        },
+        {
+          "code": "600919",
+          "name": "江苏银行",
+          "change_pct": 2.51,
+          "is_core": false
+        },
+        {
+          "code": "600926",
+          "name": "杭州银行",
+          "change_pct": 2.47,
+          "is_core": false
+        }
+      ],
+      "data_sources": [
+        "akshare/eastmoney_industry"
+      ],
+      "updated_at": "2026-07-06T14:42:31.368735",
+      "data_quality_score": 70.0,
+      "score_breakdown": {
+        "trend_strength": 10.0,
+        "fund_flow": 6.0,
+        "breadth": 5.0,
+        "persistence": 8.0,
+        "market_fit": 5.0,
+        "data_quality": 4.0,
+        "positive_score": 38.0,
+        "final_score": 38.0,
+        "risk_penalty": 0.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 0.0,
+          "total_penalty": 0.0,
+          "risk_level": "low",
+          "risk_flags": [],
+          "risk_reasons": []
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    }
+  ],
+  "concept_top": [
+    {
+      "sector_id": "ths_concept_阿尔茨海默概念",
+      "name": "阿尔茨海默概念",
+      "type": "concept",
+      "score": 19.0,
+      "positive_score": 26.0,
+      "risk_penalty": 7.0,
+      "focus_level": "avoid",
+      "phase": "divergence",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分过低 (19.0)",
+        "板块正向强度不足"
+      ],
+      "watch_points": [],
+      "constituents": [],
+      "data_sources": [
+        "akshare/ths_concept"
+      ],
+      "updated_at": "2026-07-06T14:42:48.185447",
+      "data_quality_score": 50.0,
+      "score_breakdown": {
+        "heat_burst": 2.0,
+        "fund_confirmation": 5.0,
+        "constituent_linkage": 5.0,
+        "phase_score": 8.0,
+        "catalyst": 3.0,
+        "data_quality": 3.0,
+        "positive_score": 26.0,
+        "final_score": 19.0,
+        "price_change_available": false,
+        "data_quality_warning": "THS 概念缺少涨跌幅数据，热度爆发和催化剂评分偏保守",
+        "max_possible_score_without_price": 34.0,
+        "risk_penalty": 7.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 7.0,
+          "total_penalty": 7.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据质量分偏低 (50); 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "ths_concept_AI PC",
+      "name": "AI PC",
+      "type": "concept",
+      "score": 19.0,
+      "positive_score": 26.0,
+      "risk_penalty": 7.0,
+      "focus_level": "avoid",
+      "phase": "divergence",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分过低 (19.0)",
+        "板块正向强度不足"
+      ],
+      "watch_points": [],
+      "constituents": [],
+      "data_sources": [
+        "akshare/ths_concept"
+      ],
+      "updated_at": "2026-07-06T14:42:48.186449",
+      "data_quality_score": 50.0,
+      "score_breakdown": {
+        "heat_burst": 2.0,
+        "fund_confirmation": 5.0,
+        "constituent_linkage": 5.0,
+        "phase_score": 8.0,
+        "catalyst": 3.0,
+        "data_quality": 3.0,
+        "positive_score": 26.0,
+        "final_score": 19.0,
+        "price_change_available": false,
+        "data_quality_warning": "THS 概念缺少涨跌幅数据，热度爆发和催化剂评分偏保守",
+        "max_possible_score_without_price": 34.0,
+        "risk_penalty": 7.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 7.0,
+          "total_penalty": 7.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据质量分偏低 (50); 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "ths_concept_AI手机",
+      "name": "AI手机",
+      "type": "concept",
+      "score": 19.0,
+      "positive_score": 26.0,
+      "risk_penalty": 7.0,
+      "focus_level": "avoid",
+      "phase": "divergence",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分过低 (19.0)",
+        "板块正向强度不足"
+      ],
+      "watch_points": [],
+      "constituents": [
+        {
+          "code": "300684",
+          "name": "中石科技",
+          "change_pct": 20.0,
+          "is_core": false
+        },
+        {
+          "code": "301308",
+          "name": "江波龙",
+          "change_pct": 10.67,
+          "is_core": false
+        },
+        {
+          "code": "688601",
+          "name": "力芯微",
+          "change_pct": 6.38,
+          "is_core": false
+        },
+        {
+          "code": "688525",
+          "name": "佰维存储",
+          "change_pct": 6.1,
+          "is_core": false
+        },
+        {
+          "code": "301489",
+          "name": "思泉新材",
+          "change_pct": 6.08,
+          "is_core": false
+        },
+        {
+          "code": "300735",
+          "name": "光弘科技",
+          "change_pct": 3.33,
+          "is_core": false
+        },
+        {
+          "code": "300909",
+          "name": "汇创达",
+          "change_pct": 1.73,
+          "is_core": false
+        },
+        {
+          "code": "300218",
+          "name": "安利股份",
+          "change_pct": 1.06,
+          "is_core": false
+        },
+        {
+          "code": "688153",
+          "name": "唯捷创芯",
+          "change_pct": 0.96,
+          "is_core": false
+        },
+        {
+          "code": "688173",
+          "name": "希荻微",
+          "change_pct": 0.7,
+          "is_core": false
+        }
+      ],
+      "data_sources": [
+        "akshare/ths_concept"
+      ],
+      "updated_at": "2026-07-06T14:42:48.186449",
+      "data_quality_score": 50.0,
+      "score_breakdown": {
+        "heat_burst": 2.0,
+        "fund_confirmation": 5.0,
+        "constituent_linkage": 5.0,
+        "phase_score": 8.0,
+        "catalyst": 3.0,
+        "data_quality": 3.0,
+        "positive_score": 26.0,
+        "final_score": 19.0,
+        "price_change_available": false,
+        "data_quality_warning": "THS 概念缺少涨跌幅数据，热度爆发和催化剂评分偏保守",
+        "max_possible_score_without_price": 34.0,
+        "risk_penalty": 7.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 7.0,
+          "total_penalty": 7.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据质量分偏低 (50); 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "ths_concept_AI语料",
+      "name": "AI语料",
+      "type": "concept",
+      "score": 19.0,
+      "positive_score": 26.0,
+      "risk_penalty": 7.0,
+      "focus_level": "avoid",
+      "phase": "divergence",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分过低 (19.0)",
+        "板块正向强度不足"
+      ],
+      "watch_points": [],
+      "constituents": [
+        {
+          "code": "000719",
+          "name": "中原传媒",
+          "change_pct": 5.28,
+          "is_core": false
+        },
+        {
+          "code": "600308",
+          "name": "华泰股份",
+          "change_pct": 2.23,
+          "is_core": false
+        },
+        {
+          "code": "600825",
+          "name": "新华传媒",
+          "change_pct": 1.44,
+          "is_core": false
+        },
+        {
+          "code": "601949",
+          "name": "中国出版",
+          "change_pct": 1.23,
+          "is_core": false
+        },
+        {
+          "code": "603721",
+          "name": "中广天择",
+          "change_pct": 1.02,
+          "is_core": false
+        },
+        {
+          "code": "300413",
+          "name": "芒果超媒",
+          "change_pct": 0.86,
+          "is_core": false
+        },
+        {
+          "code": "300071",
+          "name": "福石控股",
+          "change_pct": 0.76,
+          "is_core": false
+        },
+        {
+          "code": "300418",
+          "name": "昆仑万维",
+          "change_pct": 0.49,
+          "is_core": false
+        },
+        {
+          "code": "002122",
+          "name": "ST汇洲",
+          "change_pct": 0.0,
+          "is_core": false
+        },
+        {
+          "code": "600100",
+          "name": "同方股份",
+          "change_pct": 0.0,
+          "is_core": false
+        }
+      ],
+      "data_sources": [
+        "akshare/ths_concept"
+      ],
+      "updated_at": "2026-07-06T14:42:48.186449",
+      "data_quality_score": 50.0,
+      "score_breakdown": {
+        "heat_burst": 2.0,
+        "fund_confirmation": 5.0,
+        "constituent_linkage": 5.0,
+        "phase_score": 8.0,
+        "catalyst": 3.0,
+        "data_quality": 3.0,
+        "positive_score": 26.0,
+        "final_score": 19.0,
+        "price_change_available": false,
+        "data_quality_warning": "THS 概念缺少涨跌幅数据，热度爆发和催化剂评分偏保守",
+        "max_possible_score_without_price": 34.0,
+        "risk_penalty": 7.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 7.0,
+          "total_penalty": 7.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据质量分偏低 (50); 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "ths_concept_阿里巴巴概念",
+      "name": "阿里巴巴概念",
+      "type": "concept",
+      "score": 19.0,
+      "positive_score": 26.0,
+      "risk_penalty": 7.0,
+      "focus_level": "avoid",
+      "phase": "divergence",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分过低 (19.0)",
+        "板块正向强度不足"
+      ],
+      "watch_points": [],
+      "constituents": [],
+      "data_sources": [
+        "akshare/ths_concept"
+      ],
+      "updated_at": "2026-07-06T14:42:48.186449",
+      "data_quality_score": 50.0,
+      "score_breakdown": {
+        "heat_burst": 2.0,
+        "fund_confirmation": 5.0,
+        "constituent_linkage": 5.0,
+        "phase_score": 8.0,
+        "catalyst": 3.0,
+        "data_quality": 3.0,
+        "positive_score": 26.0,
+        "final_score": 19.0,
+        "price_change_available": false,
+        "data_quality_warning": "THS 概念缺少涨跌幅数据，热度爆发和催化剂评分偏保守",
+        "max_possible_score_without_price": 34.0,
+        "risk_penalty": 7.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 7.0,
+          "total_penalty": 7.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据质量分偏低 (50); 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "ths_concept_安防",
+      "name": "安防",
+      "type": "concept",
+      "score": 19.0,
+      "positive_score": 26.0,
+      "risk_penalty": 7.0,
+      "focus_level": "avoid",
+      "phase": "divergence",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分过低 (19.0)",
+        "板块正向强度不足"
+      ],
+      "watch_points": [],
+      "constituents": [],
+      "data_sources": [
+        "akshare/ths_concept"
+      ],
+      "updated_at": "2026-07-06T14:42:48.186449",
+      "data_quality_score": 50.0,
+      "score_breakdown": {
+        "heat_burst": 2.0,
+        "fund_confirmation": 5.0,
+        "constituent_linkage": 5.0,
+        "phase_score": 8.0,
+        "catalyst": 3.0,
+        "data_quality": 3.0,
+        "positive_score": 26.0,
+        "final_score": 19.0,
+        "price_change_available": false,
+        "data_quality_warning": "THS 概念缺少涨跌幅数据，热度爆发和催化剂评分偏保守",
+        "max_possible_score_without_price": 34.0,
+        "risk_penalty": 7.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 7.0,
+          "total_penalty": 7.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据质量分偏低 (50); 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "ths_concept_白酒概念",
+      "name": "白酒概念",
+      "type": "concept",
+      "score": 19.0,
+      "positive_score": 26.0,
+      "risk_penalty": 7.0,
+      "focus_level": "avoid",
+      "phase": "divergence",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分过低 (19.0)",
+        "板块正向强度不足"
+      ],
+      "watch_points": [],
+      "constituents": [],
+      "data_sources": [
+        "akshare/ths_concept"
+      ],
+      "updated_at": "2026-07-06T14:42:48.186449",
+      "data_quality_score": 50.0,
+      "score_breakdown": {
+        "heat_burst": 2.0,
+        "fund_confirmation": 5.0,
+        "constituent_linkage": 5.0,
+        "phase_score": 8.0,
+        "catalyst": 3.0,
+        "data_quality": 3.0,
+        "positive_score": 26.0,
+        "final_score": 19.0,
+        "price_change_available": false,
+        "data_quality_warning": "THS 概念缺少涨跌幅数据，热度爆发和催化剂评分偏保守",
+        "max_possible_score_without_price": 34.0,
+        "risk_penalty": 7.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 7.0,
+          "total_penalty": 7.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据质量分偏低 (50); 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "ths_concept_BC电池",
+      "name": "BC电池",
+      "type": "concept",
+      "score": 19.0,
+      "positive_score": 26.0,
+      "risk_penalty": 7.0,
+      "focus_level": "avoid",
+      "phase": "divergence",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分过低 (19.0)",
+        "板块正向强度不足"
+      ],
+      "watch_points": [],
+      "constituents": [
+        {
+          "code": "688147",
+          "name": "微导纳米",
+          "change_pct": 4.94,
+          "is_core": false
+        },
+        {
+          "code": "688700",
+          "name": "东威科技",
+          "change_pct": 0.88,
+          "is_core": false
+        },
+        {
+          "code": "603051",
+          "name": "鹿山新材",
+          "change_pct": 0.32,
+          "is_core": false
+        },
+        {
+          "code": "301327",
+          "name": "华宝新能",
+          "change_pct": -0.25,
+          "is_core": false
+        },
+        {
+          "code": "002306",
+          "name": "ST云网",
+          "change_pct": -0.48,
+          "is_core": false
+        },
+        {
+          "code": "688025",
+          "name": "杰普特",
+          "change_pct": -0.76,
+          "is_core": false
+        },
+        {
+          "code": "600438",
+          "name": "通威股份",
+          "change_pct": -1.1,
+          "is_core": false
+        },
+        {
+          "code": "601012",
+          "name": "隆基绿能",
+          "change_pct": -1.27,
+          "is_core": false
+        },
+        {
+          "code": "002079",
+          "name": "苏州固锝",
+          "change_pct": -1.7,
+          "is_core": false
+        },
+        {
+          "code": "600732",
+          "name": "爱旭股份",
+          "change_pct": -2.32,
+          "is_core": false
+        }
+      ],
+      "data_sources": [
+        "akshare/ths_concept"
+      ],
+      "updated_at": "2026-07-06T14:42:48.186449",
+      "data_quality_score": 50.0,
+      "score_breakdown": {
+        "heat_burst": 2.0,
+        "fund_confirmation": 5.0,
+        "constituent_linkage": 5.0,
+        "phase_score": 8.0,
+        "catalyst": 3.0,
+        "data_quality": 3.0,
+        "positive_score": 26.0,
+        "final_score": 19.0,
+        "price_change_available": false,
+        "data_quality_warning": "THS 概念缺少涨跌幅数据，热度爆发和催化剂评分偏保守",
+        "max_possible_score_without_price": 34.0,
+        "risk_penalty": 7.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 7.0,
+          "total_penalty": 7.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据质量分偏低 (50); 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "ths_concept_百度概念",
+      "name": "百度概念",
+      "type": "concept",
+      "score": 19.0,
+      "positive_score": 26.0,
+      "risk_penalty": 7.0,
+      "focus_level": "avoid",
+      "phase": "divergence",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分过低 (19.0)",
+        "板块正向强度不足"
+      ],
+      "watch_points": [],
+      "constituents": [
+        {
+          "code": "002607",
+          "name": "中公教育",
+          "change_pct": 10.0,
+          "is_core": false
+        },
+        {
+          "code": "300561",
+          "name": "汇金科技",
+          "change_pct": 9.88,
+          "is_core": false
+        },
+        {
+          "code": "300338",
+          "name": "*ST开元",
+          "change_pct": 8.1,
+          "is_core": false
+        },
+        {
+          "code": "688520",
+          "name": "神州细胞",
+          "change_pct": 5.66,
+          "is_core": false
+        },
+        {
+          "code": "300249",
+          "name": "依米康",
+          "change_pct": 5.2,
+          "is_core": false
+        },
+        {
+          "code": "000977",
+          "name": "浪潮信息",
+          "change_pct": 4.99,
+          "is_core": false
+        },
+        {
+          "code": "688041",
+          "name": "海光信息",
+          "change_pct": 3.84,
+          "is_core": false
+        },
+        {
+          "code": "002301",
+          "name": "齐心集团",
+          "change_pct": 3.46,
+          "is_core": false
+        },
+        {
+          "code": "000521",
+          "name": "长虹美菱",
+          "change_pct": 3.4,
+          "is_core": false
+        },
+        {
+          "code": "603466",
+          "name": "风语筑",
+          "change_pct": 2.49,
+          "is_core": false
+        }
+      ],
+      "data_sources": [
+        "akshare/ths_concept"
+      ],
+      "updated_at": "2026-07-06T14:42:48.186449",
+      "data_quality_score": 50.0,
+      "score_breakdown": {
+        "heat_burst": 2.0,
+        "fund_confirmation": 5.0,
+        "constituent_linkage": 5.0,
+        "phase_score": 8.0,
+        "catalyst": 3.0,
+        "data_quality": 3.0,
+        "positive_score": 26.0,
+        "final_score": 19.0,
+        "price_change_available": false,
+        "data_quality_warning": "THS 概念缺少涨跌幅数据，热度爆发和催化剂评分偏保守",
+        "max_possible_score_without_price": 34.0,
+        "risk_penalty": 7.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 7.0,
+          "total_penalty": 7.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据质量分偏低 (50); 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    },
+    {
+      "sector_id": "ths_concept_丙烯酸",
+      "name": "丙烯酸",
+      "type": "concept",
+      "score": 19.0,
+      "positive_score": 26.0,
+      "risk_penalty": 7.0,
+      "focus_level": "avoid",
+      "phase": "divergence",
+      "risk_level": "low",
+      "risk_flags": [
+        "data_quality_low"
+      ],
+      "reasons": [],
+      "downgrade_reasons": [
+        "最终评分过低 (19.0)",
+        "板块正向强度不足"
+      ],
+      "watch_points": [],
+      "constituents": [],
+      "data_sources": [
+        "akshare/ths_concept"
+      ],
+      "updated_at": "2026-07-06T14:42:48.186449",
+      "data_quality_score": 50.0,
+      "score_breakdown": {
+        "heat_burst": 2.0,
+        "fund_confirmation": 5.0,
+        "constituent_linkage": 5.0,
+        "phase_score": 8.0,
+        "catalyst": 3.0,
+        "data_quality": 3.0,
+        "positive_score": 26.0,
+        "final_score": 19.0,
+        "price_change_available": false,
+        "data_quality_warning": "THS 概念缺少涨跌幅数据，热度爆发和催化剂评分偏保守",
+        "max_possible_score_without_price": 34.0,
+        "risk_penalty": 7.0,
+        "risk_breakdown": {
+          "overheat_penalty": 0.0,
+          "divergence_penalty": 0.0,
+          "data_quality_penalty": 7.0,
+          "total_penalty": 7.0,
+          "risk_level": "low",
+          "risk_flags": [
+            "data_quality_low"
+          ],
+          "risk_reasons": [
+            "数据质量: 数据质量分偏低 (50); 数据源不足 (1个)"
+          ]
+        }
+      },
+      "previous_rank": null,
+      "rank_change": null
+    }
+  ],
+  "overlap": [],
+  "risk_summary": {
+    "high_risk_count": 0,
+    "medium_risk_count": 0,
+    "overheat_sectors": [],
+    "divergence_sectors": []
+  },
+  "data_quality": {
+    "overall_score": 82.5,
+    "low_quality_sectors": [
+      "阿尔茨海默概念",
+      "AI PC",
+      "AI手机",
+      "AI语料",
+      "阿里巴巴概念",
+      "安防",
+      "白酒概念",
+      "BC电池",
+      "百度概念",
+      "丙烯酸"
+    ],
+    "sector_count": 20
+  },
+  "disclaimer": "本报告仅用于板块强弱筛选和研究复盘，不作为个股操作依据或自动交易指令。",
+  "status": "ok",
+  "provider_status": {
+    "effective_provider": "mixed",
+    "industry_source": "akshare/eastmoney_industry",
+    "concept_source": "akshare/ths_concept",
+    "fallback_used": true,
+    "fallback_provider": "ths",
+    "fallback_reason": "东方财富概念接口失败: ProxyError",
+    "industry_count": 20,
+    "concept_count": 20,
+    "em_industry_error": "",
+    "em_concept_error": "ProxyError: HTTPSConnectionPool(host='79.push2.eastmoney.com', port=443): Max retries exceeded with url: /api/qt",
+    "concept_price_change_available": false
+  },
+  "data_completeness": {
+    "industry_count": 20,
+    "concept_count": 20,
+    "industry_min_count": 20,
+    "concept_min_count": 20
+  },
+  "cache_fallback": {
+    "is_fallback": false,
+    "source_as_of_date": null,
+    "cache_created_at": "2026-07-06T14:43:33.612724"
+  },
+  "fund_flow_coverage": {
+    "industry_matched": 0,
+    "concept_matched": 0,
+    "unmatched": 0,
+    "status": "ok"
+  },
+  "constituent_coverage": {
+    "enriched_count": 14,
+    "total_candidates": 20,
+    "coverage_rate": 70.0,
+    "status": "ok"
+  },
+  "rotation_summary": {
+    "industry": {
+      "new_entries": [
+        "氨纶",
+        "燃料电池",
+        "生猪养殖",
+        "动力煤",
+        "炼油化工",
+        "煤炭开采",
+        "养殖业",
+        "煤炭",
+        "焦煤",
+        "城商行Ⅲ"
+      ],
+      "dropped_out": [
+        "人工智能",
+        "芯片",
+        "新能源汽车",
+        "锂电池",
+        "电力设备",
+        "医药生物",
+        "电子",
+        "新能源",
+        "半导体",
+        "有色金属"
+      ],
+      "rising_fast": [],
+      "persistent_strength": [],
+      "risk_up": []
+    },
+    "concept": {
+      "new_entries": [
+        "阿尔茨海默概念",
+        "AI PC",
+        "AI手机",
+        "AI语料",
+        "阿里巴巴概念",
+        "安防",
+        "白酒概念",
+        "BC电池",
+        "百度概念",
+        "丙烯酸"
+      ],
+      "dropped_out": [
+        "云计算",
+        "元宇宙",
+        "CPO概念",
+        "网络安全",
+        "储能",
+        "机器人概念",
+        "人工智能概念",
+        "芯片概念",
+        "ChatGPT概念",
+        "新能源车"
+      ],
+      "rising_fast": [],
+      "persistent_strength": [],
+      "risk_up": []
+    }
+  },
+  "comparison": {
+    "compare_to_date": null,
+    "comparison_source": "lookback:5days",
+    "comparison_status": "ok",
+    "warnings": []
+  },
+  "run_mode": "daily",
+  "provider": "akshare",
+  "offline_fixture": false,
+  "fixture_profile": "full",
+  "data_source_mode": "cache_replay",
+  "report_dir": "reports/theme_sector_radar\\2026-07-06",
+  "generated_by_command": ""
+}

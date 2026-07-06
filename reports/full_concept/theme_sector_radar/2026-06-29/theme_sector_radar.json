@@ -1,0 +1,1856 @@
+{
+  "report_type": "theme_sector_radar",
+  "version": "0.1.0",
+  "as_of_date": "2026-06-29",
+  "updated_at": "2026-07-05T22:01:49.426534",
+  "status": "ok",
+  "market_temperature": {
+    "score": 43.8,
+    "label": "cold",
+    "description": "市场温度: cold",
+    "advance_count": 38,
+    "decline_count": 78,
+    "limit_up_count": 0,
+    "limit_down_count": 0
+  },
+  "market_breadth": {
+    "industry_total_count": 120,
+    "industry_up_count": 38,
+    "industry_down_count": 78,
+    "industry_flat_count": 4,
+    "industry_up_ratio": 0.3167,
+    "industry_down_ratio": 0.65,
+    "average_industry_change_pct": -0.0134,
+    "median_industry_change_pct": -0.5926,
+    "strong_industry_count": 14,
+    "weak_industry_count": 7,
+    "strong_industry_ratio": 0.1167,
+    "weak_industry_ratio": 0.0583,
+    "breadth_label": "narrow_rising",
+    "replay_market_temperature_label": "cold",
+    "replay_market_temperature_score": 43.8
+  },
+  "industry_top": [],
+  "concept_top": [
+    {
+      "sector_id": "replay_concept_仿制药一致性评价",
+      "name": "仿制药一致性评价",
+      "type": "concept",
+      "price_change_pct": 5.16,
+      "turnover": 44368536000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 91,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_创新药",
+      "name": "创新药",
+      "type": "concept",
+      "price_change_pct": 6.08,
+      "turnover": 123952304000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 91,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_重组蛋白",
+      "name": "重组蛋白",
+      "type": "concept",
+      "price_change_pct": 7.02,
+      "turnover": 20750448000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 91,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_合成生物",
+      "name": "合成生物",
+      "type": "concept",
+      "price_change_pct": 3.09,
+      "turnover": 62924186000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 76,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_国家大基金持股",
+      "name": "国家大基金持股",
+      "type": "concept",
+      "price_change_pct": 4.38,
+      "turnover": 304209770000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 76,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_猴痘概念",
+      "name": "猴痘概念",
+      "type": "concept",
+      "price_change_pct": 4.88,
+      "turnover": 21075224000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 76,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_肝炎概念",
+      "name": "肝炎概念",
+      "type": "concept",
+      "price_change_pct": 4.78,
+      "turnover": 33614477000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 76,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_芬太尼",
+      "name": "芬太尼",
+      "type": "concept",
+      "price_change_pct": 3.1,
+      "turnover": 1268246500.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 76,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_辅助生殖",
+      "name": "辅助生殖",
+      "type": "concept",
+      "price_change_pct": 4.74,
+      "turnover": 30933337000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 76,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_阿尔茨海默概念",
+      "name": "阿尔茨海默概念",
+      "type": "concept",
+      "price_change_pct": 4.81,
+      "turnover": 14714567000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 76,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_三胎概念",
+      "name": "三胎概念",
+      "type": "concept",
+      "price_change_pct": 1.42,
+      "turnover": 35534178000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 56,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_光刻胶",
+      "name": "光刻胶",
+      "type": "concept",
+      "price_change_pct": 1.57,
+      "turnover": 132676715000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 56,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_动物疫苗",
+      "name": "动物疫苗",
+      "type": "concept",
+      "price_change_pct": 2.05,
+      "turnover": 6589365200.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 56,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_存储芯片",
+      "name": "存储芯片",
+      "type": "concept",
+      "price_change_pct": 1.75,
+      "turnover": 787179640000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 56,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_宠物经济",
+      "name": "宠物经济",
+      "type": "concept",
+      "price_change_pct": 1.78,
+      "turnover": 25638769000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 56,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_工业大麻",
+      "name": "工业大麻",
+      "type": "concept",
+      "price_change_pct": 1.92,
+      "turnover": 7740883500.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 56,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_氟化工概念",
+      "name": "氟化工概念",
+      "type": "concept",
+      "price_change_pct": 2.89,
+      "turnover": 121805246000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 56,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_白酒概念",
+      "name": "白酒概念",
+      "type": "concept",
+      "price_change_pct": 1.01,
+      "turnover": 23458782000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 56,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_超导概念",
+      "name": "超导概念",
+      "type": "concept",
+      "price_change_pct": 2.66,
+      "turnover": 61115077000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 56,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_超级品牌",
+      "name": "超级品牌",
+      "type": "concept",
+      "price_change_pct": 1.75,
+      "turnover": 54321000000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 56,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_高压氧舱",
+      "name": "高压氧舱",
+      "type": "concept",
+      "price_change_pct": 2.73,
+      "turnover": 3177013300.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 56,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_高股息精选",
+      "name": "高股息精选",
+      "type": "concept",
+      "price_change_pct": 1.09,
+      "turnover": 115714539000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 56,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_丙烯酸",
+      "name": "丙烯酸",
+      "type": "concept",
+      "price_change_pct": 0.51,
+      "turnover": 12176327900.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 36,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_供销社",
+      "name": "供销社",
+      "type": "concept",
+      "price_change_pct": 0.61,
+      "turnover": 2807695900.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 36,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_俄乌冲突概念",
+      "name": "俄乌冲突概念",
+      "type": "concept",
+      "price_change_pct": 0.27,
+      "turnover": 48553730000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 36,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_共同富裕示范区",
+      "name": "共同富裕示范区",
+      "type": "concept",
+      "price_change_pct": 0.15,
+      "turnover": 81134087000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 36,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_冰雪产业",
+      "name": "冰雪产业",
+      "type": "concept",
+      "price_change_pct": 0.64,
+      "turnover": 12632169200.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 36,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_化肥",
+      "name": "化肥",
+      "type": "concept",
+      "price_change_pct": 0.1,
+      "turnover": 32707252000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 36,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_参股保险",
+      "name": "参股保险",
+      "type": "concept",
+      "price_change_pct": 0.97,
+      "turnover": 26418240000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 36,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_参股券商",
+      "name": "参股券商",
+      "type": "concept",
+      "price_change_pct": 0.42,
+      "turnover": 42887562000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 36,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_参股银行",
+      "name": "参股银行",
+      "type": "concept",
+      "price_change_pct": 0.42,
+      "turnover": 76956103000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 36,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_国企改革",
+      "name": "国企改革",
+      "type": "concept",
+      "price_change_pct": 0.15,
+      "turnover": 903184630000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 36,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_大豆",
+      "name": "大豆",
+      "type": "concept",
+      "price_change_pct": 0.24,
+      "turnover": 3618997700.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 36,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_海南自贸区",
+      "name": "海南自贸区",
+      "type": "concept",
+      "price_change_pct": 0.14,
+      "turnover": 17264032000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 36,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_福建自贸区",
+      "name": "福建自贸区",
+      "type": "concept",
+      "price_change_pct": 0.1,
+      "turnover": 78901223000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 36,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_第三代半导体",
+      "name": "第三代半导体",
+      "type": "concept",
+      "price_change_pct": 0.38,
+      "turnover": 458532710000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 36,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_航运概念",
+      "name": "航运概念",
+      "type": "concept",
+      "price_change_pct": 0.07,
+      "turnover": 22655387000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 36,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_超超临界发电",
+      "name": "超超临界发电",
+      "type": "concept",
+      "price_change_pct": 0.27,
+      "turnover": 37672169000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 36,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_黄金概念",
+      "name": "黄金概念",
+      "type": "concept",
+      "price_change_pct": 0.88,
+      "turnover": 72324999000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 36,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_黑龙江自贸区",
+      "name": "黑龙江自贸区",
+      "type": "concept",
+      "price_change_pct": 0.53,
+      "turnover": 7407766000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 36,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_AI PC",
+      "name": "AI PC",
+      "type": "concept",
+      "price_change_pct": -1.59,
+      "turnover": 194453290000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_AI手机",
+      "name": "AI手机",
+      "type": "concept",
+      "price_change_pct": -2.42,
+      "turnover": 133830731000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_AI语料",
+      "name": "AI语料",
+      "type": "concept",
+      "price_change_pct": -0.74,
+      "turnover": 30067151000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_BC电池",
+      "name": "BC电池",
+      "type": "concept",
+      "price_change_pct": -1.36,
+      "turnover": 64284973000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_EDR概念",
+      "name": "EDR概念",
+      "type": "concept",
+      "price_change_pct": -0.77,
+      "turnover": 34057015000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_ERP概念",
+      "name": "ERP概念",
+      "type": "concept",
+      "price_change_pct": -0.95,
+      "turnover": 12147862100.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_ETC",
+      "name": "ETC",
+      "type": "concept",
+      "price_change_pct": -1.05,
+      "turnover": 14365823000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_F5G概念",
+      "name": "F5G概念",
+      "type": "concept",
+      "price_change_pct": -2.86,
+      "turnover": 136735990000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_东数西算(算力)",
+      "name": "东数西算(算力)",
+      "type": "concept",
+      "price_change_pct": -1.49,
+      "turnover": 488126300000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_互联网金融",
+      "name": "互联网金融",
+      "type": "concept",
+      "price_change_pct": -1.02,
+      "turnover": 77193325000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_代糖概念",
+      "name": "代糖概念",
+      "type": "concept",
+      "price_change_pct": -0.13,
+      "turnover": 8772732200.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_传感器",
+      "name": "传感器",
+      "type": "concept",
+      "price_change_pct": -0.93,
+      "turnover": 338166860000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_低空经济",
+      "name": "低空经济",
+      "type": "concept",
+      "price_change_pct": -1.09,
+      "turnover": 343964690000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_储能",
+      "name": "储能",
+      "type": "concept",
+      "price_change_pct": -0.91,
+      "turnover": 727048120000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_充电桩",
+      "name": "充电桩",
+      "type": "concept",
+      "price_change_pct": -0.79,
+      "turnover": 325237880000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_光伏概念",
+      "name": "光伏概念",
+      "type": "concept",
+      "price_change_pct": -0.66,
+      "turnover": 716443920000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_光刻机",
+      "name": "光刻机",
+      "type": "concept",
+      "price_change_pct": -0.63,
+      "turnover": 107118762000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_光热发电",
+      "name": "光热发电",
+      "type": "concept",
+      "price_change_pct": -1.12,
+      "turnover": 13318736200.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_共享单车",
+      "name": "共享单车",
+      "type": "concept",
+      "price_change_pct": -0.23,
+      "turnover": 1827858900.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_共封装光学(CPO)",
+      "name": "共封装光学(CPO)",
+      "type": "concept",
+      "price_change_pct": -2.8,
+      "turnover": 742784860000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_军工",
+      "name": "军工",
+      "type": "concept",
+      "price_change_pct": -1.31,
+      "turnover": 461563610000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_创投",
+      "name": "创投",
+      "type": "concept",
+      "price_change_pct": -0.31,
+      "turnover": 353516460000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_动力电池回收",
+      "name": "动力电池回收",
+      "type": "concept",
+      "price_change_pct": -1.09,
+      "turnover": 91778759000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_华为概念",
+      "name": "华为概念",
+      "type": "concept",
+      "price_change_pct": -1.11,
+      "turnover": 1031137170000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_华为欧拉",
+      "name": "华为欧拉",
+      "type": "concept",
+      "price_change_pct": -0.65,
+      "turnover": 17900586000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_华为汽车",
+      "name": "华为汽车",
+      "type": "concept",
+      "price_change_pct": -0.84,
+      "turnover": 143952730000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_华为海思概念股",
+      "name": "华为海思概念股",
+      "type": "concept",
+      "price_change_pct": -1.79,
+      "turnover": 82114019000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_华为鲲鹏",
+      "name": "华为鲲鹏",
+      "type": "concept",
+      "price_change_pct": -0.83,
+      "turnover": 82331066000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_固废处理",
+      "name": "固废处理",
+      "type": "concept",
+      "price_change_pct": -0.56,
+      "turnover": 44457372000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_固态电池",
+      "name": "固态电池",
+      "type": "concept",
+      "price_change_pct": -1.11,
+      "turnover": 362275990000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_国产操作系统",
+      "name": "国产操作系统",
+      "type": "concept",
+      "price_change_pct": -1.1,
+      "turnover": 76680344000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_国产航母",
+      "name": "国产航母",
+      "type": "concept",
+      "price_change_pct": -0.62,
+      "turnover": 33505031000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_国资云",
+      "name": "国资云",
+      "type": "concept",
+      "price_change_pct": -0.67,
+      "turnover": 33731347000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_地下管网",
+      "name": "地下管网",
+      "type": "concept",
+      "price_change_pct": -0.33,
+      "turnover": 16381409000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_多模态AI",
+      "name": "多模态AI",
+      "type": "concept",
+      "price_change_pct": -0.86,
+      "turnover": 78774724000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_大飞机",
+      "name": "大飞机",
+      "type": "concept",
+      "price_change_pct": -1.09,
+      "turnover": 119423195000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_宁德时代概念",
+      "name": "宁德时代概念",
+      "type": "concept",
+      "price_change_pct": -1.02,
+      "turnover": 346510650000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_安防",
+      "name": "安防",
+      "type": "concept",
+      "price_change_pct": -1.0,
+      "turnover": 115534863000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_富士康概念",
+      "name": "富士康概念",
+      "type": "concept",
+      "price_change_pct": -2.39,
+      "turnover": 168621050000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_工业互联网",
+      "name": "工业互联网",
+      "type": "concept",
+      "price_change_pct": -0.59,
+      "turnover": 374708860000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_工业母机",
+      "name": "工业母机",
+      "type": "concept",
+      "price_change_pct": -1.23,
+      "turnover": 108208852000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_广东自贸区",
+      "name": "广东自贸区",
+      "type": "concept",
+      "price_change_pct": -1.31,
+      "turnover": 7858672500.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_成飞概念",
+      "name": "成飞概念",
+      "type": "concept",
+      "price_change_pct": -2.77,
+      "turnover": 20836986000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_抖音概念(字节概念)",
+      "name": "抖音概念(字节概念)",
+      "type": "concept",
+      "price_change_pct": -1.05,
+      "turnover": 184325300000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_抽水蓄能",
+      "name": "抽水蓄能",
+      "type": "concept",
+      "price_change_pct": -0.33,
+      "turnover": 47857985000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_换电概念",
+      "name": "换电概念",
+      "type": "concept",
+      "price_change_pct": -1.03,
+      "turnover": 57559081000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_核污染防治",
+      "name": "核污染防治",
+      "type": "concept",
+      "price_change_pct": -0.79,
+      "turnover": 27727309000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_核电",
+      "name": "核电",
+      "type": "concept",
+      "price_change_pct": -0.48,
+      "turnover": 229550310000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_横琴新区",
+      "name": "横琴新区",
+      "type": "concept",
+      "price_change_pct": -0.91,
+      "turnover": 16811815000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_比亚迪概念",
+      "name": "比亚迪概念",
+      "type": "concept",
+      "price_change_pct": -1.11,
+      "turnover": 619387920000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_毫米波雷达",
+      "name": "毫米波雷达",
+      "type": "concept",
+      "price_change_pct": -2.48,
+      "turnover": 216835070000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_海峡两岸",
+      "name": "海峡两岸",
+      "type": "concept",
+      "price_change_pct": -0.58,
+      "turnover": 298968420000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_海工装备",
+      "name": "海工装备",
+      "type": "concept",
+      "price_change_pct": -1.12,
+      "turnover": 215194630000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_独角兽概念",
+      "name": "独角兽概念",
+      "type": "concept",
+      "price_change_pct": -0.12,
+      "turnover": 87711917000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_环氧丙烷",
+      "name": "环氧丙烷",
+      "type": "concept",
+      "price_change_pct": -0.74,
+      "turnover": 17939429000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_电力物联网",
+      "name": "电力物联网",
+      "type": "concept",
+      "price_change_pct": -0.82,
+      "turnover": 31387838000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_电子竞技",
+      "name": "电子竞技",
+      "type": "concept",
+      "price_change_pct": -0.44,
+      "turnover": 20764496000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_电子纸",
+      "name": "电子纸",
+      "type": "concept",
+      "price_change_pct": -2.63,
+      "turnover": 63225940000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_电子身份证",
+      "name": "电子身份证",
+      "type": "concept",
+      "price_change_pct": -1.76,
+      "turnover": 8209670400.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_百度概念",
+      "name": "百度概念",
+      "type": "concept",
+      "price_change_pct": -1.13,
+      "turnover": 174327970000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_短剧游戏",
+      "name": "短剧游戏",
+      "type": "concept",
+      "price_change_pct": -0.07,
+      "turnover": 41509202000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_硅能源",
+      "name": "硅能源",
+      "type": "concept",
+      "price_change_pct": -0.22,
+      "turnover": 76557837000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_股权转让(并购重组)",
+      "name": "股权转让(并购重组)",
+      "type": "concept",
+      "price_change_pct": -0.36,
+      "turnover": 247988970000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_航空发动机",
+      "name": "航空发动机",
+      "type": "concept",
+      "price_change_pct": -1.41,
+      "turnover": 80712923000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_草甘膦",
+      "name": "草甘膦",
+      "type": "concept",
+      "price_change_pct": -1.19,
+      "turnover": 9625050800.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_超级电容",
+      "name": "超级电容",
+      "type": "concept",
+      "price_change_pct": -0.97,
+      "turnover": 104182098000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_车联网(车路协同)",
+      "name": "车联网(车路协同)",
+      "type": "concept",
+      "price_change_pct": -1.14,
+      "turnover": 177651170000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_金属钴",
+      "name": "金属钴",
+      "type": "concept",
+      "price_change_pct": -0.31,
+      "turnover": 53697922000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_钒电池",
+      "name": "钒电池",
+      "type": "concept",
+      "price_change_pct": -0.09,
+      "turnover": 20187348000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_钙钛矿电池",
+      "name": "钙钛矿电池",
+      "type": "concept",
+      "price_change_pct": -0.88,
+      "turnover": 153010990000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_锂电池概念",
+      "name": "锂电池概念",
+      "type": "concept",
+      "price_change_pct": -0.92,
+      "turnover": 650120760000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_长三角一体化",
+      "name": "长三角一体化",
+      "type": "concept",
+      "price_change_pct": -0.23,
+      "turnover": 105384893000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_长安汽车概念",
+      "name": "长安汽车概念",
+      "type": "concept",
+      "price_change_pct": -0.95,
+      "turnover": 170937430000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_阿里巴巴概念",
+      "name": "阿里巴巴概念",
+      "type": "concept",
+      "price_change_pct": -0.81,
+      "turnover": 308425630000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_风电",
+      "name": "风电",
+      "type": "concept",
+      "price_change_pct": -0.71,
+      "turnover": 317134320000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_飞行汽车(eVTOL)",
+      "name": "飞行汽车(eVTOL)",
+      "type": "concept",
+      "price_change_pct": -0.79,
+      "turnover": 80581961000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_高压快充",
+      "name": "高压快充",
+      "type": "concept",
+      "price_change_pct": -0.52,
+      "turnover": 132877768000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_高端装备",
+      "name": "高端装备",
+      "type": "concept",
+      "price_change_pct": -0.54,
+      "turnover": 273302410000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_高铁",
+      "name": "高铁",
+      "type": "concept",
+      "price_change_pct": -0.85,
+      "turnover": 82484178000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_concept_鸿蒙概念",
+      "name": "鸿蒙概念",
+      "type": "concept",
+      "price_change_pct": -0.53,
+      "turnover": 102884859000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    }
+  ],
+  "data_quality_score": 60.0,
+  "provider_status": {
+    "effective_provider": "sector_history_replay",
+    "industry_source": "sector_history_replay",
+    "concept_source": "sector_history_replay"
+  },
+  "data_completeness": {
+    "industry_count": 0,
+    "concept_count": 120
+  },
+  "run_mode": "replay",
+  "data_source_mode": "sector_history_replay",
+  "generated_by_command": "--replay-daily-from-sector-history --as-of 2026-06-29",
+  "disclaimer": "本报告仅用于板块研究、观察和复盘，不作为操作依据。",
+  "metadata": {
+    "replay_source": "sector_history",
+    "signal_date": "2026-06-29",
+    "max_source_record_date": "2026-06-29",
+    "no_lookahead_passed": true
+  }
+}

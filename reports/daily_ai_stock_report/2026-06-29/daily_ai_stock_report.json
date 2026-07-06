@@ -1,0 +1,1710 @@
+{
+  "as_of": "2026-06-29",
+  "status": "ok",
+  "generated_at": "2026-07-05T22:15:21.985084",
+  "board_summary": {
+    "industry_top10": [
+      {
+        "name": "半导体",
+        "agent_label": "trend_confirmed",
+        "ranking_score": 0.84,
+        "opportunity_score": 0.64,
+        "evidence_score": 0.7,
+        "risk_control_score": 1.0,
+        "confidence_score": 0.8,
+        "trend_score": 0,
+        "burst_score": 0
+      },
+      {
+        "name": "电子化学品",
+        "agent_label": "trend_confirmed",
+        "ranking_score": 0.83,
+        "opportunity_score": 0.63,
+        "evidence_score": 0.7,
+        "risk_control_score": 1.0,
+        "confidence_score": 0.8,
+        "trend_score": 0,
+        "burst_score": 0
+      },
+      {
+        "name": "医疗服务",
+        "agent_label": "trend_confirmed",
+        "ranking_score": 0.78,
+        "opportunity_score": 0.51,
+        "evidence_score": 0.7,
+        "risk_control_score": 1.0,
+        "confidence_score": 0.9,
+        "trend_score": 0,
+        "burst_score": 0
+      },
+      {
+        "name": "中药",
+        "agent_label": "trend_confirmed_but_strength_limited",
+        "ranking_score": 0.57,
+        "opportunity_score": 0.39,
+        "evidence_score": 0.7,
+        "risk_control_score": 1.0,
+        "confidence_score": 0.9,
+        "trend_score": 0,
+        "burst_score": 0
+      },
+      {
+        "name": "医疗器械",
+        "agent_label": "trend_confirmed_but_strength_limited",
+        "ranking_score": 0.56,
+        "opportunity_score": 0.37,
+        "evidence_score": 0.7,
+        "risk_control_score": 1.0,
+        "confidence_score": 0.9,
+        "trend_score": 0,
+        "burst_score": 0
+      },
+      {
+        "name": "银行",
+        "agent_label": "defensive_watch",
+        "ranking_score": 0.55,
+        "opportunity_score": 0.36,
+        "evidence_score": 0.7,
+        "risk_control_score": 1.0,
+        "confidence_score": 0.9,
+        "trend_score": 0,
+        "burst_score": 0
+      },
+      {
+        "name": "白色家电",
+        "agent_label": "trend_confirmed_but_strength_limited",
+        "ranking_score": 0.55,
+        "opportunity_score": 0.35,
+        "evidence_score": 0.7,
+        "risk_control_score": 1.0,
+        "confidence_score": 0.9,
+        "trend_score": 0,
+        "burst_score": 0
+      },
+      {
+        "name": "黑色家电",
+        "agent_label": "trend_confirmed_but_strength_limited",
+        "ranking_score": 0.54,
+        "opportunity_score": 0.34,
+        "evidence_score": 0.7,
+        "risk_control_score": 1.0,
+        "confidence_score": 0.9,
+        "trend_score": 0,
+        "burst_score": 0
+      },
+      {
+        "name": "环保设备",
+        "agent_label": "trend_confirmed_but_strength_limited",
+        "ranking_score": 0.54,
+        "opportunity_score": 0.33,
+        "evidence_score": 0.7,
+        "risk_control_score": 1.0,
+        "confidence_score": 0.9,
+        "trend_score": 0,
+        "burst_score": 0
+      },
+      {
+        "name": "养殖业",
+        "agent_label": "trend_confirmed_but_strength_limited",
+        "ranking_score": 0.54,
+        "opportunity_score": 0.33,
+        "evidence_score": 0.7,
+        "risk_control_score": 1.0,
+        "confidence_score": 0.9,
+        "trend_score": 0,
+        "burst_score": 0
+      }
+    ],
+    "concept_top10": [
+      {
+        "name": "国家大基金持股",
+        "agent_label": "strong_consensus",
+        "composite_score": 78.88,
+        "trend_score": 81.2,
+        "trend_level": "重点观察",
+        "burst_score": 66.8,
+        "burst_level": "短线活跃",
+        "agent_ranking_score": 85.0,
+        "agent_opportunity_score": 66.0,
+        "risk_control_score": 100.0
+      },
+      {
+        "name": "光刻胶",
+        "agent_label": "trend_confirmed",
+        "composite_score": 75.11,
+        "trend_score": 81.0,
+        "trend_level": "重点观察",
+        "burst_score": 52.8,
+        "burst_level": "短线中性",
+        "agent_ranking_score": 83.0,
+        "agent_opportunity_score": 63.0,
+        "risk_control_score": 100.0
+      },
+      {
+        "name": "存储芯片",
+        "agent_label": "trend_confirmed",
+        "composite_score": 74.73,
+        "trend_score": 78.2,
+        "trend_level": "观察",
+        "burst_score": 55.8,
+        "burst_level": "短线中性",
+        "agent_ranking_score": 83.0,
+        "agent_opportunity_score": 63.0,
+        "risk_control_score": 100.0
+      },
+      {
+        "name": "第三代半导体",
+        "agent_label": "trend_confirmed",
+        "composite_score": 68.51,
+        "trend_score": 73.0,
+        "trend_level": "观察",
+        "burst_score": 39.8,
+        "burst_level": "短线降温",
+        "agent_ranking_score": 81.0,
+        "agent_opportunity_score": 57.0,
+        "risk_control_score": 100.0
+      },
+      {
+        "name": "超导概念",
+        "agent_label": "trend_confirmed",
+        "composite_score": 67.11,
+        "trend_score": 63.0,
+        "trend_level": "中性",
+        "burst_score": 49.8,
+        "burst_level": "短线降温",
+        "agent_ranking_score": 81.0,
+        "agent_opportunity_score": 58.0,
+        "risk_control_score": 100.0
+      },
+      {
+        "name": "氟化工概念",
+        "agent_label": "trend_confirmed",
+        "composite_score": 65.83,
+        "trend_score": 62.2,
+        "trend_level": "中性",
+        "burst_score": 49.8,
+        "burst_level": "短线降温",
+        "agent_ranking_score": 79.0,
+        "agent_opportunity_score": 54.0,
+        "risk_control_score": 100.0
+      },
+      {
+        "name": "动物疫苗",
+        "agent_label": "trend_confirmed",
+        "composite_score": 64.96,
+        "trend_score": 60.0,
+        "trend_level": "中性",
+        "burst_score": 49.8,
+        "burst_level": "短线降温",
+        "agent_ranking_score": 79.0,
+        "agent_opportunity_score": 53.0,
+        "risk_control_score": 100.0
+      },
+      {
+        "name": "光刻机",
+        "agent_label": "trend_confirmed",
+        "composite_score": 62.85,
+        "trend_score": 64.25,
+        "trend_level": "中性",
+        "burst_score": 31.3,
+        "burst_level": "短线偏弱",
+        "agent_ranking_score": 79.0,
+        "agent_opportunity_score": 54.0,
+        "risk_control_score": 100.0
+      },
+      {
+        "name": "阿尔茨海默概念",
+        "agent_label": "trend_confirmed",
+        "composite_score": 62.13,
+        "trend_score": 56.2,
+        "trend_level": "中性",
+        "burst_score": 57.8,
+        "burst_level": "短线中性",
+        "agent_ranking_score": 71.0,
+        "agent_opportunity_score": 46.0,
+        "risk_control_score": 100.0
+      },
+      {
+        "name": "创新药",
+        "agent_label": "oversold_rebound_candidate",
+        "composite_score": 58.62,
+        "trend_score": 56.45,
+        "trend_level": "中性",
+        "burst_score": 66.3,
+        "burst_level": "短线活跃",
+        "agent_ranking_score": 56.0,
+        "agent_opportunity_score": 38.0,
+        "risk_control_score": 100.0
+      }
+    ]
+  },
+  "candidate_pool": {
+    "count": 8,
+    "rank_hidden": true,
+    "path": "E:\\liaohua\\01_projects\\theme-sector-radar-dev\\reports\\agent_bridge\\2026-06-29\\top30_candidates.json"
+  },
+  "stock_agent_summary": {
+    "preset": "selected",
+    "mode": "real",
+    "ranking_top10": [
+      {
+        "rank": 1,
+        "code": "000021",
+        "name": "深科技",
+        "boards": [
+          "光刻胶"
+        ],
+        "board_types": [
+          "concept"
+        ],
+        "source_pool": "both",
+        "trend_score": 81.0,
+        "burst_score": 55.8,
+        "relevance_score": 0.7762,
+        "quant_score": 50.0,
+        "final_score": 61.05,
+        "agent_score": 57.4,
+        "risk_adjusted_score": 57.4,
+        "risk_level": "low",
+        "bullish_count": 3,
+        "neutral_count": 4,
+        "bearish_count": 0,
+        "contributing_agents": 7,
+        "effective_weight_sum": 1.0,
+        "top_positive_agents": [
+          {
+            "agent": "industry_rotation",
+            "signal": "buy",
+            "confidence": 0.45,
+            "weight": 0.18,
+            "reason": "[board_context_fallback] 本地板块轮动分析：股票属于concept板块「光刻胶」，排名 #2，趋势分 81.0，短线分 52.8，综合分 75.1，source_pool=both，板块标签=trend_confir"
+          },
+          {
+            "agent": "china_youzi",
+            "signal": "buy",
+            "confidence": 0.29,
+            "weight": 0.2,
+            "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=28.8%，量比=1.27，涨停=1次"
+          },
+          {
+            "agent": "news_sentiment_analyst",
+            "signal": "buy",
+            "confidence": 0.15,
+            "weight": 0.06,
+            "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+          }
+        ],
+        "top_negative_agents": [],
+        "neutral_agents": [
+          {
+            "agent": "technical_analyst",
+            "confidence": 0.003,
+            "reason": "LLM unavailable | 数据来源: tencent_kline_api, mimo_llm"
+          },
+          {
+            "agent": "fundamentals_analyst",
+            "confidence": 0.6,
+            "reason": "LLM unavailable | 数据来源: financial_metrics, mimo_llm"
+          },
+          {
+            "agent": "valuation_analyst",
+            "confidence": 1.0,
+            "reason": "LLM unavailable | 数据来源: financial_metrics, financial_line_items, market_cap, mimo_llm"
+          },
+          {
+            "agent": "sentiment_analyst",
+            "confidence": 0.5,
+            "reason": "LLM unavailable | 数据来源: insider_trades, company_news, mimo_llm"
+          }
+        ],
+        "fallback_agents": [],
+        "summary": "看多偏强(3/4/0)；有效Agent 7 个；主要支持: industry_rotation",
+        "source_boards": [
+          "光刻胶"
+        ],
+        "source_agent_label": ""
+      },
+      {
+        "rank": 2,
+        "code": "000062",
+        "name": "深圳华强",
+        "boards": [
+          "光刻胶"
+        ],
+        "board_types": [
+          "concept"
+        ],
+        "source_pool": "both",
+        "trend_score": 81.0,
+        "burst_score": 55.8,
+        "relevance_score": 0.8333,
+        "quant_score": 48.76,
+        "final_score": 62.59,
+        "agent_score": 55.0,
+        "risk_adjusted_score": 55.0,
+        "risk_level": "low",
+        "bullish_count": 2,
+        "neutral_count": 2,
+        "bearish_count": 1,
+        "contributing_agents": 5,
+        "effective_weight_sum": 0.7,
+        "top_positive_agents": [
+          {
+            "agent": "industry_rotation",
+            "signal": "buy",
+            "confidence": 0.45,
+            "weight": 0.2571,
+            "reason": "[board_context_fallback] 本地板块轮动分析：股票属于concept板块「光刻胶」，排名 #2，趋势分 81.0，短线分 52.8，综合分 75.1，source_pool=both，板块标签=trend_confir"
+          },
+          {
+            "agent": "news_sentiment_analyst",
+            "signal": "buy",
+            "confidence": 0.15,
+            "weight": 0.0857,
+            "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+          }
+        ],
+        "top_negative_agents": [
+          {
+            "agent": "china_youzi",
+            "signal": "sell",
+            "confidence": 0.1,
+            "weight": 0.2857,
+            "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=-5.0%，量比=1.18，涨停=0次"
+          }
+        ],
+        "neutral_agents": [
+          {
+            "agent": "fundamentals_analyst",
+            "confidence": 0.6,
+            "reason": "LLM unavailable | 数据来源: financial_metrics, mimo_llm"
+          },
+          {
+            "agent": "valuation_analyst",
+            "confidence": 0.7,
+            "reason": "LLM unavailable | 数据来源: financial_metrics, financial_line_items, market_cap, mimo_llm"
+          }
+        ],
+        "fallback_agents": [
+          {
+            "agent": "technical_analyst",
+            "reason": "data_insufficient"
+          },
+          {
+            "agent": "sentiment_analyst",
+            "reason": "data_insufficient"
+          }
+        ],
+        "summary": "看多偏强(2/2/1)；有效Agent 5 个；主要支持: industry_rotation；主要风险: china_youzi",
+        "source_boards": [
+          "光刻胶"
+        ],
+        "source_agent_label": ""
+      },
+      {
+        "rank": 3,
+        "code": "000553",
+        "name": "安道麦A",
+        "boards": [
+          "氟化工概念"
+        ],
+        "board_types": [
+          "concept"
+        ],
+        "source_pool": "both",
+        "trend_score": 62.2,
+        "burst_score": 49.8,
+        "relevance_score": 0.7762,
+        "quant_score": 47.58,
+        "final_score": 59.6,
+        "agent_score": 53.5,
+        "risk_adjusted_score": 53.5,
+        "risk_level": "low",
+        "bullish_count": 2,
+        "neutral_count": 3,
+        "bearish_count": 1,
+        "contributing_agents": 6,
+        "effective_weight_sum": 0.92,
+        "top_positive_agents": [
+          {
+            "agent": "industry_rotation",
+            "signal": "buy",
+            "confidence": 0.37,
+            "weight": 0.1957,
+            "reason": "[board_context_fallback] 本地板块轮动分析：股票属于concept板块「氟化工概念」，排名 #6，趋势分 62.2，短线分 49.8，综合分 65.8，source_pool=both，板块标签=trend_conf"
+          },
+          {
+            "agent": "news_sentiment_analyst",
+            "signal": "buy",
+            "confidence": 0.15,
+            "weight": 0.0652,
+            "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+          }
+        ],
+        "top_negative_agents": [
+          {
+            "agent": "china_youzi",
+            "signal": "sell",
+            "confidence": 0.06,
+            "weight": 0.2174,
+            "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=-6.9%，量比=1.24，涨停=0次"
+          }
+        ],
+        "neutral_agents": [
+          {
+            "agent": "technical_analyst",
+            "confidence": 0.159,
+            "reason": "LLM unavailable | 数据来源: tencent_kline_api, mimo_llm"
+          },
+          {
+            "agent": "fundamentals_analyst",
+            "confidence": 0.45,
+            "reason": "LLM unavailable | 数据来源: financial_metrics, mimo_llm"
+          },
+          {
+            "agent": "valuation_analyst",
+            "confidence": 1.0,
+            "reason": "LLM unavailable | 数据来源: financial_metrics, financial_line_items, market_cap, mimo_llm"
+          }
+        ],
+        "fallback_agents": [
+          {
+            "agent": "sentiment_analyst",
+            "reason": "data_insufficient"
+          }
+        ],
+        "summary": "看多偏强(2/3/1)；有效Agent 6 个；主要支持: industry_rotation；主要风险: china_youzi",
+        "source_boards": [
+          "氟化工概念"
+        ],
+        "source_agent_label": ""
+      },
+      {
+        "rank": 4,
+        "code": "000565",
+        "name": "渝三峡A",
+        "boards": [
+          "氟化工概念"
+        ],
+        "board_types": [
+          "concept"
+        ],
+        "source_pool": "both",
+        "trend_score": 62.2,
+        "burst_score": 49.8,
+        "relevance_score": 0.8333,
+        "quant_score": 44.12,
+        "final_score": 59.8,
+        "agent_score": 53.0,
+        "risk_adjusted_score": 53.0,
+        "risk_level": "low",
+        "bullish_count": 2,
+        "neutral_count": 3,
+        "bearish_count": 1,
+        "contributing_agents": 6,
+        "effective_weight_sum": 0.92,
+        "top_positive_agents": [
+          {
+            "agent": "industry_rotation",
+            "signal": "buy",
+            "confidence": 0.37,
+            "weight": 0.1957,
+            "reason": "[board_context_fallback] 本地板块轮动分析：股票属于concept板块「氟化工概念」，排名 #6，趋势分 62.2，短线分 49.8，综合分 65.8，source_pool=both，板块标签=trend_conf"
+          },
+          {
+            "agent": "news_sentiment_analyst",
+            "signal": "buy",
+            "confidence": 0.15,
+            "weight": 0.0652,
+            "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+          }
+        ],
+        "top_negative_agents": [
+          {
+            "agent": "china_youzi",
+            "signal": "sell",
+            "confidence": 0.1,
+            "weight": 0.2174,
+            "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=-8.1%，量比=0.94，涨停=0次"
+          }
+        ],
+        "neutral_agents": [
+          {
+            "agent": "technical_analyst",
+            "confidence": 0.31,
+            "reason": "LLM unavailable | 数据来源: tencent_kline_api, mimo_llm"
+          },
+          {
+            "agent": "fundamentals_analyst",
+            "confidence": 0.45,
+            "reason": "LLM unavailable | 数据来源: financial_metrics, mimo_llm"
+          },
+          {
+            "agent": "valuation_analyst",
+            "confidence": 0.7,
+            "reason": "LLM unavailable | 数据来源: financial_metrics, financial_line_items, market_cap, mimo_llm"
+          }
+        ],
+        "fallback_agents": [
+          {
+            "agent": "sentiment_analyst",
+            "reason": "data_insufficient"
+          }
+        ],
+        "summary": "看多偏强(2/3/1)；有效Agent 6 个；主要支持: industry_rotation；主要风险: china_youzi",
+        "source_boards": [
+          "氟化工概念"
+        ],
+        "source_agent_label": ""
+      },
+      {
+        "rank": 5,
+        "code": "000798",
+        "name": "中水渔业",
+        "boards": [
+          "动物疫苗"
+        ],
+        "board_types": [
+          "concept"
+        ],
+        "source_pool": "both",
+        "trend_score": 60.0,
+        "burst_score": 49.8,
+        "relevance_score": 0.8333,
+        "quant_score": 40.23,
+        "final_score": 57.47,
+        "agent_score": 53.0,
+        "risk_adjusted_score": 53.0,
+        "risk_level": "low",
+        "bullish_count": 2,
+        "neutral_count": 3,
+        "bearish_count": 1,
+        "contributing_agents": 6,
+        "effective_weight_sum": 0.92,
+        "top_positive_agents": [
+          {
+            "agent": "industry_rotation",
+            "signal": "buy",
+            "confidence": 0.37,
+            "weight": 0.1957,
+            "reason": "[board_context_fallback] 本地板块轮动分析：股票属于concept板块「动物疫苗」，排名 #7，趋势分 60.0，短线分 49.8，综合分 65.0，source_pool=both，板块标签=trend_confi"
+          },
+          {
+            "agent": "news_sentiment_analyst",
+            "signal": "buy",
+            "confidence": 0.15,
+            "weight": 0.0652,
+            "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+          }
+        ],
+        "top_negative_agents": [
+          {
+            "agent": "china_youzi",
+            "signal": "sell",
+            "confidence": 0.1,
+            "weight": 0.2174,
+            "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=-6.5%，量比=1.00，涨停=0次"
+          }
+        ],
+        "neutral_agents": [
+          {
+            "agent": "technical_analyst",
+            "confidence": 0.149,
+            "reason": "LLM unavailable | 数据来源: tencent_kline_api, mimo_llm"
+          },
+          {
+            "agent": "fundamentals_analyst",
+            "confidence": 0.45,
+            "reason": "LLM unavailable | 数据来源: financial_metrics, mimo_llm"
+          },
+          {
+            "agent": "valuation_analyst",
+            "confidence": 1.0,
+            "reason": "LLM unavailable | 数据来源: financial_metrics, financial_line_items, market_cap, mimo_llm"
+          }
+        ],
+        "fallback_agents": [
+          {
+            "agent": "sentiment_analyst",
+            "reason": "data_insufficient"
+          }
+        ],
+        "summary": "看多偏强(2/3/1)；有效Agent 6 个；主要支持: industry_rotation；主要风险: china_youzi",
+        "source_boards": [
+          "动物疫苗"
+        ],
+        "source_agent_label": ""
+      },
+      {
+        "rank": 6,
+        "code": "600196",
+        "name": "复星医药",
+        "boards": [
+          "猴痘概念"
+        ],
+        "board_types": [
+          "concept"
+        ],
+        "source_pool": "both",
+        "trend_score": 54.2,
+        "burst_score": 64.3,
+        "relevance_score": 0.7,
+        "quant_score": 64.78,
+        "final_score": 66.87,
+        "agent_score": 52.4,
+        "risk_adjusted_score": 52.4,
+        "risk_level": "low",
+        "bullish_count": 2,
+        "neutral_count": 4,
+        "bearish_count": 0,
+        "contributing_agents": 6,
+        "effective_weight_sum": 0.82,
+        "top_positive_agents": [
+          {
+            "agent": "china_youzi",
+            "signal": "buy",
+            "confidence": 0.15,
+            "weight": 0.2439,
+            "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=2.1%，量比=1.79，涨停=0次"
+          },
+          {
+            "agent": "news_sentiment_analyst",
+            "signal": "buy",
+            "confidence": 0.15,
+            "weight": 0.0732,
+            "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+          }
+        ],
+        "top_negative_agents": [],
+        "neutral_agents": [
+          {
+            "agent": "technical_analyst",
+            "confidence": 0.212,
+            "reason": "LLM unavailable | 数据来源: tencent_kline_api, mimo_llm"
+          },
+          {
+            "agent": "fundamentals_analyst",
+            "confidence": 0.3,
+            "reason": "LLM unavailable | 数据来源: financial_metrics, mimo_llm"
+          },
+          {
+            "agent": "valuation_analyst",
+            "confidence": 1.0,
+            "reason": "LLM unavailable | 数据来源: financial_metrics, financial_line_items, market_cap, mimo_llm"
+          },
+          {
+            "agent": "sentiment_analyst",
+            "confidence": 1.0,
+            "reason": "LLM unavailable | 数据来源: insider_trades, company_news, mimo_llm"
+          }
+        ],
+        "fallback_agents": [
+          {
+            "agent": "industry_rotation",
+            "reason": "data_insufficient"
+          }
+        ],
+        "summary": "看多偏强(2/4/0)；有效Agent 6 个；主要支持: china_youzi",
+        "source_boards": [
+          "猴痘概念"
+        ],
+        "source_agent_label": ""
+      },
+      {
+        "rank": 7,
+        "code": "002399",
+        "name": "海普瑞",
+        "boards": [
+          "猴痘概念"
+        ],
+        "board_types": [
+          "concept"
+        ],
+        "source_pool": "both",
+        "trend_score": 54.2,
+        "burst_score": 57.8,
+        "relevance_score": 0.7667,
+        "quant_score": 50.17,
+        "final_score": 60.77,
+        "agent_score": 50.6,
+        "risk_adjusted_score": 50.6,
+        "risk_level": "low",
+        "bullish_count": 1,
+        "neutral_count": 4,
+        "bearish_count": 0,
+        "contributing_agents": 5,
+        "effective_weight_sum": 0.74,
+        "top_positive_agents": [
+          {
+            "agent": "news_sentiment_analyst",
+            "signal": "buy",
+            "confidence": 0.15,
+            "weight": 0.0811,
+            "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+          }
+        ],
+        "top_negative_agents": [],
+        "neutral_agents": [
+          {
+            "agent": "technical_analyst",
+            "confidence": 0.242,
+            "reason": "LLM unavailable | 数据来源: tencent_kline_api, mimo_llm"
+          },
+          {
+            "agent": "fundamentals_analyst",
+            "confidence": 0.3,
+            "reason": "LLM unavailable | 数据来源: financial_metrics, mimo_llm"
+          },
+          {
+            "agent": "valuation_analyst",
+            "confidence": 1.0,
+            "reason": "LLM unavailable | 数据来源: financial_metrics, financial_line_items, market_cap, mimo_llm"
+          },
+          {
+            "agent": "china_youzi",
+            "confidence": 0.032,
+            "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=-1.1%，量比=1.42，涨停=0次"
+          }
+        ],
+        "fallback_agents": [
+          {
+            "agent": "sentiment_analyst",
+            "reason": "data_insufficient"
+          },
+          {
+            "agent": "industry_rotation",
+            "reason": "data_insufficient"
+          }
+        ],
+        "summary": "看多偏强(1/4/0)；有效Agent 5 个；主要支持: news_sentiment_analyst",
+        "source_boards": [
+          "猴痘概念"
+        ],
+        "source_agent_label": ""
+      },
+      {
+        "rank": 8,
+        "code": "000411",
+        "name": "英特集团",
+        "boards": [
+          "创新药"
+        ],
+        "board_types": [
+          "concept"
+        ],
+        "source_pool": "burst",
+        "trend_score": 56.45,
+        "burst_score": 66.3,
+        "relevance_score": 0.6619,
+        "quant_score": 51.62,
+        "final_score": 57.45,
+        "agent_score": 50.5,
+        "risk_adjusted_score": 50.5,
+        "risk_level": "low",
+        "bullish_count": 1,
+        "neutral_count": 5,
+        "bearish_count": 0,
+        "contributing_agents": 6,
+        "effective_weight_sum": 0.92,
+        "top_positive_agents": [
+          {
+            "agent": "news_sentiment_analyst",
+            "signal": "buy",
+            "confidence": 0.15,
+            "weight": 0.0652,
+            "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+          }
+        ],
+        "top_negative_agents": [],
+        "neutral_agents": [
+          {
+            "agent": "technical_analyst",
+            "confidence": 0.203,
+            "reason": "LLM unavailable | 数据来源: tencent_kline_api, mimo_llm"
+          },
+          {
+            "agent": "fundamentals_analyst",
+            "confidence": 0.15,
+            "reason": "LLM unavailable | 数据来源: financial_metrics, mimo_llm"
+          },
+          {
+            "agent": "valuation_analyst",
+            "confidence": 0.7,
+            "reason": "LLM unavailable | 数据来源: financial_metrics, financial_line_items, market_cap, mimo_llm"
+          },
+          {
+            "agent": "china_youzi",
+            "confidence": 0.001,
+            "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=-4.0%，量比=0.67，涨停=1次"
+          },
+          {
+            "agent": "industry_rotation",
+            "confidence": 0.22,
+            "reason": "[board_context_fallback] 本地板块轮动分析：股票属于concept板块「创新药」，排名 #10，趋势分 56.5，短线分 66.3，综合分 58.6，source_pool=burst，板块标签=oversold_r"
+          }
+        ],
+        "fallback_agents": [
+          {
+            "agent": "sentiment_analyst",
+            "reason": "data_insufficient"
+          }
+        ],
+        "summary": "看多偏强(1/5/0)；有效Agent 6 个；主要支持: news_sentiment_analyst",
+        "source_boards": [
+          "创新药"
+        ],
+        "source_agent_label": ""
+      }
+    ],
+    "run_meta": {
+      "mode": "real",
+      "agent_preset": "selected",
+      "requested_agents": [
+        "technical_analyst",
+        "fundamentals_analyst",
+        "valuation_analyst",
+        "sentiment_analyst",
+        "china_youzi",
+        "industry_rotation",
+        "news_sentiment_analyst"
+      ],
+      "effective_agents": [
+        "china_youzi",
+        "fundamentals_analyst",
+        "industry_rotation",
+        "news_sentiment_analyst",
+        "sentiment_analyst",
+        "technical_analyst",
+        "valuation_analyst"
+      ],
+      "agent_count": 7,
+      "succeeded_agents": [
+        "china_youzi",
+        "fundamentals_analyst",
+        "industry_rotation",
+        "news_sentiment_analyst",
+        "sentiment_analyst",
+        "technical_analyst",
+        "valuation_analyst"
+      ],
+      "failed_agents": [],
+      "timed_out_agents": [],
+      "fallback_agents": [],
+      "per_agent_status": {
+        "technical_analyst": {
+          "succeeded": 7,
+          "failed": 0,
+          "fallback": 1,
+          "error": ""
+        },
+        "fundamentals_analyst": {
+          "succeeded": 8,
+          "failed": 0,
+          "fallback": 0,
+          "error": ""
+        },
+        "valuation_analyst": {
+          "succeeded": 8,
+          "failed": 0,
+          "fallback": 0,
+          "error": ""
+        },
+        "sentiment_analyst": {
+          "succeeded": 2,
+          "failed": 0,
+          "fallback": 6,
+          "error": ""
+        },
+        "china_youzi": {
+          "succeeded": 8,
+          "failed": 0,
+          "fallback": 0,
+          "error": ""
+        },
+        "industry_rotation": {
+          "succeeded": 6,
+          "failed": 0,
+          "fallback": 2,
+          "error": ""
+        },
+        "news_sentiment_analyst": {
+          "succeeded": 8,
+          "failed": 0,
+          "fallback": 0,
+          "error": ""
+        }
+      },
+      "llm_enabled": true,
+      "data_mode": "real",
+      "started_at": "2026-07-05T22:14:05.862357",
+      "finished_at": "2026-07-05T22:15:21.578114",
+      "duration_seconds": 75.72,
+      "llm_configured": true,
+      "llm_available": true,
+      "llm_provider": "OPENAI",
+      "llm_model": "mimo-v2.5-pro",
+      "llm_base_url": "https://api.xiaomimimo.com/v1",
+      "llm_error_type": null,
+      "llm_error_hint": ""
+    }
+  },
+  "report_sections": {
+    "run_summary": {
+      "date": "2026-06-29",
+      "preset": "selected",
+      "agent_count": 7
+    },
+    "board_top10": {
+      "industries": [
+        {
+          "name": "半导体",
+          "agent_label": "trend_confirmed",
+          "ranking_score": 0.84,
+          "opportunity_score": 0.64,
+          "evidence_score": 0.7,
+          "risk_control_score": 1.0,
+          "confidence_score": 0.8,
+          "trend_score": 0,
+          "burst_score": 0
+        },
+        {
+          "name": "电子化学品",
+          "agent_label": "trend_confirmed",
+          "ranking_score": 0.83,
+          "opportunity_score": 0.63,
+          "evidence_score": 0.7,
+          "risk_control_score": 1.0,
+          "confidence_score": 0.8,
+          "trend_score": 0,
+          "burst_score": 0
+        },
+        {
+          "name": "医疗服务",
+          "agent_label": "trend_confirmed",
+          "ranking_score": 0.78,
+          "opportunity_score": 0.51,
+          "evidence_score": 0.7,
+          "risk_control_score": 1.0,
+          "confidence_score": 0.9,
+          "trend_score": 0,
+          "burst_score": 0
+        },
+        {
+          "name": "中药",
+          "agent_label": "trend_confirmed_but_strength_limited",
+          "ranking_score": 0.57,
+          "opportunity_score": 0.39,
+          "evidence_score": 0.7,
+          "risk_control_score": 1.0,
+          "confidence_score": 0.9,
+          "trend_score": 0,
+          "burst_score": 0
+        },
+        {
+          "name": "医疗器械",
+          "agent_label": "trend_confirmed_but_strength_limited",
+          "ranking_score": 0.56,
+          "opportunity_score": 0.37,
+          "evidence_score": 0.7,
+          "risk_control_score": 1.0,
+          "confidence_score": 0.9,
+          "trend_score": 0,
+          "burst_score": 0
+        },
+        {
+          "name": "银行",
+          "agent_label": "defensive_watch",
+          "ranking_score": 0.55,
+          "opportunity_score": 0.36,
+          "evidence_score": 0.7,
+          "risk_control_score": 1.0,
+          "confidence_score": 0.9,
+          "trend_score": 0,
+          "burst_score": 0
+        },
+        {
+          "name": "白色家电",
+          "agent_label": "trend_confirmed_but_strength_limited",
+          "ranking_score": 0.55,
+          "opportunity_score": 0.35,
+          "evidence_score": 0.7,
+          "risk_control_score": 1.0,
+          "confidence_score": 0.9,
+          "trend_score": 0,
+          "burst_score": 0
+        },
+        {
+          "name": "黑色家电",
+          "agent_label": "trend_confirmed_but_strength_limited",
+          "ranking_score": 0.54,
+          "opportunity_score": 0.34,
+          "evidence_score": 0.7,
+          "risk_control_score": 1.0,
+          "confidence_score": 0.9,
+          "trend_score": 0,
+          "burst_score": 0
+        },
+        {
+          "name": "环保设备",
+          "agent_label": "trend_confirmed_but_strength_limited",
+          "ranking_score": 0.54,
+          "opportunity_score": 0.33,
+          "evidence_score": 0.7,
+          "risk_control_score": 1.0,
+          "confidence_score": 0.9,
+          "trend_score": 0,
+          "burst_score": 0
+        },
+        {
+          "name": "养殖业",
+          "agent_label": "trend_confirmed_but_strength_limited",
+          "ranking_score": 0.54,
+          "opportunity_score": 0.33,
+          "evidence_score": 0.7,
+          "risk_control_score": 1.0,
+          "confidence_score": 0.9,
+          "trend_score": 0,
+          "burst_score": 0
+        }
+      ],
+      "concepts": [
+        {
+          "name": "国家大基金持股",
+          "agent_label": "strong_consensus",
+          "composite_score": 78.88,
+          "trend_score": 81.2,
+          "trend_level": "重点观察",
+          "burst_score": 66.8,
+          "burst_level": "短线活跃",
+          "agent_ranking_score": 85.0,
+          "agent_opportunity_score": 66.0,
+          "risk_control_score": 100.0
+        },
+        {
+          "name": "光刻胶",
+          "agent_label": "trend_confirmed",
+          "composite_score": 75.11,
+          "trend_score": 81.0,
+          "trend_level": "重点观察",
+          "burst_score": 52.8,
+          "burst_level": "短线中性",
+          "agent_ranking_score": 83.0,
+          "agent_opportunity_score": 63.0,
+          "risk_control_score": 100.0
+        },
+        {
+          "name": "存储芯片",
+          "agent_label": "trend_confirmed",
+          "composite_score": 74.73,
+          "trend_score": 78.2,
+          "trend_level": "观察",
+          "burst_score": 55.8,
+          "burst_level": "短线中性",
+          "agent_ranking_score": 83.0,
+          "agent_opportunity_score": 63.0,
+          "risk_control_score": 100.0
+        },
+        {
+          "name": "第三代半导体",
+          "agent_label": "trend_confirmed",
+          "composite_score": 68.51,
+          "trend_score": 73.0,
+          "trend_level": "观察",
+          "burst_score": 39.8,
+          "burst_level": "短线降温",
+          "agent_ranking_score": 81.0,
+          "agent_opportunity_score": 57.0,
+          "risk_control_score": 100.0
+        },
+        {
+          "name": "超导概念",
+          "agent_label": "trend_confirmed",
+          "composite_score": 67.11,
+          "trend_score": 63.0,
+          "trend_level": "中性",
+          "burst_score": 49.8,
+          "burst_level": "短线降温",
+          "agent_ranking_score": 81.0,
+          "agent_opportunity_score": 58.0,
+          "risk_control_score": 100.0
+        },
+        {
+          "name": "氟化工概念",
+          "agent_label": "trend_confirmed",
+          "composite_score": 65.83,
+          "trend_score": 62.2,
+          "trend_level": "中性",
+          "burst_score": 49.8,
+          "burst_level": "短线降温",
+          "agent_ranking_score": 79.0,
+          "agent_opportunity_score": 54.0,
+          "risk_control_score": 100.0
+        },
+        {
+          "name": "动物疫苗",
+          "agent_label": "trend_confirmed",
+          "composite_score": 64.96,
+          "trend_score": 60.0,
+          "trend_level": "中性",
+          "burst_score": 49.8,
+          "burst_level": "短线降温",
+          "agent_ranking_score": 79.0,
+          "agent_opportunity_score": 53.0,
+          "risk_control_score": 100.0
+        },
+        {
+          "name": "光刻机",
+          "agent_label": "trend_confirmed",
+          "composite_score": 62.85,
+          "trend_score": 64.25,
+          "trend_level": "中性",
+          "burst_score": 31.3,
+          "burst_level": "短线偏弱",
+          "agent_ranking_score": 79.0,
+          "agent_opportunity_score": 54.0,
+          "risk_control_score": 100.0
+        },
+        {
+          "name": "阿尔茨海默概念",
+          "agent_label": "trend_confirmed",
+          "composite_score": 62.13,
+          "trend_score": 56.2,
+          "trend_level": "中性",
+          "burst_score": 57.8,
+          "burst_level": "短线中性",
+          "agent_ranking_score": 71.0,
+          "agent_opportunity_score": 46.0,
+          "risk_control_score": 100.0
+        },
+        {
+          "name": "创新药",
+          "agent_label": "oversold_rebound_candidate",
+          "composite_score": 58.62,
+          "trend_score": 56.45,
+          "trend_level": "中性",
+          "burst_score": 66.3,
+          "burst_level": "短线活跃",
+          "agent_ranking_score": 56.0,
+          "agent_opportunity_score": 38.0,
+          "risk_control_score": 100.0
+        }
+      ]
+    },
+    "candidate_pool_summary": {
+      "total": 8,
+      "trend": 0,
+      "burst": 1,
+      "both": 7,
+      "source_distribution": {
+        "trend": 0,
+        "burst": 1,
+        "both": 7
+      },
+      "board_top": [
+        {
+          "board": "猴痘概念",
+          "count": 2
+        },
+        {
+          "board": "光刻胶",
+          "count": 2
+        },
+        {
+          "board": "氟化工概念",
+          "count": 2
+        },
+        {
+          "board": "动物疫苗",
+          "count": 1
+        },
+        {
+          "board": "创新药",
+          "count": 1
+        }
+      ]
+    },
+    "stock_agent_top10": [
+      {
+        "rank": 1,
+        "code": "000021",
+        "name": "深科技",
+        "source_pool": "both",
+        "source_boards": [
+          "光刻胶"
+        ],
+        "board_context_match": {
+          "matched": false
+        },
+        "trend_score": 81.0,
+        "burst_score": 55.8,
+        "relevance_score": 0.7762,
+        "quant_score": 50.0,
+        "final_score": 61.05,
+        "agent_score": 57.4,
+        "risk_adjusted_score": 57.4,
+        "risk_level": "low",
+        "contributing_agents": 7,
+        "industry_rotation_contributed": true,
+        "top_positive_agents": [
+          {
+            "agent": "industry_rotation",
+            "signal": "buy",
+            "confidence": 0.45,
+            "weight": 0.18,
+            "reason": "[board_context_fallback] 本地板块轮动分析：股票属于concept板块「光刻胶」，排名 #2，趋势分 81.0，短线分 52.8，综合分 75.1，source_pool=both，板块标签=trend_confir"
+          },
+          {
+            "agent": "china_youzi",
+            "signal": "buy",
+            "confidence": 0.29,
+            "weight": 0.2,
+            "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=28.8%，量比=1.27，涨停=1次"
+          },
+          {
+            "agent": "news_sentiment_analyst",
+            "signal": "buy",
+            "confidence": 0.15,
+            "weight": 0.06,
+            "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+          }
+        ],
+        "top_negative_agents": [],
+        "fallback_agents": [],
+        "bullish_count": 3,
+        "neutral_count": 4,
+        "bearish_count": 0,
+        "summary": "看多偏强(3/4/0)；有效Agent 7 个；主要支持: industry_rotation"
+      },
+      {
+        "rank": 2,
+        "code": "000062",
+        "name": "深圳华强",
+        "source_pool": "both",
+        "source_boards": [
+          "光刻胶"
+        ],
+        "board_context_match": {
+          "matched": false
+        },
+        "trend_score": 81.0,
+        "burst_score": 55.8,
+        "relevance_score": 0.8333,
+        "quant_score": 48.76,
+        "final_score": 62.59,
+        "agent_score": 55.0,
+        "risk_adjusted_score": 55.0,
+        "risk_level": "low",
+        "contributing_agents": 5,
+        "industry_rotation_contributed": true,
+        "top_positive_agents": [
+          {
+            "agent": "industry_rotation",
+            "signal": "buy",
+            "confidence": 0.45,
+            "weight": 0.2571,
+            "reason": "[board_context_fallback] 本地板块轮动分析：股票属于concept板块「光刻胶」，排名 #2，趋势分 81.0，短线分 52.8，综合分 75.1，source_pool=both，板块标签=trend_confir"
+          },
+          {
+            "agent": "news_sentiment_analyst",
+            "signal": "buy",
+            "confidence": 0.15,
+            "weight": 0.0857,
+            "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+          }
+        ],
+        "top_negative_agents": [
+          {
+            "agent": "china_youzi",
+            "signal": "sell",
+            "confidence": 0.1,
+            "weight": 0.2857,
+            "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=-5.0%，量比=1.18，涨停=0次"
+          }
+        ],
+        "fallback_agents": [
+          {
+            "agent": "technical_analyst",
+            "reason": "data_insufficient"
+          },
+          {
+            "agent": "sentiment_analyst",
+            "reason": "data_insufficient"
+          }
+        ],
+        "bullish_count": 2,
+        "neutral_count": 2,
+        "bearish_count": 1,
+        "summary": "看多偏强(2/2/1)；有效Agent 5 个；主要支持: industry_rotation；主要风险: china_youzi"
+      },
+      {
+        "rank": 3,
+        "code": "000553",
+        "name": "安道麦A",
+        "source_pool": "both",
+        "source_boards": [
+          "氟化工概念"
+        ],
+        "board_context_match": {
+          "matched": false
+        },
+        "trend_score": 62.2,
+        "burst_score": 49.8,
+        "relevance_score": 0.7762,
+        "quant_score": 47.58,
+        "final_score": 59.6,
+        "agent_score": 53.5,
+        "risk_adjusted_score": 53.5,
+        "risk_level": "low",
+        "contributing_agents": 6,
+        "industry_rotation_contributed": true,
+        "top_positive_agents": [
+          {
+            "agent": "industry_rotation",
+            "signal": "buy",
+            "confidence": 0.37,
+            "weight": 0.1957,
+            "reason": "[board_context_fallback] 本地板块轮动分析：股票属于concept板块「氟化工概念」，排名 #6，趋势分 62.2，短线分 49.8，综合分 65.8，source_pool=both，板块标签=trend_conf"
+          },
+          {
+            "agent": "news_sentiment_analyst",
+            "signal": "buy",
+            "confidence": 0.15,
+            "weight": 0.0652,
+            "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+          }
+        ],
+        "top_negative_agents": [
+          {
+            "agent": "china_youzi",
+            "signal": "sell",
+            "confidence": 0.06,
+            "weight": 0.2174,
+            "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=-6.9%，量比=1.24，涨停=0次"
+          }
+        ],
+        "fallback_agents": [
+          {
+            "agent": "sentiment_analyst",
+            "reason": "data_insufficient"
+          }
+        ],
+        "bullish_count": 2,
+        "neutral_count": 3,
+        "bearish_count": 1,
+        "summary": "看多偏强(2/3/1)；有效Agent 6 个；主要支持: industry_rotation；主要风险: china_youzi"
+      },
+      {
+        "rank": 4,
+        "code": "000565",
+        "name": "渝三峡A",
+        "source_pool": "both",
+        "source_boards": [
+          "氟化工概念"
+        ],
+        "board_context_match": {
+          "matched": false
+        },
+        "trend_score": 62.2,
+        "burst_score": 49.8,
+        "relevance_score": 0.8333,
+        "quant_score": 44.12,
+        "final_score": 59.8,
+        "agent_score": 53.0,
+        "risk_adjusted_score": 53.0,
+        "risk_level": "low",
+        "contributing_agents": 6,
+        "industry_rotation_contributed": true,
+        "top_positive_agents": [
+          {
+            "agent": "industry_rotation",
+            "signal": "buy",
+            "confidence": 0.37,
+            "weight": 0.1957,
+            "reason": "[board_context_fallback] 本地板块轮动分析：股票属于concept板块「氟化工概念」，排名 #6，趋势分 62.2，短线分 49.8，综合分 65.8，source_pool=both，板块标签=trend_conf"
+          },
+          {
+            "agent": "news_sentiment_analyst",
+            "signal": "buy",
+            "confidence": 0.15,
+            "weight": 0.0652,
+            "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+          }
+        ],
+        "top_negative_agents": [
+          {
+            "agent": "china_youzi",
+            "signal": "sell",
+            "confidence": 0.1,
+            "weight": 0.2174,
+            "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=-8.1%，量比=0.94，涨停=0次"
+          }
+        ],
+        "fallback_agents": [
+          {
+            "agent": "sentiment_analyst",
+            "reason": "data_insufficient"
+          }
+        ],
+        "bullish_count": 2,
+        "neutral_count": 3,
+        "bearish_count": 1,
+        "summary": "看多偏强(2/3/1)；有效Agent 6 个；主要支持: industry_rotation；主要风险: china_youzi"
+      },
+      {
+        "rank": 5,
+        "code": "000798",
+        "name": "中水渔业",
+        "source_pool": "both",
+        "source_boards": [
+          "动物疫苗"
+        ],
+        "board_context_match": {
+          "matched": false
+        },
+        "trend_score": 60.0,
+        "burst_score": 49.8,
+        "relevance_score": 0.8333,
+        "quant_score": 40.23,
+        "final_score": 57.47,
+        "agent_score": 53.0,
+        "risk_adjusted_score": 53.0,
+        "risk_level": "low",
+        "contributing_agents": 6,
+        "industry_rotation_contributed": true,
+        "top_positive_agents": [
+          {
+            "agent": "industry_rotation",
+            "signal": "buy",
+            "confidence": 0.37,
+            "weight": 0.1957,
+            "reason": "[board_context_fallback] 本地板块轮动分析：股票属于concept板块「动物疫苗」，排名 #7，趋势分 60.0，短线分 49.8，综合分 65.0，source_pool=both，板块标签=trend_confi"
+          },
+          {
+            "agent": "news_sentiment_analyst",
+            "signal": "buy",
+            "confidence": 0.15,
+            "weight": 0.0652,
+            "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+          }
+        ],
+        "top_negative_agents": [
+          {
+            "agent": "china_youzi",
+            "signal": "sell",
+            "confidence": 0.1,
+            "weight": 0.2174,
+            "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=-6.5%，量比=1.00，涨停=0次"
+          }
+        ],
+        "fallback_agents": [
+          {
+            "agent": "sentiment_analyst",
+            "reason": "data_insufficient"
+          }
+        ],
+        "bullish_count": 2,
+        "neutral_count": 3,
+        "bearish_count": 1,
+        "summary": "看多偏强(2/3/1)；有效Agent 6 个；主要支持: industry_rotation；主要风险: china_youzi"
+      },
+      {
+        "rank": 6,
+        "code": "600196",
+        "name": "复星医药",
+        "source_pool": "both",
+        "source_boards": [
+          "猴痘概念"
+        ],
+        "board_context_match": {
+          "matched": false
+        },
+        "trend_score": 54.2,
+        "burst_score": 64.3,
+        "relevance_score": 0.7,
+        "quant_score": 64.78,
+        "final_score": 66.87,
+        "agent_score": 52.4,
+        "risk_adjusted_score": 52.4,
+        "risk_level": "low",
+        "contributing_agents": 6,
+        "industry_rotation_contributed": false,
+        "top_positive_agents": [
+          {
+            "agent": "china_youzi",
+            "signal": "buy",
+            "confidence": 0.15,
+            "weight": 0.2439,
+            "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=2.1%，量比=1.79，涨停=0次"
+          },
+          {
+            "agent": "news_sentiment_analyst",
+            "signal": "buy",
+            "confidence": 0.15,
+            "weight": 0.0732,
+            "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+          }
+        ],
+        "top_negative_agents": [],
+        "fallback_agents": [
+          {
+            "agent": "industry_rotation",
+            "reason": "data_insufficient"
+          }
+        ],
+        "bullish_count": 2,
+        "neutral_count": 4,
+        "bearish_count": 0,
+        "summary": "看多偏强(2/4/0)；有效Agent 6 个；主要支持: china_youzi"
+      },
+      {
+        "rank": 7,
+        "code": "002399",
+        "name": "海普瑞",
+        "source_pool": "both",
+        "source_boards": [
+          "猴痘概念"
+        ],
+        "board_context_match": {
+          "matched": false
+        },
+        "trend_score": 54.2,
+        "burst_score": 57.8,
+        "relevance_score": 0.7667,
+        "quant_score": 50.17,
+        "final_score": 60.77,
+        "agent_score": 50.6,
+        "risk_adjusted_score": 50.6,
+        "risk_level": "low",
+        "contributing_agents": 5,
+        "industry_rotation_contributed": false,
+        "top_positive_agents": [
+          {
+            "agent": "news_sentiment_analyst",
+            "signal": "buy",
+            "confidence": 0.15,
+            "weight": 0.0811,
+            "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+          }
+        ],
+        "top_negative_agents": [],
+        "fallback_agents": [
+          {
+            "agent": "sentiment_analyst",
+            "reason": "data_insufficient"
+          },
+          {
+            "agent": "industry_rotation",
+            "reason": "data_insufficient"
+          }
+        ],
+        "bullish_count": 1,
+        "neutral_count": 4,
+        "bearish_count": 0,
+        "summary": "看多偏强(1/4/0)；有效Agent 5 个；主要支持: news_sentiment_analyst"
+      },
+      {
+        "rank": 8,
+        "code": "000411",
+        "name": "英特集团",
+        "source_pool": "burst",
+        "source_boards": [
+          "创新药"
+        ],
+        "board_context_match": {
+          "matched": false
+        },
+        "trend_score": 56.45,
+        "burst_score": 66.3,
+        "relevance_score": 0.6619,
+        "quant_score": 51.62,
+        "final_score": 57.45,
+        "agent_score": 50.5,
+        "risk_adjusted_score": 50.5,
+        "risk_level": "low",
+        "contributing_agents": 6,
+        "industry_rotation_contributed": false,
+        "top_positive_agents": [
+          {
+            "agent": "news_sentiment_analyst",
+            "signal": "buy",
+            "confidence": 0.15,
+            "weight": 0.0652,
+            "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+          }
+        ],
+        "top_negative_agents": [],
+        "fallback_agents": [
+          {
+            "agent": "sentiment_analyst",
+            "reason": "data_insufficient"
+          }
+        ],
+        "bullish_count": 1,
+        "neutral_count": 5,
+        "bearish_count": 0,
+        "summary": "看多偏强(1/5/0)；有效Agent 6 个；主要支持: news_sentiment_analyst"
+      }
+    ],
+    "agent_execution_summary": {
+      "preset": "selected",
+      "agents": [
+        {
+          "agent": "technical_analyst",
+          "called": 8,
+          "succeeded": 7,
+          "fallback": 1,
+          "failed": 0
+        },
+        {
+          "agent": "fundamentals_analyst",
+          "called": 8,
+          "succeeded": 8,
+          "fallback": 0,
+          "failed": 0
+        },
+        {
+          "agent": "valuation_analyst",
+          "called": 8,
+          "succeeded": 8,
+          "fallback": 0,
+          "failed": 0
+        },
+        {
+          "agent": "sentiment_analyst",
+          "called": 8,
+          "succeeded": 2,
+          "fallback": 6,
+          "failed": 0
+        },
+        {
+          "agent": "china_youzi",
+          "called": 8,
+          "succeeded": 8,
+          "fallback": 0,
+          "failed": 0
+        },
+        {
+          "agent": "industry_rotation",
+          "called": 8,
+          "succeeded": 6,
+          "fallback": 2,
+          "failed": 0
+        },
+        {
+          "agent": "news_sentiment_analyst",
+          "called": 8,
+          "succeeded": 8,
+          "fallback": 0,
+          "failed": 0
+        }
+      ]
+    },
+    "data_risk_summary": {
+      "stockdb_available": true,
+      "api_available": true,
+      "sector_research_available": true,
+      "concept_rank_available": true,
+      "as_of_date": "2026-06-29"
+    }
+  }
+}

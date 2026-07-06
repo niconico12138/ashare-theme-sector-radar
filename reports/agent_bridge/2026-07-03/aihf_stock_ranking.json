@@ -1,0 +1,1162 @@
+{
+  "schema_version": "1.0",
+  "as_of": "2026-07-03",
+  "source": "ai-hedge-fund",
+  "agent_preset": "selected",
+  "agent_count": 7,
+  "llm_enabled": true,
+  "ranking_source": "ai_hedge_fund_agents",
+  "items": [
+    {
+      "rank": 1,
+      "code": "000536",
+      "name": "华映科技",
+      "boards": [
+        "光刻胶"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "trend",
+      "trend_score": 62.45,
+      "burst_score": 30.3,
+      "agent_score": 55.7,
+      "risk_adjusted_score": 55.7,
+      "risk_level": "low",
+      "bullish_count": 2,
+      "neutral_count": 3,
+      "bearish_count": 0,
+      "contributing_agents": 5,
+      "effective_weight_sum": 0.74,
+      "top_positive_agents": [
+        {
+          "agent": "china_youzi",
+          "signal": "buy",
+          "confidence": 0.375,
+          "weight": 0.2703,
+          "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=28.8%，量比=2.09，涨停=2次"
+        },
+        {
+          "agent": "news_sentiment_analyst",
+          "signal": "buy",
+          "confidence": 0.15,
+          "weight": 0.0811,
+          "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+        }
+      ],
+      "top_negative_agents": [],
+      "neutral_agents": [
+        {
+          "agent": "technical_analyst",
+          "confidence": 0.17,
+          "reason": "LLM unavailable | 数据来源: tencent_kline_api, mimo_llm"
+        },
+        {
+          "agent": "fundamentals_analyst",
+          "confidence": 0.45,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, mimo_llm"
+        },
+        {
+          "agent": "valuation_analyst",
+          "confidence": 1.0,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, financial_line_items, market_cap, mimo_llm"
+        }
+      ],
+      "fallback_agents": [
+        {
+          "agent": "sentiment_analyst",
+          "reason": "data_insufficient"
+        },
+        {
+          "agent": "industry_rotation",
+          "reason": "data_insufficient"
+        }
+      ],
+      "summary": "看多偏强(2/3/0)；有效Agent 5 个；主要支持: china_youzi",
+      "source_boards": [
+        "光刻胶"
+      ],
+      "source_agent_label": ""
+    },
+    {
+      "rank": 2,
+      "code": "000062",
+      "name": "深圳华强",
+      "boards": [
+        "光刻胶"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "trend",
+      "trend_score": 62.45,
+      "burst_score": 30.3,
+      "agent_score": 53.8,
+      "risk_adjusted_score": 53.8,
+      "risk_level": "low",
+      "bullish_count": 2,
+      "neutral_count": 2,
+      "bearish_count": 0,
+      "contributing_agents": 4,
+      "effective_weight_sum": 0.52,
+      "top_positive_agents": [
+        {
+          "agent": "china_youzi",
+          "signal": "buy",
+          "confidence": 0.15,
+          "weight": 0.3846,
+          "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=5.0%，量比=0.68，涨停=0次"
+        },
+        {
+          "agent": "news_sentiment_analyst",
+          "signal": "buy",
+          "confidence": 0.15,
+          "weight": 0.1154,
+          "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+        }
+      ],
+      "top_negative_agents": [],
+      "neutral_agents": [
+        {
+          "agent": "fundamentals_analyst",
+          "confidence": 0.6,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, mimo_llm"
+        },
+        {
+          "agent": "valuation_analyst",
+          "confidence": 0.7,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, financial_line_items, market_cap, mimo_llm"
+        }
+      ],
+      "fallback_agents": [
+        {
+          "agent": "technical_analyst",
+          "reason": "data_insufficient"
+        },
+        {
+          "agent": "sentiment_analyst",
+          "reason": "data_insufficient"
+        },
+        {
+          "agent": "industry_rotation",
+          "reason": "data_insufficient"
+        }
+      ],
+      "summary": "看多偏强(2/2/0)；有效Agent 4 个；主要支持: china_youzi",
+      "source_boards": [
+        "光刻胶"
+      ],
+      "source_agent_label": ""
+    },
+    {
+      "rank": 3,
+      "code": "000504",
+      "name": "南华生物",
+      "boards": [
+        "芬太尼"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "both",
+      "trend_score": 45.2,
+      "burst_score": 58.8,
+      "agent_score": 53.8,
+      "risk_adjusted_score": 53.8,
+      "risk_level": "low",
+      "bullish_count": 2,
+      "neutral_count": 2,
+      "bearish_count": 0,
+      "contributing_agents": 4,
+      "effective_weight_sum": 0.52,
+      "top_positive_agents": [
+        {
+          "agent": "china_youzi",
+          "signal": "buy",
+          "confidence": 0.15,
+          "weight": 0.3846,
+          "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=7.7%，量比=0.83，涨停=0次"
+        },
+        {
+          "agent": "news_sentiment_analyst",
+          "signal": "buy",
+          "confidence": 0.15,
+          "weight": 0.1154,
+          "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+        }
+      ],
+      "top_negative_agents": [],
+      "neutral_agents": [
+        {
+          "agent": "fundamentals_analyst",
+          "confidence": 0.6,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, mimo_llm"
+        },
+        {
+          "agent": "valuation_analyst",
+          "confidence": 0.7,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, financial_line_items, market_cap, mimo_llm"
+        }
+      ],
+      "fallback_agents": [
+        {
+          "agent": "technical_analyst",
+          "reason": "data_insufficient"
+        },
+        {
+          "agent": "sentiment_analyst",
+          "reason": "data_insufficient"
+        },
+        {
+          "agent": "industry_rotation",
+          "reason": "data_insufficient"
+        }
+      ],
+      "summary": "看多偏强(2/2/0)；有效Agent 4 个；主要支持: china_youzi",
+      "source_boards": [
+        "芬太尼"
+      ],
+      "source_agent_label": ""
+    },
+    {
+      "rank": 4,
+      "code": "000501",
+      "name": "武商集团",
+      "boards": [
+        "海南自贸区"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "burst",
+      "trend_score": 34.0,
+      "burst_score": 58.8,
+      "agent_score": 53.6,
+      "risk_adjusted_score": 53.6,
+      "risk_level": "low",
+      "bullish_count": 2,
+      "neutral_count": 3,
+      "bearish_count": 0,
+      "contributing_agents": 5,
+      "effective_weight_sum": 0.74,
+      "top_positive_agents": [
+        {
+          "agent": "china_youzi",
+          "signal": "buy",
+          "confidence": 0.225,
+          "weight": 0.2703,
+          "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=5.4%，量比=1.54，涨停=0次"
+        },
+        {
+          "agent": "news_sentiment_analyst",
+          "signal": "buy",
+          "confidence": 0.15,
+          "weight": 0.0811,
+          "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+        }
+      ],
+      "top_negative_agents": [],
+      "neutral_agents": [
+        {
+          "agent": "technical_analyst",
+          "confidence": 0.182,
+          "reason": "LLM unavailable | 数据来源: tencent_kline_api, mimo_llm"
+        },
+        {
+          "agent": "fundamentals_analyst",
+          "confidence": 0.45,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, mimo_llm"
+        },
+        {
+          "agent": "valuation_analyst",
+          "confidence": 1.0,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, financial_line_items, market_cap, mimo_llm"
+        }
+      ],
+      "fallback_agents": [
+        {
+          "agent": "sentiment_analyst",
+          "reason": "data_insufficient"
+        },
+        {
+          "agent": "industry_rotation",
+          "reason": "data_insufficient"
+        }
+      ],
+      "summary": "看多偏强(2/3/0)；有效Agent 5 个；主要支持: china_youzi",
+      "source_boards": [
+        "海南自贸区"
+      ],
+      "source_agent_label": ""
+    },
+    {
+      "rank": 5,
+      "code": "000565",
+      "name": "渝三峡A",
+      "boards": [
+        "氟化工概念"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "both",
+      "trend_score": 66.2,
+      "burst_score": 55.8,
+      "agent_score": 53.2,
+      "risk_adjusted_score": 53.2,
+      "risk_level": "low",
+      "bullish_count": 2,
+      "neutral_count": 3,
+      "bearish_count": 0,
+      "contributing_agents": 5,
+      "effective_weight_sum": 0.74,
+      "top_positive_agents": [
+        {
+          "agent": "china_youzi",
+          "signal": "buy",
+          "confidence": 0.19,
+          "weight": 0.2703,
+          "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=8.2%，量比=1.23，涨停=0次"
+        },
+        {
+          "agent": "news_sentiment_analyst",
+          "signal": "buy",
+          "confidence": 0.15,
+          "weight": 0.0811,
+          "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+        }
+      ],
+      "top_negative_agents": [],
+      "neutral_agents": [
+        {
+          "agent": "technical_analyst",
+          "confidence": 0.252,
+          "reason": "LLM unavailable | 数据来源: tencent_kline_api, mimo_llm"
+        },
+        {
+          "agent": "fundamentals_analyst",
+          "confidence": 0.45,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, mimo_llm"
+        },
+        {
+          "agent": "valuation_analyst",
+          "confidence": 0.7,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, financial_line_items, market_cap, mimo_llm"
+        }
+      ],
+      "fallback_agents": [
+        {
+          "agent": "sentiment_analyst",
+          "reason": "data_insufficient"
+        },
+        {
+          "agent": "industry_rotation",
+          "reason": "data_insufficient"
+        }
+      ],
+      "summary": "看多偏强(2/3/0)；有效Agent 5 个；主要支持: china_youzi",
+      "source_boards": [
+        "氟化工概念"
+      ],
+      "source_agent_label": ""
+    },
+    {
+      "rank": 6,
+      "code": "000153",
+      "name": "丰原药业",
+      "boards": [
+        "芬太尼"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "both",
+      "trend_score": 45.2,
+      "burst_score": 58.8,
+      "agent_score": 53.2,
+      "risk_adjusted_score": 53.2,
+      "risk_level": "low",
+      "bullish_count": 2,
+      "neutral_count": 3,
+      "bearish_count": 0,
+      "contributing_agents": 5,
+      "effective_weight_sum": 0.74,
+      "top_positive_agents": [
+        {
+          "agent": "china_youzi",
+          "signal": "buy",
+          "confidence": 0.19,
+          "weight": 0.2703,
+          "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=4.4%，量比=1.34，涨停=0次"
+        },
+        {
+          "agent": "news_sentiment_analyst",
+          "signal": "buy",
+          "confidence": 0.15,
+          "weight": 0.0811,
+          "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+        }
+      ],
+      "top_negative_agents": [],
+      "neutral_agents": [
+        {
+          "agent": "technical_analyst",
+          "confidence": 0.175,
+          "reason": "LLM unavailable | 数据来源: tencent_kline_api, mimo_llm"
+        },
+        {
+          "agent": "fundamentals_analyst",
+          "confidence": 0.45,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, mimo_llm"
+        },
+        {
+          "agent": "valuation_analyst",
+          "confidence": 0.7,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, financial_line_items, market_cap, mimo_llm"
+        }
+      ],
+      "fallback_agents": [
+        {
+          "agent": "sentiment_analyst",
+          "reason": "data_insufficient"
+        },
+        {
+          "agent": "industry_rotation",
+          "reason": "data_insufficient"
+        }
+      ],
+      "summary": "看多偏强(2/3/0)；有效Agent 5 个；主要支持: china_youzi",
+      "source_boards": [
+        "芬太尼"
+      ],
+      "source_agent_label": ""
+    },
+    {
+      "rank": 7,
+      "code": "000564",
+      "name": "供销大集",
+      "boards": [
+        "海南自贸区"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "burst",
+      "trend_score": 34.0,
+      "burst_score": 58.8,
+      "agent_score": 53.1,
+      "risk_adjusted_score": 53.1,
+      "risk_level": "low",
+      "bullish_count": 2,
+      "neutral_count": 2,
+      "bearish_count": 0,
+      "contributing_agents": 4,
+      "effective_weight_sum": 0.62,
+      "top_positive_agents": [
+        {
+          "agent": "china_youzi",
+          "signal": "buy",
+          "confidence": 0.15,
+          "weight": 0.3226,
+          "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=5.3%，量比=0.99，涨停=0次"
+        },
+        {
+          "agent": "news_sentiment_analyst",
+          "signal": "buy",
+          "confidence": 0.15,
+          "weight": 0.0968,
+          "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+        }
+      ],
+      "top_negative_agents": [],
+      "neutral_agents": [
+        {
+          "agent": "technical_analyst",
+          "confidence": 0.142,
+          "reason": "LLM unavailable | 数据来源: tencent_kline_api, mimo_llm"
+        },
+        {
+          "agent": "fundamentals_analyst",
+          "confidence": 0.45,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, mimo_llm"
+        }
+      ],
+      "fallback_agents": [
+        {
+          "agent": "valuation_analyst",
+          "reason": "data_insufficient"
+        },
+        {
+          "agent": "sentiment_analyst",
+          "reason": "data_insufficient"
+        },
+        {
+          "agent": "industry_rotation",
+          "reason": "data_insufficient"
+        }
+      ],
+      "summary": "看多偏强(2/2/0)；有效Agent 4 个；主要支持: china_youzi",
+      "source_boards": [
+        "海南自贸区"
+      ],
+      "source_agent_label": ""
+    },
+    {
+      "rank": 8,
+      "code": "000553",
+      "name": "安道麦A",
+      "boards": [
+        "氟化工概念"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "both",
+      "trend_score": 66.2,
+      "burst_score": 55.8,
+      "agent_score": 52.6,
+      "risk_adjusted_score": 52.6,
+      "risk_level": "low",
+      "bullish_count": 2,
+      "neutral_count": 3,
+      "bearish_count": 0,
+      "contributing_agents": 5,
+      "effective_weight_sum": 0.74,
+      "top_positive_agents": [
+        {
+          "agent": "china_youzi",
+          "signal": "buy",
+          "confidence": 0.15,
+          "weight": 0.2703,
+          "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=7.1%，量比=1.17，涨停=0次"
+        },
+        {
+          "agent": "news_sentiment_analyst",
+          "signal": "buy",
+          "confidence": 0.15,
+          "weight": 0.0811,
+          "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+        }
+      ],
+      "top_negative_agents": [],
+      "neutral_agents": [
+        {
+          "agent": "technical_analyst",
+          "confidence": 0.15,
+          "reason": "LLM unavailable | 数据来源: tencent_kline_api, mimo_llm"
+        },
+        {
+          "agent": "fundamentals_analyst",
+          "confidence": 0.45,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, mimo_llm"
+        },
+        {
+          "agent": "valuation_analyst",
+          "confidence": 1.0,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, financial_line_items, market_cap, mimo_llm"
+        }
+      ],
+      "fallback_agents": [
+        {
+          "agent": "sentiment_analyst",
+          "reason": "data_insufficient"
+        },
+        {
+          "agent": "industry_rotation",
+          "reason": "data_insufficient"
+        }
+      ],
+      "summary": "看多偏强(2/3/0)；有效Agent 5 个；主要支持: china_youzi",
+      "source_boards": [
+        "氟化工概念"
+      ],
+      "source_agent_label": ""
+    },
+    {
+      "rank": 9,
+      "code": "000798",
+      "name": "中水渔业",
+      "boards": [
+        "动物疫苗"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "trend",
+      "trend_score": 59.0,
+      "burst_score": 45.8,
+      "agent_score": 52.6,
+      "risk_adjusted_score": 52.6,
+      "risk_level": "low",
+      "bullish_count": 2,
+      "neutral_count": 3,
+      "bearish_count": 0,
+      "contributing_agents": 5,
+      "effective_weight_sum": 0.74,
+      "top_positive_agents": [
+        {
+          "agent": "china_youzi",
+          "signal": "buy",
+          "confidence": 0.15,
+          "weight": 0.2703,
+          "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=6.4%，量比=1.09，涨停=0次"
+        },
+        {
+          "agent": "news_sentiment_analyst",
+          "signal": "buy",
+          "confidence": 0.15,
+          "weight": 0.0811,
+          "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+        }
+      ],
+      "top_negative_agents": [],
+      "neutral_agents": [
+        {
+          "agent": "technical_analyst",
+          "confidence": 0.122,
+          "reason": "LLM unavailable | 数据来源: tencent_kline_api, mimo_llm"
+        },
+        {
+          "agent": "fundamentals_analyst",
+          "confidence": 0.45,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, mimo_llm"
+        },
+        {
+          "agent": "valuation_analyst",
+          "confidence": 1.0,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, financial_line_items, market_cap, mimo_llm"
+        }
+      ],
+      "fallback_agents": [
+        {
+          "agent": "sentiment_analyst",
+          "reason": "data_insufficient"
+        },
+        {
+          "agent": "industry_rotation",
+          "reason": "data_insufficient"
+        }
+      ],
+      "summary": "看多偏强(2/3/0)；有效Agent 5 个；主要支持: china_youzi",
+      "source_boards": [
+        "动物疫苗"
+      ],
+      "source_agent_label": ""
+    },
+    {
+      "rank": 10,
+      "code": "000411",
+      "name": "英特集团",
+      "boards": [
+        "芬太尼"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "both",
+      "trend_score": 45.2,
+      "burst_score": 58.8,
+      "agent_score": 52.6,
+      "risk_adjusted_score": 52.6,
+      "risk_level": "low",
+      "bullish_count": 2,
+      "neutral_count": 3,
+      "bearish_count": 0,
+      "contributing_agents": 5,
+      "effective_weight_sum": 0.74,
+      "top_positive_agents": [
+        {
+          "agent": "china_youzi",
+          "signal": "buy",
+          "confidence": 0.15,
+          "weight": 0.2703,
+          "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=3.4%，量比=0.82，涨停=0次"
+        },
+        {
+          "agent": "news_sentiment_analyst",
+          "signal": "buy",
+          "confidence": 0.15,
+          "weight": 0.0811,
+          "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+        }
+      ],
+      "top_negative_agents": [],
+      "neutral_agents": [
+        {
+          "agent": "technical_analyst",
+          "confidence": 0.184,
+          "reason": "LLM unavailable | 数据来源: tencent_kline_api, mimo_llm"
+        },
+        {
+          "agent": "fundamentals_analyst",
+          "confidence": 0.15,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, mimo_llm"
+        },
+        {
+          "agent": "valuation_analyst",
+          "confidence": 0.7,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, financial_line_items, market_cap, mimo_llm"
+        }
+      ],
+      "fallback_agents": [
+        {
+          "agent": "sentiment_analyst",
+          "reason": "data_insufficient"
+        },
+        {
+          "agent": "industry_rotation",
+          "reason": "data_insufficient"
+        }
+      ],
+      "summary": "看多偏强(2/3/0)；有效Agent 5 个；主要支持: china_youzi",
+      "source_boards": [
+        "芬太尼"
+      ],
+      "source_agent_label": ""
+    },
+    {
+      "rank": 11,
+      "code": "000100",
+      "name": "TCL科技",
+      "boards": [
+        "光刻胶"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "trend",
+      "trend_score": 62.45,
+      "burst_score": 30.3,
+      "agent_score": 52.6,
+      "risk_adjusted_score": 52.6,
+      "risk_level": "low",
+      "bullish_count": 2,
+      "neutral_count": 3,
+      "bearish_count": 0,
+      "contributing_agents": 5,
+      "effective_weight_sum": 0.74,
+      "top_positive_agents": [
+        {
+          "agent": "china_youzi",
+          "signal": "buy",
+          "confidence": 0.15,
+          "weight": 0.2703,
+          "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=6.8%，量比=1.13，涨停=0次"
+        },
+        {
+          "agent": "news_sentiment_analyst",
+          "signal": "buy",
+          "confidence": 0.15,
+          "weight": 0.0811,
+          "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+        }
+      ],
+      "top_negative_agents": [],
+      "neutral_agents": [
+        {
+          "agent": "technical_analyst",
+          "confidence": 0.233,
+          "reason": "LLM unavailable | 数据来源: tencent_kline_api, mimo_llm"
+        },
+        {
+          "agent": "fundamentals_analyst",
+          "confidence": 0.45,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, mimo_llm"
+        },
+        {
+          "agent": "valuation_analyst",
+          "confidence": 1.0,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, financial_line_items, market_cap, mimo_llm"
+        }
+      ],
+      "fallback_agents": [
+        {
+          "agent": "sentiment_analyst",
+          "reason": "data_insufficient"
+        },
+        {
+          "agent": "industry_rotation",
+          "reason": "data_insufficient"
+        }
+      ],
+      "summary": "看多偏强(2/3/0)；有效Agent 5 个；主要支持: china_youzi",
+      "source_boards": [
+        "光刻胶"
+      ],
+      "source_agent_label": ""
+    },
+    {
+      "rank": 12,
+      "code": "000419",
+      "name": "通程控股",
+      "boards": [
+        "海南自贸区"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "burst",
+      "trend_score": 34.0,
+      "burst_score": 58.8,
+      "agent_score": 52.6,
+      "risk_adjusted_score": 52.6,
+      "risk_level": "low",
+      "bullish_count": 2,
+      "neutral_count": 3,
+      "bearish_count": 0,
+      "contributing_agents": 5,
+      "effective_weight_sum": 0.74,
+      "top_positive_agents": [
+        {
+          "agent": "china_youzi",
+          "signal": "buy",
+          "confidence": 0.15,
+          "weight": 0.2703,
+          "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=3.9%，量比=0.83，涨停=0次"
+        },
+        {
+          "agent": "news_sentiment_analyst",
+          "signal": "buy",
+          "confidence": 0.15,
+          "weight": 0.0811,
+          "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+        }
+      ],
+      "top_negative_agents": [],
+      "neutral_agents": [
+        {
+          "agent": "technical_analyst",
+          "confidence": 0.192,
+          "reason": "LLM unavailable | 数据来源: tencent_kline_api, mimo_llm"
+        },
+        {
+          "agent": "fundamentals_analyst",
+          "confidence": 0.5,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, mimo_llm"
+        },
+        {
+          "agent": "valuation_analyst",
+          "confidence": 1.0,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, financial_line_items, market_cap, mimo_llm"
+        }
+      ],
+      "fallback_agents": [
+        {
+          "agent": "sentiment_analyst",
+          "reason": "data_insufficient"
+        },
+        {
+          "agent": "industry_rotation",
+          "reason": "data_insufficient"
+        }
+      ],
+      "summary": "看多偏强(2/3/0)；有效Agent 5 个；主要支持: china_youzi",
+      "source_boards": [
+        "海南自贸区"
+      ],
+      "source_agent_label": ""
+    },
+    {
+      "rank": 13,
+      "code": "000058",
+      "name": "深赛格",
+      "boards": [
+        "海南自贸区"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "burst",
+      "trend_score": 34.0,
+      "burst_score": 58.8,
+      "agent_score": 52.6,
+      "risk_adjusted_score": 52.6,
+      "risk_level": "low",
+      "bullish_count": 2,
+      "neutral_count": 3,
+      "bearish_count": 0,
+      "contributing_agents": 5,
+      "effective_weight_sum": 0.74,
+      "top_positive_agents": [
+        {
+          "agent": "china_youzi",
+          "signal": "buy",
+          "confidence": 0.15,
+          "weight": 0.2703,
+          "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=3.1%，量比=0.92，涨停=0次"
+        },
+        {
+          "agent": "news_sentiment_analyst",
+          "signal": "buy",
+          "confidence": 0.15,
+          "weight": 0.0811,
+          "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+        }
+      ],
+      "top_negative_agents": [],
+      "neutral_agents": [
+        {
+          "agent": "technical_analyst",
+          "confidence": 0.218,
+          "reason": "LLM unavailable | 数据来源: tencent_kline_api, mimo_llm"
+        },
+        {
+          "agent": "fundamentals_analyst",
+          "confidence": 0.6,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, mimo_llm"
+        },
+        {
+          "agent": "valuation_analyst",
+          "confidence": 0.7,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, financial_line_items, market_cap, mimo_llm"
+        }
+      ],
+      "fallback_agents": [
+        {
+          "agent": "sentiment_analyst",
+          "reason": "data_insufficient"
+        },
+        {
+          "agent": "industry_rotation",
+          "reason": "data_insufficient"
+        }
+      ],
+      "summary": "看多偏强(2/3/0)；有效Agent 5 个；主要支持: china_youzi",
+      "source_boards": [
+        "海南自贸区"
+      ],
+      "source_agent_label": ""
+    },
+    {
+      "rank": 14,
+      "code": "000021",
+      "name": "深科技",
+      "boards": [
+        "光刻胶"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "trend",
+      "trend_score": 62.45,
+      "burst_score": 30.3,
+      "agent_score": 50.5,
+      "risk_adjusted_score": 50.5,
+      "risk_level": "low",
+      "bullish_count": 1,
+      "neutral_count": 5,
+      "bearish_count": 0,
+      "contributing_agents": 6,
+      "effective_weight_sum": 0.82,
+      "top_positive_agents": [
+        {
+          "agent": "news_sentiment_analyst",
+          "signal": "buy",
+          "confidence": 0.15,
+          "weight": 0.0732,
+          "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+        }
+      ],
+      "top_negative_agents": [],
+      "neutral_agents": [
+        {
+          "agent": "technical_analyst",
+          "confidence": 0.283,
+          "reason": "LLM unavailable | 数据来源: tencent_kline_api, mimo_llm"
+        },
+        {
+          "agent": "fundamentals_analyst",
+          "confidence": 0.6,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, mimo_llm"
+        },
+        {
+          "agent": "valuation_analyst",
+          "confidence": 1.0,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, financial_line_items, market_cap, mimo_llm"
+        },
+        {
+          "agent": "sentiment_analyst",
+          "confidence": 0.5,
+          "reason": "LLM unavailable | 数据来源: insider_trades, company_news, mimo_llm"
+        },
+        {
+          "agent": "china_youzi",
+          "confidence": 0.032,
+          "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=-5.0%，量比=1.21，涨停=1次"
+        }
+      ],
+      "fallback_agents": [
+        {
+          "agent": "industry_rotation",
+          "reason": "data_insufficient"
+        }
+      ],
+      "summary": "看多偏强(1/5/0)；有效Agent 6 个；主要支持: news_sentiment_analyst",
+      "source_boards": [
+        "光刻胶"
+      ],
+      "source_agent_label": ""
+    },
+    {
+      "rank": 15,
+      "code": "000403",
+      "name": "派林生物",
+      "boards": [
+        "仿制药一致性评价"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "burst",
+      "trend_score": 45.2,
+      "burst_score": 58.8,
+      "agent_score": 50.5,
+      "risk_adjusted_score": 50.5,
+      "risk_level": "low",
+      "bullish_count": 1,
+      "neutral_count": 5,
+      "bearish_count": 0,
+      "contributing_agents": 6,
+      "effective_weight_sum": 0.82,
+      "top_positive_agents": [
+        {
+          "agent": "news_sentiment_analyst",
+          "signal": "buy",
+          "confidence": 0.15,
+          "weight": 0.0732,
+          "reason": "Total: 10 articles, Bullish: 5, Bearish: 0, Neutral: 5, LLM classified: 5 | 数据来源: company_news"
+        }
+      ],
+      "top_negative_agents": [],
+      "neutral_agents": [
+        {
+          "agent": "technical_analyst",
+          "confidence": 0.298,
+          "reason": "LLM unavailable | 数据来源: tencent_kline_api, mimo_llm"
+        },
+        {
+          "agent": "fundamentals_analyst",
+          "confidence": 0.45,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, mimo_llm"
+        },
+        {
+          "agent": "valuation_analyst",
+          "confidence": 0.7,
+          "reason": "LLM unavailable | 数据来源: financial_metrics, financial_line_items, market_cap, mimo_llm"
+        },
+        {
+          "agent": "sentiment_analyst",
+          "confidence": 1.0,
+          "reason": "LLM unavailable | 数据来源: insider_trades, company_news, mimo_llm"
+        },
+        {
+          "agent": "china_youzi",
+          "confidence": 0.06,
+          "reason": "[rule_based_fallback] LLM 不可用，使用量化指标：5日涨幅=1.3%，量比=0.73，涨停=0次"
+        }
+      ],
+      "fallback_agents": [
+        {
+          "agent": "industry_rotation",
+          "reason": "data_insufficient"
+        }
+      ],
+      "summary": "看多偏强(1/5/0)；有效Agent 6 个；主要支持: news_sentiment_analyst",
+      "source_boards": [
+        "仿制药一致性评价"
+      ],
+      "source_agent_label": ""
+    }
+  ],
+  "run_meta": {
+    "mode": "real",
+    "agent_preset": "selected",
+    "requested_agents": [
+      "technical_analyst",
+      "fundamentals_analyst",
+      "valuation_analyst",
+      "sentiment_analyst",
+      "china_youzi",
+      "industry_rotation",
+      "news_sentiment_analyst"
+    ],
+    "effective_agents": [
+      "china_youzi",
+      "fundamentals_analyst",
+      "news_sentiment_analyst",
+      "sentiment_analyst",
+      "technical_analyst",
+      "valuation_analyst"
+    ],
+    "agent_count": 7,
+    "succeeded_agents": [
+      "china_youzi",
+      "fundamentals_analyst",
+      "news_sentiment_analyst",
+      "sentiment_analyst",
+      "technical_analyst",
+      "valuation_analyst"
+    ],
+    "failed_agents": [],
+    "timed_out_agents": [],
+    "fallback_agents": [
+      "industry_rotation"
+    ],
+    "per_agent_status": {
+      "technical_analyst": {
+        "succeeded": 13,
+        "failed": 0,
+        "fallback": 2,
+        "error": ""
+      },
+      "fundamentals_analyst": {
+        "succeeded": 15,
+        "failed": 0,
+        "fallback": 0,
+        "error": ""
+      },
+      "valuation_analyst": {
+        "succeeded": 14,
+        "failed": 0,
+        "fallback": 1,
+        "error": ""
+      },
+      "sentiment_analyst": {
+        "succeeded": 2,
+        "failed": 0,
+        "fallback": 13,
+        "error": ""
+      },
+      "china_youzi": {
+        "succeeded": 15,
+        "failed": 0,
+        "fallback": 0,
+        "error": ""
+      },
+      "industry_rotation": {
+        "succeeded": 0,
+        "failed": 0,
+        "fallback": 15,
+        "error": ""
+      },
+      "news_sentiment_analyst": {
+        "succeeded": 15,
+        "failed": 0,
+        "fallback": 0,
+        "error": ""
+      }
+    },
+    "llm_enabled": true,
+    "data_mode": "real",
+    "started_at": "2026-07-05T18:05:24.073934",
+    "finished_at": "2026-07-05T18:08:20.031913",
+    "duration_seconds": 175.96,
+    "llm_configured": true,
+    "llm_available": true,
+    "llm_provider": "OPENAI",
+    "llm_model": "mimo-v2.5-pro",
+    "llm_base_url": "https://api.xiaomimimo.com/v1",
+    "llm_error_type": null,
+    "llm_error_hint": ""
+  }
+}

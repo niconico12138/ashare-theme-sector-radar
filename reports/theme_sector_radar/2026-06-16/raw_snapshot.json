@@ -1,0 +1,164 @@
+{
+  "metadata": {
+    "replay_source": "sector_history",
+    "signal_date": "2026-06-16",
+    "max_source_record_date": "2026-06-16",
+    "no_lookahead_passed": true
+  },
+  "data": {
+    "industry_sectors": [
+      {
+        "sector_id": "replay_industry_元件",
+        "name": "元件",
+        "type": "industry",
+        "price_change_pct": 3.84,
+        "turnover": 202628860000.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-16",
+        "score": 76,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_其他电子",
+        "name": "其他电子",
+        "type": "industry",
+        "price_change_pct": 4.16,
+        "turnover": 33147812000.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-16",
+        "score": 76,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_其他电源设备",
+        "name": "其他电源设备",
+        "type": "industry",
+        "price_change_pct": 3.84,
+        "turnover": 27982754000.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-16",
+        "score": 76,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_电子化学品",
+        "name": "电子化学品",
+        "type": "industry",
+        "price_change_pct": 3.25,
+        "turnover": 79717903000.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-16",
+        "score": 76,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_电池",
+        "name": "电池",
+        "type": "industry",
+        "price_change_pct": 4.02,
+        "turnover": 139331430000.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-16",
+        "score": 76,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_通信设备",
+        "name": "通信设备",
+        "type": "industry",
+        "price_change_pct": 3.28,
+        "turnover": 255305000000.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-16",
+        "score": 76,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_金属新材料",
+        "name": "金属新材料",
+        "type": "industry",
+        "price_change_pct": 3.53,
+        "turnover": 26091988000.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-16",
+        "score": 76,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_非金属材料",
+        "name": "非金属材料",
+        "type": "industry",
+        "price_change_pct": 4.03,
+        "turnover": 11906160600.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-16",
+        "score": 76,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_光伏设备",
+        "name": "光伏设备",
+        "type": "industry",
+        "price_change_pct": 1.85,
+        "turnover": 55530010000.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-16",
+        "score": 56,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_光学光电子",
+        "name": "光学光电子",
+        "type": "industry",
+        "price_change_pct": 2.98,
+        "turnover": 97052516000.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-16",
+        "score": 56,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      }
+    ],
+    "concept_sectors": [],
+    "market_data": {}
+  }
+}

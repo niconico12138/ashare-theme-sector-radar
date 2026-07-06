@@ -1,0 +1,6012 @@
+{
+  "report_type": "sector_research_index",
+  "start_date": "2026-06-01",
+  "end_date": "2026-06-29",
+  "total_days": 28,
+  "dates": [
+    "2026-06-02",
+    "2026-06-03",
+    "2026-06-04",
+    "2026-06-05",
+    "2026-06-06",
+    "2026-06-07",
+    "2026-06-08",
+    "2026-06-09",
+    "2026-06-10",
+    "2026-06-11",
+    "2026-06-12",
+    "2026-06-13",
+    "2026-06-14",
+    "2026-06-15",
+    "2026-06-16",
+    "2026-06-17",
+    "2026-06-18",
+    "2026-06-19",
+    "2026-06-20",
+    "2026-06-21",
+    "2026-06-22",
+    "2026-06-23",
+    "2026-06-24",
+    "2026-06-25",
+    "2026-06-26",
+    "2026-06-27",
+    "2026-06-28",
+    "2026-06-29"
+  ],
+  "sector_frequency": {
+    "电子化学品": {
+      "count": 9,
+      "dates": [
+        "2026-06-04",
+        "2026-06-09",
+        "2026-06-11",
+        "2026-06-15",
+        "2026-06-16",
+        "2026-06-17",
+        "2026-06-22",
+        "2026-06-24",
+        "2026-06-25"
+      ],
+      "labels": [
+        "weak_or_avoid",
+        "short_term_active_unconfirmed",
+        "oversold_rebound_candidate",
+        "trend_confirmed"
+      ],
+      "regimes": [
+        "choppy_market",
+        "risk_on",
+        "weak_rebound",
+        "risk_off"
+      ]
+    },
+    "其他电子": {
+      "count": 8,
+      "dates": [
+        "2026-06-04",
+        "2026-06-09",
+        "2026-06-18",
+        "2026-06-19",
+        "2026-06-20",
+        "2026-06-21",
+        "2026-06-24",
+        "2026-06-25"
+      ],
+      "labels": [
+        "weak_or_avoid",
+        "oversold_rebound_candidate",
+        "low_signal_noise",
+        "short_term_active_unconfirmed",
+        "trend_confirmed_but_strength_limited"
+      ],
+      "regimes": [
+        "choppy_market",
+        "risk_off",
+        "risk_on",
+        "weak_rebound"
+      ]
+    },
+    "半导体": {
+      "count": 8,
+      "dates": [
+        "2026-06-04",
+        "2026-06-09",
+        "2026-06-11",
+        "2026-06-15",
+        "2026-06-17",
+        "2026-06-24",
+        "2026-06-25",
+        "2026-06-29"
+      ],
+      "labels": [
+        "weak_or_avoid",
+        "oversold_rebound_candidate",
+        "short_term_active_unconfirmed",
+        "trend_confirmed_but_strength_limited",
+        "conflicted",
+        "trend_confirmed"
+      ],
+      "regimes": [
+        "choppy_market",
+        "risk_on",
+        "weak_rebound"
+      ]
+    },
+    "保险": {
+      "count": 8,
+      "dates": [
+        "2026-06-10",
+        "2026-06-12",
+        "2026-06-13",
+        "2026-06-14",
+        "2026-06-25",
+        "2026-06-26",
+        "2026-06-27",
+        "2026-06-28"
+      ],
+      "labels": [
+        "low_signal_noise",
+        "oversold_rebound_candidate",
+        "short_term_active_unconfirmed",
+        "defensive_stable_watch"
+      ],
+      "regimes": [
+        "risk_off",
+        "choppy_market",
+        "risk_on",
+        "weak_rebound"
+      ]
+    },
+    "小金属": {
+      "count": 7,
+      "dates": [
+        "2026-06-03",
+        "2026-06-11",
+        "2026-06-12",
+        "2026-06-13",
+        "2026-06-14",
+        "2026-06-15",
+        "2026-06-22"
+      ],
+      "labels": [
+        "weak_or_avoid",
+        "oversold_rebound_candidate",
+        "short_term_active_unconfirmed",
+        "conflicted"
+      ],
+      "regimes": [
+        "choppy_market",
+        "risk_on"
+      ]
+    },
+    "光学光电子": {
+      "count": 7,
+      "dates": [
+        "2026-06-03",
+        "2026-06-05",
+        "2026-06-06",
+        "2026-06-07",
+        "2026-06-15",
+        "2026-06-17",
+        "2026-06-24"
+      ],
+      "labels": [
+        "weak_or_avoid",
+        "oversold_rebound_candidate",
+        "low_signal_noise",
+        "conflicted",
+        "trend_confirmed_but_strength_limited",
+        "defensive_stable_watch"
+      ],
+      "regimes": [
+        "choppy_market",
+        "risk_off",
+        "risk_on",
+        "weak_rebound"
+      ]
+    },
+    "塑料制品": {
+      "count": 6,
+      "dates": [
+        "2026-06-05",
+        "2026-06-06",
+        "2026-06-07",
+        "2026-06-09",
+        "2026-06-15",
+        "2026-06-17"
+      ],
+      "labels": [
+        "weak_or_avoid",
+        "oversold_rebound_candidate",
+        "trend_confirmed_but_strength_limited"
+      ],
+      "regimes": [
+        "choppy_market",
+        "risk_on"
+      ]
+    },
+    "非金属材料": {
+      "count": 6,
+      "dates": [
+        "2026-06-16",
+        "2026-06-18",
+        "2026-06-19",
+        "2026-06-20",
+        "2026-06-21",
+        "2026-06-22"
+      ],
+      "labels": [
+        "oversold_rebound_candidate",
+        "conflicted",
+        "trend_confirmed",
+        "strong_consensus"
+      ],
+      "regimes": [
+        "weak_rebound",
+        "choppy_market"
+      ]
+    },
+    "医疗服务": {
+      "count": 6,
+      "dates": [
+        "2026-06-18",
+        "2026-06-19",
+        "2026-06-20",
+        "2026-06-21",
+        "2026-06-23",
+        "2026-06-29"
+      ],
+      "labels": [
+        "early_repair_watch",
+        "trend_confirmed_but_strength_limited",
+        "weak_or_avoid"
+      ],
+      "regimes": [
+        "choppy_market",
+        "weak_rebound"
+      ]
+    },
+    "工业金属": {
+      "count": 5,
+      "dates": [
+        "2026-06-02",
+        "2026-06-12",
+        "2026-06-13",
+        "2026-06-14",
+        "2026-06-22"
+      ],
+      "labels": [
+        "oversold_rebound_candidate",
+        "weak_or_avoid",
+        "short_term_active_unconfirmed",
+        "early_repair_watch"
+      ],
+      "regimes": [
+        "choppy_market",
+        "risk_on"
+      ]
+    },
+    "通信设备": {
+      "count": 5,
+      "dates": [
+        "2026-06-03",
+        "2026-06-18",
+        "2026-06-19",
+        "2026-06-20",
+        "2026-06-21"
+      ],
+      "labels": [
+        "weak_or_avoid",
+        "oversold_rebound_candidate",
+        "short_term_active_unconfirmed"
+      ],
+      "regimes": [
+        "choppy_market",
+        "risk_on",
+        "weak_rebound"
+      ]
+    },
+    "元件": {
+      "count": 4,
+      "dates": [
+        "2026-06-02",
+        "2026-06-04",
+        "2026-06-09",
+        "2026-06-16"
+      ],
+      "labels": [
+        "oversold_rebound_candidate",
+        "weak_or_avoid",
+        "low_signal_noise",
+        "short_term_active_unconfirmed",
+        "conflicted"
+      ],
+      "regimes": [
+        "choppy_market",
+        "risk_off",
+        "risk_on",
+        "weak_rebound"
+      ]
+    },
+    "消费电子": {
+      "count": 4,
+      "dates": [
+        "2026-06-18",
+        "2026-06-19",
+        "2026-06-20",
+        "2026-06-21"
+      ],
+      "labels": [
+        "weak_or_avoid",
+        "oversold_rebound_candidate"
+      ],
+      "regimes": [
+        "choppy_market"
+      ]
+    },
+    "工程机械": {
+      "count": 4,
+      "dates": [
+        "2026-06-05",
+        "2026-06-06",
+        "2026-06-07",
+        "2026-06-08"
+      ],
+      "labels": [
+        "oversold_rebound_candidate"
+      ],
+      "regimes": [
+        "choppy_market",
+        "risk_off"
+      ]
+    },
+    "化学纤维": {
+      "count": 4,
+      "dates": [
+        "2026-06-05",
+        "2026-06-06",
+        "2026-06-07",
+        "2026-06-24"
+      ],
+      "labels": [
+        "oversold_rebound_candidate",
+        "early_repair_watch"
+      ],
+      "regimes": [
+        "choppy_market"
+      ]
+    },
+    "公路铁路运输": {
+      "count": 4,
+      "dates": [
+        "2026-06-23",
+        "2026-06-26",
+        "2026-06-27",
+        "2026-06-28"
+      ],
+      "labels": [
+        "low_signal_noise",
+        "weak_or_avoid",
+        "early_repair_watch",
+        "defensive_stable_watch"
+      ],
+      "regimes": [
+        "risk_off",
+        "choppy_market",
+        "weak_rebound"
+      ]
+    },
+    "能源金属": {
+      "count": 4,
+      "dates": [
+        "2026-06-11",
+        "2026-06-12",
+        "2026-06-13",
+        "2026-06-14"
+      ],
+      "labels": [
+        "oversold_rebound_candidate",
+        "early_repair_watch",
+        "conflicted"
+      ],
+      "regimes": [
+        "risk_on",
+        "choppy_market"
+      ]
+    },
+    "机场航运": {
+      "count": 4,
+      "dates": [
+        "2026-06-12",
+        "2026-06-13",
+        "2026-06-14",
+        "2026-06-25"
+      ],
+      "labels": [
+        "weak_or_avoid",
+        "oversold_rebound_candidate",
+        "early_repair_watch"
+      ],
+      "regimes": [
+        "choppy_market",
+        "risk_on"
+      ]
+    },
+    "光伏设备": {
+      "count": 3,
+      "dates": [
+        "2026-06-26",
+        "2026-06-27",
+        "2026-06-28"
+      ],
+      "labels": [
+        "low_signal_noise",
+        "early_repair_watch",
+        "defensive_stable_watch"
+      ],
+      "regimes": [
+        "choppy_market",
+        "risk_off",
+        "weak_rebound"
+      ]
+    },
+    "电机": {
+      "count": 3,
+      "dates": [
+        "2026-06-05",
+        "2026-06-06",
+        "2026-06-07"
+      ],
+      "labels": [
+        "oversold_rebound_candidate"
+      ],
+      "regimes": [
+        "choppy_market"
+      ]
+    },
+    "互联网电商": {
+      "count": 3,
+      "dates": [
+        "2026-06-26",
+        "2026-06-27",
+        "2026-06-28"
+      ],
+      "labels": [
+        "low_signal_noise",
+        "weak_or_avoid",
+        "defensive_stable_watch"
+      ],
+      "regimes": [
+        "risk_off",
+        "risk_on"
+      ]
+    },
+    "教育": {
+      "count": 3,
+      "dates": [
+        "2026-06-26",
+        "2026-06-27",
+        "2026-06-28"
+      ],
+      "labels": [
+        "defensive_stable_watch"
+      ],
+      "regimes": [
+        "risk_off"
+      ]
+    },
+    "煤炭开采加工": {
+      "count": 2,
+      "dates": [
+        "2026-06-03",
+        "2026-06-04"
+      ],
+      "labels": [
+        "short_term_active_unconfirmed",
+        "oversold_rebound_candidate"
+      ],
+      "regimes": [
+        "choppy_market"
+      ]
+    },
+    "医疗器械": {
+      "count": 2,
+      "dates": [
+        "2026-06-23",
+        "2026-06-29"
+      ],
+      "labels": [
+        "early_repair_watch"
+      ],
+      "regimes": [
+        "weak_rebound"
+      ]
+    },
+    "贵金属": {
+      "count": 1,
+      "dates": [
+        "2026-06-02"
+      ],
+      "labels": [
+        "oversold_rebound_candidate",
+        "short_term_active_unconfirmed"
+      ],
+      "regimes": [
+        "choppy_market",
+        "risk_on"
+      ]
+    },
+    "金属新材料": {
+      "count": 1,
+      "dates": [
+        "2026-06-16"
+      ],
+      "labels": [
+        "weak_or_avoid",
+        "oversold_rebound_candidate",
+        "trend_confirmed"
+      ],
+      "regimes": [
+        "choppy_market",
+        "weak_rebound"
+      ]
+    },
+    "油气开采及服务": {
+      "count": 1,
+      "dates": [
+        "2026-06-03"
+      ],
+      "labels": [
+        "oversold_rebound_candidate",
+        "weak_or_avoid"
+      ],
+      "regimes": [
+        "choppy_market",
+        "risk_off"
+      ]
+    },
+    "化学原料": {
+      "count": 1,
+      "dates": [
+        "2026-06-22"
+      ],
+      "labels": [
+        "weak_or_avoid",
+        "oversold_rebound_candidate"
+      ],
+      "regimes": [
+        "choppy_market"
+      ]
+    },
+    "家居用品": {
+      "count": 1,
+      "dates": [
+        "2026-06-23"
+      ],
+      "labels": [
+        "weak_or_avoid",
+        "early_repair_watch"
+      ],
+      "regimes": [
+        "choppy_market",
+        "weak_rebound"
+      ]
+    },
+    "厨卫电器": {
+      "count": 1,
+      "dates": [
+        "2026-06-11"
+      ],
+      "labels": [
+        "weak_or_avoid",
+        "oversold_rebound_candidate",
+        "defensive_stable_watch"
+      ],
+      "regimes": [
+        "choppy_market",
+        "weak_rebound"
+      ]
+    },
+    "电池": {
+      "count": 1,
+      "dates": [
+        "2026-06-16"
+      ],
+      "labels": [
+        "oversold_rebound_candidate"
+      ],
+      "regimes": [
+        "risk_on",
+        "weak_rebound"
+      ]
+    },
+    "农产品加工": {
+      "count": 1,
+      "dates": [
+        "2026-06-29"
+      ],
+      "labels": [
+        "weak_or_avoid",
+        "defensive_stable_watch"
+      ],
+      "regimes": [
+        "choppy_market",
+        "weak_rebound"
+      ]
+    },
+    "军工电子": {
+      "count": 1,
+      "dates": [
+        "2026-06-17"
+      ],
+      "labels": [
+        "weak_or_avoid",
+        "oversold_rebound_candidate",
+        "conflicted"
+      ],
+      "regimes": [
+        "choppy_market"
+      ]
+    },
+    "化学制药": {
+      "count": 1,
+      "dates": [
+        "2026-06-23"
+      ],
+      "labels": [
+        "trend_confirmed_but_strength_limited",
+        "conflicted"
+      ],
+      "regimes": [
+        "weak_rebound"
+      ]
+    },
+    "中药": {
+      "count": 1,
+      "dates": [
+        "2026-06-29"
+      ],
+      "labels": [
+        "early_repair_watch",
+        "low_signal_noise",
+        "oversold_rebound_candidate"
+      ],
+      "regimes": [
+        "weak_rebound",
+        "risk_off"
+      ]
+    },
+    "其他社会服务": {
+      "count": 0,
+      "dates": [],
+      "labels": [
+        "weak_or_avoid",
+        "oversold_rebound_candidate"
+      ],
+      "regimes": [
+        "choppy_market",
+        "risk_on"
+      ]
+    },
+    "其他电源设备": {
+      "count": 0,
+      "dates": [],
+      "labels": [
+        "weak_or_avoid",
+        "oversold_rebound_candidate",
+        "short_term_active_unconfirmed"
+      ],
+      "regimes": [
+        "choppy_market",
+        "risk_on",
+        "weak_rebound"
+      ]
+    },
+    "通用设备": {
+      "count": 0,
+      "dates": [],
+      "labels": [
+        "weak_or_avoid"
+      ],
+      "regimes": [
+        "choppy_market"
+      ]
+    },
+    "军工装备": {
+      "count": 0,
+      "dates": [],
+      "labels": [
+        "early_repair_watch",
+        "oversold_rebound_candidate"
+      ],
+      "regimes": [
+        "choppy_market",
+        "risk_on"
+      ]
+    },
+    "IT服务": {
+      "count": 0,
+      "dates": [],
+      "labels": [
+        "low_signal_noise",
+        "early_repair_watch",
+        "defensive_stable_watch"
+      ],
+      "regimes": [
+        "risk_off",
+        "risk_on",
+        "choppy_market"
+      ]
+    },
+    "旅游及酒店": {
+      "count": 0,
+      "dates": [],
+      "labels": [
+        "weak_or_avoid",
+        "early_repair_watch"
+      ],
+      "regimes": [
+        "choppy_market",
+        "weak_rebound"
+      ]
+    },
+    "多元金融": {
+      "count": 0,
+      "dates": [],
+      "labels": [
+        "weak_or_avoid",
+        "early_repair_watch"
+      ],
+      "regimes": [
+        "choppy_market"
+      ]
+    },
+    "化学制品": {
+      "count": 0,
+      "dates": [],
+      "labels": [
+        "weak_or_avoid"
+      ],
+      "regimes": [
+        "choppy_market"
+      ]
+    },
+    "农化制品": {
+      "count": 0,
+      "dates": [],
+      "labels": [
+        "weak_or_avoid",
+        "early_repair_watch"
+      ],
+      "regimes": [
+        "choppy_market"
+      ]
+    },
+    "建筑材料": {
+      "count": 0,
+      "dates": [],
+      "labels": [
+        "defensive_stable_watch"
+      ],
+      "regimes": [
+        "choppy_market"
+      ]
+    },
+    "生物制品": {
+      "count": 0,
+      "dates": [],
+      "labels": [
+        "early_repair_watch",
+        "conflicted"
+      ],
+      "regimes": [
+        "choppy_market",
+        "weak_rebound"
+      ]
+    },
+    "通信服务": {
+      "count": 0,
+      "dates": [],
+      "labels": [
+        "conflicted"
+      ],
+      "regimes": [
+        "choppy_market"
+      ]
+    },
+    "游戏": {
+      "count": 0,
+      "dates": [],
+      "labels": [
+        "early_repair_watch",
+        "conflicted"
+      ],
+      "regimes": [
+        "choppy_market"
+      ]
+    },
+    "医药商业": {
+      "count": 0,
+      "dates": [],
+      "labels": [
+        "oversold_rebound_candidate",
+        "weak_or_avoid"
+      ],
+      "regimes": [
+        "weak_rebound"
+      ]
+    },
+    "养殖业": {
+      "count": 0,
+      "dates": [],
+      "labels": [
+        "early_repair_watch",
+        "weak_or_avoid"
+      ],
+      "regimes": [
+        "weak_rebound"
+      ]
+    },
+    "黑色家电": {
+      "count": 0,
+      "dates": [],
+      "labels": [
+        "defensive_stable_watch"
+      ],
+      "regimes": [
+        "choppy_market"
+      ]
+    },
+    "白酒": {
+      "count": 0,
+      "dates": [],
+      "labels": [
+        "defensive_stable_watch"
+      ],
+      "regimes": [
+        "choppy_market"
+      ]
+    }
+  },
+  "label_changes": [
+    {
+      "sector_name": "元件",
+      "from_date": "2026-06-02",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-03",
+      "to_label": "weak_or_avoid",
+      "to_label_cn": "正向观察强度有限"
+    },
+    {
+      "sector_name": "元件",
+      "from_date": "2026-06-03",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-04",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "元件",
+      "from_date": "2026-06-04",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-08",
+      "to_label": "low_signal_noise",
+      "to_label_cn": "低信号噪声"
+    },
+    {
+      "sector_name": "元件",
+      "from_date": "2026-06-08",
+      "from_label": "low_signal_noise",
+      "from_label_cn": "低信号噪声",
+      "to_date": "2026-06-09",
+      "to_label": "short_term_active_unconfirmed",
+      "to_label_cn": "短线活跃但趋势未确认"
+    },
+    {
+      "sector_name": "元件",
+      "from_date": "2026-06-15",
+      "from_label": "short_term_active_unconfirmed",
+      "from_label_cn": "短线活跃但趋势未确认",
+      "to_date": "2026-06-16",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "元件",
+      "from_date": "2026-06-17",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-18",
+      "to_label": "conflicted",
+      "to_label_cn": "信号分歧"
+    },
+    {
+      "sector_name": "贵金属",
+      "from_date": "2026-06-14",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-15",
+      "to_label": "short_term_active_unconfirmed",
+      "to_label_cn": "短线活跃但趋势未确认"
+    },
+    {
+      "sector_name": "工业金属",
+      "from_date": "2026-06-02",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-11",
+      "to_label": "weak_or_avoid",
+      "to_label_cn": "正向观察强度有限"
+    },
+    {
+      "sector_name": "工业金属",
+      "from_date": "2026-06-11",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-12",
+      "to_label": "short_term_active_unconfirmed",
+      "to_label_cn": "短线活跃但趋势未确认"
+    },
+    {
+      "sector_name": "工业金属",
+      "from_date": "2026-06-14",
+      "from_label": "short_term_active_unconfirmed",
+      "from_label_cn": "短线活跃但趋势未确认",
+      "to_date": "2026-06-22",
+      "to_label": "early_repair_watch",
+      "to_label_cn": "早期修复观察"
+    },
+    {
+      "sector_name": "小金属",
+      "from_date": "2026-06-02",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-03",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "小金属",
+      "from_date": "2026-06-03",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-11",
+      "to_label": "short_term_active_unconfirmed",
+      "to_label_cn": "短线活跃但趋势未确认"
+    },
+    {
+      "sector_name": "小金属",
+      "from_date": "2026-06-15",
+      "from_label": "short_term_active_unconfirmed",
+      "from_label_cn": "短线活跃但趋势未确认",
+      "to_date": "2026-06-18",
+      "to_label": "conflicted",
+      "to_label_cn": "信号分歧"
+    },
+    {
+      "sector_name": "小金属",
+      "from_date": "2026-06-21",
+      "from_label": "conflicted",
+      "from_label_cn": "信号分歧",
+      "to_date": "2026-06-22",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "小金属",
+      "from_date": "2026-06-22",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-24",
+      "to_label": "weak_or_avoid",
+      "to_label_cn": "正向观察强度有限"
+    },
+    {
+      "sector_name": "消费电子",
+      "from_date": "2026-06-02",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-18",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "光学光电子",
+      "from_date": "2026-06-02",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-03",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "光学光电子",
+      "from_date": "2026-06-03",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-04",
+      "to_label": "weak_or_avoid",
+      "to_label_cn": "正向观察强度有限"
+    },
+    {
+      "sector_name": "光学光电子",
+      "from_date": "2026-06-04",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-05",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "光学光电子",
+      "from_date": "2026-06-07",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-08",
+      "to_label": "low_signal_noise",
+      "to_label_cn": "低信号噪声"
+    },
+    {
+      "sector_name": "光学光电子",
+      "from_date": "2026-06-08",
+      "from_label": "low_signal_noise",
+      "from_label_cn": "低信号噪声",
+      "to_date": "2026-06-15",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "光学光电子",
+      "from_date": "2026-06-15",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-16",
+      "to_label": "conflicted",
+      "to_label_cn": "信号分歧"
+    },
+    {
+      "sector_name": "光学光电子",
+      "from_date": "2026-06-16",
+      "from_label": "conflicted",
+      "from_label_cn": "信号分歧",
+      "to_date": "2026-06-17",
+      "to_label": "trend_confirmed_but_strength_limited",
+      "to_label_cn": "趋势有确认但强度有限"
+    },
+    {
+      "sector_name": "光学光电子",
+      "from_date": "2026-06-17",
+      "from_label": "trend_confirmed_but_strength_limited",
+      "from_label_cn": "趋势有确认但强度有限",
+      "to_date": "2026-06-24",
+      "to_label": "defensive_stable_watch",
+      "to_label_cn": "防御稳定观察"
+    },
+    {
+      "sector_name": "光学光电子",
+      "from_date": "2026-06-24",
+      "from_label": "defensive_stable_watch",
+      "from_label_cn": "防御稳定观察",
+      "to_date": "2026-06-26",
+      "to_label": "conflicted",
+      "to_label_cn": "信号分歧"
+    },
+    {
+      "sector_name": "通信设备",
+      "from_date": "2026-06-02",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-03",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "通信设备",
+      "from_date": "2026-06-09",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-15",
+      "to_label": "short_term_active_unconfirmed",
+      "to_label_cn": "短线活跃但趋势未确认"
+    },
+    {
+      "sector_name": "通信设备",
+      "from_date": "2026-06-16",
+      "from_label": "short_term_active_unconfirmed",
+      "from_label_cn": "短线活跃但趋势未确认",
+      "to_date": "2026-06-18",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "其他电子",
+      "from_date": "2026-06-02",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-04",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "其他电子",
+      "from_date": "2026-06-04",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-08",
+      "to_label": "low_signal_noise",
+      "to_label_cn": "低信号噪声"
+    },
+    {
+      "sector_name": "其他电子",
+      "from_date": "2026-06-08",
+      "from_label": "low_signal_noise",
+      "from_label_cn": "低信号噪声",
+      "to_date": "2026-06-09",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "其他电子",
+      "from_date": "2026-06-09",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-15",
+      "to_label": "short_term_active_unconfirmed",
+      "to_label_cn": "短线活跃但趋势未确认"
+    },
+    {
+      "sector_name": "其他电子",
+      "from_date": "2026-06-16",
+      "from_label": "short_term_active_unconfirmed",
+      "from_label_cn": "短线活跃但趋势未确认",
+      "to_date": "2026-06-17",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "其他电子",
+      "from_date": "2026-06-21",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-24",
+      "to_label": "trend_confirmed_but_strength_limited",
+      "to_label_cn": "趋势有确认但强度有限"
+    },
+    {
+      "sector_name": "金属新材料",
+      "from_date": "2026-06-02",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-03",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "金属新材料",
+      "from_date": "2026-06-03",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-16",
+      "to_label": "trend_confirmed",
+      "to_label_cn": "趋势确认"
+    },
+    {
+      "sector_name": "电子化学品",
+      "from_date": "2026-06-02",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-04",
+      "to_label": "short_term_active_unconfirmed",
+      "to_label_cn": "短线活跃但趋势未确认"
+    },
+    {
+      "sector_name": "电子化学品",
+      "from_date": "2026-06-09",
+      "from_label": "short_term_active_unconfirmed",
+      "from_label_cn": "短线活跃但趋势未确认",
+      "to_date": "2026-06-10",
+      "to_label": "weak_or_avoid",
+      "to_label_cn": "正向观察强度有限"
+    },
+    {
+      "sector_name": "电子化学品",
+      "from_date": "2026-06-10",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-11",
+      "to_label": "short_term_active_unconfirmed",
+      "to_label_cn": "短线活跃但趋势未确认"
+    },
+    {
+      "sector_name": "电子化学品",
+      "from_date": "2026-06-15",
+      "from_label": "short_term_active_unconfirmed",
+      "from_label_cn": "短线活跃但趋势未确认",
+      "to_date": "2026-06-16",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "电子化学品",
+      "from_date": "2026-06-16",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-17",
+      "to_label": "trend_confirmed",
+      "to_label_cn": "趋势确认"
+    },
+    {
+      "sector_name": "电子化学品",
+      "from_date": "2026-06-24",
+      "from_label": "trend_confirmed",
+      "from_label_cn": "趋势确认",
+      "to_date": "2026-06-25",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "电子化学品",
+      "from_date": "2026-06-25",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-26",
+      "to_label": "weak_or_avoid",
+      "to_label_cn": "正向观察强度有限"
+    },
+    {
+      "sector_name": "煤炭开采加工",
+      "from_date": "2026-06-03",
+      "from_label": "short_term_active_unconfirmed",
+      "from_label_cn": "短线活跃但趋势未确认",
+      "to_date": "2026-06-04",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "油气开采及服务",
+      "from_date": "2026-06-03",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-08",
+      "to_label": "weak_or_avoid",
+      "to_label_cn": "正向观察强度有限"
+    },
+    {
+      "sector_name": "半导体",
+      "from_date": "2026-06-03",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-04",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "半导体",
+      "from_date": "2026-06-11",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-15",
+      "to_label": "short_term_active_unconfirmed",
+      "to_label_cn": "短线活跃但趋势未确认"
+    },
+    {
+      "sector_name": "半导体",
+      "from_date": "2026-06-15",
+      "from_label": "short_term_active_unconfirmed",
+      "from_label_cn": "短线活跃但趋势未确认",
+      "to_date": "2026-06-17",
+      "to_label": "trend_confirmed_but_strength_limited",
+      "to_label_cn": "趋势有确认但强度有限"
+    },
+    {
+      "sector_name": "半导体",
+      "from_date": "2026-06-17",
+      "from_label": "trend_confirmed_but_strength_limited",
+      "from_label_cn": "趋势有确认但强度有限",
+      "to_date": "2026-06-18",
+      "to_label": "conflicted",
+      "to_label_cn": "信号分歧"
+    },
+    {
+      "sector_name": "半导体",
+      "from_date": "2026-06-21",
+      "from_label": "conflicted",
+      "from_label_cn": "信号分歧",
+      "to_date": "2026-06-24",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "半导体",
+      "from_date": "2026-06-25",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-29",
+      "to_label": "trend_confirmed",
+      "to_label_cn": "趋势确认"
+    },
+    {
+      "sector_name": "其他社会服务",
+      "from_date": "2026-06-14",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-17",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "其他电源设备",
+      "from_date": "2026-06-04",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-09",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "其他电源设备",
+      "from_date": "2026-06-09",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-12",
+      "to_label": "weak_or_avoid",
+      "to_label_cn": "正向观察强度有限"
+    },
+    {
+      "sector_name": "其他电源设备",
+      "from_date": "2026-06-14",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-15",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "其他电源设备",
+      "from_date": "2026-06-15",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-16",
+      "to_label": "short_term_active_unconfirmed",
+      "to_label_cn": "短线活跃但趋势未确认"
+    },
+    {
+      "sector_name": "光伏设备",
+      "from_date": "2026-06-08",
+      "from_label": "low_signal_noise",
+      "from_label_cn": "低信号噪声",
+      "to_date": "2026-06-16",
+      "to_label": "early_repair_watch",
+      "to_label_cn": "早期修复观察"
+    },
+    {
+      "sector_name": "光伏设备",
+      "from_date": "2026-06-16",
+      "from_label": "early_repair_watch",
+      "from_label_cn": "早期修复观察",
+      "to_date": "2026-06-26",
+      "to_label": "defensive_stable_watch",
+      "to_label_cn": "防御稳定观察"
+    },
+    {
+      "sector_name": "塑料制品",
+      "from_date": "2026-06-04",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-05",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "塑料制品",
+      "from_date": "2026-06-09",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-10",
+      "to_label": "weak_or_avoid",
+      "to_label_cn": "正向观察强度有限"
+    },
+    {
+      "sector_name": "塑料制品",
+      "from_date": "2026-06-10",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-15",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "塑料制品",
+      "from_date": "2026-06-15",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-17",
+      "to_label": "trend_confirmed_but_strength_limited",
+      "to_label_cn": "趋势有确认但强度有限"
+    },
+    {
+      "sector_name": "化学纤维",
+      "from_date": "2026-06-07",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-24",
+      "to_label": "early_repair_watch",
+      "to_label_cn": "早期修复观察"
+    },
+    {
+      "sector_name": "军工装备",
+      "from_date": "2026-06-07",
+      "from_label": "early_repair_watch",
+      "from_label_cn": "早期修复观察",
+      "to_date": "2026-06-12",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "化学原料",
+      "from_date": "2026-06-11",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-22",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "家居用品",
+      "from_date": "2026-06-07",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-23",
+      "to_label": "early_repair_watch",
+      "to_label_cn": "早期修复观察"
+    },
+    {
+      "sector_name": "厨卫电器",
+      "from_date": "2026-06-07",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-11",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "厨卫电器",
+      "from_date": "2026-06-11",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-23",
+      "to_label": "defensive_stable_watch",
+      "to_label_cn": "防御稳定观察"
+    },
+    {
+      "sector_name": "保险",
+      "from_date": "2026-06-08",
+      "from_label": "low_signal_noise",
+      "from_label_cn": "低信号噪声",
+      "to_date": "2026-06-10",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "保险",
+      "from_date": "2026-06-10",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-12",
+      "to_label": "short_term_active_unconfirmed",
+      "to_label_cn": "短线活跃但趋势未确认"
+    },
+    {
+      "sector_name": "保险",
+      "from_date": "2026-06-22",
+      "from_label": "short_term_active_unconfirmed",
+      "from_label_cn": "短线活跃但趋势未确认",
+      "to_date": "2026-06-25",
+      "to_label": "defensive_stable_watch",
+      "to_label_cn": "防御稳定观察"
+    },
+    {
+      "sector_name": "公路铁路运输",
+      "from_date": "2026-06-08",
+      "from_label": "low_signal_noise",
+      "from_label_cn": "低信号噪声",
+      "to_date": "2026-06-10",
+      "to_label": "weak_or_avoid",
+      "to_label_cn": "正向观察强度有限"
+    },
+    {
+      "sector_name": "公路铁路运输",
+      "from_date": "2026-06-10",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-23",
+      "to_label": "early_repair_watch",
+      "to_label_cn": "早期修复观察"
+    },
+    {
+      "sector_name": "公路铁路运输",
+      "from_date": "2026-06-23",
+      "from_label": "early_repair_watch",
+      "from_label_cn": "早期修复观察",
+      "to_date": "2026-06-26",
+      "to_label": "defensive_stable_watch",
+      "to_label_cn": "防御稳定观察"
+    },
+    {
+      "sector_name": "IT服务",
+      "from_date": "2026-06-08",
+      "from_label": "low_signal_noise",
+      "from_label_cn": "低信号噪声",
+      "to_date": "2026-06-09",
+      "to_label": "early_repair_watch",
+      "to_label_cn": "早期修复观察"
+    },
+    {
+      "sector_name": "IT服务",
+      "from_date": "2026-06-09",
+      "from_label": "early_repair_watch",
+      "from_label_cn": "早期修复观察",
+      "to_date": "2026-06-25",
+      "to_label": "defensive_stable_watch",
+      "to_label_cn": "防御稳定观察"
+    },
+    {
+      "sector_name": "互联网电商",
+      "from_date": "2026-06-08",
+      "from_label": "low_signal_noise",
+      "from_label_cn": "低信号噪声",
+      "to_date": "2026-06-12",
+      "to_label": "weak_or_avoid",
+      "to_label_cn": "正向观察强度有限"
+    },
+    {
+      "sector_name": "互联网电商",
+      "from_date": "2026-06-14",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-26",
+      "to_label": "defensive_stable_watch",
+      "to_label_cn": "防御稳定观察"
+    },
+    {
+      "sector_name": "能源金属",
+      "from_date": "2026-06-14",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-22",
+      "to_label": "early_repair_watch",
+      "to_label_cn": "早期修复观察"
+    },
+    {
+      "sector_name": "能源金属",
+      "from_date": "2026-06-22",
+      "from_label": "early_repair_watch",
+      "from_label_cn": "早期修复观察",
+      "to_date": "2026-06-24",
+      "to_label": "conflicted",
+      "to_label_cn": "信号分歧"
+    },
+    {
+      "sector_name": "旅游及酒店",
+      "from_date": "2026-06-10",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-23",
+      "to_label": "early_repair_watch",
+      "to_label_cn": "早期修复观察"
+    },
+    {
+      "sector_name": "机场航运",
+      "from_date": "2026-06-10",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-12",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "机场航运",
+      "from_date": "2026-06-14",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-25",
+      "to_label": "early_repair_watch",
+      "to_label_cn": "早期修复观察"
+    },
+    {
+      "sector_name": "农产品加工",
+      "from_date": "2026-06-10",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-29",
+      "to_label": "defensive_stable_watch",
+      "to_label_cn": "防御稳定观察"
+    },
+    {
+      "sector_name": "多元金融",
+      "from_date": "2026-06-10",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-22",
+      "to_label": "early_repair_watch",
+      "to_label_cn": "早期修复观察"
+    },
+    {
+      "sector_name": "农化制品",
+      "from_date": "2026-06-11",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-22",
+      "to_label": "early_repair_watch",
+      "to_label_cn": "早期修复观察"
+    },
+    {
+      "sector_name": "军工电子",
+      "from_date": "2026-06-11",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-17",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    },
+    {
+      "sector_name": "军工电子",
+      "from_date": "2026-06-17",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-24",
+      "to_label": "conflicted",
+      "to_label_cn": "信号分歧"
+    },
+    {
+      "sector_name": "非金属材料",
+      "from_date": "2026-06-16",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-17",
+      "to_label": "conflicted",
+      "to_label_cn": "信号分歧"
+    },
+    {
+      "sector_name": "非金属材料",
+      "from_date": "2026-06-17",
+      "from_label": "conflicted",
+      "from_label_cn": "信号分歧",
+      "to_date": "2026-06-18",
+      "to_label": "trend_confirmed",
+      "to_label_cn": "趋势确认"
+    },
+    {
+      "sector_name": "非金属材料",
+      "from_date": "2026-06-21",
+      "from_label": "trend_confirmed",
+      "from_label_cn": "趋势确认",
+      "to_date": "2026-06-22",
+      "to_label": "strong_consensus",
+      "to_label_cn": "多维共识较强"
+    },
+    {
+      "sector_name": "医疗服务",
+      "from_date": "2026-06-21",
+      "from_label": "early_repair_watch",
+      "from_label_cn": "早期修复观察",
+      "to_date": "2026-06-23",
+      "to_label": "trend_confirmed_but_strength_limited",
+      "to_label_cn": "趋势有确认但强度有限"
+    },
+    {
+      "sector_name": "医疗服务",
+      "from_date": "2026-06-23",
+      "from_label": "trend_confirmed_but_strength_limited",
+      "from_label_cn": "趋势有确认但强度有限",
+      "to_date": "2026-06-24",
+      "to_label": "weak_or_avoid",
+      "to_label_cn": "正向观察强度有限"
+    },
+    {
+      "sector_name": "医疗服务",
+      "from_date": "2026-06-24",
+      "from_label": "weak_or_avoid",
+      "from_label_cn": "正向观察强度有限",
+      "to_date": "2026-06-29",
+      "to_label": "trend_confirmed_but_strength_limited",
+      "to_label_cn": "趋势有确认但强度有限"
+    },
+    {
+      "sector_name": "生物制品",
+      "from_date": "2026-06-21",
+      "from_label": "early_repair_watch",
+      "from_label_cn": "早期修复观察",
+      "to_date": "2026-06-29",
+      "to_label": "conflicted",
+      "to_label_cn": "信号分歧"
+    },
+    {
+      "sector_name": "游戏",
+      "from_date": "2026-06-22",
+      "from_label": "early_repair_watch",
+      "from_label_cn": "早期修复观察",
+      "to_date": "2026-06-25",
+      "to_label": "conflicted",
+      "to_label_cn": "信号分歧"
+    },
+    {
+      "sector_name": "化学制药",
+      "from_date": "2026-06-23",
+      "from_label": "trend_confirmed_but_strength_limited",
+      "from_label_cn": "趋势有确认但强度有限",
+      "to_date": "2026-06-29",
+      "to_label": "conflicted",
+      "to_label_cn": "信号分歧"
+    },
+    {
+      "sector_name": "医药商业",
+      "from_date": "2026-06-23",
+      "from_label": "oversold_rebound_candidate",
+      "from_label_cn": "弱修复观察",
+      "to_date": "2026-06-29",
+      "to_label": "weak_or_avoid",
+      "to_label_cn": "正向观察强度有限"
+    },
+    {
+      "sector_name": "养殖业",
+      "from_date": "2026-06-23",
+      "from_label": "early_repair_watch",
+      "from_label_cn": "早期修复观察",
+      "to_date": "2026-06-29",
+      "to_label": "weak_or_avoid",
+      "to_label_cn": "正向观察强度有限"
+    },
+    {
+      "sector_name": "中药",
+      "from_date": "2026-06-23",
+      "from_label": "early_repair_watch",
+      "from_label_cn": "早期修复观察",
+      "to_date": "2026-06-26",
+      "to_label": "low_signal_noise",
+      "to_label_cn": "低信号噪声"
+    },
+    {
+      "sector_name": "中药",
+      "from_date": "2026-06-28",
+      "from_label": "low_signal_noise",
+      "from_label_cn": "低信号噪声",
+      "to_date": "2026-06-29",
+      "to_label": "oversold_rebound_candidate",
+      "to_label_cn": "弱修复观察"
+    }
+  ],
+  "score_trends": {
+    "元件": {
+      "ranking_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.54
+        },
+        {
+          "date": "2026-06-03",
+          "value": 0.34
+        },
+        {
+          "date": "2026-06-04",
+          "value": 0.59
+        },
+        {
+          "date": "2026-06-08",
+          "value": 0.35
+        },
+        {
+          "date": "2026-06-09",
+          "value": 0.55
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.55
+        },
+        {
+          "date": "2026-06-16",
+          "value": 0.56
+        },
+        {
+          "date": "2026-06-17",
+          "value": 0.56
+        },
+        {
+          "date": "2026-06-18",
+          "value": 0.42
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.42
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.42
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.42
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.41
+        },
+        {
+          "date": "2026-06-25",
+          "value": 0.44
+        },
+        {
+          "date": "2026-06-26",
+          "value": 0.4
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.4
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.4
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.33
+        },
+        {
+          "date": "2026-06-03",
+          "value": 0.38
+        },
+        {
+          "date": "2026-06-04",
+          "value": 0.45
+        },
+        {
+          "date": "2026-06-08",
+          "value": 0.24
+        },
+        {
+          "date": "2026-06-09",
+          "value": 0.35
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.35
+        },
+        {
+          "date": "2026-06-16",
+          "value": 0.37
+        },
+        {
+          "date": "2026-06-17",
+          "value": 0.38
+        },
+        {
+          "date": "2026-06-18",
+          "value": 0.37
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.37
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.37
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.37
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.35
+        },
+        {
+          "date": "2026-06-25",
+          "value": 0.45
+        },
+        {
+          "date": "2026-06-26",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.32
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-03",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-04",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-08",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-09",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-16",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-17",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-18",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-25",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-26",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.6
+        }
+      ]
+    },
+    "贵金属": {
+      "ranking_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.54
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.53
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.53
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.53
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.56
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.33
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.37
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.6
+        }
+      ]
+    },
+    "工业金属": {
+      "ranking_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.53
+        },
+        {
+          "date": "2026-06-11",
+          "value": 0.3
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.55
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.55
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.55
+        },
+        {
+          "date": "2026-06-22",
+          "value": 0.5
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-11",
+          "value": 0.25
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.36
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.36
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.36
+        },
+        {
+          "date": "2026-06-22",
+          "value": 0.25
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-11",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-22",
+          "value": 0.8
+        }
+      ]
+    },
+    "小金属": {
+      "ranking_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-03",
+          "value": 0.53
+        },
+        {
+          "date": "2026-06-11",
+          "value": 0.55
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.55
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.55
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.55
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.59
+        },
+        {
+          "date": "2026-06-18",
+          "value": 0.44
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.44
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.44
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.44
+        },
+        {
+          "date": "2026-06-22",
+          "value": 0.67
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.34
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.3
+        },
+        {
+          "date": "2026-06-03",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-11",
+          "value": 0.35
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.35
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.35
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.35
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.45
+        },
+        {
+          "date": "2026-06-18",
+          "value": 0.43
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.43
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.43
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.43
+        },
+        {
+          "date": "2026-06-22",
+          "value": 0.52
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.41
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-03",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-11",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-18",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-22",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.7
+        }
+      ]
+    },
+    "消费电子": {
+      "ranking_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-18",
+          "value": 0.59
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.59
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.59
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.59
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.3
+        },
+        {
+          "date": "2026-06-18",
+          "value": 0.44
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.44
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.44
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.44
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-18",
+          "value": 0.9
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.9
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.9
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.9
+        }
+      ]
+    },
+    "光学光电子": {
+      "ranking_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-03",
+          "value": 0.53
+        },
+        {
+          "date": "2026-06-04",
+          "value": 0.34
+        },
+        {
+          "date": "2026-06-05",
+          "value": 0.53
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.53
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.53
+        },
+        {
+          "date": "2026-06-08",
+          "value": 0.35
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.58
+        },
+        {
+          "date": "2026-06-16",
+          "value": 0.43
+        },
+        {
+          "date": "2026-06-17",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.47
+        },
+        {
+          "date": "2026-06-26",
+          "value": 0.39
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.39
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.39
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.29
+        },
+        {
+          "date": "2026-06-03",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-04",
+          "value": 0.38
+        },
+        {
+          "date": "2026-06-05",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-08",
+          "value": 0.24
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.42
+        },
+        {
+          "date": "2026-06-16",
+          "value": 0.4
+        },
+        {
+          "date": "2026-06-17",
+          "value": 0.46
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.17
+        },
+        {
+          "date": "2026-06-26",
+          "value": 0.28
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.28
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.28
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-03",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-04",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-05",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-08",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-16",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-17",
+          "value": 0.9
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-26",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.7
+        }
+      ]
+    },
+    "通信设备": {
+      "ranking_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-03",
+          "value": 0.53
+        },
+        {
+          "date": "2026-06-09",
+          "value": 0.54
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.55
+        },
+        {
+          "date": "2026-06-16",
+          "value": 0.5
+        },
+        {
+          "date": "2026-06-18",
+          "value": 0.59
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.59
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.59
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.59
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.28
+        },
+        {
+          "date": "2026-06-03",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-09",
+          "value": 0.33
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.35
+        },
+        {
+          "date": "2026-06-16",
+          "value": 0.25
+        },
+        {
+          "date": "2026-06-18",
+          "value": 0.44
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.44
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.44
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.44
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-03",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-09",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-16",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-18",
+          "value": 0.9
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.9
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.9
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.9
+        }
+      ]
+    },
+    "其他电子": {
+      "ranking_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-04",
+          "value": 0.53
+        },
+        {
+          "date": "2026-06-08",
+          "value": 0.34
+        },
+        {
+          "date": "2026-06-09",
+          "value": 0.54
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.55
+        },
+        {
+          "date": "2026-06-16",
+          "value": 0.51
+        },
+        {
+          "date": "2026-06-17",
+          "value": 0.55
+        },
+        {
+          "date": "2026-06-18",
+          "value": 0.56
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.56
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.56
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.56
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.58
+        },
+        {
+          "date": "2026-06-25",
+          "value": 0.59
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.27
+        },
+        {
+          "date": "2026-06-04",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-08",
+          "value": 0.21
+        },
+        {
+          "date": "2026-06-09",
+          "value": 0.34
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.36
+        },
+        {
+          "date": "2026-06-16",
+          "value": 0.27
+        },
+        {
+          "date": "2026-06-17",
+          "value": 0.36
+        },
+        {
+          "date": "2026-06-18",
+          "value": 0.37
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.37
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.37
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.37
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.42
+        },
+        {
+          "date": "2026-06-25",
+          "value": 0.45
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-04",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-08",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-09",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-16",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-17",
+          "value": 0.9
+        },
+        {
+          "date": "2026-06-18",
+          "value": 0.9
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.9
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.9
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.9
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.9
+        },
+        {
+          "date": "2026-06-25",
+          "value": 0.9
+        }
+      ]
+    },
+    "金属新材料": {
+      "ranking_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-03",
+          "value": 0.53
+        },
+        {
+          "date": "2026-06-16",
+          "value": 0.83
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.27
+        },
+        {
+          "date": "2026-06-03",
+          "value": 0.3
+        },
+        {
+          "date": "2026-06-16",
+          "value": 0.62
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-03",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-16",
+          "value": 0.9
+        }
+      ]
+    },
+    "电子化学品": {
+      "ranking_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.3
+        },
+        {
+          "date": "2026-06-04",
+          "value": 0.59
+        },
+        {
+          "date": "2026-06-09",
+          "value": 0.55
+        },
+        {
+          "date": "2026-06-10",
+          "value": 0.34
+        },
+        {
+          "date": "2026-06-11",
+          "value": 0.58
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.61
+        },
+        {
+          "date": "2026-06-16",
+          "value": 0.67
+        },
+        {
+          "date": "2026-06-17",
+          "value": 0.84
+        },
+        {
+          "date": "2026-06-22",
+          "value": 0.84
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.82
+        },
+        {
+          "date": "2026-06-25",
+          "value": 0.61
+        },
+        {
+          "date": "2026-06-26",
+          "value": 0.36
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.36
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.36
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.26
+        },
+        {
+          "date": "2026-06-04",
+          "value": 0.44
+        },
+        {
+          "date": "2026-06-09",
+          "value": 0.35
+        },
+        {
+          "date": "2026-06-10",
+          "value": 0.38
+        },
+        {
+          "date": "2026-06-11",
+          "value": 0.43
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.48
+        },
+        {
+          "date": "2026-06-16",
+          "value": 0.51
+        },
+        {
+          "date": "2026-06-17",
+          "value": 0.64
+        },
+        {
+          "date": "2026-06-22",
+          "value": 0.64
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.61
+        },
+        {
+          "date": "2026-06-25",
+          "value": 0.49
+        },
+        {
+          "date": "2026-06-26",
+          "value": 0.46
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.46
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.46
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-02",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-04",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-09",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-10",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-11",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-16",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-17",
+          "value": 0.9
+        },
+        {
+          "date": "2026-06-22",
+          "value": 0.9
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.9
+        },
+        {
+          "date": "2026-06-25",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-26",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.7
+        }
+      ]
+    },
+    "煤炭开采加工": {
+      "ranking_score": [
+        {
+          "date": "2026-06-03",
+          "value": 0.58
+        },
+        {
+          "date": "2026-06-04",
+          "value": 0.59
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-03",
+          "value": 0.43
+        },
+        {
+          "date": "2026-06-04",
+          "value": 0.45
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-03",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-04",
+          "value": 0.7
+        }
+      ]
+    },
+    "油气开采及服务": {
+      "ranking_score": [
+        {
+          "date": "2026-06-03",
+          "value": 0.56
+        },
+        {
+          "date": "2026-06-08",
+          "value": 0.3
+        },
+        {
+          "date": "2026-06-11",
+          "value": 0.31
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-03",
+          "value": 0.37
+        },
+        {
+          "date": "2026-06-08",
+          "value": 0.25
+        },
+        {
+          "date": "2026-06-11",
+          "value": 0.28
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-03",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-08",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-11",
+          "value": 0.7
+        }
+      ]
+    },
+    "半导体": {
+      "ranking_score": [
+        {
+          "date": "2026-06-03",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-04",
+          "value": 0.53
+        },
+        {
+          "date": "2026-06-09",
+          "value": 0.54
+        },
+        {
+          "date": "2026-06-11",
+          "value": 0.53
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.59
+        },
+        {
+          "date": "2026-06-17",
+          "value": 0.61
+        },
+        {
+          "date": "2026-06-18",
+          "value": 0.44
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.44
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.44
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.44
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.68
+        },
+        {
+          "date": "2026-06-25",
+          "value": 0.67
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.82
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-03",
+          "value": 0.28
+        },
+        {
+          "date": "2026-06-04",
+          "value": 0.3
+        },
+        {
+          "date": "2026-06-09",
+          "value": 0.34
+        },
+        {
+          "date": "2026-06-11",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.44
+        },
+        {
+          "date": "2026-06-17",
+          "value": 0.48
+        },
+        {
+          "date": "2026-06-18",
+          "value": 0.44
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.44
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.44
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.44
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.53
+        },
+        {
+          "date": "2026-06-25",
+          "value": 0.52
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.6
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-03",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-04",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-09",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-11",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-17",
+          "value": 0.9
+        },
+        {
+          "date": "2026-06-18",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-25",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.9
+        }
+      ]
+    },
+    "其他社会服务": {
+      "ranking_score": [
+        {
+          "date": "2026-06-03",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-05",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-17",
+          "value": 0.58
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-03",
+          "value": 0.27
+        },
+        {
+          "date": "2026-06-05",
+          "value": 0.3
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.3
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.3
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.29
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.29
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.29
+        },
+        {
+          "date": "2026-06-17",
+          "value": 0.42
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-03",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-05",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-17",
+          "value": 0.9
+        }
+      ]
+    },
+    "其他电源设备": {
+      "ranking_score": [
+        {
+          "date": "2026-06-03",
+          "value": 0.3
+        },
+        {
+          "date": "2026-06-04",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-09",
+          "value": 0.54
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.54
+        },
+        {
+          "date": "2026-06-16",
+          "value": 0.54
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-03",
+          "value": 0.26
+        },
+        {
+          "date": "2026-06-04",
+          "value": 0.28
+        },
+        {
+          "date": "2026-06-09",
+          "value": 0.33
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.27
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.27
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.27
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.33
+        },
+        {
+          "date": "2026-06-16",
+          "value": 0.33
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-03",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-04",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-09",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-16",
+          "value": 0.8
+        }
+      ]
+    },
+    "光伏设备": {
+      "ranking_score": [
+        {
+          "date": "2026-06-04",
+          "value": 0.35
+        },
+        {
+          "date": "2026-06-08",
+          "value": 0.34
+        },
+        {
+          "date": "2026-06-16",
+          "value": 0.48
+        },
+        {
+          "date": "2026-06-26",
+          "value": 0.46
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.46
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.46
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-04",
+          "value": 0.24
+        },
+        {
+          "date": "2026-06-08",
+          "value": 0.21
+        },
+        {
+          "date": "2026-06-16",
+          "value": 0.19
+        },
+        {
+          "date": "2026-06-26",
+          "value": 0.16
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.16
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.16
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-04",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-08",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-16",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-26",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.8
+        }
+      ]
+    },
+    "通用设备": {
+      "ranking_score": [
+        {
+          "date": "2026-06-04",
+          "value": 0.31
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-04",
+          "value": 0.28
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-04",
+          "value": 0.7
+        }
+      ]
+    },
+    "塑料制品": {
+      "ranking_score": [
+        {
+          "date": "2026-06-04",
+          "value": 0.3
+        },
+        {
+          "date": "2026-06-05",
+          "value": 0.53
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.53
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.53
+        },
+        {
+          "date": "2026-06-09",
+          "value": 0.54
+        },
+        {
+          "date": "2026-06-10",
+          "value": 0.33
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.58
+        },
+        {
+          "date": "2026-06-17",
+          "value": 0.6
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-04",
+          "value": 0.25
+        },
+        {
+          "date": "2026-06-05",
+          "value": 0.3
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.3
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.3
+        },
+        {
+          "date": "2026-06-09",
+          "value": 0.34
+        },
+        {
+          "date": "2026-06-10",
+          "value": 0.37
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.42
+        },
+        {
+          "date": "2026-06-17",
+          "value": 0.46
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-04",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-05",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-09",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-10",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-15",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-17",
+          "value": 0.9
+        }
+      ]
+    },
+    "电机": {
+      "ranking_score": [
+        {
+          "date": "2026-06-05",
+          "value": 0.54
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.54
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.54
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-05",
+          "value": 0.34
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.34
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.34
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-05",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.6
+        }
+      ]
+    },
+    "工程机械": {
+      "ranking_score": [
+        {
+          "date": "2026-06-05",
+          "value": 0.54
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.54
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.54
+        },
+        {
+          "date": "2026-06-08",
+          "value": 0.53
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-05",
+          "value": 0.33
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.33
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.33
+        },
+        {
+          "date": "2026-06-08",
+          "value": 0.31
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-05",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-08",
+          "value": 0.6
+        }
+      ]
+    },
+    "化学纤维": {
+      "ranking_score": [
+        {
+          "date": "2026-06-05",
+          "value": 0.53
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.53
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.53
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.49
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-05",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.22
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-05",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.8
+        }
+      ]
+    },
+    "军工装备": {
+      "ranking_score": [
+        {
+          "date": "2026-06-05",
+          "value": 0.52
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.52
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.52
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.54
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.54
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.54
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-05",
+          "value": 0.29
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.29
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.29
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.33
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.33
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.33
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-05",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.6
+        }
+      ]
+    },
+    "化学原料": {
+      "ranking_score": [
+        {
+          "date": "2026-06-05",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-10",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-11",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-22",
+          "value": 0.53
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-05",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-10",
+          "value": 0.27
+        },
+        {
+          "date": "2026-06-11",
+          "value": 0.3
+        },
+        {
+          "date": "2026-06-22",
+          "value": 0.3
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-05",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-10",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-11",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-22",
+          "value": 0.8
+        }
+      ]
+    },
+    "家居用品": {
+      "ranking_score": [
+        {
+          "date": "2026-06-05",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-23",
+          "value": 0.49
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-05",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-23",
+          "value": 0.22
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-05",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-23",
+          "value": 0.8
+        }
+      ]
+    },
+    "厨卫电器": {
+      "ranking_score": [
+        {
+          "date": "2026-06-05",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-11",
+          "value": 0.53
+        },
+        {
+          "date": "2026-06-23",
+          "value": 0.47
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-05",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-11",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-23",
+          "value": 0.18
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-05",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-06",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-07",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-11",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-23",
+          "value": 0.8
+        }
+      ]
+    },
+    "保险": {
+      "ranking_score": [
+        {
+          "date": "2026-06-08",
+          "value": 0.35
+        },
+        {
+          "date": "2026-06-10",
+          "value": 0.54
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.55
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.55
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.55
+        },
+        {
+          "date": "2026-06-22",
+          "value": 0.5
+        },
+        {
+          "date": "2026-06-25",
+          "value": 0.48
+        },
+        {
+          "date": "2026-06-26",
+          "value": 0.44
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.44
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.44
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.48
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-08",
+          "value": 0.24
+        },
+        {
+          "date": "2026-06-10",
+          "value": 0.34
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.35
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.35
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.35
+        },
+        {
+          "date": "2026-06-22",
+          "value": 0.24
+        },
+        {
+          "date": "2026-06-25",
+          "value": 0.2
+        },
+        {
+          "date": "2026-06-26",
+          "value": 0.12
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.12
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.12
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.2
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-08",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-10",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-22",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-25",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-26",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.8
+        }
+      ]
+    },
+    "公路铁路运输": {
+      "ranking_score": [
+        {
+          "date": "2026-06-08",
+          "value": 0.34
+        },
+        {
+          "date": "2026-06-10",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-23",
+          "value": 0.48
+        },
+        {
+          "date": "2026-06-26",
+          "value": 0.46
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.46
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.46
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-08",
+          "value": 0.22
+        },
+        {
+          "date": "2026-06-10",
+          "value": 0.28
+        },
+        {
+          "date": "2026-06-23",
+          "value": 0.19
+        },
+        {
+          "date": "2026-06-26",
+          "value": 0.15
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.15
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.15
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-08",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-10",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-23",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-26",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.8
+        }
+      ]
+    },
+    "IT服务": {
+      "ranking_score": [
+        {
+          "date": "2026-06-08",
+          "value": 0.34
+        },
+        {
+          "date": "2026-06-09",
+          "value": 0.52
+        },
+        {
+          "date": "2026-06-25",
+          "value": 0.43
+        },
+        {
+          "date": "2026-06-26",
+          "value": 0.43
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.43
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.43
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-08",
+          "value": 0.22
+        },
+        {
+          "date": "2026-06-09",
+          "value": 0.28
+        },
+        {
+          "date": "2026-06-25",
+          "value": 0.1
+        },
+        {
+          "date": "2026-06-26",
+          "value": 0.1
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.1
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.1
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-08",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-09",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-25",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-26",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.8
+        }
+      ]
+    },
+    "互联网电商": {
+      "ranking_score": [
+        {
+          "date": "2026-06-08",
+          "value": 0.34
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-26",
+          "value": 0.46
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.46
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.46
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-08",
+          "value": 0.21
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-26",
+          "value": 0.15
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.15
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.15
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-08",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-26",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.8
+        }
+      ]
+    },
+    "能源金属": {
+      "ranking_score": [
+        {
+          "date": "2026-06-09",
+          "value": 0.54
+        },
+        {
+          "date": "2026-06-11",
+          "value": 0.53
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.54
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.54
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.54
+        },
+        {
+          "date": "2026-06-22",
+          "value": 0.5
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.4
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-09",
+          "value": 0.34
+        },
+        {
+          "date": "2026-06-11",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.34
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.34
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.34
+        },
+        {
+          "date": "2026-06-22",
+          "value": 0.24
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.32
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-09",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-11",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-22",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.6
+        }
+      ]
+    },
+    "电池": {
+      "ranking_score": [
+        {
+          "date": "2026-06-09",
+          "value": 0.53
+        },
+        {
+          "date": "2026-06-16",
+          "value": 0.55
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-09",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-16",
+          "value": 0.36
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-09",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-16",
+          "value": 0.8
+        }
+      ]
+    },
+    "旅游及酒店": {
+      "ranking_score": [
+        {
+          "date": "2026-06-10",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-23",
+          "value": 0.48
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-10",
+          "value": 0.3
+        },
+        {
+          "date": "2026-06-23",
+          "value": 0.19
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-10",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-23",
+          "value": 0.8
+        }
+      ]
+    },
+    "机场航运": {
+      "ranking_score": [
+        {
+          "date": "2026-06-10",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.54
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.54
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.54
+        },
+        {
+          "date": "2026-06-25",
+          "value": 0.48
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-10",
+          "value": 0.28
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.34
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.34
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.34
+        },
+        {
+          "date": "2026-06-25",
+          "value": 0.21
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-10",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-12",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-13",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-14",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-25",
+          "value": 0.8
+        }
+      ]
+    },
+    "农产品加工": {
+      "ranking_score": [
+        {
+          "date": "2026-06-10",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.49
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-10",
+          "value": 0.28
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.22
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-10",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.8
+        }
+      ]
+    },
+    "多元金融": {
+      "ranking_score": [
+        {
+          "date": "2026-06-10",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-22",
+          "value": 0.49
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-10",
+          "value": 0.28
+        },
+        {
+          "date": "2026-06-22",
+          "value": 0.22
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-10",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-22",
+          "value": 0.8
+        }
+      ]
+    },
+    "化学制品": {
+      "ranking_score": [
+        {
+          "date": "2026-06-10",
+          "value": 0.31
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-10",
+          "value": 0.27
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-10",
+          "value": 0.7
+        }
+      ]
+    },
+    "农化制品": {
+      "ranking_score": [
+        {
+          "date": "2026-06-11",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-22",
+          "value": 0.48
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-11",
+          "value": 0.27
+        },
+        {
+          "date": "2026-06-22",
+          "value": 0.21
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-11",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-22",
+          "value": 0.8
+        }
+      ]
+    },
+    "军工电子": {
+      "ranking_score": [
+        {
+          "date": "2026-06-11",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-17",
+          "value": 0.61
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.41
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-11",
+          "value": 0.27
+        },
+        {
+          "date": "2026-06-17",
+          "value": 0.48
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.34
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-11",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-17",
+          "value": 0.9
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.7
+        }
+      ]
+    },
+    "非金属材料": {
+      "ranking_score": [
+        {
+          "date": "2026-06-16",
+          "value": 0.56
+        },
+        {
+          "date": "2026-06-17",
+          "value": 0.44
+        },
+        {
+          "date": "2026-06-18",
+          "value": 0.83
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.83
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.83
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.83
+        },
+        {
+          "date": "2026-06-22",
+          "value": 0.84
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-16",
+          "value": 0.37
+        },
+        {
+          "date": "2026-06-17",
+          "value": 0.44
+        },
+        {
+          "date": "2026-06-18",
+          "value": 0.62
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.62
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.62
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.62
+        },
+        {
+          "date": "2026-06-22",
+          "value": 0.65
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-16",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-17",
+          "value": 0.7
+        },
+        {
+          "date": "2026-06-18",
+          "value": 0.9
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.9
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.9
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.9
+        },
+        {
+          "date": "2026-06-22",
+          "value": 0.9
+        }
+      ]
+    },
+    "建筑材料": {
+      "ranking_score": [
+        {
+          "date": "2026-06-17",
+          "value": 0.52
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-17",
+          "value": 0.28
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-17",
+          "value": 0.8
+        }
+      ]
+    },
+    "医疗服务": {
+      "ranking_score": [
+        {
+          "date": "2026-06-18",
+          "value": 0.49
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.49
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.49
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.49
+        },
+        {
+          "date": "2026-06-23",
+          "value": 0.54
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.57
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-18",
+          "value": 0.23
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.23
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.23
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.23
+        },
+        {
+          "date": "2026-06-23",
+          "value": 0.34
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.31
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.4
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-18",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-23",
+          "value": 0.9
+        },
+        {
+          "date": "2026-06-24",
+          "value": 0.9
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.9
+        }
+      ]
+    },
+    "生物制品": {
+      "ranking_score": [
+        {
+          "date": "2026-06-18",
+          "value": 0.48
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.48
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.48
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.48
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.4
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-18",
+          "value": 0.19
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.19
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.19
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.19
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.33
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-18",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.6
+        }
+      ]
+    },
+    "通信服务": {
+      "ranking_score": [
+        {
+          "date": "2026-06-18",
+          "value": 0.39
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.39
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.39
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.39
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-18",
+          "value": 0.28
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.28
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.28
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.28
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-18",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-19",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-20",
+          "value": 0.6
+        },
+        {
+          "date": "2026-06-21",
+          "value": 0.6
+        }
+      ]
+    },
+    "游戏": {
+      "ranking_score": [
+        {
+          "date": "2026-06-22",
+          "value": 0.49
+        },
+        {
+          "date": "2026-06-25",
+          "value": 0.39
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-22",
+          "value": 0.23
+        },
+        {
+          "date": "2026-06-25",
+          "value": 0.28
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-22",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-25",
+          "value": 0.7
+        }
+      ]
+    },
+    "化学制药": {
+      "ranking_score": [
+        {
+          "date": "2026-06-23",
+          "value": 0.59
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.4
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-23",
+          "value": 0.45
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.33
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-23",
+          "value": 0.9
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.6
+        }
+      ]
+    },
+    "医疗器械": {
+      "ranking_score": [
+        {
+          "date": "2026-06-23",
+          "value": 0.49
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.49
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-23",
+          "value": 0.22
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.22
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-23",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.8
+        }
+      ]
+    },
+    "医药商业": {
+      "ranking_score": [
+        {
+          "date": "2026-06-23",
+          "value": 0.46
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.31
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-23",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.3
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-23",
+          "value": 0.35
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.65
+        }
+      ]
+    },
+    "养殖业": {
+      "ranking_score": [
+        {
+          "date": "2026-06-23",
+          "value": 0.45
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.31
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-23",
+          "value": 0.29
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.32
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-23",
+          "value": 0.35
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.65
+        }
+      ]
+    },
+    "中药": {
+      "ranking_score": [
+        {
+          "date": "2026-06-23",
+          "value": 0.45
+        },
+        {
+          "date": "2026-06-26",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.32
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.52
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-23",
+          "value": 0.28
+        },
+        {
+          "date": "2026-06-26",
+          "value": 0.2
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.2
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.2
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.33
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-23",
+          "value": 0.35
+        },
+        {
+          "date": "2026-06-26",
+          "value": 0.5
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.5
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.5
+        },
+        {
+          "date": "2026-06-29",
+          "value": 0.65
+        }
+      ]
+    },
+    "黑色家电": {
+      "ranking_score": [
+        {
+          "date": "2026-06-25",
+          "value": 0.48
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-25",
+          "value": 0.19
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-25",
+          "value": 0.8
+        }
+      ]
+    },
+    "白酒": {
+      "ranking_score": [
+        {
+          "date": "2026-06-25",
+          "value": 0.47
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-25",
+          "value": 0.18
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-25",
+          "value": 0.8
+        }
+      ]
+    },
+    "教育": {
+      "ranking_score": [
+        {
+          "date": "2026-06-26",
+          "value": 0.45
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.45
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.45
+        }
+      ],
+      "opportunity_score": [
+        {
+          "date": "2026-06-26",
+          "value": 0.14
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.14
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.14
+        }
+      ],
+      "confidence_score": [
+        {
+          "date": "2026-06-26",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-27",
+          "value": 0.8
+        },
+        {
+          "date": "2026-06-28",
+          "value": 0.8
+        }
+      ]
+    }
+  },
+  "risk_signals": [
+    {
+      "date": "2026-06-03",
+      "sector_name": "煤炭开采加工",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-03",
+      "sector_name": "元件",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-04",
+      "sector_name": "煤炭开采加工",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-04",
+      "sector_name": "元件",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-04",
+      "sector_name": "电子化学品",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-04",
+      "sector_name": "光学光电子",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-09",
+      "sector_name": "元件",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-09",
+      "sector_name": "电子化学品",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-10",
+      "sector_name": "电子化学品",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-10",
+      "sector_name": "塑料制品",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-11",
+      "sector_name": "电子化学品",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-11",
+      "sector_name": "小金属",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-12",
+      "sector_name": "工业金属",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-12",
+      "sector_name": "小金属",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-12",
+      "sector_name": "保险",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-13",
+      "sector_name": "工业金属",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-13",
+      "sector_name": "小金属",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-13",
+      "sector_name": "保险",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-14",
+      "sector_name": "工业金属",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-14",
+      "sector_name": "小金属",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-14",
+      "sector_name": "保险",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-15",
+      "sector_name": "电子化学品",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-15",
+      "sector_name": "小金属",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-15",
+      "sector_name": "半导体",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-15",
+      "sector_name": "塑料制品",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-15",
+      "sector_name": "光学光电子",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-15",
+      "sector_name": "贵金属",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-15",
+      "sector_name": "其他电子",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-15",
+      "sector_name": "元件",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-15",
+      "sector_name": "通信设备",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-16",
+      "sector_name": "其他电源设备",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-16",
+      "sector_name": "其他电子",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-16",
+      "sector_name": "通信设备",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    },
+    {
+      "date": "2026-06-22",
+      "sector_name": "保险",
+      "signal_type": "conflict",
+      "details": [
+        "conflict_level=medium"
+      ]
+    }
+  ],
+  "regime_correlation": {
+    "choppy_market": {
+      "sectors": [
+        "元件",
+        "贵金属",
+        "工业金属",
+        "小金属",
+        "消费电子",
+        "光学光电子",
+        "通信设备",
+        "其他电子",
+        "金属新材料",
+        "电子化学品",
+        "煤炭开采加工",
+        "油气开采及服务",
+        "半导体",
+        "其他社会服务",
+        "其他电源设备",
+        "光伏设备",
+        "通用设备",
+        "塑料制品",
+        "电机",
+        "工程机械",
+        "化学纤维",
+        "军工装备",
+        "化学原料",
+        "家居用品",
+        "厨卫电器",
+        "保险",
+        "旅游及酒店",
+        "公路铁路运输",
+        "机场航运",
+        "农产品加工",
+        "多元金融",
+        "化学制品",
+        "能源金属",
+        "农化制品",
+        "军工电子",
+        "建筑材料",
+        "非金属材料",
+        "医疗服务",
+        "生物制品",
+        "通信服务",
+        "游戏",
+        "黑色家电",
+        "白酒",
+        "IT服务"
+      ],
+      "dates": [
+        "2026-06-02",
+        "2026-06-03",
+        "2026-06-04",
+        "2026-06-05",
+        "2026-06-06",
+        "2026-06-07",
+        "2026-06-10",
+        "2026-06-11",
+        "2026-06-17",
+        "2026-06-18",
+        "2026-06-19",
+        "2026-06-20",
+        "2026-06-21",
+        "2026-06-22",
+        "2026-06-24",
+        "2026-06-25"
+      ]
+    },
+    "risk_off": {
+      "sectors": [
+        "工程机械",
+        "元件",
+        "光学光电子",
+        "保险",
+        "公路铁路运输",
+        "IT服务",
+        "光伏设备",
+        "互联网电商",
+        "其他电子",
+        "油气开采及服务",
+        "教育",
+        "电子化学品",
+        "中药"
+      ],
+      "dates": [
+        "2026-06-08",
+        "2026-06-26",
+        "2026-06-27",
+        "2026-06-28"
+      ]
+    },
+    "risk_on": {
+      "sectors": [
+        "元件",
+        "电子化学品",
+        "塑料制品",
+        "其他电子",
+        "半导体",
+        "能源金属",
+        "通信设备",
+        "其他电源设备",
+        "电池",
+        "IT服务",
+        "工业金属",
+        "小金属",
+        "保险",
+        "机场航运",
+        "军工装备",
+        "贵金属",
+        "互联网电商",
+        "其他社会服务",
+        "光学光电子"
+      ],
+      "dates": [
+        "2026-06-09",
+        "2026-06-12",
+        "2026-06-13",
+        "2026-06-14",
+        "2026-06-15"
+      ]
+    },
+    "weak_rebound": {
+      "sectors": [
+        "金属新材料",
+        "电子化学品",
+        "非金属材料",
+        "元件",
+        "电池",
+        "其他电源设备",
+        "其他电子",
+        "通信设备",
+        "光伏设备",
+        "光学光电子",
+        "化学制药",
+        "医疗服务",
+        "医疗器械",
+        "家居用品",
+        "公路铁路运输",
+        "旅游及酒店",
+        "厨卫电器",
+        "医药商业",
+        "养殖业",
+        "中药",
+        "半导体",
+        "农产品加工",
+        "保险",
+        "生物制品"
+      ],
+      "dates": [
+        "2026-06-16",
+        "2026-06-23",
+        "2026-06-29"
+      ]
+    }
+  },
+  "review_template": {
+    "sections": [
+      {
+        "name": "市场环境回顾",
+        "questions": [
+          "今日 market_regime 是什么？",
+          "与昨日相比 regime 是否变化？",
+          "市场温度和广度如何？"
+        ]
+      },
+      {
+        "name": "重点板块跟踪",
+        "questions": [
+          "哪些板块连续出现在今日重点观察中？",
+          "这些板块的 ranking_score 趋势如何？",
+          "是否有新的观察候选？"
+        ]
+      },
+      {
+        "name": "标签变化复盘",
+        "questions": [
+          "哪些板块标签发生变化？",
+          "变化方向是否合理？",
+          "是否有误判需要记录？"
+        ]
+      },
+      {
+        "name": "风险信号复盘",
+        "questions": [
+          "哪些板块触发了 veto？",
+          "是否有新的冲突信号？",
+          "风险是否在可控范围内？"
+        ]
+      },
+      {
+        "name": "下一交易日准备",
+        "questions": [
+          "哪些板块需要继续跟踪？",
+          "是否有需要调整观察权重的板块？",
+          "市场环境是否需要调整策略？"
+        ]
+      }
+    ]
+  }
+}

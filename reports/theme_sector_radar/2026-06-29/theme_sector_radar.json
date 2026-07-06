@@ -2,1202 +2,205 @@
   "report_type": "theme_sector_radar",
   "version": "0.1.0",
   "as_of_date": "2026-06-29",
-  "updated_at": "2026-06-29T21:49:39.195987",
-  "data_sources": [
-    "akshare/ths_concept",
-    "akshare/ths_industry"
-  ],
-  "data_quality_score": 65.0,
+  "updated_at": "2026-07-01T18:46:57.126780",
+  "status": "ok",
   "market_temperature": {
-    "score": 50.0,
-    "label": "neutral",
-    "description": "市场情绪中性，建议精选板块和个股",
-    "advance_count": 0,
-    "decline_count": 0,
+    "score": 47.8,
+    "label": "cool",
+    "description": "市场温度: cool",
+    "advance_count": 35,
+    "decline_count": 44,
     "limit_up_count": 0,
     "limit_down_count": 0
   },
+  "market_breadth": {
+    "industry_total_count": 83,
+    "industry_up_count": 35,
+    "industry_down_count": 44,
+    "industry_flat_count": 4,
+    "industry_up_ratio": 0.4217,
+    "industry_down_ratio": 0.5301,
+    "average_industry_change_pct": 0.0859,
+    "median_industry_change_pct": -0.2307,
+    "strong_industry_count": 10,
+    "weak_industry_count": 8,
+    "strong_industry_ratio": 0.1205,
+    "weak_industry_ratio": 0.0964,
+    "breadth_label": "narrow_rising",
+    "replay_market_temperature_label": "cool",
+    "replay_market_temperature_score": 47.8
+  },
   "industry_top": [
     {
-      "sector_id": "ths_industry_生物制品",
-      "name": "生物制品",
-      "type": "industry",
-      "score": 42.0,
-      "positive_score": 45.0,
-      "risk_penalty": 3.0,
-      "focus_level": "avoid",
-      "phase": "startup",
-      "risk_level": "low",
-      "risk_flags": [
-        "data_quality_low"
-      ],
-      "reasons": [],
-      "downgrade_reasons": [
-        "最终评分过低 (42.0)"
-      ],
-      "watch_points": [],
-      "constituents": [],
-      "data_sources": [
-        "akshare/ths_industry"
-      ],
-      "updated_at": "2026-06-29T21:44:59.459091",
-      "data_quality_score": 60.0,
-      "score_breakdown": {
-        "trend_strength": 17.0,
-        "fund_flow": 6.0,
-        "breadth": 5.0,
-        "persistence": 8.0,
-        "market_fit": 5.0,
-        "data_quality": 4.0,
-        "positive_score": 45.0,
-        "final_score": 42.0,
-        "risk_penalty": 3.0,
-        "risk_breakdown": {
-          "overheat_penalty": 0.0,
-          "divergence_penalty": 0.0,
-          "data_quality_penalty": 3.0,
-          "total_penalty": 3.0,
-          "risk_level": "low",
-          "risk_flags": [
-            "data_quality_low"
-          ],
-          "risk_reasons": [
-            "数据质量: 数据源不足 (1个)"
-          ]
-        }
-      },
-      "previous_rank": null,
-      "rank_change": null
-    },
-    {
-      "sector_id": "ths_industry_医疗服务",
-      "name": "医疗服务",
-      "type": "industry",
-      "score": 42.0,
-      "positive_score": 45.0,
-      "risk_penalty": 3.0,
-      "focus_level": "avoid",
-      "phase": "startup",
-      "risk_level": "low",
-      "risk_flags": [
-        "data_quality_low"
-      ],
-      "reasons": [],
-      "downgrade_reasons": [
-        "最终评分过低 (42.0)"
-      ],
-      "watch_points": [],
-      "constituents": [],
-      "data_sources": [
-        "akshare/ths_industry"
-      ],
-      "updated_at": "2026-06-29T21:44:59.459091",
-      "data_quality_score": 60.0,
-      "score_breakdown": {
-        "trend_strength": 17.0,
-        "fund_flow": 6.0,
-        "breadth": 5.0,
-        "persistence": 8.0,
-        "market_fit": 5.0,
-        "data_quality": 4.0,
-        "positive_score": 45.0,
-        "final_score": 42.0,
-        "risk_penalty": 3.0,
-        "risk_breakdown": {
-          "overheat_penalty": 0.0,
-          "divergence_penalty": 0.0,
-          "data_quality_penalty": 3.0,
-          "total_penalty": 3.0,
-          "risk_level": "low",
-          "risk_flags": [
-            "data_quality_low"
-          ],
-          "risk_reasons": [
-            "数据质量: 数据源不足 (1个)"
-          ]
-        }
-      },
-      "previous_rank": null,
-      "rank_change": null
-    },
-    {
-      "sector_id": "ths_industry_化学制药",
+      "sector_id": "replay_industry_化学制药",
       "name": "化学制药",
       "type": "industry",
-      "score": 42.0,
-      "positive_score": 45.0,
-      "risk_penalty": 3.0,
-      "focus_level": "avoid",
-      "phase": "startup",
-      "risk_level": "low",
-      "risk_flags": [
-        "data_quality_low"
-      ],
-      "reasons": [],
-      "downgrade_reasons": [
-        "最终评分过低 (42.0)"
-      ],
-      "watch_points": [],
-      "constituents": [],
-      "data_sources": [
-        "akshare/ths_industry"
-      ],
-      "updated_at": "2026-06-29T21:44:59.459091",
+      "price_change_pct": 5.87,
+      "turnover": 59792479000.0,
+      "main_net_inflow": 0.0,
       "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 91,
       "score_breakdown": {
-        "trend_strength": 17.0,
-        "fund_flow": 6.0,
-        "breadth": 5.0,
-        "persistence": 8.0,
-        "market_fit": 5.0,
-        "data_quality": 4.0,
-        "positive_score": 45.0,
-        "final_score": 42.0,
-        "risk_penalty": 3.0,
-        "risk_breakdown": {
-          "overheat_penalty": 0.0,
-          "divergence_penalty": 0.0,
-          "data_quality_penalty": 3.0,
-          "total_penalty": 3.0,
-          "risk_level": "low",
-          "risk_flags": [
-            "data_quality_low"
-          ],
-          "risk_reasons": [
-            "数据质量: 数据源不足 (1个)"
-          ]
-        }
-      },
-      "previous_rank": null,
-      "rank_change": null
+        "score_source": "sector_history_replay"
+      }
     },
     {
-      "sector_id": "ths_industry_中药",
+      "sector_id": "replay_industry_医疗服务",
+      "name": "医疗服务",
+      "type": "industry",
+      "price_change_pct": 6.11,
+      "turnover": 37944208000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 91,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_生物制品",
+      "name": "生物制品",
+      "type": "industry",
+      "price_change_pct": 7.43,
+      "turnover": 18576907000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 91,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_中药",
       "name": "中药",
       "type": "industry",
-      "score": 39.0,
-      "positive_score": 42.0,
-      "risk_penalty": 3.0,
-      "focus_level": "avoid",
-      "phase": "startup",
-      "risk_level": "low",
-      "risk_flags": [
-        "data_quality_low"
-      ],
-      "reasons": [],
-      "downgrade_reasons": [
-        "最终评分过低 (39.0)",
-        "板块正向强度不足"
-      ],
-      "watch_points": [],
-      "constituents": [],
-      "data_sources": [
-        "akshare/ths_industry"
-      ],
-      "updated_at": "2026-06-29T21:44:59.459091",
+      "price_change_pct": 3.7,
+      "turnover": 12294060100.0,
+      "main_net_inflow": 0.0,
       "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 76,
       "score_breakdown": {
-        "trend_strength": 14.0,
-        "fund_flow": 6.0,
-        "breadth": 5.0,
-        "persistence": 8.0,
-        "market_fit": 5.0,
-        "data_quality": 4.0,
-        "positive_score": 42.0,
-        "final_score": 39.0,
-        "risk_penalty": 3.0,
-        "risk_breakdown": {
-          "overheat_penalty": 0.0,
-          "divergence_penalty": 0.0,
-          "data_quality_penalty": 3.0,
-          "total_penalty": 3.0,
-          "risk_level": "low",
-          "risk_flags": [
-            "data_quality_low"
-          ],
-          "risk_reasons": [
-            "数据质量: 数据源不足 (1个)"
-          ]
-        }
-      },
-      "previous_rank": null,
-      "rank_change": null
+        "score_source": "sector_history_replay"
+      }
     },
     {
-      "sector_id": "ths_industry_医疗器械",
+      "sector_id": "replay_industry_医疗器械",
       "name": "医疗器械",
       "type": "industry",
-      "score": 39.0,
-      "positive_score": 42.0,
-      "risk_penalty": 3.0,
-      "focus_level": "avoid",
-      "phase": "startup",
-      "risk_level": "low",
-      "risk_flags": [
-        "data_quality_low"
-      ],
-      "reasons": [],
-      "downgrade_reasons": [
-        "最终评分过低 (39.0)",
-        "板块正向强度不足"
-      ],
-      "watch_points": [],
-      "constituents": [],
-      "data_sources": [
-        "akshare/ths_industry"
-      ],
-      "updated_at": "2026-06-29T21:44:59.459091",
+      "price_change_pct": 3.52,
+      "turnover": 27569933000.0,
+      "main_net_inflow": 0.0,
       "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 76,
       "score_breakdown": {
-        "trend_strength": 14.0,
-        "fund_flow": 6.0,
-        "breadth": 5.0,
-        "persistence": 8.0,
-        "market_fit": 5.0,
-        "data_quality": 4.0,
-        "positive_score": 42.0,
-        "final_score": 39.0,
-        "risk_penalty": 3.0,
-        "risk_breakdown": {
-          "overheat_penalty": 0.0,
-          "divergence_penalty": 0.0,
-          "data_quality_penalty": 3.0,
-          "total_penalty": 3.0,
-          "risk_level": "low",
-          "risk_flags": [
-            "data_quality_low"
-          ],
-          "risk_reasons": [
-            "数据质量: 数据源不足 (1个)"
-          ]
-        }
-      },
-      "previous_rank": null,
-      "rank_change": null
+        "score_source": "sector_history_replay"
+      }
     },
     {
-      "sector_id": "ths_industry_半导体",
-      "name": "半导体",
-      "type": "industry",
-      "score": 35.0,
-      "positive_score": 38.0,
-      "risk_penalty": 3.0,
-      "focus_level": "avoid",
-      "phase": "startup",
-      "risk_level": "low",
-      "risk_flags": [
-        "data_quality_low"
-      ],
-      "reasons": [],
-      "downgrade_reasons": [
-        "最终评分过低 (35.0)",
-        "板块正向强度不足"
-      ],
-      "watch_points": [],
-      "constituents": [],
-      "data_sources": [
-        "akshare/ths_industry"
-      ],
-      "updated_at": "2026-06-29T21:44:59.459091",
-      "data_quality_score": 60.0,
-      "score_breakdown": {
-        "trend_strength": 10.0,
-        "fund_flow": 6.0,
-        "breadth": 5.0,
-        "persistence": 8.0,
-        "market_fit": 5.0,
-        "data_quality": 4.0,
-        "positive_score": 38.0,
-        "final_score": 35.0,
-        "risk_penalty": 3.0,
-        "risk_breakdown": {
-          "overheat_penalty": 0.0,
-          "divergence_penalty": 0.0,
-          "data_quality_penalty": 3.0,
-          "total_penalty": 3.0,
-          "risk_level": "low",
-          "risk_flags": [
-            "data_quality_low"
-          ],
-          "risk_reasons": [
-            "数据质量: 数据源不足 (1个)"
-          ]
-        }
-      },
-      "previous_rank": null,
-      "rank_change": null
-    },
-    {
-      "sector_id": "ths_industry_养殖业",
-      "name": "养殖业",
-      "type": "industry",
-      "score": 35.0,
-      "positive_score": 38.0,
-      "risk_penalty": 3.0,
-      "focus_level": "avoid",
-      "phase": "startup",
-      "risk_level": "low",
-      "risk_flags": [
-        "data_quality_low"
-      ],
-      "reasons": [],
-      "downgrade_reasons": [
-        "最终评分过低 (35.0)",
-        "板块正向强度不足"
-      ],
-      "watch_points": [],
-      "constituents": [],
-      "data_sources": [
-        "akshare/ths_industry"
-      ],
-      "updated_at": "2026-06-29T21:44:59.459091",
-      "data_quality_score": 60.0,
-      "score_breakdown": {
-        "trend_strength": 10.0,
-        "fund_flow": 6.0,
-        "breadth": 5.0,
-        "persistence": 8.0,
-        "market_fit": 5.0,
-        "data_quality": 4.0,
-        "positive_score": 38.0,
-        "final_score": 35.0,
-        "risk_penalty": 3.0,
-        "risk_breakdown": {
-          "overheat_penalty": 0.0,
-          "divergence_penalty": 0.0,
-          "data_quality_penalty": 3.0,
-          "total_penalty": 3.0,
-          "risk_level": "low",
-          "risk_flags": [
-            "data_quality_low"
-          ],
-          "risk_reasons": [
-            "数据质量: 数据源不足 (1个)"
-          ]
-        }
-      },
-      "previous_rank": null,
-      "rank_change": null
-    },
-    {
-      "sector_id": "ths_industry_医药商业",
-      "name": "医药商业",
-      "type": "industry",
-      "score": 35.0,
-      "positive_score": 38.0,
-      "risk_penalty": 3.0,
-      "focus_level": "avoid",
-      "phase": "startup",
-      "risk_level": "low",
-      "risk_flags": [
-        "data_quality_low"
-      ],
-      "reasons": [],
-      "downgrade_reasons": [
-        "最终评分过低 (35.0)",
-        "板块正向强度不足"
-      ],
-      "watch_points": [],
-      "constituents": [],
-      "data_sources": [
-        "akshare/ths_industry"
-      ],
-      "updated_at": "2026-06-29T21:44:59.460602",
-      "data_quality_score": 60.0,
-      "score_breakdown": {
-        "trend_strength": 10.0,
-        "fund_flow": 6.0,
-        "breadth": 5.0,
-        "persistence": 8.0,
-        "market_fit": 5.0,
-        "data_quality": 4.0,
-        "positive_score": 38.0,
-        "final_score": 35.0,
-        "risk_penalty": 3.0,
-        "risk_breakdown": {
-          "overheat_penalty": 0.0,
-          "divergence_penalty": 0.0,
-          "data_quality_penalty": 3.0,
-          "total_penalty": 3.0,
-          "risk_level": "low",
-          "risk_flags": [
-            "data_quality_low"
-          ],
-          "risk_reasons": [
-            "数据质量: 数据源不足 (1个)"
-          ]
-        }
-      },
-      "previous_rank": null,
-      "rank_change": null
-    },
-    {
-      "sector_id": "ths_industry_保险",
+      "sector_id": "replay_industry_保险",
       "name": "保险",
       "type": "industry",
-      "score": 35.0,
-      "positive_score": 38.0,
-      "risk_penalty": 3.0,
-      "focus_level": "avoid",
-      "phase": "startup",
-      "risk_level": "low",
-      "risk_flags": [
-        "data_quality_low"
-      ],
-      "reasons": [],
-      "downgrade_reasons": [
-        "最终评分过低 (35.0)",
-        "板块正向强度不足"
-      ],
-      "watch_points": [],
-      "constituents": [],
-      "data_sources": [
-        "akshare/ths_industry"
-      ],
-      "updated_at": "2026-06-29T21:44:59.460602",
+      "price_change_pct": 2.19,
+      "turnover": 11097282800.0,
+      "main_net_inflow": 0.0,
       "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 56,
       "score_breakdown": {
-        "trend_strength": 10.0,
-        "fund_flow": 6.0,
-        "breadth": 5.0,
-        "persistence": 8.0,
-        "market_fit": 5.0,
-        "data_quality": 4.0,
-        "positive_score": 38.0,
-        "final_score": 35.0,
-        "risk_penalty": 3.0,
-        "risk_breakdown": {
-          "overheat_penalty": 0.0,
-          "divergence_penalty": 0.0,
-          "data_quality_penalty": 3.0,
-          "total_penalty": 3.0,
-          "risk_level": "low",
-          "risk_flags": [
-            "data_quality_low"
-          ],
-          "risk_reasons": [
-            "数据质量: 数据源不足 (1个)"
-          ]
-        }
-      },
-      "previous_rank": null,
-      "rank_change": null
+        "score_source": "sector_history_replay"
+      }
     },
     {
-      "sector_id": "ths_industry_美容护理",
-      "name": "美容护理",
+      "sector_id": "replay_industry_养殖业",
+      "name": "养殖业",
       "type": "industry",
-      "score": 35.0,
-      "positive_score": 38.0,
-      "risk_penalty": 3.0,
-      "focus_level": "avoid",
-      "phase": "startup",
-      "risk_level": "low",
-      "risk_flags": [
-        "data_quality_low"
-      ],
-      "reasons": [],
-      "downgrade_reasons": [
-        "最终评分过低 (35.0)",
-        "板块正向强度不足"
-      ],
-      "watch_points": [],
-      "constituents": [],
-      "data_sources": [
-        "akshare/ths_industry"
-      ],
-      "updated_at": "2026-06-29T21:44:59.460602",
+      "price_change_pct": 2.39,
+      "turnover": 10552389000.0,
+      "main_net_inflow": 0.0,
       "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 56,
       "score_breakdown": {
-        "trend_strength": 10.0,
-        "fund_flow": 6.0,
-        "breadth": 5.0,
-        "persistence": 8.0,
-        "market_fit": 5.0,
-        "data_quality": 4.0,
-        "positive_score": 38.0,
-        "final_score": 35.0,
-        "risk_penalty": 3.0,
-        "risk_breakdown": {
-          "overheat_penalty": 0.0,
-          "divergence_penalty": 0.0,
-          "data_quality_penalty": 3.0,
-          "total_penalty": 3.0,
-          "risk_level": "low",
-          "risk_flags": [
-            "data_quality_low"
-          ],
-          "risk_reasons": [
-            "数据质量: 数据源不足 (1个)"
-          ]
-        }
-      },
-      "previous_rank": null,
-      "rank_change": null
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_农产品加工",
+      "name": "农产品加工",
+      "type": "industry",
+      "price_change_pct": 1.62,
+      "turnover": 5877202600.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 56,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_医药商业",
+      "name": "医药商业",
+      "type": "industry",
+      "price_change_pct": 2.37,
+      "turnover": 4017935900.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 56,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_半导体",
+      "name": "半导体",
+      "type": "industry",
+      "price_change_pct": 2.74,
+      "turnover": 661729300000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-29",
+      "score": 56,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
     }
   ],
-  "concept_top": [
-    {
-      "sector_id": "ths_concept_阿尔茨海默概念",
-      "name": "阿尔茨海默概念",
-      "type": "concept",
-      "score": 19.0,
-      "positive_score": 26.0,
-      "risk_penalty": 7.0,
-      "focus_level": "avoid",
-      "phase": "divergence",
-      "risk_level": "low",
-      "risk_flags": [
-        "data_quality_low"
-      ],
-      "reasons": [],
-      "downgrade_reasons": [
-        "最终评分过低 (19.0)",
-        "板块正向强度不足"
-      ],
-      "watch_points": [],
-      "constituents": [],
-      "data_sources": [
-        "akshare/ths_concept"
-      ],
-      "updated_at": "2026-06-29T21:45:14.174094",
-      "data_quality_score": 50.0,
-      "score_breakdown": {
-        "heat_burst": 2.0,
-        "fund_confirmation": 5.0,
-        "constituent_linkage": 5.0,
-        "phase_score": 8.0,
-        "catalyst": 3.0,
-        "data_quality": 3.0,
-        "positive_score": 26.0,
-        "final_score": 19.0,
-        "price_change_available": false,
-        "data_quality_warning": "THS 概念缺少涨跌幅数据，热度爆发和催化剂评分偏保守",
-        "max_possible_score_without_price": 34.0,
-        "risk_penalty": 7.0,
-        "risk_breakdown": {
-          "overheat_penalty": 0.0,
-          "divergence_penalty": 0.0,
-          "data_quality_penalty": 7.0,
-          "total_penalty": 7.0,
-          "risk_level": "low",
-          "risk_flags": [
-            "data_quality_low"
-          ],
-          "risk_reasons": [
-            "数据质量: 数据质量分偏低 (50); 数据源不足 (1个)"
-          ]
-        }
-      },
-      "previous_rank": null,
-      "rank_change": null
-    },
-    {
-      "sector_id": "ths_concept_AI PC",
-      "name": "AI PC",
-      "type": "concept",
-      "score": 19.0,
-      "positive_score": 26.0,
-      "risk_penalty": 7.0,
-      "focus_level": "avoid",
-      "phase": "divergence",
-      "risk_level": "low",
-      "risk_flags": [
-        "data_quality_low"
-      ],
-      "reasons": [],
-      "downgrade_reasons": [
-        "最终评分过低 (19.0)",
-        "板块正向强度不足"
-      ],
-      "watch_points": [],
-      "constituents": [],
-      "data_sources": [
-        "akshare/ths_concept"
-      ],
-      "updated_at": "2026-06-29T21:45:14.175605",
-      "data_quality_score": 50.0,
-      "score_breakdown": {
-        "heat_burst": 2.0,
-        "fund_confirmation": 5.0,
-        "constituent_linkage": 5.0,
-        "phase_score": 8.0,
-        "catalyst": 3.0,
-        "data_quality": 3.0,
-        "positive_score": 26.0,
-        "final_score": 19.0,
-        "price_change_available": false,
-        "data_quality_warning": "THS 概念缺少涨跌幅数据，热度爆发和催化剂评分偏保守",
-        "max_possible_score_without_price": 34.0,
-        "risk_penalty": 7.0,
-        "risk_breakdown": {
-          "overheat_penalty": 0.0,
-          "divergence_penalty": 0.0,
-          "data_quality_penalty": 7.0,
-          "total_penalty": 7.0,
-          "risk_level": "low",
-          "risk_flags": [
-            "data_quality_low"
-          ],
-          "risk_reasons": [
-            "数据质量: 数据质量分偏低 (50); 数据源不足 (1个)"
-          ]
-        }
-      },
-      "previous_rank": null,
-      "rank_change": null
-    },
-    {
-      "sector_id": "ths_concept_AI手机",
-      "name": "AI手机",
-      "type": "concept",
-      "score": 19.0,
-      "positive_score": 26.0,
-      "risk_penalty": 7.0,
-      "focus_level": "avoid",
-      "phase": "divergence",
-      "risk_level": "low",
-      "risk_flags": [
-        "data_quality_low"
-      ],
-      "reasons": [],
-      "downgrade_reasons": [
-        "最终评分过低 (19.0)",
-        "板块正向强度不足"
-      ],
-      "watch_points": [],
-      "constituents": [],
-      "data_sources": [
-        "akshare/ths_concept"
-      ],
-      "updated_at": "2026-06-29T21:45:14.175605",
-      "data_quality_score": 50.0,
-      "score_breakdown": {
-        "heat_burst": 2.0,
-        "fund_confirmation": 5.0,
-        "constituent_linkage": 5.0,
-        "phase_score": 8.0,
-        "catalyst": 3.0,
-        "data_quality": 3.0,
-        "positive_score": 26.0,
-        "final_score": 19.0,
-        "price_change_available": false,
-        "data_quality_warning": "THS 概念缺少涨跌幅数据，热度爆发和催化剂评分偏保守",
-        "max_possible_score_without_price": 34.0,
-        "risk_penalty": 7.0,
-        "risk_breakdown": {
-          "overheat_penalty": 0.0,
-          "divergence_penalty": 0.0,
-          "data_quality_penalty": 7.0,
-          "total_penalty": 7.0,
-          "risk_level": "low",
-          "risk_flags": [
-            "data_quality_low"
-          ],
-          "risk_reasons": [
-            "数据质量: 数据质量分偏低 (50); 数据源不足 (1个)"
-          ]
-        }
-      },
-      "previous_rank": null,
-      "rank_change": null
-    },
-    {
-      "sector_id": "ths_concept_AI语料",
-      "name": "AI语料",
-      "type": "concept",
-      "score": 19.0,
-      "positive_score": 26.0,
-      "risk_penalty": 7.0,
-      "focus_level": "avoid",
-      "phase": "divergence",
-      "risk_level": "low",
-      "risk_flags": [
-        "data_quality_low"
-      ],
-      "reasons": [],
-      "downgrade_reasons": [
-        "最终评分过低 (19.0)",
-        "板块正向强度不足"
-      ],
-      "watch_points": [],
-      "constituents": [],
-      "data_sources": [
-        "akshare/ths_concept"
-      ],
-      "updated_at": "2026-06-29T21:45:14.175605",
-      "data_quality_score": 50.0,
-      "score_breakdown": {
-        "heat_burst": 2.0,
-        "fund_confirmation": 5.0,
-        "constituent_linkage": 5.0,
-        "phase_score": 8.0,
-        "catalyst": 3.0,
-        "data_quality": 3.0,
-        "positive_score": 26.0,
-        "final_score": 19.0,
-        "price_change_available": false,
-        "data_quality_warning": "THS 概念缺少涨跌幅数据，热度爆发和催化剂评分偏保守",
-        "max_possible_score_without_price": 34.0,
-        "risk_penalty": 7.0,
-        "risk_breakdown": {
-          "overheat_penalty": 0.0,
-          "divergence_penalty": 0.0,
-          "data_quality_penalty": 7.0,
-          "total_penalty": 7.0,
-          "risk_level": "low",
-          "risk_flags": [
-            "data_quality_low"
-          ],
-          "risk_reasons": [
-            "数据质量: 数据质量分偏低 (50); 数据源不足 (1个)"
-          ]
-        }
-      },
-      "previous_rank": null,
-      "rank_change": null
-    },
-    {
-      "sector_id": "ths_concept_阿里巴巴概念",
-      "name": "阿里巴巴概念",
-      "type": "concept",
-      "score": 19.0,
-      "positive_score": 26.0,
-      "risk_penalty": 7.0,
-      "focus_level": "avoid",
-      "phase": "divergence",
-      "risk_level": "low",
-      "risk_flags": [
-        "data_quality_low"
-      ],
-      "reasons": [],
-      "downgrade_reasons": [
-        "最终评分过低 (19.0)",
-        "板块正向强度不足"
-      ],
-      "watch_points": [],
-      "constituents": [],
-      "data_sources": [
-        "akshare/ths_concept"
-      ],
-      "updated_at": "2026-06-29T21:45:14.175605",
-      "data_quality_score": 50.0,
-      "score_breakdown": {
-        "heat_burst": 2.0,
-        "fund_confirmation": 5.0,
-        "constituent_linkage": 5.0,
-        "phase_score": 8.0,
-        "catalyst": 3.0,
-        "data_quality": 3.0,
-        "positive_score": 26.0,
-        "final_score": 19.0,
-        "price_change_available": false,
-        "data_quality_warning": "THS 概念缺少涨跌幅数据，热度爆发和催化剂评分偏保守",
-        "max_possible_score_without_price": 34.0,
-        "risk_penalty": 7.0,
-        "risk_breakdown": {
-          "overheat_penalty": 0.0,
-          "divergence_penalty": 0.0,
-          "data_quality_penalty": 7.0,
-          "total_penalty": 7.0,
-          "risk_level": "low",
-          "risk_flags": [
-            "data_quality_low"
-          ],
-          "risk_reasons": [
-            "数据质量: 数据质量分偏低 (50); 数据源不足 (1个)"
-          ]
-        }
-      },
-      "previous_rank": null,
-      "rank_change": null
-    },
-    {
-      "sector_id": "ths_concept_安防",
-      "name": "安防",
-      "type": "concept",
-      "score": 19.0,
-      "positive_score": 26.0,
-      "risk_penalty": 7.0,
-      "focus_level": "avoid",
-      "phase": "divergence",
-      "risk_level": "low",
-      "risk_flags": [
-        "data_quality_low"
-      ],
-      "reasons": [],
-      "downgrade_reasons": [
-        "最终评分过低 (19.0)",
-        "板块正向强度不足"
-      ],
-      "watch_points": [],
-      "constituents": [],
-      "data_sources": [
-        "akshare/ths_concept"
-      ],
-      "updated_at": "2026-06-29T21:45:14.175605",
-      "data_quality_score": 50.0,
-      "score_breakdown": {
-        "heat_burst": 2.0,
-        "fund_confirmation": 5.0,
-        "constituent_linkage": 5.0,
-        "phase_score": 8.0,
-        "catalyst": 3.0,
-        "data_quality": 3.0,
-        "positive_score": 26.0,
-        "final_score": 19.0,
-        "price_change_available": false,
-        "data_quality_warning": "THS 概念缺少涨跌幅数据，热度爆发和催化剂评分偏保守",
-        "max_possible_score_without_price": 34.0,
-        "risk_penalty": 7.0,
-        "risk_breakdown": {
-          "overheat_penalty": 0.0,
-          "divergence_penalty": 0.0,
-          "data_quality_penalty": 7.0,
-          "total_penalty": 7.0,
-          "risk_level": "low",
-          "risk_flags": [
-            "data_quality_low"
-          ],
-          "risk_reasons": [
-            "数据质量: 数据质量分偏低 (50); 数据源不足 (1个)"
-          ]
-        }
-      },
-      "previous_rank": null,
-      "rank_change": null
-    },
-    {
-      "sector_id": "ths_concept_白酒概念",
-      "name": "白酒概念",
-      "type": "concept",
-      "score": 19.0,
-      "positive_score": 26.0,
-      "risk_penalty": 7.0,
-      "focus_level": "avoid",
-      "phase": "divergence",
-      "risk_level": "low",
-      "risk_flags": [
-        "data_quality_low"
-      ],
-      "reasons": [],
-      "downgrade_reasons": [
-        "最终评分过低 (19.0)",
-        "板块正向强度不足"
-      ],
-      "watch_points": [],
-      "constituents": [],
-      "data_sources": [
-        "akshare/ths_concept"
-      ],
-      "updated_at": "2026-06-29T21:45:14.175605",
-      "data_quality_score": 50.0,
-      "score_breakdown": {
-        "heat_burst": 2.0,
-        "fund_confirmation": 5.0,
-        "constituent_linkage": 5.0,
-        "phase_score": 8.0,
-        "catalyst": 3.0,
-        "data_quality": 3.0,
-        "positive_score": 26.0,
-        "final_score": 19.0,
-        "price_change_available": false,
-        "data_quality_warning": "THS 概念缺少涨跌幅数据，热度爆发和催化剂评分偏保守",
-        "max_possible_score_without_price": 34.0,
-        "risk_penalty": 7.0,
-        "risk_breakdown": {
-          "overheat_penalty": 0.0,
-          "divergence_penalty": 0.0,
-          "data_quality_penalty": 7.0,
-          "total_penalty": 7.0,
-          "risk_level": "low",
-          "risk_flags": [
-            "data_quality_low"
-          ],
-          "risk_reasons": [
-            "数据质量: 数据质量分偏低 (50); 数据源不足 (1个)"
-          ]
-        }
-      },
-      "previous_rank": null,
-      "rank_change": null
-    },
-    {
-      "sector_id": "ths_concept_BC电池",
-      "name": "BC电池",
-      "type": "concept",
-      "score": 19.0,
-      "positive_score": 26.0,
-      "risk_penalty": 7.0,
-      "focus_level": "avoid",
-      "phase": "divergence",
-      "risk_level": "low",
-      "risk_flags": [
-        "data_quality_low"
-      ],
-      "reasons": [],
-      "downgrade_reasons": [
-        "最终评分过低 (19.0)",
-        "板块正向强度不足"
-      ],
-      "watch_points": [],
-      "constituents": [],
-      "data_sources": [
-        "akshare/ths_concept"
-      ],
-      "updated_at": "2026-06-29T21:45:14.175605",
-      "data_quality_score": 50.0,
-      "score_breakdown": {
-        "heat_burst": 2.0,
-        "fund_confirmation": 5.0,
-        "constituent_linkage": 5.0,
-        "phase_score": 8.0,
-        "catalyst": 3.0,
-        "data_quality": 3.0,
-        "positive_score": 26.0,
-        "final_score": 19.0,
-        "price_change_available": false,
-        "data_quality_warning": "THS 概念缺少涨跌幅数据，热度爆发和催化剂评分偏保守",
-        "max_possible_score_without_price": 34.0,
-        "risk_penalty": 7.0,
-        "risk_breakdown": {
-          "overheat_penalty": 0.0,
-          "divergence_penalty": 0.0,
-          "data_quality_penalty": 7.0,
-          "total_penalty": 7.0,
-          "risk_level": "low",
-          "risk_flags": [
-            "data_quality_low"
-          ],
-          "risk_reasons": [
-            "数据质量: 数据质量分偏低 (50); 数据源不足 (1个)"
-          ]
-        }
-      },
-      "previous_rank": null,
-      "rank_change": null
-    },
-    {
-      "sector_id": "ths_concept_百度概念",
-      "name": "百度概念",
-      "type": "concept",
-      "score": 19.0,
-      "positive_score": 26.0,
-      "risk_penalty": 7.0,
-      "focus_level": "avoid",
-      "phase": "divergence",
-      "risk_level": "low",
-      "risk_flags": [
-        "data_quality_low"
-      ],
-      "reasons": [],
-      "downgrade_reasons": [
-        "最终评分过低 (19.0)",
-        "板块正向强度不足"
-      ],
-      "watch_points": [],
-      "constituents": [],
-      "data_sources": [
-        "akshare/ths_concept"
-      ],
-      "updated_at": "2026-06-29T21:45:14.175605",
-      "data_quality_score": 50.0,
-      "score_breakdown": {
-        "heat_burst": 2.0,
-        "fund_confirmation": 5.0,
-        "constituent_linkage": 5.0,
-        "phase_score": 8.0,
-        "catalyst": 3.0,
-        "data_quality": 3.0,
-        "positive_score": 26.0,
-        "final_score": 19.0,
-        "price_change_available": false,
-        "data_quality_warning": "THS 概念缺少涨跌幅数据，热度爆发和催化剂评分偏保守",
-        "max_possible_score_without_price": 34.0,
-        "risk_penalty": 7.0,
-        "risk_breakdown": {
-          "overheat_penalty": 0.0,
-          "divergence_penalty": 0.0,
-          "data_quality_penalty": 7.0,
-          "total_penalty": 7.0,
-          "risk_level": "low",
-          "risk_flags": [
-            "data_quality_low"
-          ],
-          "risk_reasons": [
-            "数据质量: 数据质量分偏低 (50); 数据源不足 (1个)"
-          ]
-        }
-      },
-      "previous_rank": null,
-      "rank_change": null
-    },
-    {
-      "sector_id": "ths_concept_丙烯酸",
-      "name": "丙烯酸",
-      "type": "concept",
-      "score": 19.0,
-      "positive_score": 26.0,
-      "risk_penalty": 7.0,
-      "focus_level": "avoid",
-      "phase": "divergence",
-      "risk_level": "low",
-      "risk_flags": [
-        "data_quality_low"
-      ],
-      "reasons": [],
-      "downgrade_reasons": [
-        "最终评分过低 (19.0)",
-        "板块正向强度不足"
-      ],
-      "watch_points": [],
-      "constituents": [],
-      "data_sources": [
-        "akshare/ths_concept"
-      ],
-      "updated_at": "2026-06-29T21:45:14.175605",
-      "data_quality_score": 50.0,
-      "score_breakdown": {
-        "heat_burst": 2.0,
-        "fund_confirmation": 5.0,
-        "constituent_linkage": 5.0,
-        "phase_score": 8.0,
-        "catalyst": 3.0,
-        "data_quality": 3.0,
-        "positive_score": 26.0,
-        "final_score": 19.0,
-        "price_change_available": false,
-        "data_quality_warning": "THS 概念缺少涨跌幅数据，热度爆发和催化剂评分偏保守",
-        "max_possible_score_without_price": 34.0,
-        "risk_penalty": 7.0,
-        "risk_breakdown": {
-          "overheat_penalty": 0.0,
-          "divergence_penalty": 0.0,
-          "data_quality_penalty": 7.0,
-          "total_penalty": 7.0,
-          "risk_level": "low",
-          "risk_flags": [
-            "data_quality_low"
-          ],
-          "risk_reasons": [
-            "数据质量: 数据质量分偏低 (50); 数据源不足 (1个)"
-          ]
-        }
-      },
-      "previous_rank": null,
-      "rank_change": null
-    }
-  ],
-  "overlap": [],
-  "risk_summary": {
-    "high_risk_count": 0,
-    "medium_risk_count": 0,
-    "overheat_sectors": [],
-    "divergence_sectors": []
-  },
-  "data_quality": {
-    "overall_score": 65.0,
-    "low_quality_sectors": [
-      "阿尔茨海默概念",
-      "AI PC",
-      "AI手机",
-      "AI语料",
-      "阿里巴巴概念",
-      "安防",
-      "白酒概念",
-      "BC电池",
-      "百度概念",
-      "丙烯酸"
-    ],
-    "sector_count": 20
-  },
-  "disclaimer": "本报告仅用于板块强弱筛选和研究复盘，不构成个股推荐、买卖建议或自动交易指令。",
-  "status": "ok",
+  "concept_top": [],
+  "data_quality_score": 60.0,
   "provider_status": {
-    "effective_provider": "ths",
-    "industry_source": "akshare/ths_industry",
-    "concept_source": "akshare/ths_concept",
-    "fallback_used": true,
-    "fallback_provider": "ths",
-    "fallback_reason": "东方财富行业接口失败: ProxyError",
-    "industry_count": 20,
-    "concept_count": 20,
-    "em_industry_error": "ProxyError: HTTPSConnectionPool(host='17.push2.eastmoney.com', port=443): Max retries exceeded with url: /api/qt",
-    "em_concept_error": "ProxyError: HTTPSConnectionPool(host='79.push2.eastmoney.com', port=443): Max retries exceeded with url: /api/qt",
-    "concept_price_change_available": false
+    "effective_provider": "sector_history_replay",
+    "industry_source": "sector_history_replay",
+    "concept_source": "sector_history_replay"
   },
   "data_completeness": {
-    "industry_count": 20,
-    "concept_count": 20,
-    "industry_min_count": 20,
-    "concept_min_count": 20
+    "industry_count": 10,
+    "concept_count": 0
   },
-  "cache_fallback": {
-    "is_fallback": false,
-    "source_as_of_date": null,
-    "cache_created_at": "2026-06-29T21:45:19.654075"
-  },
-  "fund_flow_coverage": {
-    "industry_matched": 0,
-    "concept_matched": 0,
-    "unmatched": 0,
-    "status": "ok"
-  },
-  "constituent_coverage": {
-    "enriched_count": 0,
-    "total_candidates": 20,
-    "coverage_rate": 0.0,
-    "status": "ok"
-  },
-  "rotation_summary": {
-    "industry": {
-      "new_entries": [
-        "生物制品",
-        "医疗服务",
-        "化学制药",
-        "中药",
-        "医疗器械",
-        "半导体",
-        "养殖业",
-        "医药商业",
-        "保险",
-        "美容护理"
-      ],
-      "dropped_out": [],
-      "rising_fast": [],
-      "persistent_strength": [],
-      "risk_up": []
-    },
-    "concept": {
-      "new_entries": [
-        "阿尔茨海默概念",
-        "AI PC",
-        "AI手机",
-        "AI语料",
-        "阿里巴巴概念",
-        "安防",
-        "白酒概念",
-        "BC电池",
-        "百度概念",
-        "丙烯酸"
-      ],
-      "dropped_out": [],
-      "rising_fast": [],
-      "persistent_strength": [],
-      "risk_up": []
-    }
-  },
-  "comparison": {
-    "compare_to_date": null,
-    "comparison_source": "lookback:5days",
-    "comparison_status": "ok",
-    "warnings": []
-  },
-  "run_mode": "daily",
-  "provider": "akshare",
-  "offline_fixture": false,
-  "fixture_profile": "full",
-  "data_source_mode": "cache_replay",
-  "report_dir": "reports/theme_sector_radar\\2026-06-29",
-  "generated_by_command": ""
+  "run_mode": "replay",
+  "data_source_mode": "sector_history_replay",
+  "generated_by_command": "--replay-daily-from-sector-history --as-of 2026-06-29",
+  "disclaimer": "本报告仅用于板块研究、观察和复盘，不构成投资建议。",
+  "metadata": {
+    "replay_source": "sector_history",
+    "signal_date": "2026-06-29",
+    "max_source_record_date": "2026-06-29",
+    "no_lookahead_passed": true
+  }
 }

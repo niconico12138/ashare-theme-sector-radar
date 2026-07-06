@@ -136,10 +136,23 @@ def assess_data_quality_risk(
         reasons.append(f"数据质量分偏低 ({snapshot.data_quality_score:.0f})")
 
     # 数据源不足
-    if len(snapshot.data_sources) < 2:
+    has_sector_index_source = any(
+        (source.startswith("sector_history/ths_") and source.endswith("_index"))
+        or source == "akshare/ths_industry"
+        or source in {"akshare/eastmoney_industry", "akshare/eastmoney_concept"}
+        for source in snapshot.data_sources
+    )
+    has_price_index_data = (
+        has_sector_index_source
+        and snapshot.price_change_available
+        and bool(snapshot.updated_at)
+    )
+
+    if len(snapshot.data_sources) < 2 and not has_price_index_data:
         is_low_quality = True
         penalty += abs(penalty_config.get("data_quality_max", -10)) * 0.3
         reasons.append(f"数据源不足 ({len(snapshot.data_sources)}个)")
+
 
     if is_low_quality:
         penalty = min(penalty, abs(penalty_config.get("data_quality_max", -10)))

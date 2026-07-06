@@ -1,0 +1,164 @@
+{
+  "metadata": {
+    "replay_source": "sector_history",
+    "signal_date": "2026-06-23",
+    "max_source_record_date": "2026-06-23",
+    "no_lookahead_passed": true
+  },
+  "data": {
+    "industry_sectors": [
+      {
+        "sector_id": "replay_industry_化学制药",
+        "name": "化学制药",
+        "type": "industry",
+        "price_change_pct": 3.68,
+        "turnover": 47742813000.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-23",
+        "score": 76,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_中药",
+        "name": "中药",
+        "type": "industry",
+        "price_change_pct": 2.18,
+        "turnover": 10744849400.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-23",
+        "score": 56,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_公路铁路运输",
+        "name": "公路铁路运输",
+        "type": "industry",
+        "price_change_pct": 1.47,
+        "turnover": 3661041300.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-23",
+        "score": 56,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_养殖业",
+        "name": "养殖业",
+        "type": "industry",
+        "price_change_pct": 1.26,
+        "turnover": 6897297300.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-23",
+        "score": 56,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_医疗器械",
+        "name": "医疗器械",
+        "type": "industry",
+        "price_change_pct": 1.75,
+        "turnover": 24179778000.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-23",
+        "score": 56,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_医疗服务",
+        "name": "医疗服务",
+        "type": "industry",
+        "price_change_pct": 2.39,
+        "turnover": 22577502000.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-23",
+        "score": 56,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_医药商业",
+        "name": "医药商业",
+        "type": "industry",
+        "price_change_pct": 2.35,
+        "turnover": 4472688800.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-23",
+        "score": 56,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_厨卫电器",
+        "name": "厨卫电器",
+        "type": "industry",
+        "price_change_pct": 1.2,
+        "turnover": 727412840.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-23",
+        "score": 56,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_家居用品",
+        "name": "家居用品",
+        "type": "industry",
+        "price_change_pct": 1.01,
+        "turnover": 9746497200.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-23",
+        "score": 56,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_旅游及酒店",
+        "name": "旅游及酒店",
+        "type": "industry",
+        "price_change_pct": 1.6,
+        "turnover": 3482695400.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-23",
+        "score": 56,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      }
+    ],
+    "concept_sectors": [],
+    "market_data": {}
+  }
+}

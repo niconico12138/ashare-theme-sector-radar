@@ -163,7 +163,7 @@ class TestAkShareProviderTHSFallback:
 
     @pytest.mark.network
     def test_both_sectors_fallback(self):
-        """测试行业和概念板块都 fallback"""
+        """测试行业和概念板块 fallback 场景（支持部分 fallback）"""
         provider = AkShareProvider()
         industries = provider.get_industry_sectors("2026-06-29", top_n=5)
         concepts = provider.get_concept_sectors("2026-06-29", top_n=5)
@@ -174,11 +174,20 @@ class TestAkShareProviderTHSFallback:
         assert isinstance(industries, list)
         assert isinstance(concepts, list)
 
-        # 如果都 fallback，effective_provider 应该是 "ths"
-        if status.fallback_used:
-            assert status.effective_provider == "ths"
-            assert "akshare/ths_industry" in status.industry_source
-            assert "akshare/ths_concept" in status.concept_source
+        # 根据实际 source 判断 effective_provider
+        ind_is_ths = "ths" in status.industry_source if status.industry_source else False
+        con_is_ths = "ths" in status.concept_source if status.concept_source else False
+        ind_is_em = "eastmoney" in status.industry_source if status.industry_source else False
+        con_is_em = "eastmoney" in status.concept_source if status.concept_source else False
+
+        if status.industry_source and status.concept_source:
+            if ind_is_ths and con_is_ths:
+                assert status.effective_provider == "ths"
+            elif ind_is_em and con_is_em:
+                assert status.effective_provider == "akshare"
+            else:
+                # 一个 THS 一个 EM → mixed
+                assert status.effective_provider == "mixed"
 
     def test_prefer_ths_mode(self):
         """测试 prefer_ths 模式"""
@@ -228,3 +237,103 @@ class TestCallResult:
         assert result.status == "failed"
         assert result.error_type == "ConnectionError"
         assert "Remote end closed" in result.error_message
+
+
+class TestEffectiveProviderStateSemantics:
+    """测试 effective_provider 状态判定语义（不依赖网络，直接模拟 _status_info）"""
+
+    def test_both_ths_sources(self):
+        """两个 source 都是 THS → effective_provider='ths'"""
+        provider = AkShareProvider()
+        provider._status_info.industry_source = "akshare/ths_industry"
+        provider._status_info.concept_source = "akshare/ths_concept"
+        provider._status_info.fallback_used = True
+
+        status = provider.get_provider_status()
+        assert status.effective_provider == "ths"
+
+    def test_both_em_sources(self):
+        """两个 source 都是 EM → effective_provider='akshare'"""
+        provider = AkShareProvider()
+        provider._status_info.industry_source = "akshare/eastmoney_industry"
+        provider._status_info.concept_source = "akshare/eastmoney_concept"
+        provider._status_info.fallback_used = False
+
+        status = provider.get_provider_status()
+        assert status.effective_provider == "akshare"
+
+    def test_mixed_ths_industry_em_concept(self):
+        """industry=THS + concept=EM → effective_provider='mixed'"""
+        provider = AkShareProvider()
+        provider._status_info.industry_source = "akshare/ths_industry"
+        provider._status_info.concept_source = "akshare/eastmoney_concept"
+        provider._status_info.fallback_used = True
+
+        status = provider.get_provider_status()
+        assert status.effective_provider == "mixed"
+
+    def test_mixed_em_industry_ths_concept(self):
+        """industry=EM + concept=THS → effective_provider='mixed'"""
+        provider = AkShareProvider()
+        provider._status_info.industry_source = "akshare/eastmoney_industry"
+        provider._status_info.concept_source = "akshare/ths_concept"
+        provider._status_info.fallback_used = True
+
+        status = provider.get_provider_status()
+        assert status.effective_provider == "mixed"
+
+    def test_industry_ths_only(self):
+        """只有 industry 且为 THS → effective_provider='ths'"""
+        provider = AkShareProvider()
+        provider._status_info.industry_source = "akshare/ths_industry"
+        provider._status_info.concept_source = ""
+        provider._status_info.fallback_used = True
+
+        status = provider.get_provider_status()
+        assert status.effective_provider == "ths"
+
+    def test_concept_ths_only(self):
+        """只有 concept 且为 THS → effective_provider='ths'"""
+        provider = AkShareProvider()
+        provider._status_info.industry_source = ""
+        provider._status_info.concept_source = "akshare/ths_concept"
+        provider._status_info.fallback_used = True
+
+        status = provider.get_provider_status()
+        assert status.effective_provider == "ths"
+
+    def test_industry_em_only(self):
+        """只有 industry 且为 EM → effective_provider='akshare'"""
+        provider = AkShareProvider()
+        provider._status_info.industry_source = "akshare/eastmoney_industry"
+        provider._status_info.concept_source = ""
+        provider._status_info.fallback_used = False
+
+        status = provider.get_provider_status()
+        assert status.effective_provider == "akshare"
+
+    def test_concept_em_only(self):
+        """只有 concept 且为 EM → effective_provider='akshare'"""
+        provider = AkShareProvider()
+        provider._status_info.industry_source = ""
+        provider._status_info.concept_source = "akshare/eastmoney_concept"
+        provider._status_info.fallback_used = False
+
+        status = provider.get_provider_status()
+        assert status.effective_provider == "akshare"
+
+    def test_prefer_ths_both_em_sources(self):
+        """prefer_ths=True 但两个都是 EM → effective_provider='akshare'（source 实际是 EM）"""
+        provider = AkShareProvider(prefer_ths=True)
+        provider._status_info.industry_source = "akshare/eastmoney_industry"
+        provider._status_info.concept_source = "akshare/eastmoney_concept"
+        provider._status_info.fallback_used = False
+
+        status = provider.get_provider_status()
+        assert status.effective_provider == "akshare"
+
+    def test_no_sources_no_fallback(self):
+        """无 source、无 fallback → effective_provider='akshare'"""
+        provider = AkShareProvider()
+        status = provider.get_provider_status()
+        assert status.effective_provider == "akshare"

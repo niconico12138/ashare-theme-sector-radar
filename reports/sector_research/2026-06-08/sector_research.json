@@ -1,0 +1,3031 @@
+{
+  "as_of_date": "2026-06-08",
+  "sector_type": "industry",
+  "report_type": "sector_research",
+  "version": "phase21",
+  "inputs": {
+    "sector_scores_source": "reports/sector_scores\\..\\sector_consensus\\2026-06-08\\windows\\10\\2026-06-08\\sector_scores.json",
+    "multi_window_consensus_source": "reports/sector_scores\\..\\sector_consensus\\2026-06-08\\multi_window_consensus.json",
+    "trend_weight_profile": "trend_confirmation",
+    "windows": [
+      5,
+      10,
+      20
+    ],
+    "benchmark": "hs300"
+  },
+  "research_results": [
+    {
+      "sector_name": "工程机械",
+      "sector_type": "industry",
+      "consensus_label": "oversold_rebound_candidate",
+      "confirm_level": "medium",
+      "evidence_score": 0.7,
+      "opportunity_score": 0.31,
+      "risk_control_score": 1.0,
+      "confidence_score": 0.6,
+      "calibrated_confidence_score": 0.0,
+      "ranking_score": 0.53,
+      "dimension_scores": {
+        "technical": 0.26,
+        "heat": 0.56,
+        "rotation": 0.2,
+        "risk": 1.0,
+        "data_quality": 1.0,
+        "market_context": 0.0,
+        "narrative": 0.5
+      },
+      "views": {
+        "technical": {
+          "technical_label": "trend_unreliable",
+          "technical_score": 0.26,
+          "technical_reasons": [
+            "历史数据不足，技术面不可靠",
+            "共识分数偏低"
+          ],
+          "technical_conflicts": [],
+          "technical_watch_points": [
+            "数据不足，建议积累更多数据后再评估"
+          ],
+          "vote": "negative"
+        },
+        "heat": {
+          "heat_label": "heat_moderate",
+          "heat_score": 0.56,
+          "heat_reasons": [
+            "短线热度适中"
+          ],
+          "heat_conflicts": [],
+          "heat_watch_points": [
+            "短线热度适中，可适度关注"
+          ],
+          "vote": "neutral"
+        },
+        "rotation": {
+          "rotation_label": "rotation_lagging",
+          "rotation_score": 0.2,
+          "rotation_reasons": [
+            "板块处于落后阶段"
+          ],
+          "rotation_watch_points": [
+            "板块处于落后阶段，建议回避"
+          ],
+          "vote": "negative"
+        },
+        "risk": {
+          "risk_label": "risk_low",
+          "risk_score": 1.0,
+          "risk_flags": [],
+          "risk_summary": "风险较低，板块表现相对稳定",
+          "vote": "positive"
+        },
+        "data_quality": {
+          "data_quality_label": "data_reliable",
+          "data_quality_score": 1.0,
+          "data_quality_warnings": [],
+          "data_reliability_summary": "数据质量可靠，历史数据完整 (覆盖率: 100%, 实际天数: 10)",
+          "vote": "positive"
+        },
+        "market_context": {
+          "market_context_label": "underperforming_benchmark",
+          "market_context_score": 0.0,
+          "market_context_summary": "板块跑输市场基准 (相对强度: 0.0/15)",
+          "market_watch_points": [
+            "板块跑输市场基准，表现相对较弱"
+          ],
+          "vote": "negative"
+        },
+        "narrative": {
+          "narrative_label": "general_sector",
+          "narrative_summary": "行业属性，关注基本面变化和行业趋势。",
+          "narrative_watch_points": [
+            "关注基本面变化和行业趋势"
+          ],
+          "vote": "neutral",
+          "low_information_agent": true
+        }
+      },
+      "main_reasons": [
+        "短线活跃且风险可控，存在修复观察信号"
+      ],
+      "conflict_points": [],
+      "watch_points": [
+        "当前短线活跃且风险可控，观察修复持续性"
+      ],
+      "data_warnings": [],
+      "agent_votes": {
+        "positive_votes": 2,
+        "neutral_votes": 4,
+        "negative_votes": 3,
+        "veto_votes": 0,
+        "total_votes": 9
+      },
+      "agent_opinions": [
+        {
+          "agent_id": "technical_trend",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "short_term_heat",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "rotation_analysis",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "risk_control",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "positive",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "data_quality",
+          "layer": "L1_data_evidence",
+          "label": "data_reliable",
+          "score": 1.0,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "positive",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "market_context",
+          "layer": "L2_specialized",
+          "label": "underperforming_benchmark",
+          "score": 0.0,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "narrative",
+          "layer": "L2_specialized",
+          "label": "general_sector",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "persistence_strength",
+          "layer": "L2_specialized",
+          "label": "persistence_building",
+          "score": 0.38,
+          "confidence": 0.5,
+          "evidence": [
+            "连续出现在重点观察 4 天",
+            "排序分趋势: flat",
+            "正向观察强度趋势: flat",
+            "标签转换:  -> weak_or_avoid"
+          ],
+          "warnings": [
+            "timeline 数据较少，持续性判断可能不准确"
+          ],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "catalyst_event",
+          "layer": "L2_specialized",
+          "label": "no_catalyst_observed",
+          "score": 0.0,
+          "confidence": 0.5,
+          "evidence": [
+            "当前板块未匹配到外部事件"
+          ],
+          "warnings": [
+            "外部事件仅用于复盘解释，不参与当前评分和标签决策"
+          ],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {
+            "decision_impact": "report_only",
+            "matched_event_count": 0,
+            "source_ids": [],
+            "event_ids": []
+          }
+        }
+      ],
+      "conflicts": [],
+      "conflict_summary": "无冲突",
+      "conflict_level": "none",
+      "veto": {
+        "veto_triggered": false,
+        "veto_reasons": [],
+        "ranking_penalty": 0.0,
+        "label_constraints": []
+      },
+      "veto_reasons": [],
+      "confidence_calibration": {
+        "calibrated_confidence_score": 0.0,
+        "confidence_factors": {
+          "data_quality": 0.0,
+          "vote_consistency": 0.2222222222222222,
+          "conflict_factor": 1.0,
+          "veto_factor": 1.0,
+          "coverage_factor": 1.0
+        }
+      },
+      "calibrated_confidence_factors": {
+        "data_quality": 0.0,
+        "vote_consistency": 0.2222222222222222,
+        "conflict_factor": 1.0,
+        "veto_factor": 1.0,
+        "coverage_factor": 1.0
+      },
+      "decision_path": [
+        "数据可用",
+        "技术面趋势偏弱",
+        "短线热度活跃",
+        "轮动降温",
+        "输出标签: oversold_rebound_candidate"
+      ],
+      "data_coverage_detail": {
+        "data_quality_label": "data_reliable",
+        "data_quality_score": 1.0,
+        "history_coverage": 0.0,
+        "history_days": 0,
+        "data_reliability_summary": "数据质量可靠，历史数据完整 (覆盖率: 100%, 实际天数: 10)"
+      },
+      "market_regime": {
+        "regime_composite_label": "risk_off",
+        "benchmark_trend": "benchmark_downtrend",
+        "market_temperature_regime": "market_cold",
+        "breadth_regime": "broad_falling",
+        "volatility_regime": "normal_volatility",
+        "source": "theme_sector_radar.market_breadth",
+        "decision_impact": "report_only"
+      },
+      "regime_interpretation": {
+        "summary": "市场处于风险规避环境，多数板块下跌，趋势确认度较低。",
+        "label_context": "风险规避环境下反弹候选成功率较低。",
+        "watch_points": [
+          "市场整体偏弱，标签表现可能普遍偏弱",
+          "关注是否有超跌修复信号"
+        ],
+        "warnings": [
+          "风险规避环境下需关注系统性风险"
+        ]
+      }
+    },
+    {
+      "sector_name": "元件",
+      "sector_type": "industry",
+      "consensus_label": "low_signal_noise",
+      "confirm_level": "medium",
+      "evidence_score": 0.7,
+      "opportunity_score": 0.24,
+      "risk_control_score": 1.0,
+      "confidence_score": 0.6,
+      "calibrated_confidence_score": 0.0,
+      "ranking_score": 0.35,
+      "dimension_scores": {
+        "technical": 0.3,
+        "heat": 0.24,
+        "rotation": 0.2,
+        "risk": 1.0,
+        "data_quality": 1.0,
+        "market_context": 0.0,
+        "narrative": 0.5
+      },
+      "views": {
+        "technical": {
+          "technical_label": "trend_unreliable",
+          "technical_score": 0.3,
+          "technical_reasons": [
+            "历史数据不足，技术面不可靠"
+          ],
+          "technical_conflicts": [],
+          "technical_watch_points": [
+            "数据不足，建议积累更多数据后再评估"
+          ],
+          "vote": "negative"
+        },
+        "heat": {
+          "heat_label": "heat_weak",
+          "heat_score": 0.24,
+          "heat_reasons": [
+            "短线热度偏弱"
+          ],
+          "heat_conflicts": [],
+          "heat_watch_points": [
+            "短线热度偏弱，建议回避"
+          ],
+          "vote": "negative"
+        },
+        "rotation": {
+          "rotation_label": "rotation_lagging",
+          "rotation_score": 0.2,
+          "rotation_reasons": [
+            "板块处于落后阶段"
+          ],
+          "rotation_watch_points": [
+            "板块处于落后阶段，建议回避"
+          ],
+          "vote": "negative"
+        },
+        "risk": {
+          "risk_label": "risk_low",
+          "risk_score": 1.0,
+          "risk_flags": [],
+          "risk_summary": "风险较低，板块表现相对稳定",
+          "vote": "positive"
+        },
+        "data_quality": {
+          "data_quality_label": "data_reliable",
+          "data_quality_score": 1.0,
+          "data_quality_warnings": [],
+          "data_reliability_summary": "数据质量可靠，历史数据完整 (覆盖率: 100%, 实际天数: 10)",
+          "vote": "positive"
+        },
+        "market_context": {
+          "market_context_label": "underperforming_benchmark",
+          "market_context_score": 0.0,
+          "market_context_summary": "板块跑输市场基准 (相对强度: 0.0/15)",
+          "market_watch_points": [
+            "板块跑输市场基准，表现相对较弱"
+          ],
+          "vote": "negative"
+        },
+        "narrative": {
+          "narrative_label": "general_sector",
+          "narrative_summary": "行业属性，关注基本面变化和行业趋势。",
+          "narrative_watch_points": [
+            "关注基本面变化和行业趋势"
+          ],
+          "vote": "neutral",
+          "low_information_agent": true
+        }
+      },
+      "main_reasons": [
+        "多维信号不明确，标签价值较低"
+      ],
+      "conflict_points": [],
+      "watch_points": [
+        "当前信号不明确，标签价值较低"
+      ],
+      "data_warnings": [],
+      "agent_votes": {
+        "positive_votes": 2,
+        "neutral_votes": 3,
+        "negative_votes": 4,
+        "veto_votes": 0,
+        "total_votes": 9
+      },
+      "agent_opinions": [
+        {
+          "agent_id": "technical_trend",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "short_term_heat",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "rotation_analysis",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "risk_control",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "positive",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "data_quality",
+          "layer": "L1_data_evidence",
+          "label": "data_reliable",
+          "score": 1.0,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "positive",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "market_context",
+          "layer": "L2_specialized",
+          "label": "underperforming_benchmark",
+          "score": 0.0,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "narrative",
+          "layer": "L2_specialized",
+          "label": "general_sector",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "persistence_strength",
+          "layer": "L2_specialized",
+          "label": "persistence_weak",
+          "score": 0.05,
+          "confidence": 0.5,
+          "evidence": [
+            "排序分趋势: volatile",
+            "正向观察强度趋势: falling"
+          ],
+          "warnings": [
+            "timeline 数据较少，持续性判断可能不准确"
+          ],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "catalyst_event",
+          "layer": "L2_specialized",
+          "label": "no_catalyst_observed",
+          "score": 0.0,
+          "confidence": 0.5,
+          "evidence": [
+            "当前板块未匹配到外部事件"
+          ],
+          "warnings": [
+            "外部事件仅用于复盘解释，不参与当前评分和标签决策"
+          ],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {
+            "decision_impact": "report_only",
+            "matched_event_count": 0,
+            "source_ids": [],
+            "event_ids": []
+          }
+        }
+      ],
+      "conflicts": [],
+      "conflict_summary": "无冲突",
+      "conflict_level": "none",
+      "veto": {
+        "veto_triggered": false,
+        "veto_reasons": [],
+        "ranking_penalty": 0.0,
+        "label_constraints": []
+      },
+      "veto_reasons": [],
+      "confidence_calibration": {
+        "calibrated_confidence_score": 0.0,
+        "confidence_factors": {
+          "data_quality": 0.0,
+          "vote_consistency": 0.2222222222222222,
+          "conflict_factor": 1.0,
+          "veto_factor": 1.0,
+          "coverage_factor": 1.0
+        }
+      },
+      "calibrated_confidence_factors": {
+        "data_quality": 0.0,
+        "vote_consistency": 0.2222222222222222,
+        "conflict_factor": 1.0,
+        "veto_factor": 1.0,
+        "coverage_factor": 1.0
+      },
+      "decision_path": [
+        "数据可用",
+        "技术面趋势偏弱",
+        "短线热度偏弱",
+        "轮动降温",
+        "输出标签: low_signal_noise"
+      ],
+      "data_coverage_detail": {
+        "data_quality_label": "data_reliable",
+        "data_quality_score": 1.0,
+        "history_coverage": 0.0,
+        "history_days": 0,
+        "data_reliability_summary": "数据质量可靠，历史数据完整 (覆盖率: 100%, 实际天数: 10)"
+      },
+      "market_regime": {
+        "regime_composite_label": "risk_off",
+        "benchmark_trend": "benchmark_downtrend",
+        "market_temperature_regime": "market_cold",
+        "breadth_regime": "broad_falling",
+        "volatility_regime": "normal_volatility",
+        "source": "theme_sector_radar.market_breadth",
+        "decision_impact": "report_only"
+      },
+      "regime_interpretation": {
+        "summary": "市场处于风险规避环境，多数板块下跌，趋势确认度较低。",
+        "label_context": "风险规避环境下低信号标签需谨慎，市场整体偏弱。",
+        "watch_points": [
+          "市场整体偏弱，标签表现可能普遍偏弱",
+          "关注是否有超跌修复信号"
+        ],
+        "warnings": [
+          "风险规避环境下需关注系统性风险"
+        ]
+      }
+    },
+    {
+      "sector_name": "光学光电子",
+      "sector_type": "industry",
+      "consensus_label": "low_signal_noise",
+      "confirm_level": "medium",
+      "evidence_score": 0.7,
+      "opportunity_score": 0.24,
+      "risk_control_score": 1.0,
+      "confidence_score": 0.6,
+      "calibrated_confidence_score": 0.0,
+      "ranking_score": 0.35,
+      "dimension_scores": {
+        "technical": 0.29,
+        "heat": 0.24,
+        "rotation": 0.2,
+        "risk": 1.0,
+        "data_quality": 1.0,
+        "market_context": 0.0,
+        "narrative": 0.5
+      },
+      "views": {
+        "technical": {
+          "technical_label": "trend_unreliable",
+          "technical_score": 0.29,
+          "technical_reasons": [
+            "历史数据不足，技术面不可靠",
+            "共识分数偏低"
+          ],
+          "technical_conflicts": [],
+          "technical_watch_points": [
+            "数据不足，建议积累更多数据后再评估"
+          ],
+          "vote": "negative"
+        },
+        "heat": {
+          "heat_label": "heat_weak",
+          "heat_score": 0.24,
+          "heat_reasons": [
+            "短线热度偏弱"
+          ],
+          "heat_conflicts": [],
+          "heat_watch_points": [
+            "短线热度偏弱，建议回避"
+          ],
+          "vote": "negative"
+        },
+        "rotation": {
+          "rotation_label": "rotation_lagging",
+          "rotation_score": 0.2,
+          "rotation_reasons": [
+            "板块处于落后阶段"
+          ],
+          "rotation_watch_points": [
+            "板块处于落后阶段，建议回避"
+          ],
+          "vote": "negative"
+        },
+        "risk": {
+          "risk_label": "risk_low",
+          "risk_score": 1.0,
+          "risk_flags": [],
+          "risk_summary": "风险较低，板块表现相对稳定",
+          "vote": "positive"
+        },
+        "data_quality": {
+          "data_quality_label": "data_reliable",
+          "data_quality_score": 1.0,
+          "data_quality_warnings": [],
+          "data_reliability_summary": "数据质量可靠，历史数据完整 (覆盖率: 100%, 实际天数: 10)",
+          "vote": "positive"
+        },
+        "market_context": {
+          "market_context_label": "underperforming_benchmark",
+          "market_context_score": 0.0,
+          "market_context_summary": "板块跑输市场基准 (相对强度: 0.0/15)",
+          "market_watch_points": [
+            "板块跑输市场基准，表现相对较弱"
+          ],
+          "vote": "negative"
+        },
+        "narrative": {
+          "narrative_label": "general_sector",
+          "narrative_summary": "行业属性，关注基本面变化和行业趋势。",
+          "narrative_watch_points": [
+            "关注基本面变化和行业趋势"
+          ],
+          "vote": "neutral",
+          "low_information_agent": true
+        }
+      },
+      "main_reasons": [
+        "多维信号不明确，标签价值较低"
+      ],
+      "conflict_points": [],
+      "watch_points": [
+        "当前信号不明确，标签价值较低"
+      ],
+      "data_warnings": [],
+      "agent_votes": {
+        "positive_votes": 2,
+        "neutral_votes": 3,
+        "negative_votes": 4,
+        "veto_votes": 0,
+        "total_votes": 9
+      },
+      "agent_opinions": [
+        {
+          "agent_id": "technical_trend",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "short_term_heat",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "rotation_analysis",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "risk_control",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "positive",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "data_quality",
+          "layer": "L1_data_evidence",
+          "label": "data_reliable",
+          "score": 1.0,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "positive",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "market_context",
+          "layer": "L2_specialized",
+          "label": "underperforming_benchmark",
+          "score": 0.0,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "narrative",
+          "layer": "L2_specialized",
+          "label": "general_sector",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "persistence_strength",
+          "layer": "L2_specialized",
+          "label": "persistence_weak",
+          "score": 0.08,
+          "confidence": 0.6,
+          "evidence": [
+            "排序分趋势: falling",
+            "正向观察强度趋势: flat",
+            "标签转换:  -> oversold_rebound_candidate"
+          ],
+          "warnings": [],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "catalyst_event",
+          "layer": "L2_specialized",
+          "label": "no_catalyst_observed",
+          "score": 0.0,
+          "confidence": 0.5,
+          "evidence": [
+            "当前板块未匹配到外部事件"
+          ],
+          "warnings": [
+            "外部事件仅用于复盘解释，不参与当前评分和标签决策"
+          ],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {
+            "decision_impact": "report_only",
+            "matched_event_count": 0,
+            "source_ids": [],
+            "event_ids": []
+          }
+        }
+      ],
+      "conflicts": [],
+      "conflict_summary": "无冲突",
+      "conflict_level": "none",
+      "veto": {
+        "veto_triggered": false,
+        "veto_reasons": [],
+        "ranking_penalty": 0.0,
+        "label_constraints": []
+      },
+      "veto_reasons": [],
+      "confidence_calibration": {
+        "calibrated_confidence_score": 0.0,
+        "confidence_factors": {
+          "data_quality": 0.0,
+          "vote_consistency": 0.2222222222222222,
+          "conflict_factor": 1.0,
+          "veto_factor": 1.0,
+          "coverage_factor": 1.0
+        }
+      },
+      "calibrated_confidence_factors": {
+        "data_quality": 0.0,
+        "vote_consistency": 0.2222222222222222,
+        "conflict_factor": 1.0,
+        "veto_factor": 1.0,
+        "coverage_factor": 1.0
+      },
+      "decision_path": [
+        "数据可用",
+        "技术面趋势偏弱",
+        "短线热度偏弱",
+        "轮动降温",
+        "输出标签: low_signal_noise"
+      ],
+      "data_coverage_detail": {
+        "data_quality_label": "data_reliable",
+        "data_quality_score": 1.0,
+        "history_coverage": 0.0,
+        "history_days": 0,
+        "data_reliability_summary": "数据质量可靠，历史数据完整 (覆盖率: 100%, 实际天数: 10)"
+      },
+      "market_regime": {
+        "regime_composite_label": "risk_off",
+        "benchmark_trend": "benchmark_downtrend",
+        "market_temperature_regime": "market_cold",
+        "breadth_regime": "broad_falling",
+        "volatility_regime": "normal_volatility",
+        "source": "theme_sector_radar.market_breadth",
+        "decision_impact": "report_only"
+      },
+      "regime_interpretation": {
+        "summary": "市场处于风险规避环境，多数板块下跌，趋势确认度较低。",
+        "label_context": "风险规避环境下低信号标签需谨慎，市场整体偏弱。",
+        "watch_points": [
+          "市场整体偏弱，标签表现可能普遍偏弱",
+          "关注是否有超跌修复信号"
+        ],
+        "warnings": [
+          "风险规避环境下需关注系统性风险"
+        ]
+      }
+    },
+    {
+      "sector_name": "保险",
+      "sector_type": "industry",
+      "consensus_label": "low_signal_noise",
+      "confirm_level": "medium",
+      "evidence_score": 0.7,
+      "opportunity_score": 0.24,
+      "risk_control_score": 1.0,
+      "confidence_score": 0.6,
+      "calibrated_confidence_score": 0.0,
+      "ranking_score": 0.35,
+      "dimension_scores": {
+        "technical": 0.12,
+        "heat": 0.28,
+        "rotation": 0.4,
+        "risk": 1.0,
+        "data_quality": 1.0,
+        "market_context": 0.0,
+        "narrative": 0.5
+      },
+      "views": {
+        "technical": {
+          "technical_label": "trend_unreliable",
+          "technical_score": 0.12,
+          "technical_reasons": [
+            "历史数据不足，技术面不可靠",
+            "共识分数偏低"
+          ],
+          "technical_conflicts": [],
+          "technical_watch_points": [
+            "数据不足，建议积累更多数据后再评估"
+          ],
+          "vote": "negative"
+        },
+        "heat": {
+          "heat_label": "heat_weak",
+          "heat_score": 0.28,
+          "heat_reasons": [
+            "短线热度偏弱"
+          ],
+          "heat_conflicts": [],
+          "heat_watch_points": [
+            "短线热度偏弱，建议回避"
+          ],
+          "vote": "negative"
+        },
+        "rotation": {
+          "rotation_label": "rotation_weakening",
+          "rotation_score": 0.4,
+          "rotation_reasons": [
+            "板块正在弱化"
+          ],
+          "rotation_watch_points": [
+            "板块正在弱化，谨慎观察"
+          ],
+          "vote": "negative"
+        },
+        "risk": {
+          "risk_label": "risk_low",
+          "risk_score": 1.0,
+          "risk_flags": [],
+          "risk_summary": "风险较低，板块表现相对稳定",
+          "vote": "positive"
+        },
+        "data_quality": {
+          "data_quality_label": "data_reliable",
+          "data_quality_score": 1.0,
+          "data_quality_warnings": [],
+          "data_reliability_summary": "数据质量可靠，历史数据完整 (覆盖率: 100%, 实际天数: 10)",
+          "vote": "positive"
+        },
+        "market_context": {
+          "market_context_label": "underperforming_benchmark",
+          "market_context_score": 0.0,
+          "market_context_summary": "板块跑输市场基准 (相对强度: 0.0/15)",
+          "market_watch_points": [
+            "板块跑输市场基准，表现相对较弱"
+          ],
+          "vote": "negative"
+        },
+        "narrative": {
+          "narrative_label": "financial_stability",
+          "narrative_summary": "金融稳定属性，关注宏观经济、利率环境和资产质量。",
+          "narrative_watch_points": [
+            "关注宏观经济和利率环境"
+          ],
+          "vote": "neutral",
+          "low_information_agent": true
+        }
+      },
+      "main_reasons": [
+        "多维信号不明确，标签价值较低"
+      ],
+      "conflict_points": [],
+      "watch_points": [
+        "当前信号不明确，标签价值较低"
+      ],
+      "data_warnings": [],
+      "agent_votes": {
+        "positive_votes": 2,
+        "neutral_votes": 3,
+        "negative_votes": 4,
+        "veto_votes": 0,
+        "total_votes": 9
+      },
+      "agent_opinions": [
+        {
+          "agent_id": "technical_trend",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "short_term_heat",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "rotation_analysis",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "risk_control",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "positive",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "data_quality",
+          "layer": "L1_data_evidence",
+          "label": "data_reliable",
+          "score": 1.0,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "positive",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "market_context",
+          "layer": "L2_specialized",
+          "label": "underperforming_benchmark",
+          "score": 0.0,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "narrative",
+          "layer": "L2_specialized",
+          "label": "financial_stability",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "persistence_strength",
+          "layer": "L2_specialized",
+          "label": "persistence_unknown",
+          "score": 0.0,
+          "confidence": 0.3,
+          "evidence": [
+            "数据不足，无法判断持续性"
+          ],
+          "warnings": [
+            "缺少多日 timeline 数据"
+          ],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "catalyst_event",
+          "layer": "L2_specialized",
+          "label": "no_catalyst_observed",
+          "score": 0.0,
+          "confidence": 0.5,
+          "evidence": [
+            "当前板块未匹配到外部事件"
+          ],
+          "warnings": [
+            "外部事件仅用于复盘解释，不参与当前评分和标签决策"
+          ],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {
+            "decision_impact": "report_only",
+            "matched_event_count": 0,
+            "source_ids": [],
+            "event_ids": []
+          }
+        }
+      ],
+      "conflicts": [],
+      "conflict_summary": "无冲突",
+      "conflict_level": "none",
+      "veto": {
+        "veto_triggered": false,
+        "veto_reasons": [],
+        "ranking_penalty": 0.0,
+        "label_constraints": []
+      },
+      "veto_reasons": [],
+      "confidence_calibration": {
+        "calibrated_confidence_score": 0.0,
+        "confidence_factors": {
+          "data_quality": 0.0,
+          "vote_consistency": 0.2222222222222222,
+          "conflict_factor": 1.0,
+          "veto_factor": 1.0,
+          "coverage_factor": 1.0
+        }
+      },
+      "calibrated_confidence_factors": {
+        "data_quality": 0.0,
+        "vote_consistency": 0.2222222222222222,
+        "conflict_factor": 1.0,
+        "veto_factor": 1.0,
+        "coverage_factor": 1.0
+      },
+      "decision_path": [
+        "数据可用",
+        "技术面趋势偏弱",
+        "短线热度偏弱",
+        "轮动降温",
+        "输出标签: low_signal_noise"
+      ],
+      "data_coverage_detail": {
+        "data_quality_label": "data_reliable",
+        "data_quality_score": 1.0,
+        "history_coverage": 0.0,
+        "history_days": 0,
+        "data_reliability_summary": "数据质量可靠，历史数据完整 (覆盖率: 100%, 实际天数: 10)"
+      },
+      "market_regime": {
+        "regime_composite_label": "risk_off",
+        "benchmark_trend": "benchmark_downtrend",
+        "market_temperature_regime": "market_cold",
+        "breadth_regime": "broad_falling",
+        "volatility_regime": "normal_volatility",
+        "source": "theme_sector_radar.market_breadth",
+        "decision_impact": "report_only"
+      },
+      "regime_interpretation": {
+        "summary": "市场处于风险规避环境，多数板块下跌，趋势确认度较低。",
+        "label_context": "风险规避环境下低信号标签需谨慎，市场整体偏弱。",
+        "watch_points": [
+          "市场整体偏弱，标签表现可能普遍偏弱",
+          "关注是否有超跌修复信号"
+        ],
+        "warnings": [
+          "风险规避环境下需关注系统性风险"
+        ]
+      }
+    },
+    {
+      "sector_name": "公路铁路运输",
+      "sector_type": "industry",
+      "consensus_label": "low_signal_noise",
+      "confirm_level": "medium",
+      "evidence_score": 0.7,
+      "opportunity_score": 0.22,
+      "risk_control_score": 1.0,
+      "confidence_score": 0.6,
+      "calibrated_confidence_score": 0.0,
+      "ranking_score": 0.34,
+      "dimension_scores": {
+        "technical": 0.11,
+        "heat": 0.21,
+        "rotation": 0.4,
+        "risk": 1.0,
+        "data_quality": 1.0,
+        "market_context": 0.0,
+        "narrative": 0.5
+      },
+      "views": {
+        "technical": {
+          "technical_label": "trend_unreliable",
+          "technical_score": 0.11,
+          "technical_reasons": [
+            "历史数据不足，技术面不可靠",
+            "共识分数偏低"
+          ],
+          "technical_conflicts": [],
+          "technical_watch_points": [
+            "数据不足，建议积累更多数据后再评估"
+          ],
+          "vote": "negative"
+        },
+        "heat": {
+          "heat_label": "heat_weak",
+          "heat_score": 0.21,
+          "heat_reasons": [
+            "短线热度偏弱"
+          ],
+          "heat_conflicts": [],
+          "heat_watch_points": [
+            "短线热度偏弱，建议回避"
+          ],
+          "vote": "negative"
+        },
+        "rotation": {
+          "rotation_label": "rotation_weakening",
+          "rotation_score": 0.4,
+          "rotation_reasons": [
+            "板块正在弱化"
+          ],
+          "rotation_watch_points": [
+            "板块正在弱化，谨慎观察"
+          ],
+          "vote": "negative"
+        },
+        "risk": {
+          "risk_label": "risk_low",
+          "risk_score": 1.0,
+          "risk_flags": [],
+          "risk_summary": "风险较低，板块表现相对稳定",
+          "vote": "positive"
+        },
+        "data_quality": {
+          "data_quality_label": "data_reliable",
+          "data_quality_score": 1.0,
+          "data_quality_warnings": [],
+          "data_reliability_summary": "数据质量可靠，历史数据完整 (覆盖率: 100%, 实际天数: 10)",
+          "vote": "positive"
+        },
+        "market_context": {
+          "market_context_label": "underperforming_benchmark",
+          "market_context_score": 0.0,
+          "market_context_summary": "板块跑输市场基准 (相对强度: 0.0/15)",
+          "market_watch_points": [
+            "板块跑输市场基准，表现相对较弱"
+          ],
+          "vote": "negative"
+        },
+        "narrative": {
+          "narrative_label": "general_sector",
+          "narrative_summary": "行业属性，关注基本面变化和行业趋势。",
+          "narrative_watch_points": [
+            "关注基本面变化和行业趋势"
+          ],
+          "vote": "neutral",
+          "low_information_agent": true
+        }
+      },
+      "main_reasons": [
+        "多维信号不明确，标签价值较低"
+      ],
+      "conflict_points": [],
+      "watch_points": [
+        "当前信号不明确，标签价值较低"
+      ],
+      "data_warnings": [],
+      "agent_votes": {
+        "positive_votes": 2,
+        "neutral_votes": 3,
+        "negative_votes": 4,
+        "veto_votes": 0,
+        "total_votes": 9
+      },
+      "agent_opinions": [
+        {
+          "agent_id": "technical_trend",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "short_term_heat",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "rotation_analysis",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "risk_control",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "positive",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "data_quality",
+          "layer": "L1_data_evidence",
+          "label": "data_reliable",
+          "score": 1.0,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "positive",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "market_context",
+          "layer": "L2_specialized",
+          "label": "underperforming_benchmark",
+          "score": 0.0,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "narrative",
+          "layer": "L2_specialized",
+          "label": "general_sector",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "persistence_strength",
+          "layer": "L2_specialized",
+          "label": "persistence_unknown",
+          "score": 0.0,
+          "confidence": 0.3,
+          "evidence": [
+            "数据不足，无法判断持续性"
+          ],
+          "warnings": [
+            "缺少多日 timeline 数据"
+          ],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "catalyst_event",
+          "layer": "L2_specialized",
+          "label": "no_catalyst_observed",
+          "score": 0.0,
+          "confidence": 0.5,
+          "evidence": [
+            "当前板块未匹配到外部事件"
+          ],
+          "warnings": [
+            "外部事件仅用于复盘解释，不参与当前评分和标签决策"
+          ],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {
+            "decision_impact": "report_only",
+            "matched_event_count": 0,
+            "source_ids": [],
+            "event_ids": []
+          }
+        }
+      ],
+      "conflicts": [],
+      "conflict_summary": "无冲突",
+      "conflict_level": "none",
+      "veto": {
+        "veto_triggered": false,
+        "veto_reasons": [],
+        "ranking_penalty": 0.0,
+        "label_constraints": []
+      },
+      "veto_reasons": [],
+      "confidence_calibration": {
+        "calibrated_confidence_score": 0.0,
+        "confidence_factors": {
+          "data_quality": 0.0,
+          "vote_consistency": 0.2222222222222222,
+          "conflict_factor": 1.0,
+          "veto_factor": 1.0,
+          "coverage_factor": 1.0
+        }
+      },
+      "calibrated_confidence_factors": {
+        "data_quality": 0.0,
+        "vote_consistency": 0.2222222222222222,
+        "conflict_factor": 1.0,
+        "veto_factor": 1.0,
+        "coverage_factor": 1.0
+      },
+      "decision_path": [
+        "数据可用",
+        "技术面趋势偏弱",
+        "短线热度偏弱",
+        "轮动降温",
+        "输出标签: low_signal_noise"
+      ],
+      "data_coverage_detail": {
+        "data_quality_label": "data_reliable",
+        "data_quality_score": 1.0,
+        "history_coverage": 0.0,
+        "history_days": 0,
+        "data_reliability_summary": "数据质量可靠，历史数据完整 (覆盖率: 100%, 实际天数: 10)"
+      },
+      "market_regime": {
+        "regime_composite_label": "risk_off",
+        "benchmark_trend": "benchmark_downtrend",
+        "market_temperature_regime": "market_cold",
+        "breadth_regime": "broad_falling",
+        "volatility_regime": "normal_volatility",
+        "source": "theme_sector_radar.market_breadth",
+        "decision_impact": "report_only"
+      },
+      "regime_interpretation": {
+        "summary": "市场处于风险规避环境，多数板块下跌，趋势确认度较低。",
+        "label_context": "风险规避环境下低信号标签需谨慎，市场整体偏弱。",
+        "watch_points": [
+          "市场整体偏弱，标签表现可能普遍偏弱",
+          "关注是否有超跌修复信号"
+        ],
+        "warnings": [
+          "风险规避环境下需关注系统性风险"
+        ]
+      }
+    },
+    {
+      "sector_name": "IT服务",
+      "sector_type": "industry",
+      "consensus_label": "low_signal_noise",
+      "confirm_level": "medium",
+      "evidence_score": 0.7,
+      "opportunity_score": 0.22,
+      "risk_control_score": 1.0,
+      "confidence_score": 0.6,
+      "calibrated_confidence_score": 0.0,
+      "ranking_score": 0.34,
+      "dimension_scores": {
+        "technical": 0.08,
+        "heat": 0.25,
+        "rotation": 0.4,
+        "risk": 1.0,
+        "data_quality": 1.0,
+        "market_context": 0.0,
+        "narrative": 0.5
+      },
+      "views": {
+        "technical": {
+          "technical_label": "trend_unreliable",
+          "technical_score": 0.08,
+          "technical_reasons": [
+            "历史数据不足，技术面不可靠",
+            "共识分数偏低"
+          ],
+          "technical_conflicts": [],
+          "technical_watch_points": [
+            "数据不足，建议积累更多数据后再评估"
+          ],
+          "vote": "negative"
+        },
+        "heat": {
+          "heat_label": "heat_weak",
+          "heat_score": 0.25,
+          "heat_reasons": [
+            "短线热度偏弱"
+          ],
+          "heat_conflicts": [],
+          "heat_watch_points": [
+            "短线热度偏弱，建议回避"
+          ],
+          "vote": "negative"
+        },
+        "rotation": {
+          "rotation_label": "rotation_weakening",
+          "rotation_score": 0.4,
+          "rotation_reasons": [
+            "板块正在弱化"
+          ],
+          "rotation_watch_points": [
+            "板块正在弱化，谨慎观察"
+          ],
+          "vote": "negative"
+        },
+        "risk": {
+          "risk_label": "risk_low",
+          "risk_score": 1.0,
+          "risk_flags": [],
+          "risk_summary": "风险较低，板块表现相对稳定",
+          "vote": "positive"
+        },
+        "data_quality": {
+          "data_quality_label": "data_reliable",
+          "data_quality_score": 1.0,
+          "data_quality_warnings": [],
+          "data_reliability_summary": "数据质量可靠，历史数据完整 (覆盖率: 100%, 实际天数: 10)",
+          "vote": "positive"
+        },
+        "market_context": {
+          "market_context_label": "underperforming_benchmark",
+          "market_context_score": 0.0,
+          "market_context_summary": "板块跑输市场基准 (相对强度: 0.0/15)",
+          "market_watch_points": [
+            "板块跑输市场基准，表现相对较弱"
+          ],
+          "vote": "negative"
+        },
+        "narrative": {
+          "narrative_label": "general_sector",
+          "narrative_summary": "行业属性，关注基本面变化和行业趋势。",
+          "narrative_watch_points": [
+            "关注基本面变化和行业趋势"
+          ],
+          "vote": "neutral",
+          "low_information_agent": true
+        }
+      },
+      "main_reasons": [
+        "多维信号不明确，标签价值较低"
+      ],
+      "conflict_points": [],
+      "watch_points": [
+        "当前信号不明确，标签价值较低"
+      ],
+      "data_warnings": [],
+      "agent_votes": {
+        "positive_votes": 2,
+        "neutral_votes": 3,
+        "negative_votes": 4,
+        "veto_votes": 0,
+        "total_votes": 9
+      },
+      "agent_opinions": [
+        {
+          "agent_id": "technical_trend",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "short_term_heat",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "rotation_analysis",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "risk_control",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "positive",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "data_quality",
+          "layer": "L1_data_evidence",
+          "label": "data_reliable",
+          "score": 1.0,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "positive",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "market_context",
+          "layer": "L2_specialized",
+          "label": "underperforming_benchmark",
+          "score": 0.0,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "narrative",
+          "layer": "L2_specialized",
+          "label": "general_sector",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "persistence_strength",
+          "layer": "L2_specialized",
+          "label": "persistence_unknown",
+          "score": 0.0,
+          "confidence": 0.3,
+          "evidence": [
+            "数据不足，无法判断持续性"
+          ],
+          "warnings": [
+            "缺少多日 timeline 数据"
+          ],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "catalyst_event",
+          "layer": "L2_specialized",
+          "label": "no_catalyst_observed",
+          "score": 0.0,
+          "confidence": 0.5,
+          "evidence": [
+            "当前板块未匹配到外部事件"
+          ],
+          "warnings": [
+            "外部事件仅用于复盘解释，不参与当前评分和标签决策"
+          ],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {
+            "decision_impact": "report_only",
+            "matched_event_count": 0,
+            "source_ids": [],
+            "event_ids": []
+          }
+        }
+      ],
+      "conflicts": [],
+      "conflict_summary": "无冲突",
+      "conflict_level": "none",
+      "veto": {
+        "veto_triggered": false,
+        "veto_reasons": [],
+        "ranking_penalty": 0.0,
+        "label_constraints": []
+      },
+      "veto_reasons": [],
+      "confidence_calibration": {
+        "calibrated_confidence_score": 0.0,
+        "confidence_factors": {
+          "data_quality": 0.0,
+          "vote_consistency": 0.2222222222222222,
+          "conflict_factor": 1.0,
+          "veto_factor": 1.0,
+          "coverage_factor": 1.0
+        }
+      },
+      "calibrated_confidence_factors": {
+        "data_quality": 0.0,
+        "vote_consistency": 0.2222222222222222,
+        "conflict_factor": 1.0,
+        "veto_factor": 1.0,
+        "coverage_factor": 1.0
+      },
+      "decision_path": [
+        "数据可用",
+        "技术面趋势偏弱",
+        "短线热度偏弱",
+        "轮动降温",
+        "输出标签: low_signal_noise"
+      ],
+      "data_coverage_detail": {
+        "data_quality_label": "data_reliable",
+        "data_quality_score": 1.0,
+        "history_coverage": 0.0,
+        "history_days": 0,
+        "data_reliability_summary": "数据质量可靠，历史数据完整 (覆盖率: 100%, 实际天数: 10)"
+      },
+      "market_regime": {
+        "regime_composite_label": "risk_off",
+        "benchmark_trend": "benchmark_downtrend",
+        "market_temperature_regime": "market_cold",
+        "breadth_regime": "broad_falling",
+        "volatility_regime": "normal_volatility",
+        "source": "theme_sector_radar.market_breadth",
+        "decision_impact": "report_only"
+      },
+      "regime_interpretation": {
+        "summary": "市场处于风险规避环境，多数板块下跌，趋势确认度较低。",
+        "label_context": "风险规避环境下低信号标签需谨慎，市场整体偏弱。",
+        "watch_points": [
+          "市场整体偏弱，标签表现可能普遍偏弱",
+          "关注是否有超跌修复信号"
+        ],
+        "warnings": [
+          "风险规避环境下需关注系统性风险"
+        ]
+      }
+    },
+    {
+      "sector_name": "光伏设备",
+      "sector_type": "industry",
+      "consensus_label": "low_signal_noise",
+      "confirm_level": "medium",
+      "evidence_score": 0.7,
+      "opportunity_score": 0.21,
+      "risk_control_score": 1.0,
+      "confidence_score": 0.6,
+      "calibrated_confidence_score": 0.0,
+      "ranking_score": 0.34,
+      "dimension_scores": {
+        "technical": 0.1,
+        "heat": 0.21,
+        "rotation": 0.4,
+        "risk": 1.0,
+        "data_quality": 1.0,
+        "market_context": 0.0,
+        "narrative": 0.5
+      },
+      "views": {
+        "technical": {
+          "technical_label": "trend_unreliable",
+          "technical_score": 0.1,
+          "technical_reasons": [
+            "历史数据不足，技术面不可靠",
+            "共识分数偏低"
+          ],
+          "technical_conflicts": [],
+          "technical_watch_points": [
+            "数据不足，建议积累更多数据后再评估"
+          ],
+          "vote": "negative"
+        },
+        "heat": {
+          "heat_label": "heat_weak",
+          "heat_score": 0.21,
+          "heat_reasons": [
+            "短线热度偏弱"
+          ],
+          "heat_conflicts": [],
+          "heat_watch_points": [
+            "短线热度偏弱，建议回避"
+          ],
+          "vote": "negative"
+        },
+        "rotation": {
+          "rotation_label": "rotation_weakening",
+          "rotation_score": 0.4,
+          "rotation_reasons": [
+            "板块正在弱化"
+          ],
+          "rotation_watch_points": [
+            "板块正在弱化，谨慎观察"
+          ],
+          "vote": "negative"
+        },
+        "risk": {
+          "risk_label": "risk_low",
+          "risk_score": 1.0,
+          "risk_flags": [],
+          "risk_summary": "风险较低，板块表现相对稳定",
+          "vote": "positive"
+        },
+        "data_quality": {
+          "data_quality_label": "data_reliable",
+          "data_quality_score": 1.0,
+          "data_quality_warnings": [],
+          "data_reliability_summary": "数据质量可靠，历史数据完整 (覆盖率: 100%, 实际天数: 10)",
+          "vote": "positive"
+        },
+        "market_context": {
+          "market_context_label": "underperforming_benchmark",
+          "market_context_score": 0.0,
+          "market_context_summary": "板块跑输市场基准 (相对强度: 0.0/15)",
+          "market_watch_points": [
+            "板块跑输市场基准，表现相对较弱"
+          ],
+          "vote": "negative"
+        },
+        "narrative": {
+          "narrative_label": "new_energy_cycle",
+          "narrative_summary": "新能源周期属性，关注产能扩张、技术进步和需求变化。",
+          "narrative_watch_points": [
+            "关注产能扩张和需求变化"
+          ],
+          "vote": "neutral",
+          "low_information_agent": true
+        }
+      },
+      "main_reasons": [
+        "多维信号不明确，标签价值较低"
+      ],
+      "conflict_points": [],
+      "watch_points": [
+        "当前信号不明确，标签价值较低"
+      ],
+      "data_warnings": [],
+      "agent_votes": {
+        "positive_votes": 2,
+        "neutral_votes": 3,
+        "negative_votes": 4,
+        "veto_votes": 0,
+        "total_votes": 9
+      },
+      "agent_opinions": [
+        {
+          "agent_id": "technical_trend",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "short_term_heat",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "rotation_analysis",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "risk_control",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "positive",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "data_quality",
+          "layer": "L1_data_evidence",
+          "label": "data_reliable",
+          "score": 1.0,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "positive",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "market_context",
+          "layer": "L2_specialized",
+          "label": "underperforming_benchmark",
+          "score": 0.0,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "narrative",
+          "layer": "L2_specialized",
+          "label": "new_energy_cycle",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "persistence_strength",
+          "layer": "L2_specialized",
+          "label": "persistence_unknown",
+          "score": 0.05,
+          "confidence": 0.3,
+          "evidence": [
+            "标签转换:  -> low_signal_noise"
+          ],
+          "warnings": [
+            "timeline 数据较少，持续性判断可能不准确"
+          ],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "catalyst_event",
+          "layer": "L2_specialized",
+          "label": "no_catalyst_observed",
+          "score": 0.0,
+          "confidence": 0.5,
+          "evidence": [
+            "当前板块未匹配到外部事件"
+          ],
+          "warnings": [
+            "外部事件仅用于复盘解释，不参与当前评分和标签决策"
+          ],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {
+            "decision_impact": "report_only",
+            "matched_event_count": 0,
+            "source_ids": [],
+            "event_ids": []
+          }
+        }
+      ],
+      "conflicts": [],
+      "conflict_summary": "无冲突",
+      "conflict_level": "none",
+      "veto": {
+        "veto_triggered": false,
+        "veto_reasons": [],
+        "ranking_penalty": 0.0,
+        "label_constraints": []
+      },
+      "veto_reasons": [],
+      "confidence_calibration": {
+        "calibrated_confidence_score": 0.0,
+        "confidence_factors": {
+          "data_quality": 0.0,
+          "vote_consistency": 0.2222222222222222,
+          "conflict_factor": 1.0,
+          "veto_factor": 1.0,
+          "coverage_factor": 1.0
+        }
+      },
+      "calibrated_confidence_factors": {
+        "data_quality": 0.0,
+        "vote_consistency": 0.2222222222222222,
+        "conflict_factor": 1.0,
+        "veto_factor": 1.0,
+        "coverage_factor": 1.0
+      },
+      "decision_path": [
+        "数据可用",
+        "技术面趋势偏弱",
+        "短线热度偏弱",
+        "轮动降温",
+        "输出标签: low_signal_noise"
+      ],
+      "data_coverage_detail": {
+        "data_quality_label": "data_reliable",
+        "data_quality_score": 1.0,
+        "history_coverage": 0.0,
+        "history_days": 0,
+        "data_reliability_summary": "数据质量可靠，历史数据完整 (覆盖率: 100%, 实际天数: 10)"
+      },
+      "market_regime": {
+        "regime_composite_label": "risk_off",
+        "benchmark_trend": "benchmark_downtrend",
+        "market_temperature_regime": "market_cold",
+        "breadth_regime": "broad_falling",
+        "volatility_regime": "normal_volatility",
+        "source": "theme_sector_radar.market_breadth",
+        "decision_impact": "report_only"
+      },
+      "regime_interpretation": {
+        "summary": "市场处于风险规避环境，多数板块下跌，趋势确认度较低。",
+        "label_context": "风险规避环境下低信号标签需谨慎，市场整体偏弱。",
+        "watch_points": [
+          "市场整体偏弱，标签表现可能普遍偏弱",
+          "关注是否有超跌修复信号"
+        ],
+        "warnings": [
+          "风险规避环境下需关注系统性风险"
+        ]
+      }
+    },
+    {
+      "sector_name": "互联网电商",
+      "sector_type": "industry",
+      "consensus_label": "low_signal_noise",
+      "confirm_level": "medium",
+      "evidence_score": 0.7,
+      "opportunity_score": 0.21,
+      "risk_control_score": 1.0,
+      "confidence_score": 0.6,
+      "calibrated_confidence_score": 0.0,
+      "ranking_score": 0.34,
+      "dimension_scores": {
+        "technical": 0.08,
+        "heat": 0.21,
+        "rotation": 0.4,
+        "risk": 1.0,
+        "data_quality": 1.0,
+        "market_context": 0.0,
+        "narrative": 0.5
+      },
+      "views": {
+        "technical": {
+          "technical_label": "trend_unreliable",
+          "technical_score": 0.08,
+          "technical_reasons": [
+            "历史数据不足，技术面不可靠",
+            "共识分数偏低"
+          ],
+          "technical_conflicts": [],
+          "technical_watch_points": [
+            "数据不足，建议积累更多数据后再评估"
+          ],
+          "vote": "negative"
+        },
+        "heat": {
+          "heat_label": "heat_weak",
+          "heat_score": 0.21,
+          "heat_reasons": [
+            "短线热度偏弱"
+          ],
+          "heat_conflicts": [],
+          "heat_watch_points": [
+            "短线热度偏弱，建议回避"
+          ],
+          "vote": "negative"
+        },
+        "rotation": {
+          "rotation_label": "rotation_weakening",
+          "rotation_score": 0.4,
+          "rotation_reasons": [
+            "板块正在弱化"
+          ],
+          "rotation_watch_points": [
+            "板块正在弱化，谨慎观察"
+          ],
+          "vote": "negative"
+        },
+        "risk": {
+          "risk_label": "risk_low",
+          "risk_score": 1.0,
+          "risk_flags": [],
+          "risk_summary": "风险较低，板块表现相对稳定",
+          "vote": "positive"
+        },
+        "data_quality": {
+          "data_quality_label": "data_reliable",
+          "data_quality_score": 1.0,
+          "data_quality_warnings": [],
+          "data_reliability_summary": "数据质量可靠，历史数据完整 (覆盖率: 100%, 实际天数: 10)",
+          "vote": "positive"
+        },
+        "market_context": {
+          "market_context_label": "underperforming_benchmark",
+          "market_context_score": 0.0,
+          "market_context_summary": "板块跑输市场基准 (相对强度: 0.0/15)",
+          "market_watch_points": [
+            "板块跑输市场基准，表现相对较弱"
+          ],
+          "vote": "negative"
+        },
+        "narrative": {
+          "narrative_label": "general_sector",
+          "narrative_summary": "行业属性，关注基本面变化和行业趋势。",
+          "narrative_watch_points": [
+            "关注基本面变化和行业趋势"
+          ],
+          "vote": "neutral",
+          "low_information_agent": true
+        }
+      },
+      "main_reasons": [
+        "多维信号不明确，标签价值较低"
+      ],
+      "conflict_points": [],
+      "watch_points": [
+        "当前信号不明确，标签价值较低"
+      ],
+      "data_warnings": [],
+      "agent_votes": {
+        "positive_votes": 2,
+        "neutral_votes": 3,
+        "negative_votes": 4,
+        "veto_votes": 0,
+        "total_votes": 9
+      },
+      "agent_opinions": [
+        {
+          "agent_id": "technical_trend",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "short_term_heat",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "rotation_analysis",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "risk_control",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "positive",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "data_quality",
+          "layer": "L1_data_evidence",
+          "label": "data_reliable",
+          "score": 1.0,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "positive",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "market_context",
+          "layer": "L2_specialized",
+          "label": "underperforming_benchmark",
+          "score": 0.0,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "narrative",
+          "layer": "L2_specialized",
+          "label": "general_sector",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "persistence_strength",
+          "layer": "L2_specialized",
+          "label": "persistence_unknown",
+          "score": 0.0,
+          "confidence": 0.3,
+          "evidence": [
+            "数据不足，无法判断持续性"
+          ],
+          "warnings": [
+            "缺少多日 timeline 数据"
+          ],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "catalyst_event",
+          "layer": "L2_specialized",
+          "label": "no_catalyst_observed",
+          "score": 0.0,
+          "confidence": 0.5,
+          "evidence": [
+            "当前板块未匹配到外部事件"
+          ],
+          "warnings": [
+            "外部事件仅用于复盘解释，不参与当前评分和标签决策"
+          ],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {
+            "decision_impact": "report_only",
+            "matched_event_count": 0,
+            "source_ids": [],
+            "event_ids": []
+          }
+        }
+      ],
+      "conflicts": [],
+      "conflict_summary": "无冲突",
+      "conflict_level": "none",
+      "veto": {
+        "veto_triggered": false,
+        "veto_reasons": [],
+        "ranking_penalty": 0.0,
+        "label_constraints": []
+      },
+      "veto_reasons": [],
+      "confidence_calibration": {
+        "calibrated_confidence_score": 0.0,
+        "confidence_factors": {
+          "data_quality": 0.0,
+          "vote_consistency": 0.2222222222222222,
+          "conflict_factor": 1.0,
+          "veto_factor": 1.0,
+          "coverage_factor": 1.0
+        }
+      },
+      "calibrated_confidence_factors": {
+        "data_quality": 0.0,
+        "vote_consistency": 0.2222222222222222,
+        "conflict_factor": 1.0,
+        "veto_factor": 1.0,
+        "coverage_factor": 1.0
+      },
+      "decision_path": [
+        "数据可用",
+        "技术面趋势偏弱",
+        "短线热度偏弱",
+        "轮动降温",
+        "输出标签: low_signal_noise"
+      ],
+      "data_coverage_detail": {
+        "data_quality_label": "data_reliable",
+        "data_quality_score": 1.0,
+        "history_coverage": 0.0,
+        "history_days": 0,
+        "data_reliability_summary": "数据质量可靠，历史数据完整 (覆盖率: 100%, 实际天数: 10)"
+      },
+      "market_regime": {
+        "regime_composite_label": "risk_off",
+        "benchmark_trend": "benchmark_downtrend",
+        "market_temperature_regime": "market_cold",
+        "breadth_regime": "broad_falling",
+        "volatility_regime": "normal_volatility",
+        "source": "theme_sector_radar.market_breadth",
+        "decision_impact": "report_only"
+      },
+      "regime_interpretation": {
+        "summary": "市场处于风险规避环境，多数板块下跌，趋势确认度较低。",
+        "label_context": "风险规避环境下低信号标签需谨慎，市场整体偏弱。",
+        "watch_points": [
+          "市场整体偏弱，标签表现可能普遍偏弱",
+          "关注是否有超跌修复信号"
+        ],
+        "warnings": [
+          "风险规避环境下需关注系统性风险"
+        ]
+      }
+    },
+    {
+      "sector_name": "其他电子",
+      "sector_type": "industry",
+      "consensus_label": "low_signal_noise",
+      "confirm_level": "medium",
+      "evidence_score": 0.7,
+      "opportunity_score": 0.21,
+      "risk_control_score": 1.0,
+      "confidence_score": 0.6,
+      "calibrated_confidence_score": 0.0,
+      "ranking_score": 0.34,
+      "dimension_scores": {
+        "technical": 0.09,
+        "heat": 0.21,
+        "rotation": 0.4,
+        "risk": 1.0,
+        "data_quality": 1.0,
+        "market_context": 0.0,
+        "narrative": 0.5
+      },
+      "views": {
+        "technical": {
+          "technical_label": "trend_unreliable",
+          "technical_score": 0.09,
+          "technical_reasons": [
+            "历史数据不足，技术面不可靠",
+            "共识分数偏低"
+          ],
+          "technical_conflicts": [],
+          "technical_watch_points": [
+            "数据不足，建议积累更多数据后再评估"
+          ],
+          "vote": "negative"
+        },
+        "heat": {
+          "heat_label": "heat_weak",
+          "heat_score": 0.21,
+          "heat_reasons": [
+            "短线热度偏弱"
+          ],
+          "heat_conflicts": [],
+          "heat_watch_points": [
+            "短线热度偏弱，建议回避"
+          ],
+          "vote": "negative"
+        },
+        "rotation": {
+          "rotation_label": "rotation_weakening",
+          "rotation_score": 0.4,
+          "rotation_reasons": [
+            "板块正在弱化"
+          ],
+          "rotation_watch_points": [
+            "板块正在弱化，谨慎观察"
+          ],
+          "vote": "negative"
+        },
+        "risk": {
+          "risk_label": "risk_low",
+          "risk_score": 1.0,
+          "risk_flags": [],
+          "risk_summary": "风险较低，板块表现相对稳定",
+          "vote": "positive"
+        },
+        "data_quality": {
+          "data_quality_label": "data_reliable",
+          "data_quality_score": 1.0,
+          "data_quality_warnings": [],
+          "data_reliability_summary": "数据质量可靠，历史数据完整 (覆盖率: 100%, 实际天数: 10)",
+          "vote": "positive"
+        },
+        "market_context": {
+          "market_context_label": "underperforming_benchmark",
+          "market_context_score": 0.0,
+          "market_context_summary": "板块跑输市场基准 (相对强度: 0.0/15)",
+          "market_watch_points": [
+            "板块跑输市场基准，表现相对较弱"
+          ],
+          "vote": "negative"
+        },
+        "narrative": {
+          "narrative_label": "general_sector",
+          "narrative_summary": "行业属性，关注基本面变化和行业趋势。",
+          "narrative_watch_points": [
+            "关注基本面变化和行业趋势"
+          ],
+          "vote": "neutral",
+          "low_information_agent": true
+        }
+      },
+      "main_reasons": [
+        "多维信号不明确，标签价值较低"
+      ],
+      "conflict_points": [],
+      "watch_points": [
+        "当前信号不明确，标签价值较低"
+      ],
+      "data_warnings": [],
+      "agent_votes": {
+        "positive_votes": 2,
+        "neutral_votes": 3,
+        "negative_votes": 4,
+        "veto_votes": 0,
+        "total_votes": 9
+      },
+      "agent_opinions": [
+        {
+          "agent_id": "technical_trend",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "short_term_heat",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "rotation_analysis",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "risk_control",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "positive",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "data_quality",
+          "layer": "L1_data_evidence",
+          "label": "data_reliable",
+          "score": 1.0,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "positive",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "market_context",
+          "layer": "L2_specialized",
+          "label": "underperforming_benchmark",
+          "score": 0.0,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "narrative",
+          "layer": "L2_specialized",
+          "label": "general_sector",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "persistence_strength",
+          "layer": "L2_specialized",
+          "label": "persistence_weak",
+          "score": 0.05,
+          "confidence": 0.5,
+          "evidence": [
+            "排序分趋势: volatile",
+            "正向观察强度趋势: volatile",
+            "标签转换:  -> low_signal_noise"
+          ],
+          "warnings": [
+            "timeline 数据较少，持续性判断可能不准确"
+          ],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "catalyst_event",
+          "layer": "L2_specialized",
+          "label": "no_catalyst_observed",
+          "score": 0.0,
+          "confidence": 0.5,
+          "evidence": [
+            "当前板块未匹配到外部事件"
+          ],
+          "warnings": [
+            "外部事件仅用于复盘解释，不参与当前评分和标签决策"
+          ],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {
+            "decision_impact": "report_only",
+            "matched_event_count": 0,
+            "source_ids": [],
+            "event_ids": []
+          }
+        }
+      ],
+      "conflicts": [],
+      "conflict_summary": "无冲突",
+      "conflict_level": "none",
+      "veto": {
+        "veto_triggered": false,
+        "veto_reasons": [],
+        "ranking_penalty": 0.0,
+        "label_constraints": []
+      },
+      "veto_reasons": [],
+      "confidence_calibration": {
+        "calibrated_confidence_score": 0.0,
+        "confidence_factors": {
+          "data_quality": 0.0,
+          "vote_consistency": 0.2222222222222222,
+          "conflict_factor": 1.0,
+          "veto_factor": 1.0,
+          "coverage_factor": 1.0
+        }
+      },
+      "calibrated_confidence_factors": {
+        "data_quality": 0.0,
+        "vote_consistency": 0.2222222222222222,
+        "conflict_factor": 1.0,
+        "veto_factor": 1.0,
+        "coverage_factor": 1.0
+      },
+      "decision_path": [
+        "数据可用",
+        "技术面趋势偏弱",
+        "短线热度偏弱",
+        "轮动降温",
+        "输出标签: low_signal_noise"
+      ],
+      "data_coverage_detail": {
+        "data_quality_label": "data_reliable",
+        "data_quality_score": 1.0,
+        "history_coverage": 0.0,
+        "history_days": 0,
+        "data_reliability_summary": "数据质量可靠，历史数据完整 (覆盖率: 100%, 实际天数: 10)"
+      },
+      "market_regime": {
+        "regime_composite_label": "risk_off",
+        "benchmark_trend": "benchmark_downtrend",
+        "market_temperature_regime": "market_cold",
+        "breadth_regime": "broad_falling",
+        "volatility_regime": "normal_volatility",
+        "source": "theme_sector_radar.market_breadth",
+        "decision_impact": "report_only"
+      },
+      "regime_interpretation": {
+        "summary": "市场处于风险规避环境，多数板块下跌，趋势确认度较低。",
+        "label_context": "风险规避环境下低信号标签需谨慎，市场整体偏弱。",
+        "watch_points": [
+          "市场整体偏弱，标签表现可能普遍偏弱",
+          "关注是否有超跌修复信号"
+        ],
+        "warnings": [
+          "风险规避环境下需关注系统性风险"
+        ]
+      }
+    },
+    {
+      "sector_name": "油气开采及服务",
+      "sector_type": "industry",
+      "consensus_label": "weak_or_avoid",
+      "confirm_level": "medium",
+      "evidence_score": 0.7,
+      "opportunity_score": 0.25,
+      "risk_control_score": 1.0,
+      "confidence_score": 0.7,
+      "calibrated_confidence_score": 0.0,
+      "ranking_score": 0.3,
+      "dimension_scores": {
+        "technical": 0.22,
+        "heat": 0.37,
+        "rotation": 0.2,
+        "risk": 1.0,
+        "data_quality": 1.0,
+        "market_context": 0.0,
+        "narrative": 0.5
+      },
+      "views": {
+        "technical": {
+          "technical_label": "trend_unreliable",
+          "technical_score": 0.22,
+          "technical_reasons": [
+            "历史数据不足，技术面不可靠",
+            "共识分数偏低"
+          ],
+          "technical_conflicts": [],
+          "technical_watch_points": [
+            "数据不足，建议积累更多数据后再评估"
+          ],
+          "vote": "negative"
+        },
+        "heat": {
+          "heat_label": "heat_fading",
+          "heat_score": 0.37,
+          "heat_reasons": [
+            "短线热度减弱"
+          ],
+          "heat_conflicts": [],
+          "heat_watch_points": [
+            "短线热度减弱，谨慎观察"
+          ],
+          "vote": "negative"
+        },
+        "rotation": {
+          "rotation_label": "rotation_lagging",
+          "rotation_score": 0.2,
+          "rotation_reasons": [
+            "板块处于落后阶段"
+          ],
+          "rotation_watch_points": [
+            "板块处于落后阶段，建议回避"
+          ],
+          "vote": "negative"
+        },
+        "risk": {
+          "risk_label": "risk_low",
+          "risk_score": 1.0,
+          "risk_flags": [],
+          "risk_summary": "风险较低，板块表现相对稳定",
+          "vote": "positive"
+        },
+        "data_quality": {
+          "data_quality_label": "data_reliable",
+          "data_quality_score": 1.0,
+          "data_quality_warnings": [],
+          "data_reliability_summary": "数据质量可靠，历史数据完整 (覆盖率: 100%, 实际天数: 10)",
+          "vote": "positive"
+        },
+        "market_context": {
+          "market_context_label": "underperforming_benchmark",
+          "market_context_score": 0.0,
+          "market_context_summary": "板块跑输市场基准 (相对强度: 0.0/15)",
+          "market_watch_points": [
+            "板块跑输市场基准，表现相对较弱"
+          ],
+          "vote": "negative"
+        },
+        "narrative": {
+          "narrative_label": "general_sector",
+          "narrative_summary": "行业属性，关注基本面变化和行业趋势。",
+          "narrative_watch_points": [
+            "关注基本面变化和行业趋势"
+          ],
+          "vote": "neutral",
+          "low_information_agent": true
+        }
+      },
+      "main_reasons": [
+        "多维度偏弱"
+      ],
+      "conflict_points": [],
+      "watch_points": [
+        "当前正向观察强度有限，信号偏弱"
+      ],
+      "data_warnings": [],
+      "agent_votes": {
+        "positive_votes": 2,
+        "neutral_votes": 3,
+        "negative_votes": 4,
+        "veto_votes": 0,
+        "total_votes": 9
+      },
+      "agent_opinions": [
+        {
+          "agent_id": "technical_trend",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "short_term_heat",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "rotation_analysis",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "risk_control",
+          "layer": "L2_specialized",
+          "label": "unknown",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "positive",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "data_quality",
+          "layer": "L1_data_evidence",
+          "label": "data_reliable",
+          "score": 1.0,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "positive",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "market_context",
+          "layer": "L2_specialized",
+          "label": "underperforming_benchmark",
+          "score": 0.0,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "negative",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "narrative",
+          "layer": "L2_specialized",
+          "label": "general_sector",
+          "score": 0.5,
+          "confidence": 0.8,
+          "evidence": [],
+          "warnings": [],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "persistence_strength",
+          "layer": "L2_specialized",
+          "label": "persistence_unknown",
+          "score": 0.05,
+          "confidence": 0.3,
+          "evidence": [
+            "标签转换:  -> low_signal_noise"
+          ],
+          "warnings": [
+            "timeline 数据较少，持续性判断可能不准确"
+          ],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {}
+        },
+        {
+          "agent_id": "catalyst_event",
+          "layer": "L2_specialized",
+          "label": "no_catalyst_observed",
+          "score": 0.0,
+          "confidence": 0.5,
+          "evidence": [
+            "当前板块未匹配到外部事件"
+          ],
+          "warnings": [
+            "外部事件仅用于复盘解释，不参与当前评分和标签决策"
+          ],
+          "vote": "neutral",
+          "veto": false,
+          "veto_reason": "",
+          "metadata": {
+            "decision_impact": "report_only",
+            "matched_event_count": 0,
+            "source_ids": [],
+            "event_ids": []
+          }
+        }
+      ],
+      "conflicts": [],
+      "conflict_summary": "无冲突",
+      "conflict_level": "none",
+      "veto": {
+        "veto_triggered": false,
+        "veto_reasons": [],
+        "ranking_penalty": 0.0,
+        "label_constraints": []
+      },
+      "veto_reasons": [],
+      "confidence_calibration": {
+        "calibrated_confidence_score": 0.0,
+        "confidence_factors": {
+          "data_quality": 0.0,
+          "vote_consistency": 0.2222222222222222,
+          "conflict_factor": 1.0,
+          "veto_factor": 1.0,
+          "coverage_factor": 1.0
+        }
+      },
+      "calibrated_confidence_factors": {
+        "data_quality": 0.0,
+        "vote_consistency": 0.2222222222222222,
+        "conflict_factor": 1.0,
+        "veto_factor": 1.0,
+        "coverage_factor": 1.0
+      },
+      "decision_path": [
+        "数据可用",
+        "技术面趋势偏弱",
+        "短线热度偏弱",
+        "轮动降温",
+        "输出标签: weak_or_avoid"
+      ],
+      "data_coverage_detail": {
+        "data_quality_label": "data_reliable",
+        "data_quality_score": 1.0,
+        "history_coverage": 0.0,
+        "history_days": 0,
+        "data_reliability_summary": "数据质量可靠，历史数据完整 (覆盖率: 100%, 实际天数: 10)"
+      },
+      "market_regime": {
+        "regime_composite_label": "risk_off",
+        "benchmark_trend": "benchmark_downtrend",
+        "market_temperature_regime": "market_cold",
+        "breadth_regime": "broad_falling",
+        "volatility_regime": "normal_volatility",
+        "source": "theme_sector_radar.market_breadth",
+        "decision_impact": "report_only"
+      },
+      "regime_interpretation": {
+        "summary": "市场处于风险规避环境，多数板块下跌，趋势确认度较低。",
+        "label_context": "风险规避环境下弱标签表现通常偏弱。",
+        "watch_points": [
+          "市场整体偏弱，标签表现可能普遍偏弱",
+          "关注是否有超跌修复信号"
+        ],
+        "warnings": [
+          "风险规避环境下需关注系统性风险"
+        ]
+      }
+    }
+  ],
+  "warnings": [],
+  "disclaimer": "仅用于板块研究、观察和复盘，不构成投资建议。",
+  "daily_summary": {
+    "as_of_date": "2026-06-08",
+    "sector_type": "industry",
+    "market_regime": "risk_off",
+    "total_count": 10,
+    "focus_count": 1,
+    "conflicted_count": 0,
+    "low_signal_count": 8,
+    "insufficient_data_count": 0,
+    "veto_count": 0,
+    "top_watch_names": [
+      "工程机械"
+    ],
+    "summary_text": "今日市场处于风险收缩环境，1 个板块进入重点观察范围，重点关注: 工程机械。"
+  }
+}

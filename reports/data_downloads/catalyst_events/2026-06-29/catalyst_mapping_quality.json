@@ -1,0 +1,12 @@
+{
+  "date_range": "2026-06-29_to_2026-06-29",
+  "event_count": 22,
+  "mapped_count": 22,
+  "unmapped_count": 0,
+  "mapping_rate": 1.0,
+  "status_counts": {
+    "mapped_by_symbol": 22
+  },
+  "top_unmapped": [],
+  "warnings": []
+}

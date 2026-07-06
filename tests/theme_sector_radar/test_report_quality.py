@@ -150,10 +150,10 @@ class TestReportQuality:
             with open(md_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
-            assert "不构成个股推荐、买卖建议或自动交易指令" in content
+            assert "不作为个股操作依据或自动交易指令" in content
 
     def test_markdown_no_stock_recommendation(self):
-        """测试 Markdown 不含个股推荐"""
+        """测试 Markdown 不含个股操作结论"""
         import tempfile
         import os
 
@@ -171,7 +171,7 @@ class TestReportQuality:
                 content = f.read()
 
             # 不得出现 buy/sell/hold（不区分大小写）
-            # 注意：声明中的 "不构成个股推荐" 是允许的
+            # 注意：声明中的 "不构成个股操作结论" 是允许的
             lines = content.split("\n")
             disclaimer_line = ""
             for line in lines:
@@ -184,12 +184,12 @@ class TestReportQuality:
                 if line == disclaimer_line or "不构成" in line:
                     continue
                 # 这里只检查明显的推荐语义
-                # 不检查声明中的 "不构成个股推荐"
+                # 不检查声明中的 "不构成个股操作结论"
 
             # 检查 buy/sell/hold 不出现在表格数据中
-            assert "buy" not in content.lower().replace("不构成个股推荐", "")
-            assert "sell" not in content.lower().replace("不构成个股推荐", "")
-            assert "hold" not in content.lower().replace("不构成个股推荐", "")
+            assert "buy" not in content.lower().replace("不构成个股操作结论", "")
+            assert "sell" not in content.lower().replace("不构成个股操作结论", "")
+            assert "hold" not in content.lower().replace("不构成个股操作结论", "")
 
     def test_json_has_score_breakdown(self):
         """测试 JSON 包含 score_breakdown"""

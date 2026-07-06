@@ -1,0 +1,8 @@
+{
+  "command_args": "--replay-daily-from-sector-history --as-of 2026-07-03",
+  "started_at": "2026-07-03T19:45:38.112447",
+  "finished_at": "2026-07-03T19:45:38.112447",
+  "status": "ok",
+  "run_mode": "replay",
+  "data_source_mode": "sector_history_replay"
+}

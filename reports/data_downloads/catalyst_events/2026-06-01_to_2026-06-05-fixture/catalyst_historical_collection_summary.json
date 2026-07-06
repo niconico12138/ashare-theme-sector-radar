@@ -1,0 +1,21 @@
+{
+  "start_date": "2026-06-01",
+  "end_date": "2026-06-05",
+  "date_count": 5,
+  "generated_dates": [
+    "2026-06-01",
+    "2026-06-02",
+    "2026-06-03",
+    "2026-06-04",
+    "2026-06-05"
+  ],
+  "skipped_dates": [],
+  "failed_dates": [],
+  "total_events": 25,
+  "mapped_events": 20,
+  "unmapped_events": 5,
+  "real_event_count": 0,
+  "fixture_event_count": 25,
+  "missing_cache_dates": [],
+  "warnings": []
+}

@@ -1,0 +1,266 @@
+{
+  "as_of_date": "2026-06-23",
+  "sector_type": "industry",
+  "report_type": "multi_window_consensus",
+  "trend_weight_profile": "trend_confirmation",
+  "windows": [
+    5,
+    10,
+    20
+  ],
+  "metadata": {
+    "history_start_date": "2026-05-20",
+    "history_end_date": "2026-06-23",
+    "benchmark": "hs300",
+    "top_n": 20
+  },
+  "warnings": [],
+  "disclaimer": "仅用于板块研究、观察和复盘，不构成投资建议。",
+  "consensus": [
+    {
+      "sector_name": "化学制药",
+      "sector_type": "industry",
+      "multi_window_label": "short_mid_strong_long_weak",
+      "consensus_score": 39.15,
+      "consensus_strength": "weak",
+      "window_scores": {
+        "5": 45.0,
+        "10": 50.0,
+        "20": 26.0
+      },
+      "window_levels": {
+        "5": "cooling",
+        "10": "neutral",
+        "20": "avoid"
+      },
+      "window_conflicts": [
+        "20日趋势分明显弱于5日和10日",
+        "短中期动量强于中期趋势",
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "观察20日趋势分是否继续抬升",
+        "若短窗口继续强而20日不跟随，说明趋势确认不足"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "医疗服务",
+      "sector_type": "industry",
+      "multi_window_label": "short_mid_strong_long_weak",
+      "consensus_score": 35.45,
+      "consensus_strength": "weak",
+      "window_scores": {
+        "5": 50.0,
+        "10": 45.0,
+        "20": 18.0
+      },
+      "window_levels": {
+        "5": "neutral",
+        "10": "cooling",
+        "20": "avoid"
+      },
+      "window_conflicts": [
+        "20日趋势分明显弱于5日和10日",
+        "短中期动量强于中期趋势",
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "观察20日趋势分是否继续抬升",
+        "若短窗口继续强而20日不跟随，说明趋势确认不足"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "医疗器械",
+      "sector_type": "industry",
+      "multi_window_label": "weak_all_windows",
+      "consensus_score": 30.13,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 31.8,
+        "10": 42.8,
+        "20": 18.0
+      },
+      "window_levels": {
+        "5": "avoid",
+        "10": "cooling",
+        "20": "avoid"
+      },
+      "window_conflicts": [
+        "20日趋势分明显弱于5日和10日",
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "全窗口偏弱，建议回避或等待反转信号"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "养殖业",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 23.0,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 23.0,
+        "10": 23.0,
+        "20": 23.0
+      },
+      "window_levels": {
+        "5": "avoid",
+        "10": "avoid",
+        "20": "avoid"
+      },
+      "window_conflicts": [],
+      "watch_points": [
+        "历史数据不足，不能确认趋势共识",
+        "建议积累更多数据后再评估"
+      ],
+      "data_warnings": [
+        "10日窗口覆盖率不足 (50%, 实际5天)",
+        "20日窗口历史数据不足 (status=insufficient_history)"
+      ]
+    },
+    {
+      "sector_name": "旅游及酒店",
+      "sector_type": "industry",
+      "multi_window_label": "weak_all_windows",
+      "consensus_score": 21.25,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 16.0,
+        "10": 23.0,
+        "20": 23.0
+      },
+      "window_levels": {
+        "5": "avoid",
+        "10": "avoid",
+        "20": "avoid"
+      },
+      "window_conflicts": [],
+      "watch_points": [
+        "全窗口偏弱，建议回避或等待反转信号"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "厨卫电器",
+      "sector_type": "industry",
+      "multi_window_label": "weak_all_windows",
+      "consensus_score": 21.2,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 16.8,
+        "10": 28.0,
+        "20": 18.0
+      },
+      "window_levels": {
+        "5": "avoid",
+        "10": "avoid",
+        "20": "avoid"
+      },
+      "window_conflicts": [],
+      "watch_points": [
+        "全窗口偏弱，建议回避或等待反转信号"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "公路铁路运输",
+      "sector_type": "industry",
+      "multi_window_label": "weak_all_windows",
+      "consensus_score": 20.73,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 20.8,
+        "10": 23.8,
+        "20": 18.0
+      },
+      "window_levels": {
+        "5": "avoid",
+        "10": "avoid",
+        "20": "avoid"
+      },
+      "window_conflicts": [],
+      "watch_points": [
+        "全窗口偏弱，建议回避或等待反转信号"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "中药",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 20.0,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 20.0,
+        "10": 20.0,
+        "20": 20.0
+      },
+      "window_levels": {
+        "5": "avoid",
+        "10": "avoid",
+        "20": "avoid"
+      },
+      "window_conflicts": [],
+      "watch_points": [
+        "历史数据不足，不能确认趋势共识",
+        "建议积累更多数据后再评估"
+      ],
+      "data_warnings": [
+        "10日窗口覆盖率不足 (50%, 实际5天)",
+        "20日窗口历史数据不足 (status=insufficient_history)"
+      ]
+    },
+    {
+      "sector_name": "医药商业",
+      "sector_type": "industry",
+      "multi_window_label": "insufficient_history",
+      "consensus_score": 20.0,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 20.0,
+        "10": 20.0,
+        "20": 20.0
+      },
+      "window_levels": {
+        "5": "avoid",
+        "10": "avoid",
+        "20": "avoid"
+      },
+      "window_conflicts": [],
+      "watch_points": [
+        "历史数据不足，不能确认趋势共识",
+        "建议积累更多数据后再评估"
+      ],
+      "data_warnings": [
+        "10日窗口覆盖率不足 (50%, 实际5天)",
+        "20日窗口历史数据不足 (status=insufficient_history)"
+      ]
+    },
+    {
+      "sector_name": "家居用品",
+      "sector_type": "industry",
+      "multi_window_label": "weak_all_windows",
+      "consensus_score": 16.48,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 16.8,
+        "10": 16.8,
+        "20": 16.0
+      },
+      "window_levels": {
+        "5": "avoid",
+        "10": "avoid",
+        "20": "avoid"
+      },
+      "window_conflicts": [],
+      "watch_points": [
+        "全窗口偏弱，建议回避或等待反转信号"
+      ],
+      "data_warnings": []
+    }
+  ]
+}

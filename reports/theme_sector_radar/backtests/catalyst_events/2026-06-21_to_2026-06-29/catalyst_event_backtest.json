@@ -1,0 +1,9 @@
+{
+  "report_type": "catalyst_event_backtest",
+  "start_date": "2026-06-21",
+  "end_date": "2026-06-29",
+  "total_samples": 0,
+  "recommendation": {
+    "recommend_vote_calibration": false
+  }
+}

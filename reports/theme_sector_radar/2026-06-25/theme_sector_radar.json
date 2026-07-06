@@ -1,0 +1,206 @@
+{
+  "report_type": "theme_sector_radar",
+  "version": "0.1.0",
+  "as_of_date": "2026-06-25",
+  "updated_at": "2026-07-01T18:46:57.027828",
+  "status": "ok",
+  "market_temperature": {
+    "score": 22.5,
+    "label": "cold",
+    "description": "市场温度: cold",
+    "advance_count": 9,
+    "decline_count": 73,
+    "limit_up_count": 0,
+    "limit_down_count": 0
+  },
+  "market_breadth": {
+    "industry_total_count": 83,
+    "industry_up_count": 9,
+    "industry_down_count": 73,
+    "industry_flat_count": 1,
+    "industry_up_ratio": 0.1084,
+    "industry_down_ratio": 0.8795,
+    "average_industry_change_pct": -1.2644,
+    "median_industry_change_pct": -1.5468,
+    "strong_industry_count": 4,
+    "weak_industry_count": 27,
+    "strong_industry_ratio": 0.0482,
+    "weak_industry_ratio": 0.3253,
+    "breadth_label": "narrow_rising",
+    "replay_market_temperature_label": "cold",
+    "replay_market_temperature_score": 22.5
+  },
+  "industry_top": [
+    {
+      "sector_id": "replay_industry_元件",
+      "name": "元件",
+      "type": "industry",
+      "price_change_pct": 3.14,
+      "turnover": 198279160000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-25",
+      "score": 76,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_机场航运",
+      "name": "机场航运",
+      "type": "industry",
+      "price_change_pct": 4.05,
+      "turnover": 8801230500.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-25",
+      "score": 76,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_保险",
+      "name": "保险",
+      "type": "industry",
+      "price_change_pct": 2.19,
+      "turnover": 14805138000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-25",
+      "score": 56,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_半导体",
+      "name": "半导体",
+      "type": "industry",
+      "price_change_pct": 2.21,
+      "turnover": 610536750000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-25",
+      "score": 56,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_游戏",
+      "name": "游戏",
+      "type": "industry",
+      "price_change_pct": 1.51,
+      "turnover": 18141052000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-25",
+      "score": 56,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_电子化学品",
+      "name": "电子化学品",
+      "type": "industry",
+      "price_change_pct": 1.27,
+      "turnover": 94876643000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-25",
+      "score": 56,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_白酒",
+      "name": "白酒",
+      "type": "industry",
+      "price_change_pct": 1.64,
+      "turnover": 17810245000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-25",
+      "score": 56,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_其他电子",
+      "name": "其他电子",
+      "type": "industry",
+      "price_change_pct": 0.93,
+      "turnover": 52290089000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-25",
+      "score": 36,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_黑色家电",
+      "name": "黑色家电",
+      "type": "industry",
+      "price_change_pct": 0.29,
+      "turnover": 3139944600.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-25",
+      "score": 36,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_IT服务",
+      "name": "IT服务",
+      "type": "industry",
+      "price_change_pct": -2.82,
+      "turnover": 59253850000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-25",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    }
+  ],
+  "concept_top": [],
+  "data_quality_score": 60.0,
+  "provider_status": {
+    "effective_provider": "sector_history_replay",
+    "industry_source": "sector_history_replay",
+    "concept_source": "sector_history_replay"
+  },
+  "data_completeness": {
+    "industry_count": 10,
+    "concept_count": 0
+  },
+  "run_mode": "replay",
+  "data_source_mode": "sector_history_replay",
+  "generated_by_command": "--replay-daily-from-sector-history --as-of 2026-06-25",
+  "disclaimer": "本报告仅用于板块研究、观察和复盘，不构成投资建议。",
+  "metadata": {
+    "replay_source": "sector_history",
+    "signal_date": "2026-06-25",
+    "max_source_record_date": "2026-06-25",
+    "no_lookahead_passed": true
+  }
+}

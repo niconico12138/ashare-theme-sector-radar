@@ -1,0 +1,206 @@
+{
+  "report_type": "theme_sector_radar",
+  "version": "0.1.0",
+  "as_of_date": "2026-06-17",
+  "updated_at": "2026-07-01T18:46:56.832665",
+  "status": "ok",
+  "market_temperature": {
+    "score": 33.3,
+    "label": "cold",
+    "description": "市场温度: cold",
+    "advance_count": 16,
+    "decline_count": 64,
+    "limit_up_count": 0,
+    "limit_down_count": 0
+  },
+  "market_breadth": {
+    "industry_total_count": 83,
+    "industry_up_count": 16,
+    "industry_down_count": 64,
+    "industry_flat_count": 3,
+    "industry_up_ratio": 0.1928,
+    "industry_down_ratio": 0.7711,
+    "average_industry_change_pct": -0.6339,
+    "median_industry_change_pct": -0.8105,
+    "strong_industry_count": 5,
+    "weak_industry_count": 10,
+    "strong_industry_ratio": 0.0602,
+    "weak_industry_ratio": 0.1205,
+    "breadth_label": "narrow_rising",
+    "replay_market_temperature_label": "cold",
+    "replay_market_temperature_score": 33.3
+  },
+  "industry_top": [
+    {
+      "sector_id": "replay_industry_电子化学品",
+      "name": "电子化学品",
+      "type": "industry",
+      "price_change_pct": 5.34,
+      "turnover": 86798313000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-17",
+      "score": 91,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_元件",
+      "name": "元件",
+      "type": "industry",
+      "price_change_pct": 4.32,
+      "turnover": 217732740000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-17",
+      "score": 76,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_半导体",
+      "name": "半导体",
+      "type": "industry",
+      "price_change_pct": 3.97,
+      "turnover": 476077610000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-17",
+      "score": 76,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_光学光电子",
+      "name": "光学光电子",
+      "type": "industry",
+      "price_change_pct": 2.89,
+      "turnover": 99763027000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-17",
+      "score": 56,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_其他电子",
+      "name": "其他电子",
+      "type": "industry",
+      "price_change_pct": 1.93,
+      "turnover": 41232830000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-17",
+      "score": 56,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_其他社会服务",
+      "name": "其他社会服务",
+      "type": "industry",
+      "price_change_pct": 2.02,
+      "turnover": 9002966300.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-17",
+      "score": 56,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_军工电子",
+      "name": "军工电子",
+      "type": "industry",
+      "price_change_pct": 1.1,
+      "turnover": 43106736000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-17",
+      "score": 56,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_非金属材料",
+      "name": "非金属材料",
+      "type": "industry",
+      "price_change_pct": 1.2,
+      "turnover": 13474326000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-17",
+      "score": 56,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_塑料制品",
+      "name": "塑料制品",
+      "type": "industry",
+      "price_change_pct": 0.74,
+      "turnover": 49014647000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-17",
+      "score": 36,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_建筑材料",
+      "name": "建筑材料",
+      "type": "industry",
+      "price_change_pct": 0.94,
+      "turnover": 44871778000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-17",
+      "score": 36,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    }
+  ],
+  "concept_top": [],
+  "data_quality_score": 60.0,
+  "provider_status": {
+    "effective_provider": "sector_history_replay",
+    "industry_source": "sector_history_replay",
+    "concept_source": "sector_history_replay"
+  },
+  "data_completeness": {
+    "industry_count": 10,
+    "concept_count": 0
+  },
+  "run_mode": "replay",
+  "data_source_mode": "sector_history_replay",
+  "generated_by_command": "--replay-daily-from-sector-history --as-of 2026-06-17",
+  "disclaimer": "本报告仅用于板块研究、观察和复盘，不构成投资建议。",
+  "metadata": {
+    "replay_source": "sector_history",
+    "signal_date": "2026-06-17",
+    "max_source_record_date": "2026-06-17",
+    "no_lookahead_passed": true
+  }
+}

@@ -111,7 +111,7 @@ class TestDegradedReportContract:
                 assert field in json_data, f"Missing field: {field}"
 
     def test_json_report_no_stock_recommendation(self):
-        """测试 JSON 报告不含个股推荐"""
+        """测试 JSON 报告不含个股操作结论"""
         import tempfile
         import os
 
@@ -176,4 +176,4 @@ class TestDegradedReportContract:
             with open(md_path, "r", encoding="utf-8") as f:
                 md_content = f.read()
 
-            assert "不构成个股推荐、买卖建议或自动交易指令" in md_content
+            assert "不作为个股操作依据或自动交易指令" in md_content

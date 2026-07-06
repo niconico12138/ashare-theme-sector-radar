@@ -1,0 +1,206 @@
+{
+  "report_type": "theme_sector_radar",
+  "version": "0.1.0",
+  "as_of_date": "2026-06-08",
+  "updated_at": "2026-07-01T18:46:56.614121",
+  "status": "ok",
+  "market_temperature": {
+    "score": 6.8,
+    "label": "cold",
+    "description": "市场温度: cold",
+    "advance_count": 2,
+    "decline_count": 78,
+    "limit_up_count": 0,
+    "limit_down_count": 0
+  },
+  "market_breadth": {
+    "industry_total_count": 80,
+    "industry_up_count": 2,
+    "industry_down_count": 78,
+    "industry_flat_count": 0,
+    "industry_up_ratio": 0.025,
+    "industry_down_ratio": 0.975,
+    "average_industry_change_pct": -2.7944,
+    "median_industry_change_pct": -2.7658,
+    "strong_industry_count": 0,
+    "weak_industry_count": 57,
+    "strong_industry_ratio": 0.0,
+    "weak_industry_ratio": 0.7125,
+    "breadth_label": "broad_falling",
+    "replay_market_temperature_label": "cold",
+    "replay_market_temperature_score": 6.8
+  },
+  "industry_top": [
+    {
+      "sector_id": "replay_industry_工程机械",
+      "name": "工程机械",
+      "type": "industry",
+      "price_change_pct": 1.04,
+      "turnover": 16376681000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-08",
+      "score": 56,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_油气开采及服务",
+      "name": "油气开采及服务",
+      "type": "industry",
+      "price_change_pct": 0.94,
+      "turnover": 9305168700.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-08",
+      "score": 36,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_IT服务",
+      "name": "IT服务",
+      "type": "industry",
+      "price_change_pct": -1.66,
+      "turnover": 50191982000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-08",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_互联网电商",
+      "name": "互联网电商",
+      "type": "industry",
+      "price_change_pct": -3.14,
+      "turnover": 3900342100.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-08",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_保险",
+      "name": "保险",
+      "type": "industry",
+      "price_change_pct": -0.28,
+      "turnover": 8396956300.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-08",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_元件",
+      "name": "元件",
+      "type": "industry",
+      "price_change_pct": -3.17,
+      "turnover": 167274880000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-08",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_光伏设备",
+      "name": "光伏设备",
+      "type": "industry",
+      "price_change_pct": -4.02,
+      "turnover": 50403463000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-08",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_光学光电子",
+      "name": "光学光电子",
+      "type": "industry",
+      "price_change_pct": -3.48,
+      "turnover": 115026535000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-08",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_公路铁路运输",
+      "name": "公路铁路运输",
+      "type": "industry",
+      "price_change_pct": -2.13,
+      "turnover": 3881364200.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-08",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    },
+    {
+      "sector_id": "replay_industry_其他电子",
+      "name": "其他电子",
+      "type": "industry",
+      "price_change_pct": -6.78,
+      "turnover": 32691518000.0,
+      "main_net_inflow": 0.0,
+      "data_quality_score": 60.0,
+      "source": "sector_history_replay",
+      "source_record_date": "2026-06-08",
+      "score": 11,
+      "score_breakdown": {
+        "score_source": "sector_history_replay"
+      }
+    }
+  ],
+  "concept_top": [],
+  "data_quality_score": 60.0,
+  "provider_status": {
+    "effective_provider": "sector_history_replay",
+    "industry_source": "sector_history_replay",
+    "concept_source": "sector_history_replay"
+  },
+  "data_completeness": {
+    "industry_count": 10,
+    "concept_count": 0
+  },
+  "run_mode": "replay",
+  "data_source_mode": "sector_history_replay",
+  "generated_by_command": "--replay-daily-from-sector-history --as-of 2026-06-08",
+  "disclaimer": "本报告仅用于板块研究、观察和复盘，不构成投资建议。",
+  "metadata": {
+    "replay_source": "sector_history",
+    "signal_date": "2026-06-08",
+    "max_source_record_date": "2026-06-08",
+    "no_lookahead_passed": true
+  }
+}

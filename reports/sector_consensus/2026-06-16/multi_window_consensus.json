@@ -1,0 +1,261 @@
+{
+  "as_of_date": "2026-06-16",
+  "sector_type": "industry",
+  "report_type": "multi_window_consensus",
+  "trend_weight_profile": "trend_confirmation",
+  "windows": [
+    5,
+    10,
+    20
+  ],
+  "metadata": {
+    "history_start_date": "2026-05-20",
+    "history_end_date": "2026-06-16",
+    "benchmark": "hs300",
+    "top_n": 20
+  },
+  "warnings": [],
+  "disclaimer": "仅用于板块研究、观察和复盘，不构成投资建议。",
+  "consensus": [
+    {
+      "sector_name": "金属新材料",
+      "sector_type": "industry",
+      "multi_window_label": "multi_window_confirmed",
+      "consensus_score": 59.08,
+      "consensus_strength": "medium",
+      "window_scores": {
+        "5": 63.0,
+        "10": 63.0,
+        "20": 53.2
+      },
+      "window_levels": {
+        "5": "neutral",
+        "10": "neutral",
+        "20": "neutral"
+      },
+      "window_conflicts": [],
+      "watch_points": [
+        "趋势跨窗口确认，可作为重点观察对象",
+        "关注资金流入和成交量是否持续放大"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "电子化学品",
+      "sector_type": "industry",
+      "multi_window_label": "conflicted_windows",
+      "consensus_score": 53.85,
+      "consensus_strength": "medium",
+      "window_scores": {
+        "5": 62.4,
+        "10": 57.4,
+        "20": 45.4
+      },
+      "window_levels": {
+        "5": "neutral",
+        "10": "neutral",
+        "20": "cooling"
+      },
+      "window_conflicts": [
+        "20日趋势分明显弱于5日和10日",
+        "短中期动量强于中期趋势",
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "窗口之间分歧较大，暂不形成明确结论",
+        "观察后续走势是否收敛"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "非金属材料",
+      "sector_type": "industry",
+      "multi_window_label": "conflicted_windows",
+      "consensus_score": 47.95,
+      "consensus_strength": "weak",
+      "window_scores": {
+        "5": 47.2,
+        "10": 48.2,
+        "20": 48.2
+      },
+      "window_levels": {
+        "5": "cooling",
+        "10": "cooling",
+        "20": "cooling"
+      },
+      "window_conflicts": [],
+      "watch_points": [
+        "窗口之间分歧较大，暂不形成明确结论",
+        "观察后续走势是否收敛"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "元件",
+      "sector_type": "industry",
+      "multi_window_label": "conflicted_windows",
+      "consensus_score": 44.9,
+      "consensus_strength": "weak",
+      "window_scores": {
+        "5": 43.4,
+        "10": 45.4,
+        "20": 45.4
+      },
+      "window_levels": {
+        "5": "cooling",
+        "10": "cooling",
+        "20": "cooling"
+      },
+      "window_conflicts": [],
+      "watch_points": [
+        "窗口之间分歧较大，暂不形成明确结论",
+        "观察后续走势是否收敛"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "光学光电子",
+      "sector_type": "industry",
+      "multi_window_label": "conflicted_windows",
+      "consensus_score": 38.25,
+      "consensus_strength": "weak",
+      "window_scores": {
+        "5": 32.2,
+        "10": 47.2,
+        "20": 34.2
+      },
+      "window_levels": {
+        "5": "avoid",
+        "10": "cooling",
+        "20": "avoid"
+      },
+      "window_conflicts": [
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "窗口之间分歧较大，暂不形成明确结论",
+        "观察后续走势是否收敛"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "其他电子",
+      "sector_type": "industry",
+      "multi_window_label": "weak_all_windows",
+      "consensus_score": 34.2,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 35.4,
+        "10": 35.4,
+        "20": 32.4
+      },
+      "window_levels": {
+        "5": "cooling",
+        "10": "cooling",
+        "20": "avoid"
+      },
+      "window_conflicts": [
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "全窗口偏弱，建议回避或等待反转信号"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "电池",
+      "sector_type": "industry",
+      "multi_window_label": "short_active_only",
+      "consensus_score": 33.45,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 50.2,
+        "10": 33.2,
+        "20": 23.2
+      },
+      "window_levels": {
+        "5": "neutral",
+        "10": "avoid",
+        "20": "avoid"
+      },
+      "window_conflicts": [
+        "20日趋势分明显弱于5日和10日",
+        "短中期动量强于中期趋势",
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "只有短窗口活跃，趋势未确认",
+        "观察10日和20日趋势分是否跟进"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "通信设备",
+      "sector_type": "industry",
+      "multi_window_label": "weak_all_windows",
+      "consensus_score": 32.15,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 32.4,
+        "10": 42.2,
+        "20": 23.2
+      },
+      "window_levels": {
+        "5": "avoid",
+        "10": "cooling",
+        "20": "avoid"
+      },
+      "window_conflicts": [
+        "各窗口趋势等级不一致"
+      ],
+      "watch_points": [
+        "全窗口偏弱，建议回避或等待反转信号"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "其他电源设备",
+      "sector_type": "industry",
+      "multi_window_label": "weak_all_windows",
+      "consensus_score": 29.9,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 31.4,
+        "10": 34.2,
+        "20": 25.2
+      },
+      "window_levels": {
+        "5": "avoid",
+        "10": "avoid",
+        "20": "avoid"
+      },
+      "window_conflicts": [],
+      "watch_points": [
+        "全窗口偏弱，建议回避或等待反转信号"
+      ],
+      "data_warnings": []
+    },
+    {
+      "sector_name": "光伏设备",
+      "sector_type": "industry",
+      "multi_window_label": "weak_all_windows",
+      "consensus_score": 20.88,
+      "consensus_strength": "very_weak",
+      "window_scores": {
+        "5": 27.0,
+        "10": 23.0,
+        "20": 15.2
+      },
+      "window_levels": {
+        "5": "avoid",
+        "10": "avoid",
+        "20": "avoid"
+      },
+      "window_conflicts": [],
+      "watch_points": [
+        "全窗口偏弱，建议回避或等待反转信号"
+      ],
+      "data_warnings": []
+    }
+  ]
+}

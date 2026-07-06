@@ -1,0 +1,437 @@
+{
+  "schema_version": "1.0",
+  "as_of": "2026-07-03",
+  "source": "theme-sector-radar-dev",
+  "candidate_count": 15,
+  "rank_hidden": true,
+  "selection_policy": {
+    "industry_top_n": 10,
+    "concept_top_n": 10,
+    "stock_limit": 30,
+    "trend_pool_limit": 15,
+    "burst_pool_limit": 15,
+    "dedupe": true,
+    "exclude_st": true,
+    "exclude_invalid_code": true,
+    "main_board_only": true,
+    "exclude_non_main_board": true
+  },
+  "board_snapshot": {
+    "industry_top": [
+      {
+        "name": "化学制药",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "电子化学品",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "物流",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "养殖业",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "纺织制造",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "化学制品",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "化学原料",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "游戏",
+        "agent_label": "trend_confirmed_but_strength_limited"
+      },
+      {
+        "name": "造纸",
+        "agent_label": "trend_confirmed_but_strength_limited"
+      },
+      {
+        "name": "美容护理",
+        "agent_label": "trend_confirmed_but_strength_limited"
+      }
+    ],
+    "concept_top": [
+      {
+        "name": "氟化工概念",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "动物疫苗",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "丙烯酸",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "光刻胶",
+        "agent_label": "trend_confirmed"
+      },
+      {
+        "name": "芬太尼",
+        "agent_label": "oversold_rebound_candidate"
+      },
+      {
+        "name": "环氧丙烷",
+        "agent_label": "conflicted"
+      },
+      {
+        "name": "海南自贸区",
+        "agent_label": "trend_confirmed_but_strength_limited"
+      },
+      {
+        "name": "辅助生殖",
+        "agent_label": "trend_confirmed_but_strength_limited"
+      },
+      {
+        "name": "仿制药一致性评价",
+        "agent_label": "conflicted"
+      },
+      {
+        "name": "合成生物",
+        "agent_label": "conflicted"
+      }
+    ]
+  },
+  "candidates": [
+    {
+      "code": "000062",
+      "name": "深圳华强",
+      "boards": [
+        "光刻胶"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "trend",
+      "trend_score": 62.45,
+      "burst_score": 30.3,
+      "agent_label": "trend_confirmed",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ]
+    },
+    {
+      "code": "000565",
+      "name": "渝三峡A",
+      "boards": [
+        "氟化工概念"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "both",
+      "trend_score": 66.2,
+      "burst_score": 55.8,
+      "agent_label": "trend_confirmed",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ]
+    },
+    {
+      "code": "000553",
+      "name": "安道麦A",
+      "boards": [
+        "氟化工概念"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "both",
+      "trend_score": 66.2,
+      "burst_score": 55.8,
+      "agent_label": "trend_confirmed",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ]
+    },
+    {
+      "code": "000798",
+      "name": "中水渔业",
+      "boards": [
+        "动物疫苗"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "trend",
+      "trend_score": 59.0,
+      "burst_score": 45.8,
+      "agent_label": "trend_confirmed",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ]
+    },
+    {
+      "code": "000153",
+      "name": "丰原药业",
+      "boards": [
+        "芬太尼"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "both",
+      "trend_score": 45.2,
+      "burst_score": 58.8,
+      "agent_label": "oversold_rebound_candidate",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ]
+    },
+    {
+      "code": "000536",
+      "name": "华映科技",
+      "boards": [
+        "光刻胶"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "trend",
+      "trend_score": 62.45,
+      "burst_score": 30.3,
+      "agent_label": "trend_confirmed",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ]
+    },
+    {
+      "code": "000504",
+      "name": "南华生物",
+      "boards": [
+        "芬太尼"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "both",
+      "trend_score": 45.2,
+      "burst_score": 58.8,
+      "agent_label": "oversold_rebound_candidate",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ]
+    },
+    {
+      "code": "000411",
+      "name": "英特集团",
+      "boards": [
+        "芬太尼"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "both",
+      "trend_score": 45.2,
+      "burst_score": 58.8,
+      "agent_label": "oversold_rebound_candidate",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ]
+    },
+    {
+      "code": "000100",
+      "name": "TCL科技",
+      "boards": [
+        "光刻胶"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "trend",
+      "trend_score": 62.45,
+      "burst_score": 30.3,
+      "agent_label": "trend_confirmed",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ]
+    },
+    {
+      "code": "000021",
+      "name": "深科技",
+      "boards": [
+        "光刻胶"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "trend",
+      "trend_score": 62.45,
+      "burst_score": 30.3,
+      "agent_label": "trend_confirmed",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ]
+    },
+    {
+      "code": "000564",
+      "name": "供销大集",
+      "boards": [
+        "海南自贸区"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "burst",
+      "trend_score": 34.0,
+      "burst_score": 58.8,
+      "agent_label": "trend_confirmed_but_strength_limited",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ]
+    },
+    {
+      "code": "000419",
+      "name": "通程控股",
+      "boards": [
+        "海南自贸区"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "burst",
+      "trend_score": 34.0,
+      "burst_score": 58.8,
+      "agent_label": "trend_confirmed_but_strength_limited",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ]
+    },
+    {
+      "code": "000501",
+      "name": "武商集团",
+      "boards": [
+        "海南自贸区"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "burst",
+      "trend_score": 34.0,
+      "burst_score": 58.8,
+      "agent_label": "trend_confirmed_but_strength_limited",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ]
+    },
+    {
+      "code": "000058",
+      "name": "深赛格",
+      "boards": [
+        "海南自贸区"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "burst",
+      "trend_score": 34.0,
+      "burst_score": 58.8,
+      "agent_label": "trend_confirmed_but_strength_limited",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ]
+    },
+    {
+      "code": "000403",
+      "name": "派林生物",
+      "boards": [
+        "仿制药一致性评价"
+      ],
+      "board_types": [
+        "concept"
+      ],
+      "source_pool": "burst",
+      "trend_score": 45.2,
+      "burst_score": 58.8,
+      "agent_label": "conflicted",
+      "candidate_reasons": [
+        "concept_top10",
+        "trend_candidate"
+      ],
+      "data_sources": [
+        "market_data_service",
+        "stable_sector_inputs"
+      ]
+    }
+  ]
+}

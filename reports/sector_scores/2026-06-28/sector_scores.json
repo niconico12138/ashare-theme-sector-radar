@@ -1,0 +1,873 @@
+{
+  "report_type": "sector_scores",
+  "version": "0.1.0",
+  "as_of_date": "2026-06-28",
+  "updated_at": "2026-07-02T14:49:26.108735",
+  "scores": [
+    {
+      "sector_name": "电子化学品",
+      "sector_type": "industry",
+      "sector_selection_score": 64.2,
+      "selection_level": "neutral",
+      "selection_level_cn": "中性",
+      "trend_continuation_score": 64.2,
+      "trend_level": "neutral",
+      "trend_level_cn": "中性",
+      "trend_breakdown": {
+        "radar_score_component": 5.4,
+        "momentum_component": 20.0,
+        "relative_strength_component": 20.0,
+        "persistence_component": 20.0,
+        "drawdown_component": 0.0,
+        "volatility_component": 2.4,
+        "data_quality_component": 6.4,
+        "risk_penalty": 10.0,
+        "positive_score": 74.2,
+        "final_score": 64.2
+      },
+      "short_term_burst_score": 49.8,
+      "burst_level": "burst_fading",
+      "burst_level_cn": "短线降温",
+      "burst_breakdown": {
+        "radar_today_component": 10.8,
+        "one_day_change_component": 12.0,
+        "three_day_momentum_component": 9.0,
+        "volume_or_heat_component": 5.0,
+        "rank_jump_component": 5.0,
+        "data_quality_component": 8.0,
+        "burst_risk_penalty": 0.0,
+        "positive_score": 49.8,
+        "final_score": 49.8
+      },
+      "score_interpretation": {
+        "profile": "neutral",
+        "summary": "表现中性，可作为备选观察",
+        "watch_points": [
+          "等待更多确认信号",
+          "关注后续表现"
+        ]
+      },
+      "rotation_phase": "leading",
+      "benchmark_mode": "sector_median",
+      "benchmark_id": null,
+      "benchmark_name": null,
+      "trend_weight_profile": "trend_confirmation",
+      "trend_window": 10,
+      "actual_history_days": 10,
+      "history_coverage_ratio": 1.0,
+      "trend_window_status": "ok",
+      "score_breakdown": {
+        "radar_score_component": 5.4,
+        "momentum_component": 20.0,
+        "relative_strength_component": 20.0,
+        "persistence_component": 20.0,
+        "drawdown_component": 0.0,
+        "volatility_component": 2.4,
+        "data_quality_component": 6.4,
+        "risk_penalty": 10.0,
+        "positive_score": 74.2,
+        "final_score": 64.2
+      },
+      "strength_reasons": [
+        "近期涨幅靠前",
+        "相对行业中位数明显走强",
+        "上涨持续性强",
+        "数据质量一般"
+      ],
+      "risk_reasons": [
+        "存在一定风险",
+        "回撤较大，注意仓位控制",
+        "波动率中等"
+      ],
+      "watch_points": [
+        "表现中性，可作为备选观察",
+        "等待更多确认信号",
+        "基准为行业中位数，注意行业整体表现"
+      ],
+      "data_warnings": [],
+      "radar_score": 36.0,
+      "history_days": 28,
+      "diagnosis_summary": "板块表现中性，可作为备选观察",
+      "history_source": "sector_history_cache",
+      "history_data_warnings": []
+    },
+    {
+      "sector_name": "光学光电子",
+      "sector_type": "industry",
+      "sector_selection_score": 47.2,
+      "selection_level": "cooling",
+      "selection_level_cn": "降温",
+      "trend_continuation_score": 47.2,
+      "trend_level": "cooling",
+      "trend_level_cn": "降温",
+      "trend_breakdown": {
+        "radar_score_component": 5.4,
+        "momentum_component": 15.0,
+        "relative_strength_component": 20.0,
+        "persistence_component": 10.0,
+        "drawdown_component": 0.0,
+        "volatility_component": 2.4,
+        "data_quality_component": 6.4,
+        "risk_penalty": 12.0,
+        "positive_score": 59.2,
+        "final_score": 47.2
+      },
+      "short_term_burst_score": 35.8,
+      "burst_level": "burst_fading",
+      "burst_level_cn": "短线降温",
+      "burst_breakdown": {
+        "radar_today_component": 10.8,
+        "one_day_change_component": 4.0,
+        "three_day_momentum_component": 3.0,
+        "volume_or_heat_component": 5.0,
+        "rank_jump_component": 5.0,
+        "data_quality_component": 8.0,
+        "burst_risk_penalty": 0.0,
+        "positive_score": 35.8,
+        "final_score": 35.8
+      },
+      "score_interpretation": {
+        "profile": "weak_or_cooling",
+        "summary": "趋势和短线都弱，建议回避",
+        "watch_points": [
+          "板块整体表现疲弱",
+          "等待明确的反转信号"
+        ]
+      },
+      "rotation_phase": "lagging",
+      "benchmark_mode": "sector_median",
+      "benchmark_id": null,
+      "benchmark_name": null,
+      "trend_weight_profile": "trend_confirmation",
+      "trend_window": 10,
+      "actual_history_days": 10,
+      "history_coverage_ratio": 1.0,
+      "trend_window_status": "ok",
+      "score_breakdown": {
+        "radar_score_component": 5.4,
+        "momentum_component": 15.0,
+        "relative_strength_component": 20.0,
+        "persistence_component": 10.0,
+        "drawdown_component": 0.0,
+        "volatility_component": 2.4,
+        "data_quality_component": 6.4,
+        "risk_penalty": 12.0,
+        "positive_score": 59.2,
+        "final_score": 47.2
+      },
+      "strength_reasons": [
+        "近期涨幅靠前",
+        "相对行业中位数明显走强",
+        "上涨持续性一般",
+        "数据质量一般"
+      ],
+      "risk_reasons": [
+        "存在一定风险",
+        "回撤较大，注意仓位控制",
+        "波动率中等"
+      ],
+      "watch_points": [
+        "板块降温，谨慎观察",
+        "若放量滞涨则降级观察",
+        "基准为行业中位数，注意行业整体表现"
+      ],
+      "data_warnings": [],
+      "radar_score": 36.0,
+      "history_days": 28,
+      "diagnosis_summary": "板块降温，建议谨慎观察",
+      "history_source": "sector_history_cache",
+      "history_data_warnings": []
+    },
+    {
+      "sector_name": "元件",
+      "sector_type": "industry",
+      "sector_selection_score": 45.65,
+      "selection_level": "cooling",
+      "selection_level_cn": "降温",
+      "trend_continuation_score": 45.65,
+      "trend_level": "cooling",
+      "trend_level_cn": "降温",
+      "trend_breakdown": {
+        "radar_score_component": 1.65,
+        "momentum_component": 15.0,
+        "relative_strength_component": 20.0,
+        "persistence_component": 15.0,
+        "drawdown_component": 0.0,
+        "volatility_component": 1.6,
+        "data_quality_component": 6.4,
+        "risk_penalty": 14.0,
+        "positive_score": 59.65,
+        "final_score": 45.65
+      },
+      "short_term_burst_score": 21.3,
+      "burst_level": "burst_avoid",
+      "burst_level_cn": "短线偏弱",
+      "burst_breakdown": {
+        "radar_today_component": 3.3,
+        "one_day_change_component": 0.0,
+        "three_day_momentum_component": 0.0,
+        "volume_or_heat_component": 5.0,
+        "rank_jump_component": 5.0,
+        "data_quality_component": 8.0,
+        "burst_risk_penalty": 0.0,
+        "positive_score": 21.3,
+        "final_score": 21.3
+      },
+      "score_interpretation": {
+        "profile": "weak_or_cooling",
+        "summary": "趋势和短线都弱，建议回避",
+        "watch_points": [
+          "板块整体表现疲弱",
+          "等待明确的反转信号"
+        ]
+      },
+      "rotation_phase": "improving",
+      "benchmark_mode": "sector_median",
+      "benchmark_id": null,
+      "benchmark_name": null,
+      "trend_weight_profile": "trend_confirmation",
+      "trend_window": 10,
+      "actual_history_days": 10,
+      "history_coverage_ratio": 1.0,
+      "trend_window_status": "ok",
+      "score_breakdown": {
+        "radar_score_component": 1.65,
+        "momentum_component": 15.0,
+        "relative_strength_component": 20.0,
+        "persistence_component": 15.0,
+        "drawdown_component": 0.0,
+        "volatility_component": 1.6,
+        "data_quality_component": 6.4,
+        "risk_penalty": 14.0,
+        "positive_score": 59.65,
+        "final_score": 45.65
+      },
+      "strength_reasons": [
+        "近期涨幅靠前",
+        "相对行业中位数明显走强",
+        "上涨持续性强",
+        "数据质量一般"
+      ],
+      "risk_reasons": [
+        "存在一定风险",
+        "回撤较大，注意仓位控制",
+        "波动率较高"
+      ],
+      "watch_points": [
+        "板块降温，谨慎观察",
+        "若放量滞涨则降级观察",
+        "基准为行业中位数，注意行业整体表现"
+      ],
+      "data_warnings": [],
+      "radar_score": 11.0,
+      "history_days": 28,
+      "diagnosis_summary": "板块降温，建议谨慎观察",
+      "history_source": "sector_history_cache",
+      "history_data_warnings": []
+    },
+    {
+      "sector_name": "IT服务",
+      "sector_type": "industry",
+      "sector_selection_score": 33.25,
+      "selection_level": "avoid",
+      "selection_level_cn": "偏弱",
+      "trend_continuation_score": 33.25,
+      "trend_level": "avoid",
+      "trend_level_cn": "偏弱",
+      "trend_breakdown": {
+        "radar_score_component": 1.65,
+        "momentum_component": 10.0,
+        "relative_strength_component": 14.0,
+        "persistence_component": 10.0,
+        "drawdown_component": 0.0,
+        "volatility_component": 3.2,
+        "data_quality_component": 6.4,
+        "risk_penalty": 12.0,
+        "positive_score": 45.25,
+        "final_score": 33.25
+      },
+      "short_term_burst_score": 25.3,
+      "burst_level": "burst_avoid",
+      "burst_level_cn": "短线偏弱",
+      "burst_breakdown": {
+        "radar_today_component": 3.3,
+        "one_day_change_component": 4.0,
+        "three_day_momentum_component": 0.0,
+        "volume_or_heat_component": 5.0,
+        "rank_jump_component": 5.0,
+        "data_quality_component": 8.0,
+        "burst_risk_penalty": 0.0,
+        "positive_score": 25.3,
+        "final_score": 25.3
+      },
+      "score_interpretation": {
+        "profile": "weak_or_cooling",
+        "summary": "趋势和短线都弱，建议回避",
+        "watch_points": [
+          "板块整体表现疲弱",
+          "等待明确的反转信号"
+        ]
+      },
+      "rotation_phase": "lagging",
+      "benchmark_mode": "sector_median",
+      "benchmark_id": null,
+      "benchmark_name": null,
+      "trend_weight_profile": "trend_confirmation",
+      "trend_window": 10,
+      "actual_history_days": 10,
+      "history_coverage_ratio": 1.0,
+      "trend_window_status": "ok",
+      "score_breakdown": {
+        "radar_score_component": 1.65,
+        "momentum_component": 10.0,
+        "relative_strength_component": 14.0,
+        "persistence_component": 10.0,
+        "drawdown_component": 0.0,
+        "volatility_component": 3.2,
+        "data_quality_component": 6.4,
+        "risk_penalty": 12.0,
+        "positive_score": 45.25,
+        "final_score": 33.25
+      },
+      "strength_reasons": [
+        "近期小幅上涨",
+        "相对行业中位数明显走强",
+        "上涨持续性一般",
+        "数据质量一般"
+      ],
+      "risk_reasons": [
+        "存在一定风险",
+        "回撤较大，注意仓位控制"
+      ],
+      "watch_points": [
+        "板块弱势，建议回避",
+        "基准为行业中位数，注意行业整体表现"
+      ],
+      "data_warnings": [],
+      "radar_score": 11.0,
+      "history_days": 28,
+      "diagnosis_summary": "板块弱势，建议回避",
+      "history_source": "sector_history_cache",
+      "history_data_warnings": []
+    },
+    {
+      "sector_name": "光伏设备",
+      "sector_type": "industry",
+      "sector_selection_score": 31.25,
+      "selection_level": "avoid",
+      "selection_level_cn": "偏弱",
+      "trend_continuation_score": 31.25,
+      "trend_level": "avoid",
+      "trend_level_cn": "偏弱",
+      "trend_breakdown": {
+        "radar_score_component": 1.65,
+        "momentum_component": 10.0,
+        "relative_strength_component": 17.0,
+        "persistence_component": 5.0,
+        "drawdown_component": 0.0,
+        "volatility_component": 3.2,
+        "data_quality_component": 6.4,
+        "risk_penalty": 12.0,
+        "positive_score": 43.25,
+        "final_score": 31.25
+      },
+      "short_term_burst_score": 28.3,
+      "burst_level": "burst_avoid",
+      "burst_level_cn": "短线偏弱",
+      "burst_breakdown": {
+        "radar_today_component": 3.3,
+        "one_day_change_component": 4.0,
+        "three_day_momentum_component": 3.0,
+        "volume_or_heat_component": 5.0,
+        "rank_jump_component": 5.0,
+        "data_quality_component": 8.0,
+        "burst_risk_penalty": 0.0,
+        "positive_score": 28.3,
+        "final_score": 28.3
+      },
+      "score_interpretation": {
+        "profile": "weak_or_cooling",
+        "summary": "趋势和短线都弱，建议回避",
+        "watch_points": [
+          "板块整体表现疲弱",
+          "等待明确的反转信号"
+        ]
+      },
+      "rotation_phase": "weakening",
+      "benchmark_mode": "sector_median",
+      "benchmark_id": null,
+      "benchmark_name": null,
+      "trend_weight_profile": "trend_confirmation",
+      "trend_window": 10,
+      "actual_history_days": 10,
+      "history_coverage_ratio": 1.0,
+      "trend_window_status": "ok",
+      "score_breakdown": {
+        "radar_score_component": 1.65,
+        "momentum_component": 10.0,
+        "relative_strength_component": 17.0,
+        "persistence_component": 5.0,
+        "drawdown_component": 0.0,
+        "volatility_component": 3.2,
+        "data_quality_component": 6.4,
+        "risk_penalty": 12.0,
+        "positive_score": 43.25,
+        "final_score": 31.25
+      },
+      "strength_reasons": [
+        "近期小幅上涨",
+        "相对行业中位数明显走强",
+        "数据质量一般"
+      ],
+      "risk_reasons": [
+        "存在一定风险",
+        "回撤较大，注意仓位控制"
+      ],
+      "watch_points": [
+        "板块弱势，建议回避",
+        "基准为行业中位数，注意行业整体表现"
+      ],
+      "data_warnings": [],
+      "radar_score": 11.0,
+      "history_days": 28,
+      "diagnosis_summary": "板块弱势，建议回避",
+      "history_source": "sector_history_cache",
+      "history_data_warnings": []
+    },
+    {
+      "sector_name": "互联网电商",
+      "sector_type": "industry",
+      "sector_selection_score": 29.25,
+      "selection_level": "avoid",
+      "selection_level_cn": "偏弱",
+      "trend_continuation_score": 29.25,
+      "trend_level": "avoid",
+      "trend_level_cn": "偏弱",
+      "trend_breakdown": {
+        "radar_score_component": 1.65,
+        "momentum_component": 10.0,
+        "relative_strength_component": 17.0,
+        "persistence_component": 5.0,
+        "drawdown_component": 0.0,
+        "volatility_component": 3.2,
+        "data_quality_component": 6.4,
+        "risk_penalty": 14.0,
+        "positive_score": 43.25,
+        "final_score": 29.25
+      },
+      "short_term_burst_score": 25.3,
+      "burst_level": "burst_avoid",
+      "burst_level_cn": "短线偏弱",
+      "burst_breakdown": {
+        "radar_today_component": 3.3,
+        "one_day_change_component": 4.0,
+        "three_day_momentum_component": 0.0,
+        "volume_or_heat_component": 5.0,
+        "rank_jump_component": 5.0,
+        "data_quality_component": 8.0,
+        "burst_risk_penalty": 0.0,
+        "positive_score": 25.3,
+        "final_score": 25.3
+      },
+      "score_interpretation": {
+        "profile": "weak_or_cooling",
+        "summary": "趋势和短线都弱，建议回避",
+        "watch_points": [
+          "板块整体表现疲弱",
+          "等待明确的反转信号"
+        ]
+      },
+      "rotation_phase": "weakening",
+      "benchmark_mode": "sector_median",
+      "benchmark_id": null,
+      "benchmark_name": null,
+      "trend_weight_profile": "trend_confirmation",
+      "trend_window": 10,
+      "actual_history_days": 10,
+      "history_coverage_ratio": 1.0,
+      "trend_window_status": "ok",
+      "score_breakdown": {
+        "radar_score_component": 1.65,
+        "momentum_component": 10.0,
+        "relative_strength_component": 17.0,
+        "persistence_component": 5.0,
+        "drawdown_component": 0.0,
+        "volatility_component": 3.2,
+        "data_quality_component": 6.4,
+        "risk_penalty": 14.0,
+        "positive_score": 43.25,
+        "final_score": 29.25
+      },
+      "strength_reasons": [
+        "近期小幅上涨",
+        "相对行业中位数明显走强",
+        "数据质量一般"
+      ],
+      "risk_reasons": [
+        "存在一定风险",
+        "回撤较大，注意仓位控制"
+      ],
+      "watch_points": [
+        "板块弱势，建议回避",
+        "基准为行业中位数，注意行业整体表现"
+      ],
+      "data_warnings": [],
+      "radar_score": 11.0,
+      "history_days": 28,
+      "diagnosis_summary": "板块弱势，建议回避",
+      "history_source": "sector_history_cache",
+      "history_data_warnings": []
+    },
+    {
+      "sector_name": "保险",
+      "sector_type": "industry",
+      "sector_selection_score": 25.65,
+      "selection_level": "avoid",
+      "selection_level_cn": "偏弱",
+      "trend_continuation_score": 25.65,
+      "trend_level": "avoid",
+      "trend_level_cn": "偏弱",
+      "trend_breakdown": {
+        "radar_score_component": 1.65,
+        "momentum_component": 5.0,
+        "relative_strength_component": 17.0,
+        "persistence_component": 10.0,
+        "drawdown_component": 0.0,
+        "volatility_component": 1.6,
+        "data_quality_component": 6.4,
+        "risk_penalty": 16.0,
+        "positive_score": 41.65,
+        "final_score": 25.65
+      },
+      "short_term_burst_score": 36.3,
+      "burst_level": "burst_fading",
+      "burst_level_cn": "短线降温",
+      "burst_breakdown": {
+        "radar_today_component": 3.3,
+        "one_day_change_component": 12.0,
+        "three_day_momentum_component": 3.0,
+        "volume_or_heat_component": 5.0,
+        "rank_jump_component": 5.0,
+        "data_quality_component": 8.0,
+        "burst_risk_penalty": 0.0,
+        "positive_score": 36.3,
+        "final_score": 36.3
+      },
+      "score_interpretation": {
+        "profile": "weak_or_cooling",
+        "summary": "趋势和短线都弱，建议回避",
+        "watch_points": [
+          "板块整体表现疲弱",
+          "等待明确的反转信号"
+        ]
+      },
+      "rotation_phase": "lagging",
+      "benchmark_mode": "sector_median",
+      "benchmark_id": null,
+      "benchmark_name": null,
+      "trend_weight_profile": "trend_confirmation",
+      "trend_window": 10,
+      "actual_history_days": 10,
+      "history_coverage_ratio": 1.0,
+      "trend_window_status": "ok",
+      "score_breakdown": {
+        "radar_score_component": 1.65,
+        "momentum_component": 5.0,
+        "relative_strength_component": 17.0,
+        "persistence_component": 10.0,
+        "drawdown_component": 0.0,
+        "volatility_component": 1.6,
+        "data_quality_component": 6.4,
+        "risk_penalty": 16.0,
+        "positive_score": 41.65,
+        "final_score": 25.65
+      },
+      "strength_reasons": [
+        "相对行业中位数明显走强",
+        "上涨持续性一般",
+        "数据质量一般"
+      ],
+      "risk_reasons": [
+        "风险扣分较高，存在明显风险",
+        "回撤较大，注意仓位控制",
+        "波动率较高"
+      ],
+      "watch_points": [
+        "板块弱势，建议回避",
+        "基准为行业中位数，注意行业整体表现"
+      ],
+      "data_warnings": [],
+      "radar_score": 11.0,
+      "history_days": 28,
+      "diagnosis_summary": "板块弱势，建议回避",
+      "history_source": "sector_history_cache",
+      "history_data_warnings": []
+    },
+    {
+      "sector_name": "教育",
+      "sector_type": "industry",
+      "sector_selection_score": 24.0,
+      "selection_level": "avoid",
+      "selection_level_cn": "偏弱",
+      "trend_continuation_score": 24.0,
+      "trend_level": "avoid",
+      "trend_level_cn": "偏弱",
+      "trend_breakdown": {
+        "radar_score_component": 5.4,
+        "momentum_component": 5.0,
+        "relative_strength_component": 6.0,
+        "persistence_component": 10.0,
+        "drawdown_component": 0.0,
+        "volatility_component": 3.2,
+        "data_quality_component": 6.4,
+        "risk_penalty": 12.0,
+        "positive_score": 36.0,
+        "final_score": 24.0
+      },
+      "short_term_burst_score": 39.8,
+      "burst_level": "burst_fading",
+      "burst_level_cn": "短线降温",
+      "burst_breakdown": {
+        "radar_today_component": 10.8,
+        "one_day_change_component": 8.0,
+        "three_day_momentum_component": 3.0,
+        "volume_or_heat_component": 5.0,
+        "rank_jump_component": 5.0,
+        "data_quality_component": 8.0,
+        "burst_risk_penalty": 0.0,
+        "positive_score": 39.8,
+        "final_score": 39.8
+      },
+      "score_interpretation": {
+        "profile": "weak_or_cooling",
+        "summary": "趋势和短线都弱，建议回避",
+        "watch_points": [
+          "板块整体表现疲弱",
+          "等待明确的反转信号"
+        ]
+      },
+      "rotation_phase": "lagging",
+      "benchmark_mode": "sector_median",
+      "benchmark_id": null,
+      "benchmark_name": null,
+      "trend_weight_profile": "trend_confirmation",
+      "trend_window": 10,
+      "actual_history_days": 10,
+      "history_coverage_ratio": 1.0,
+      "trend_window_status": "ok",
+      "score_breakdown": {
+        "radar_score_component": 5.4,
+        "momentum_component": 5.0,
+        "relative_strength_component": 6.0,
+        "persistence_component": 10.0,
+        "drawdown_component": 0.0,
+        "volatility_component": 3.2,
+        "data_quality_component": 6.4,
+        "risk_penalty": 12.0,
+        "positive_score": 36.0,
+        "final_score": 24.0
+      },
+      "strength_reasons": [
+        "上涨持续性一般",
+        "数据质量一般"
+      ],
+      "risk_reasons": [
+        "存在一定风险",
+        "回撤较大，注意仓位控制"
+      ],
+      "watch_points": [
+        "板块弱势，建议回避",
+        "基准为行业中位数，注意行业整体表现"
+      ],
+      "data_warnings": [],
+      "radar_score": 36.0,
+      "history_days": 28,
+      "diagnosis_summary": "板块弱势，建议回避",
+      "history_source": "sector_history_cache",
+      "history_data_warnings": []
+    },
+    {
+      "sector_name": "公路铁路运输",
+      "sector_type": "industry",
+      "sector_selection_score": 22.05,
+      "selection_level": "avoid",
+      "selection_level_cn": "偏弱",
+      "trend_continuation_score": 22.05,
+      "trend_level": "avoid",
+      "trend_level_cn": "偏弱",
+      "trend_breakdown": {
+        "radar_score_component": 1.65,
+        "momentum_component": 5.0,
+        "relative_strength_component": 14.0,
+        "persistence_component": 5.0,
+        "drawdown_component": 0.0,
+        "volatility_component": 4.0,
+        "data_quality_component": 6.4,
+        "risk_penalty": 14.0,
+        "positive_score": 36.05,
+        "final_score": 22.05
+      },
+      "short_term_burst_score": 32.3,
+      "burst_level": "burst_avoid",
+      "burst_level_cn": "短线偏弱",
+      "burst_breakdown": {
+        "radar_today_component": 3.3,
+        "one_day_change_component": 8.0,
+        "three_day_momentum_component": 3.0,
+        "volume_or_heat_component": 5.0,
+        "rank_jump_component": 5.0,
+        "data_quality_component": 8.0,
+        "burst_risk_penalty": 0.0,
+        "positive_score": 32.3,
+        "final_score": 32.3
+      },
+      "score_interpretation": {
+        "profile": "weak_or_cooling",
+        "summary": "趋势和短线都弱，建议回避",
+        "watch_points": [
+          "板块整体表现疲弱",
+          "等待明确的反转信号"
+        ]
+      },
+      "rotation_phase": "weakening",
+      "benchmark_mode": "sector_median",
+      "benchmark_id": null,
+      "benchmark_name": null,
+      "trend_weight_profile": "trend_confirmation",
+      "trend_window": 10,
+      "actual_history_days": 10,
+      "history_coverage_ratio": 1.0,
+      "trend_window_status": "ok",
+      "score_breakdown": {
+        "radar_score_component": 1.65,
+        "momentum_component": 5.0,
+        "relative_strength_component": 14.0,
+        "persistence_component": 5.0,
+        "drawdown_component": 0.0,
+        "volatility_component": 4.0,
+        "data_quality_component": 6.4,
+        "risk_penalty": 14.0,
+        "positive_score": 36.05,
+        "final_score": 22.05
+      },
+      "strength_reasons": [
+        "相对行业中位数明显走强",
+        "数据质量一般"
+      ],
+      "risk_reasons": [
+        "存在一定风险",
+        "回撤较大，注意仓位控制"
+      ],
+      "watch_points": [
+        "板块弱势，建议回避",
+        "基准为行业中位数，注意行业整体表现"
+      ],
+      "data_warnings": [],
+      "radar_score": 11.0,
+      "history_days": 28,
+      "diagnosis_summary": "板块弱势，建议回避",
+      "history_source": "sector_history_cache",
+      "history_data_warnings": []
+    },
+    {
+      "sector_name": "中药",
+      "sector_type": "industry",
+      "sector_selection_score": 21.45,
+      "selection_level": "avoid",
+      "selection_level_cn": "偏弱",
+      "trend_continuation_score": 21.45,
+      "trend_level": "avoid",
+      "trend_level_cn": "偏弱",
+      "trend_breakdown": {
+        "radar_score_component": 1.65,
+        "momentum_component": 5.0,
+        "relative_strength_component": 17.0,
+        "persistence_component": 5.0,
+        "drawdown_component": 0.0,
+        "volatility_component": 2.4,
+        "data_quality_component": 6.4,
+        "risk_penalty": 16.0,
+        "positive_score": 37.45,
+        "final_score": 21.45
+      },
+      "short_term_burst_score": 33.3,
+      "burst_level": "burst_avoid",
+      "burst_level_cn": "短线偏弱",
+      "burst_breakdown": {
+        "radar_today_component": 3.3,
+        "one_day_change_component": 16.0,
+        "three_day_momentum_component": 3.0,
+        "volume_or_heat_component": 5.0,
+        "rank_jump_component": 5.0,
+        "data_quality_component": 8.0,
+        "burst_risk_penalty": 7.0,
+        "positive_score": 40.3,
+        "final_score": 33.3
+      },
+      "score_interpretation": {
+        "profile": "weak_or_cooling",
+        "summary": "趋势和短线都弱，建议回避",
+        "watch_points": [
+          "板块整体表现疲弱",
+          "等待明确的反转信号"
+        ]
+      },
+      "rotation_phase": "weakening",
+      "benchmark_mode": "sector_median",
+      "benchmark_id": null,
+      "benchmark_name": null,
+      "trend_weight_profile": "trend_confirmation",
+      "trend_window": 10,
+      "actual_history_days": 9,
+      "history_coverage_ratio": 0.9,
+      "trend_window_status": "ok",
+      "score_breakdown": {
+        "radar_score_component": 1.65,
+        "momentum_component": 5.0,
+        "relative_strength_component": 17.0,
+        "persistence_component": 5.0,
+        "drawdown_component": 0.0,
+        "volatility_component": 2.4,
+        "data_quality_component": 6.4,
+        "risk_penalty": 16.0,
+        "positive_score": 37.45,
+        "final_score": 21.45
+      },
+      "strength_reasons": [
+        "相对行业中位数明显走强",
+        "数据质量一般"
+      ],
+      "risk_reasons": [
+        "风险扣分较高，存在明显风险",
+        "回撤较大，注意仓位控制",
+        "波动率中等"
+      ],
+      "watch_points": [
+        "板块弱势，建议回避",
+        "基准为行业中位数，注意行业整体表现"
+      ],
+      "data_warnings": [],
+      "radar_score": 11.0,
+      "history_days": 9,
+      "diagnosis_summary": "板块弱势，建议回避",
+      "history_source": "sector_history_cache",
+      "history_data_warnings": []
+    }
+  ],
+  "metadata": {
+    "sector_type": "industry",
+    "history_start_date": null,
+    "history_end_date": null,
+    "top_n": 10,
+    "history_source": "sector_history_cache",
+    "history_warnings": [],
+    "score_mode": "dual",
+    "benchmark_id": null,
+    "benchmark_name": null,
+    "benchmark_status": "none",
+    "trend_weight_profile": "trend_confirmation",
+    "trend_window": 10,
+    "trend_window_description": "10 个交易日窗口"
+  },
+  "disclaimer": "本报告仅用于板块强弱筛选和研究复盘，不作为个股操作依据或自动交易指令。"
+}

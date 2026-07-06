@@ -80,10 +80,10 @@ class TestWeightComparisonReport:
 
         md = generate_comparison_md(report)
 
-        assert "不构成个股推荐或买卖建议" in md
+        assert "不作为个股操作依据" in md
 
     def test_comparison_md_no_stock_recommendation(self):
-        """测试 comparison.md 不包含个股推荐"""
+        """测试 comparison.md 不包含个股操作结论"""
         report = {
             "as_of_date": "2026-06-28",
             "generated_at": "2026-06-29T10:00:00",

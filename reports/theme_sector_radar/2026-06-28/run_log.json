@@ -1,25 +1,8 @@
 {
-  "command_args": "--daily --as-of 2026-06-28 --provider akshare --refresh --fallback-cache-days 7 --lookback-days 5 --report-root reports/theme_sector_radar",
-  "started_at": "2026-06-29T15:47:32.097268",
-  "finished_at": "2026-06-29T15:47:49.603609",
-  "duration_ms": 17506,
-  "run_mode": "daily",
-  "provider": "akshare",
-  "offline_fixture": false,
-  "fixture_profile": "full",
-  "data_source_mode": "cache_replay",
-  "status": "failed",
-  "comparison_status": "ok",
-  "cache_fallback_used": false,
-  "warnings": [],
-  "output_files": [
-    "theme_sector_radar.json",
-    "theme_sector_radar.md",
-    "raw_snapshot.json"
-  ],
-  "report_dir": "reports/theme_sector_radar\\2026-06-28",
-  "report_root": "reports/theme_sector_radar",
-  "index_included": true,
-  "comparison_source": "lookback:5days",
-  "input_snapshot_source": "akshare"
+  "command_args": "--replay-daily-from-sector-history --as-of 2026-06-28",
+  "started_at": "2026-07-01T18:46:57.104424",
+  "finished_at": "2026-07-01T18:46:57.104424",
+  "status": "ok",
+  "run_mode": "replay",
+  "data_source_mode": "sector_history_replay"
 }

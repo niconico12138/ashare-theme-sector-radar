@@ -1,0 +1,164 @@
+{
+  "metadata": {
+    "replay_source": "sector_history",
+    "signal_date": "2026-06-10",
+    "max_source_record_date": "2026-06-10",
+    "no_lookahead_passed": true
+  },
+  "data": {
+    "industry_sectors": [
+      {
+        "sector_id": "replay_industry_保险",
+        "name": "保险",
+        "type": "industry",
+        "price_change_pct": 3.19,
+        "turnover": 11684691700.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-10",
+        "score": 76,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_旅游及酒店",
+        "name": "旅游及酒店",
+        "type": "industry",
+        "price_change_pct": 1.88,
+        "turnover": 4868084400.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-10",
+        "score": 56,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_公路铁路运输",
+        "name": "公路铁路运输",
+        "type": "industry",
+        "price_change_pct": 0.09,
+        "turnover": 3514299000.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-10",
+        "score": 36,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_农产品加工",
+        "name": "农产品加工",
+        "type": "industry",
+        "price_change_pct": 0.02,
+        "turnover": 3253261300.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-10",
+        "score": 36,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_化学制品",
+        "name": "化学制品",
+        "type": "industry",
+        "price_change_pct": 0.89,
+        "turnover": 50735619000.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-10",
+        "score": 36,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_化学原料",
+        "name": "化学原料",
+        "type": "industry",
+        "price_change_pct": 0.69,
+        "turnover": 16847329000.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-10",
+        "score": 36,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_塑料制品",
+        "name": "塑料制品",
+        "type": "industry",
+        "price_change_pct": 0.63,
+        "turnover": 42219533000.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-10",
+        "score": 36,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_多元金融",
+        "name": "多元金融",
+        "type": "industry",
+        "price_change_pct": 0.17,
+        "turnover": 5091650100.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-10",
+        "score": 36,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_机场航运",
+        "name": "机场航运",
+        "type": "industry",
+        "price_change_pct": 0.59,
+        "turnover": 3821123600.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-10",
+        "score": 36,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      },
+      {
+        "sector_id": "replay_industry_电子化学品",
+        "name": "电子化学品",
+        "type": "industry",
+        "price_change_pct": 0.72,
+        "turnover": 72782627000.0,
+        "main_net_inflow": 0.0,
+        "data_quality_score": 60.0,
+        "source": "sector_history_replay",
+        "source_record_date": "2026-06-10",
+        "score": 36,
+        "score_breakdown": {
+          "score_source": "sector_history_replay"
+        }
+      }
+    ],
+    "concept_sectors": [],
+    "market_data": {}
+  }
+}

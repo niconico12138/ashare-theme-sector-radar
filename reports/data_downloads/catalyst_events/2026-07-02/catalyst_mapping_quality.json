@@ -1,0 +1,37 @@
+{
+  "date_range": "2026-07-02_to_2026-07-02",
+  "event_count": 14,
+  "mapped_count": 0,
+  "unmapped_count": 14,
+  "mapping_rate": 0.0,
+  "status_counts": {
+    "unmapped_missing_symbol": 14
+  },
+  "top_unmapped": [
+    {
+      "symbol": "工程机械",
+      "name": "",
+      "count": 5,
+      "reason": "unmapped_missing_symbol"
+    },
+    {
+      "symbol": "贵金属",
+      "name": "",
+      "count": 5,
+      "reason": "unmapped_missing_symbol"
+    },
+    {
+      "symbol": "纺织制造",
+      "name": "",
+      "count": 3,
+      "reason": "unmapped_missing_symbol"
+    },
+    {
+      "symbol": "美容护理",
+      "name": "",
+      "count": 1,
+      "reason": "unmapped_missing_symbol"
+    }
+  ],
+  "warnings": []
+}

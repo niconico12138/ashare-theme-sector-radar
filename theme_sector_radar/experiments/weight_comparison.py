@@ -224,10 +224,10 @@ def generate_recommendation(
     cache_days: int = 0,
 ) -> Dict[str, Any]:
     """
-    生成推荐结论
+    生成后续方向结论
 
     Returns:
-        推荐字典
+        后续方向字典
     """
     # 单日 fixture 实验默认结论
     if is_fixture:
@@ -379,7 +379,7 @@ def generate_comparison_md(report: Dict[str, Any]) -> str:
     # 初步结论
     lines.append("## 7. 初步结论")
     lines.append("")
-    lines.append(f"- **推荐**: {report['recommendation']['recommendation']}")
+    lines.append(f"- **后续方向**: {report['recommendation']['recommendation']}")
     for reason in report["recommendation"]["reasons"]:
         lines.append(f"- {reason}")
     lines.append("")
@@ -387,7 +387,7 @@ def generate_comparison_md(report: Dict[str, Any]) -> str:
     # 声明
     lines.append("## 8. 声明")
     lines.append("")
-    lines.append("**本报告仅用于板块评分研究，不构成个股推荐或买卖建议。**")
+    lines.append("**本报告仅用于板块评分研究，不作为个股操作依据。**")
     lines.append("")
 
     return "\n".join(lines)
@@ -506,7 +506,7 @@ def generate_multi_day_summary_md(summary: Dict[str, Any]) -> str:
 
     lines.append("## 声明")
     lines.append("")
-    lines.append("**本报告仅用于板块评分研究，不构成个股推荐或买卖建议。**")
+    lines.append("**本报告仅用于板块评分研究，不作为个股操作依据。**")
     lines.append("")
 
     return "\n".join(lines)
@@ -608,7 +608,7 @@ def _run_single_day_experiment(args, weight_configs: List[Dict[str, Any]]):
         )["risk_level_changes"],
     }
 
-    # 生成推荐
+    # 生成后续方向
     recommendation = generate_recommendation(
         results["baseline"],
         results["capital_focused"],
@@ -642,7 +642,7 @@ def _run_single_day_experiment(args, weight_configs: List[Dict[str, Any]]):
     print(f"comparison.md 已保存: {md_path}")
 
     print("-" * 50)
-    print(f"推荐: {recommendation['recommendation']}")
+    print(f"后续方向: {recommendation['recommendation']}")
     for reason in recommendation["reasons"]:
         print(f"  - {reason}")
 
