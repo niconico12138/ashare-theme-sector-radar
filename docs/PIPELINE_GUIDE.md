@@ -29,22 +29,56 @@
 
 ## 前置条件
 
-| 组件 | 地址 | 启动方式 | 用途 |
-|------|------|----------|------|
-| **StockDB** | 127.0.0.1:7899 | 双击 `stockdb.exe` 或 `Start-Process stockdb.exe` | 个股日K线数据 |
-| **market_data_service** | http://127.0.0.1:8000 | `cd market_data_service && python -m market_data_service.api_server --host 127.0.0.1 --port 8000` | 板块成分股/行业总览 |
-| **ai-hedge-fund** | 无需常驻 | 被 radar 通过 subprocess 调用 | Agent 个股深度分析 |
+| 组件 | 地址 | 用途 |
+|------|------|------|
+| **StockDB** | 127.0.0.1:7899 | 个股日K线数据（本地数据库） |
+| **market_data_service** | http://127.0.0.1:8000 | 板块成分股/行业总览（HTTP API） |
+| **ai-hedge-fund** | 无需常驻 | Agent 个股深度分析（被 radar 通过 subprocess 调用） |
+
+### 启动 StockDB
+
+**位置**: `C:\Users\Administrator\Desktop\stockdb\stockdb.exe`
+
+```bash
+# 方式1: 双击启动
+# 双击 C:\Users\Administrator\Desktop\stockdb\stockdb.exe
+
+# 方式2: 命令行启动
+C:\Users\Administrator\Desktop\stockdb\stockdb.exe
+```
+
+- 监听 `127.0.0.1:7899`（配置在 `stockdb.conf`，不要修改）
+- **数据更新**: 双击同目录下的 `数据更新.exe`（运行前先退出 stockdb.exe）
+- 数据更新可多次运行直到完全同步，之后定期运行即可
+
+### 启动 market_data_service API
+
+```bash
+cd E:\liaohua\01_projects\market_data_service
+python -m market_data_service.api_server --host 127.0.0.1 --port 8000
+```
+
+> 依赖 StockDB 运行，确保 stockdb.exe 已启动后再启动 API。
+
+### 启动顺序
+
+```
+1. stockdb.exe              ← 先启动（数据源）
+2. 数据更新.exe             ← 更新数据（首次或定期）
+3. api_server (port 8000)   ← 再启动（依赖 StockDB）
+4. radar / pipeline         ← 最后运行
+```
 
 ### 验证前置服务
 
 ```bash
-# 检查 StockDB
+# 检查 StockDB 是否在运行
 netstat -ano | findstr :7899
 
-# 检查 API
+# 检查 API 是否在运行
 curl http://127.0.0.1:8000/health
 
-# 检查 API 可用数据源
+# 查看 API 可用数据源
 curl http://127.0.0.1:8000/health | python -m json.tool
 ```
 
@@ -244,12 +278,14 @@ Register-ScheduledTask -TaskName "ThemeSectorRadarDaily" `
 
 | 症状 | 可能原因 | 解决方案 |
 |------|----------|----------|
-| API 不可达 | market_data_service 未启动 | 启动 API server |
-| StockDB 不可达 | stockdb.exe 未运行 | 启动 StockDB |
+| StockDB 不可达 (port 7899) | stockdb.exe 未运行 | 双击 `C:\Users\Administrator\Desktop\stockdb\stockdb.exe` |
+| API 不可达 (port 8000) | market_data_service 未启动 | `cd market_data_service && python -m market_data_service.api_server --host 127.0.0.1 --port 8000` |
+| API 启动报错 | StockDB 未启动 | 先启动 stockdb.exe，再启动 API |
 | 全部 `http_mapping` (WARN) | Eastmoney EM 被代理封锁 | 预期行为，mapping 数据已覆盖 107 板块 |
 | `concept_rank` 缺失 | 未运行 full_concept 评分 | 先运行 `--score-sectors` |
 | Agent 分析超时 | LLM API 响应慢 | 检查 MiMo API 连通性 |
 | akshare 报错 ProxyError | Clash 代理拦截 | 系统自动降级到同花顺 |
+| 数据过旧 | 长期未更新 | 运行 `数据更新.exe`（先退出 stockdb.exe） |
 
 ### 数据降级说明
 
