@@ -398,7 +398,78 @@ def _fetch_data_with_cache(
             market_data = data.get("market_data", {})
             return industry_sectors, concept_sectors, market_data, cache_info, provider_status
 
-    # 获取真实数据
+    # 检查是否为历史日期（非今天）
+    from datetime import datetime, date
+    today = date.today().isoformat()
+    is_historical_date = as_of_date < today
+
+    # 如果是历史日期，优先从 sector_history 读取数据
+    if is_historical_date and not offline_fixture:
+        print(f"  检测到历史日期 {as_of_date}，优先从 sector_history 读取...")
+        industry_sectors, industry_meta = _load_sector_history_fallback(
+            cache.cache_dir,
+            SectorType.INDUSTRY,
+            as_of_date,
+            top_n * 2,
+        )
+        concept_sectors, concept_meta = _load_sector_history_fallback(
+            cache.cache_dir,
+            SectorType.CONCEPT,
+            as_of_date,
+            top_n * 2,
+        )
+
+        # 如果 sector_history 有数据，直接使用
+        if len(industry_sectors) > 0 and len(concept_sectors) > 0:
+            print(f"  从 sector_history 读取到 {len(industry_sectors)} 个行业板块, {len(concept_sectors)} 个概念板块")
+            market_data = provider.get_market_overview(as_of_date)
+
+            # 更新 provider_status
+            if hasattr(provider, 'get_provider_status'):
+                provider_status = provider.get_provider_status()
+                if provider_status is None:
+                    from .data.akshare_provider import ProviderStatusInfo
+                    provider_status = ProviderStatusInfo()
+                provider_status.fallback_used = True
+                provider_status.fallback_provider = "sector_history_cache"
+                provider_status.fallback_reason = f"历史日期 {as_of_date}，使用 sector_history_cache"
+                provider_status.industry_source = "sector_history/ths_industry_index"
+                provider_status.industry_count = len(industry_sectors)
+                provider_status.concept_source = "sector_history/ths_concept_index"
+                provider_status.concept_count = len(concept_sectors)
+                provider_status.concept_price_change_available = True
+
+            # 更新 cache_info
+            cache_info["is_fallback"] = True
+            cache_info["fallback_source"] = "sector_history_cache"
+            cache_info["source_as_of_date"] = industry_meta.get("source_as_of_date") or concept_meta.get("source_as_of_date")
+
+            # 缓存数据
+            cache_data = {
+                "industry_sectors": [s.model_dump() for s in industry_sectors],
+                "concept_sectors": [s.model_dump() for s in concept_sectors],
+                "market_data": market_data,
+            }
+            cache.set(
+                cache_key,
+                cache_data,
+                as_of_date=as_of_date,
+                metadata={
+                    "provider": "akshare",
+                    "created_at": datetime.now().isoformat(),
+                    "as_of_date": as_of_date,
+                    "data_sources": ["sector_history/ths_industry_index", "sector_history/ths_concept_index"],
+                    "is_fallback": True,
+                    "source_as_of_date": cache_info["source_as_of_date"],
+                }
+            )
+            cache_info["cache_created_at"] = datetime.now().isoformat()
+
+            return industry_sectors, concept_sectors, market_data, cache_info, provider_status
+        else:
+            print(f"  sector_history 中无 {as_of_date} 的数据，降级到实时接口")
+
+    # 获取真实数据（实时接口）
     industry_sectors = provider.get_industry_sectors(as_of_date, top_n * 2)
     concept_sectors = provider.get_concept_sectors(as_of_date, top_n * 2)
     market_data = provider.get_market_overview(as_of_date)
