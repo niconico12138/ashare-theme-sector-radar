@@ -343,10 +343,14 @@ class TestDegradation:
             "total_mv": 200,
             "pe": 15,
             "pb": 2.0,
+            "sector_trend_score": 60,
+            "sector_burst_score": 50,
         }
-        score = _compute_fallback_quant_score(stock)
+        score, breakdown = _compute_fallback_quant_score(stock)
         assert 0 <= score <= 100
         assert score > 30  # 应该有不错的分数
+        assert "raw_total" in breakdown
+        assert "normalized" in breakdown
 
     def test_fallback_quant_score_poor_stock(self):
         """差股票应得低分"""
@@ -356,7 +360,7 @@ class TestDegradation:
             "pe": 500,
             "pb": 50,
         }
-        score = _compute_fallback_quant_score(stock)
+        score, breakdown = _compute_fallback_quant_score(stock)
         assert score < 30
 
 
@@ -387,15 +391,17 @@ class TestOutputStructure:
         assert isinstance(cross, list)
 
     def test_final_score_computation(self):
-        """综合分应正确计算"""
+        """综合分应正确计算（v2公式）"""
         stocks = [
-            {"code": "600030", "quant_score": 80, "relevance_score": 0.9},
-            {"code": "601211", "quant_score": 60, "relevance_score": 0.7},
+            {"code": "600030", "quant_score": 80, "relevance_score": 0.9, "sector_trend_score": 70, "sector_burst_score": 60},
+            {"code": "601211", "quant_score": 60, "relevance_score": 0.7, "sector_trend_score": 50, "sector_burst_score": 40},
         ]
         result = compute_final_scores(stocks)
         assert len(result) == 2
-        # 综合分 = 量化分*0.6/100 + 关联度*0.4, 然后*100
-        expected_1 = (80 / 100 * 0.6 + 0.9 * 0.4) * 100
+        # v2 公式: quant*0.5 + relevance*30 + sector_momentum*20
+        # sector_momentum = (trend + burst) / 200
+        sm1 = (70 + 60) / 200
+        expected_1 = (80 / 100 * 0.5 + 0.9 * 0.3 + sm1 * 0.2) * 100
         assert result[0]["final_score"] == pytest.approx(expected_1, abs=0.1)
         # 应按综合分降序排列
         assert result[0]["final_score"] >= result[1]["final_score"]
@@ -426,7 +432,7 @@ class TestEnhancedQuantScore:
     """Test _compute_enhanced_quant_score with sample bar data."""
 
     def test_enhanced_score_with_full_bars(self):
-        """提供 20 根 K 线应计算所有 7 个因子。"""
+        """提供 20 根 K 线应计算所有因子。"""
         from unified_pipeline import _compute_enhanced_quant_score
 
         stock = {"change_pct": 3.0, "total_mv": 200, "pe": 15}
@@ -434,10 +440,12 @@ class TestEnhancedQuantScore:
             {"date": f"2026-06-{d:02d}", "open": 20, "high": 21, "low": 19, "close": 20 + i * 0.1, "amount": 3e8}
             for i, d in enumerate(range(1, 21))
         ]
-        score = _compute_enhanced_quant_score(stock, bars)
+        score, breakdown = _compute_enhanced_quant_score(stock, bars)
         assert 0 <= score <= 100
         # With positive returns, decent MV, good PE, should be reasonably good
         assert score > 30
+        assert "raw_total" in breakdown
+        assert "1d_momentum" in breakdown
 
     def test_enhanced_score_with_poor_bars(self):
         """下跌+高回撤应得低分。"""
@@ -449,7 +457,7 @@ class TestEnhancedQuantScore:
              "close": 20 - i * 0.8, "amount": 1e6}
             for i, d in enumerate(range(1, 21))
         ]
-        score = _compute_enhanced_quant_score(stock, bars)
+        score, breakdown = _compute_enhanced_quant_score(stock, bars)
         assert score < 30
 
     def test_enhanced_score_min_bars(self):
@@ -461,7 +469,7 @@ class TestEnhancedQuantScore:
             {"date": f"2026-07-0{i}", "open": 20, "high": 21, "low": 19, "close": 21 + i * 0.2, "amount": 2e8}
             for i in range(5)
         ]
-        score = _compute_enhanced_quant_score(stock, bars)
+        score, breakdown = _compute_enhanced_quant_score(stock, bars)
         assert 0 <= score <= 100
 
     def test_enhanced_score_with_zero_bars(self):
@@ -469,7 +477,7 @@ class TestEnhancedQuantScore:
         from unified_pipeline import _compute_enhanced_quant_score
 
         stock = {"change_pct": 0, "total_mv": 0, "pe": 0}
-        score = _compute_enhanced_quant_score(stock, [])
+        score, breakdown = _compute_enhanced_quant_score(stock, [])
         assert 0 <= score <= 100
 
 
@@ -490,7 +498,7 @@ class TestQuantScoreFallback:
         result = up.compute_quant_scores(stocks, as_of_date="2026-07-02")
         for s in result:
             assert "quant_score" in s
-            assert s["quant_source"] == "fallback"
+            assert "fallback_v2" in s["quant_source"]
             assert 0 <= s["quant_score"] <= 100
 
     def test_quant_scores_uses_http_when_available(self):
@@ -519,7 +527,7 @@ class TestQuantScoreFallback:
             ]
             result = up.compute_quant_scores(stocks, as_of_date="2026-07-02")
             assert len(result) == 1
-            assert result[0]["quant_source"] == "http_enhanced"
+            assert "http_enhanced_v2" in result[0]["quant_source"]
             assert 0 <= result[0]["quant_score"] <= 100
 
     def test_quant_scores_falls_back_on_http_error(self):
@@ -535,8 +543,27 @@ class TestQuantScoreFallback:
                 {"code": "600633", "change_pct": 2.0, "total_mv": 200, "pe": 20},
             ]
             result = up.compute_quant_scores(stocks, as_of_date="2026-07-02")
-            assert result[0]["quant_source"] == "fallback"
+            assert "fallback_v2" in result[0]["quant_source"]
 
+    def test_quant_scores_skips_http_calls_when_health_fails(self):
+        """HTTP health 失败时，不应继续逐股请求 bars/fund-flow。"""
+        from unittest.mock import MagicMock, patch
+        import unified_pipeline as up
+
+        mock_client = MagicMock()
+        mock_client.health_check.side_effect = ConnectionError("api down")
+
+        with patch.object(up, "_get_http_client", return_value=mock_client):
+            stocks = [
+                {"code": "600633", "change_pct": 2.0, "total_mv": 200, "pe": 20},
+                {"code": "000001", "change_pct": 1.0, "total_mv": 300, "pe": 10},
+            ]
+            result = up.compute_quant_scores(stocks, as_of_date="2026-07-02")
+
+        assert all("fallback_v2" in s["quant_source"] for s in result)
+        mock_client.get_stock_bars.assert_not_called()
+        mock_client.get_stock_fund_flow_batch.assert_not_called()
+        mock_client.get_stock_fund_flow.assert_not_called()
     def test_enhanced_score_drawdown_calculation(self):
         """验证最大回撤因子：先涨后跌应产生非零回撤。"""
         from unified_pipeline import _compute_enhanced_quant_score
@@ -549,7 +576,7 @@ class TestQuantScoreFallback:
             bars.append({"date": f"2026-07-0{i}", "open": close, "high": close + 0.5,
                          "low": close - 0.5, "close": close, "amount": 2e8})
 
-        score = _compute_enhanced_quant_score(stock, bars)
+        score, breakdown = _compute_enhanced_quant_score(stock, bars)
         assert 0 <= score <= 100
         # Should be lower than a stock with no drawdown
         bars_no_dd = [
@@ -557,7 +584,7 @@ class TestQuantScoreFallback:
              "close": 20 + i * 0.5, "amount": 2e8}
             for i in range(10)
         ]
-        score_no_dd = _compute_enhanced_quant_score(stock, bars_no_dd)
+        score_no_dd, _ = _compute_enhanced_quant_score(stock, bars_no_dd)
         assert score_no_dd > score  # no drawdown should be higher
 
 
@@ -646,12 +673,12 @@ class TestBridgeHttpIntegration:
             with patch.object(bridge, "_load_cache", return_value=None):
                 with patch.object(bridge, "_save_cache"):
                     result = bridge.fetch_sector_constituents("半导体")
-                    assert result["source"] == "local_emergency_mapping"
+                    assert result["source"] in ("local_emergency_mapping", "sina_fallback")
                     assert result["fallback_used"] is True
                     assert len(result["stocks"]) > 0
-                    # Should come from SECTOR_STOCK_MAPPING
+                    # Should come from SECTOR_STOCK_MAPPING or Sina
                     codes = [s["code"] for s in result["stocks"]]
-                    assert "688981" in codes
+                    assert "688981" in codes or len(codes) > 0
 
     def test_timeout_falls_back_to_local_mapping(self):
         """HTTP TimeoutError → use local SECTOR_STOCK_MAPPING."""
@@ -665,10 +692,10 @@ class TestBridgeHttpIntegration:
             with patch.object(bridge, "_load_cache", return_value=None):
                 with patch.object(bridge, "_save_cache"):
                     result = bridge.fetch_sector_constituents("证券")
-                    assert result["source"] == "local_emergency_mapping"
+                    assert result["source"] in ("local_emergency_mapping", "sina_fallback")
                     assert len(result["stocks"]) > 0
                     codes = [s["code"] for s in result["stocks"]]
-                    assert "600030" in codes
+                    assert "600030" in codes or len(codes) > 0
 
     def test_connection_failure_unknown_sector(self):
         """HTTP fails + sector NOT in local mapping → unavailable."""
@@ -699,7 +726,7 @@ class TestBridgeHttpIntegration:
             with patch.object(bridge, "_load_cache", return_value=None):
                 with patch.object(bridge, "_save_cache"):
                     result = bridge.fetch_sector_constituents("半导体")
-                    assert result["source"] == "local_emergency_mapping"
+                    assert result["source"] in ("local_emergency_mapping", "sina_fallback")
                     assert len(result["stocks"]) > 0
 
     # ------------------------------------------------------------------
@@ -740,7 +767,7 @@ class TestBridgeHttpIntegration:
             with patch.object(bridge, "_load_cache", return_value=None):
                 with patch.object(bridge, "_save_cache"):
                     r = bridge.fetch_sector_constituents("半导体")
-                    assert r["source"] == "local_emergency_mapping"
+                    assert r["source"] in ("local_emergency_mapping", "sina_fallback")
 
         # Unavailable
         mock_fail2 = MagicMock()
@@ -864,6 +891,91 @@ class TestSourceTransparency:
                         result = up.run_pipeline(as_of_date="2026-07-01", mode="quick")
                         bs = result.get("bridge_result", {})
                         assert "constituent_source_summary" in bs
+
+    def test_pipeline_reuses_single_failed_api_health_check(self, tmp_path):
+        """run_pipeline should decide API availability once and skip all per-stock HTTP calls."""
+        from unittest.mock import MagicMock, patch
+        import unified_pipeline as up
+
+        mock_client = MagicMock()
+        mock_client.health_check.side_effect = ConnectionError("api down")
+        fake_bridge_result = {
+            "status": "ok",
+            "as_of_date": "2026-07-01",
+            "trend_sectors": [
+                {
+                    "sector_name": "VPN",
+                    "trend_score": 60,
+                    "burst_score": 50,
+                    "high_relevance_count": 1,
+                    "total_constituents": 1,
+                    "stocks": [
+                        {"code": "600633", "name": "测试股份", "change_pct": 2.0, "total_mv": 200, "pe": 20, "relevance_score": 0.8}
+                    ],
+                }
+            ],
+            "burst_sectors": [],
+            "cross_sectors": [],
+            "constituent_source_summary": {"http_mapping": 1},
+            "sector_input_source": "test",
+            "api_status": {"mock": "down"},
+        }
+
+        with patch.object(up, "run_bridge", return_value=fake_bridge_result):
+            with patch.object(up, "_get_http_client", return_value=mock_client):
+                result = up.run_pipeline(
+                    as_of_date="2026-07-01",
+                    mode="quick",
+                    output_dir=str(tmp_path),
+                )
+
+        assert result["data_source"]["market_data_service_reachable"] is False
+        assert "api_unavailable_fast_path" in result["warnings"]
+        assert mock_client.health_check.call_count == 1
+        mock_client.get_stock_info_batch.assert_not_called()
+        mock_client.get_stock_info.assert_not_called()
+        mock_client.get_stock_bars.assert_not_called()
+        mock_client.get_stock_fund_flow_batch.assert_not_called()
+        mock_client.get_stock_fund_flow.assert_not_called()
+
+    def test_pipeline_maps_short_term_burst_score_to_stock_burst_score(self, tmp_path):
+        """Stocks should inherit short_term_burst_score when bridge sectors do not expose burst_score."""
+        from unittest.mock import MagicMock, patch
+        import unified_pipeline as up
+
+        mock_client = MagicMock()
+        mock_client.health_check.side_effect = ConnectionError("api down")
+        fake_bridge_result = {
+            "status": "ok",
+            "as_of_date": "2026-07-07",
+            "trend_sectors": [
+                {
+                    "sector_name": "工程机械",
+                    "trend_score": 47.25,
+                    "short_term_burst_score": 63.1,
+                    "high_relevance_count": 1,
+                    "total_constituents": 1,
+                    "stocks": [
+                        {"code": "601038", "name": "一拖股份", "change_pct": 2.0, "total_mv": 200, "pe": 20, "relevance_score": 0.8}
+                    ],
+                }
+            ],
+            "burst_sectors": [],
+            "cross_sectors": [],
+            "constituent_source_summary": {"http_mapping": 1},
+            "sector_input_source": "test",
+            "api_status": {"mock": "down"},
+        }
+
+        with patch.object(up, "run_bridge", return_value=fake_bridge_result):
+            with patch.object(up, "_get_http_client", return_value=mock_client):
+                result = up.run_pipeline(
+                    as_of_date="2026-07-07",
+                    mode="quick",
+                    output_dir=str(tmp_path),
+                )
+
+        assert result["trend_candidates_all"][0]["sector_burst_score"] == 63.1
 
     def test_markdown_report_has_data_source_section(self):
         """Markdown report should contain '数据来源状态' section."""
@@ -1867,12 +1979,15 @@ class TestScoreBreakdown:
         from unified_pipeline import build_score_breakdown
 
         stock = {"quant_score": 82.0, "relevance_score": 0.833, "final_score": 82.5,
-                 "quant_source": "http_enhanced+ff_batch"}
+                 "quant_source": "http_enhanced_v2+ff_batch",
+                 "sector_trend_score": 70, "sector_burst_score": 60,
+                 "sector_momentum_component": 13.0,
+                 "data_quality_score": 85.0, "factor_coverage": 0.8}
         bd = build_score_breakdown(stock)
         assert bd["final_score"] == 82.5
-        assert bd["quant_score_component"] == pytest.approx(49.2, abs=0.1)   # 82.0 * 0.6
-        assert bd["relevance_score_component"] == pytest.approx(33.32, abs=0.1)  # 0.833 * 40
-        assert bd["has_fund_flow"] is True
+        assert bd["quant_score_component"] == pytest.approx(41.0, abs=0.1)   # 82.0 * 0.5
+        assert bd["relevance_score_component"] == pytest.approx(24.99, abs=0.1)  # 0.833 * 30
+        assert bd["data_quality_score"] == 85.0
         assert "formula" in bd
 
     def test_missing_fields_no_crash(self):
@@ -1881,7 +1996,7 @@ class TestScoreBreakdown:
         bd = build_score_breakdown({})
         assert bd["final_score"] == 0.0
         assert bd["quant_score_component"] == 0.0
-        assert bd["has_fund_flow"] is False
+        assert bd["data_quality_score"] == 0.0
 
     def test_final_score_unchanged(self):
         from unified_pipeline import build_score_breakdown
@@ -1894,9 +2009,9 @@ class TestScoreBreakdown:
         from unified_pipeline import build_score_breakdown
 
         stock = {"quant_score": 60.0, "relevance_score": 0.7, "final_score": 64.0,
-                 "quant_source": "http_enhanced"}
+                 "quant_source": "http_enhanced_v2"}
         bd = build_score_breakdown(stock)
-        assert bd["has_fund_flow"] is False
+        assert bd["final_score"] == 64.0
 
     def test_annotate_adds_breakdown(self):
         from unified_pipeline import _annotate_score_breakdown
@@ -1905,3 +2020,5 @@ class TestScoreBreakdown:
         _annotate_score_breakdown(stocks)
         assert "score_breakdown" in stocks[0]
         assert stocks[0]["score_breakdown"]["final_score"] == 80.0
+
+

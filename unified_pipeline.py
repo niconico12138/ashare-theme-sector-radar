@@ -61,6 +61,36 @@ def _get_http_client():
     return _http_client
 
 
+def _http_client_is_healthy(http_client) -> bool:
+    """Return False quickly when market_data_service is unavailable.
+
+    Without this gate, callers can spend minutes retrying every per-stock
+    endpoint after /health would already have shown the local API is down.
+    """
+    if http_client is None:
+        return False
+    checker = getattr(http_client, "health_check", None) or getattr(http_client, "health", None)
+    if not callable(checker):
+        return True
+    try:
+        checker()
+        return True
+    except Exception as exc:
+        logger.warning("market_data_service health check failed; using local fallback: %s", exc)
+        return False
+
+
+def _get_sector_burst_score(sector: Dict[str, Any]) -> float:
+    """Return the short-term sector score across legacy and current field names."""
+    value = sector.get("burst_score")
+    if value is None:
+        value = sector.get("short_term_burst_score", 0)
+    try:
+        return float(value or 0)
+    except (TypeError, ValueError):
+        return 0.0
+
+
 # ============================================================
 # 项目路径
 # ============================================================
@@ -84,71 +114,238 @@ from sector_stock_bridge import (
 # ============================================================
 
 
-def _compute_enhanced_quant_score(stock: Dict, bars: List[Dict]) -> float:
-    """增强量化评分：当 HTTP API 返回足够 K 线数据时使用。
+def _compute_enhanced_quant_score(stock: Dict, bars: List[Dict]) -> Tuple[float, Dict[str, float]]:
+    """增强量化评分 v2：当 HTTP API 返回足够 K 线数据时使用。
 
-    基于七个因子（满分 100）：
-    - 涨幅排名分（0~30）
-    - 成交额排名分（0~30）
-    - 估值适中分（0~10, PE only）
-    - 5 日涨幅分（0~10）
-    - 10 日涨幅分（0~10）
-    - 20 日最大回撤分（0~10）
-    - 5 日平均成交额分（0~10）
+    v2 因子体系（满分 104 → 归一化到 100）：
+
+    一、动量质量（30分）
+      - 1日涨幅分（8）：单日涨幅，+5%满分
+      - 5日动量质量（8）：5日收益/5日波动率（Sharpe-like）
+      - MA排列分（8）：MA5>MA10>MA20=满分
+      - 涨幅持续性（6）：近5日上涨天数占比
+
+    二、估值合理（12分）
+      - PE相对分（8）：PE vs 行业中位数
+      - PB评分（4）：PB适中
+
+    三、流动性（22分）
+      - 市值适中分（8）：行业内相对市值
+      - 量能趋势（8）：5日均量/20日均量，>1.2=满分
+      - 日均成交额（6）：≥5亿=6
+
+    四、风险控制（14分）
+      - 20日最大回撤（8）：≤2%=满分
+      - 20日波动率（6）：越低越好
+
+    五、资金面（14分）
+      - 主力净流入（8）：金额标准化
+      - 资金流持续性（6）：近期流入天数
+
+    六、板块匹配（12分）
+      - 板块趋势分（8）：sector_trend_score/100
+      - 板块轮动分（4）：sector_burst_score/100
 
     Returns:
-        0~100 的综合分
+        (归一化分数 0~100, 因子明细字典)
     """
-    score = 0.0
+    breakdown = {}
+    raw_score = 0.0
+    raw_max = 104.0  # 总分上限
     n = len(bars)
 
-    # --- 涨幅分（30分满分）---
-    change = stock.get("change_pct", 0)
+    # ============================================================
+    # 一、动量质量（30分）
+    # ============================================================
+
+    # 1.1 1日涨幅分（8分）
+    change = stock.get("change_pct", 0) or 0
     if change > 0:
-        score += min(change / 5.0, 1.0) * 30  # 涨5%拿满分
+        s1d = min(change / 5.0, 1.0) * 8
     elif change < -3:
-        score += 0  # 跌太多不给分
+        s1d = 0
+    else:
+        s1d = max(0, (change + 3) / 3) * 4  # -3%~0% 给 0~4 分
+    raw_score += s1d
+    breakdown["1d_momentum"] = round(s1d, 2)
 
-    # --- 成交额分（30分满分）--- 用 total_mv 作为流动性代理
-    mv = stock.get("total_mv", 0)
-    if mv > 0:
-        if 50 <= mv <= 500:
-            score += 30
-        elif 20 <= mv < 50 or 500 < mv <= 1000:
-            score += 20
-        elif mv > 1000:
-            score += 15
-        else:
-            score += 10
-
-    # --- 估值分（10分满分，PE only）---
-    pe = stock.get("pe", 0)
-    if 0 < pe <= 200:
-        pe_score = max(0, min(1.0, (50 - min(pe, 50)) / 50)) * 10
-        score += pe_score
-
-    # --- 5 日涨幅分（10分满分）---
+    # 1.2 5日动量质量（8分）— Sharpe-like: 5d_ret / 5d_volatility
+    s5d_quality = 0.0
     if n >= 5:
-        close_5d_ago = bars[n - 5].get("close", bars[0].get("close", 0))
-        close_now = bars[-1].get("close", 0)
-        if close_5d_ago and close_5d_ago > 0:
-            ret_5d = (close_now - close_5d_ago) / close_5d_ago * 100
-            score += min(max(ret_5d, 0) / 5.0, 1.0) * 10  # +5% → 满分
+        closes_5 = [b.get("close", 0) for b in bars[-6:]]
+        rets_5 = []
+        for i in range(1, len(closes_5)):
+            if closes_5[i - 1] > 0:
+                rets_5.append((closes_5[i] - closes_5[i - 1]) / closes_5[i - 1])
+        if rets_5:
+            mean_ret = sum(rets_5) / len(rets_5)
+            if len(rets_5) > 1:
+                var = sum((r - mean_ret) ** 2 for r in rets_5) / len(rets_5)
+                std = var ** 0.5
+            else:
+                std = abs(mean_ret) if mean_ret != 0 else 0.001
+            if std > 0:
+                sharpe = mean_ret / std
+                # sharpe > 1.5 → 满分, 0~1.5 线性
+                s5d_quality = min(max(sharpe, 0) / 1.5, 1.0) * 8
+    raw_score += s5d_quality
+    breakdown["5d_momentum_quality"] = round(s5d_quality, 2)
 
-    # --- 10 日涨幅分（10分满分）---
-    if n >= 10:
-        close_10d_ago = bars[n - 10].get("close", bars[0].get("close", 0))
-        close_now = bars[-1].get("close", 0)
-        if close_10d_ago and close_10d_ago > 0:
-            ret_10d = (close_now - close_10d_ago) / close_10d_ago * 100
-            score += min(max(ret_10d, 0) / 8.0, 1.0) * 10  # +8% → 满分
+    # 1.3 MA排列分（8分）
+    ma_score = 0.0
+    if n >= 20:
+        closes = [b.get("close", 0) for b in bars]
+        ma5 = sum(closes[-5:]) / 5
+        ma10 = sum(closes[-10:]) / 10
+        ma20 = sum(closes[-20:]) / 20
+        if ma5 > ma10 > ma20 and ma20 > 0:
+            ma_score = 8  # 完美多头排列
+        elif ma5 > ma10 and ma10 > 0:
+            ma_score = 5  # 短期多头
+        elif ma5 > ma20 and ma20 > 0:
+            ma_score = 3  # 弱多头
+    elif n >= 10:
+        closes = [b.get("close", 0) for b in bars]
+        ma5 = sum(closes[-5:]) / 5
+        ma10 = sum(closes[-10:]) / 10
+        if ma5 > ma10 and ma10 > 0:
+            ma_score = 4  # 降级：只看短期
+    raw_score += ma_score
+    breakdown["ma_alignment"] = round(ma_score, 2)
 
-    # --- 20 日最大回撤分（10分满分，回撤越小分越高）---
+    # 1.4 涨幅持续性（6分）
+    continuity = 0.0
+    if n >= 5:
+        recent_5 = bars[-5:]
+        up_days = sum(1 for b in recent_5 if (b.get("close", 0) or 0) > (b.get("open", 0) or 0))
+        continuity = (up_days / 5) * 6
+    raw_score += continuity
+    breakdown["continuity"] = round(continuity, 2)
+
+    # ============================================================
+    # 二、估值合理（12分）
+    # ============================================================
+
+    # 2.1 PE相对分（8分）
+    pe_score = 0.0
+    pe = stock.get("pe", 0) or 0
+    sector_pe_median = stock.get("_sector_pe_median")
+    if pe > 0:
+        if sector_pe_median and sector_pe_median > 0:
+            # 行业内相对估值：越接近中位数越好
+            pe_ratio = pe / sector_pe_median
+            if 0.5 <= pe_ratio <= 1.5:
+                pe_score = 8  # 合理区间
+            elif 0.3 <= pe_ratio <= 2.0:
+                pe_score = 5  # 可接受
+            elif pe_ratio < 3.0:
+                pe_score = 2  # 偏离较大
+        else:
+            # 无行业中位数，用绝对值降级
+            if pe <= 30:
+                pe_score = 6
+            elif pe <= 50:
+                pe_score = 4
+            elif pe <= 100:
+                pe_score = 2
+    raw_score += pe_score
+    breakdown["pe_score"] = round(pe_score, 2)
+
+    # 2.2 PB评分（4分）
+    pb_score = 0.0
+    pb = stock.get("pb", 0) or 0
+    if pb > 0:
+        if 0.5 <= pb <= 5:
+            pb_score = 4
+        elif 0.3 <= pb <= 10:
+            pb_score = 2
+    raw_score += pb_score
+    breakdown["pb_score"] = round(pb_score, 2)
+
+    # ============================================================
+    # 三、流动性（22分）
+    # ============================================================
+
+    # 3.1 市值适中分（8分）
+    mv_score = 0.0
+    mv = stock.get("total_mv", 0) or 0
+    sector_mv_median = stock.get("_sector_mv_median")
+    if mv > 0:
+        if sector_mv_median and sector_mv_median > 0:
+            # 行业内相对市值
+            mv_ratio = mv / sector_mv_median
+            if 0.3 <= mv_ratio <= 3.0:
+                mv_score = 8  # 行业内适中
+            elif 0.1 <= mv_ratio <= 10.0:
+                mv_score = 5
+            else:
+                mv_score = 2
+        else:
+            # 无行业中位数，用绝对值
+            if 50 <= mv <= 500:
+                mv_score = 8
+            elif 20 <= mv < 50 or 500 < mv <= 1000:
+                mv_score = 6
+            elif 10 <= mv < 20 or 1000 < mv <= 2000:
+                mv_score = 4
+            elif mv > 2000:
+                mv_score = 3
+            else:
+                mv_score = 2
+    raw_score += mv_score
+    breakdown["market_cap"] = round(mv_score, 2)
+
+    # 3.2 量能趋势（8分）— 5日均量/20日均量
+    vol_trend = 0.0
+    if n >= 20:
+        vol_5 = [b.get("volume", 0) or 0 for b in bars[-5:]]
+        vol_20 = [b.get("volume", 0) or 0 for b in bars[-20:]]
+        avg_5 = sum(vol_5) / len(vol_5) if vol_5 else 0
+        avg_20 = sum(vol_20) / len(vol_20) if vol_20 else 0
+        if avg_20 > 0:
+            vol_ratio = avg_5 / avg_20
+            if vol_ratio >= 1.2:
+                vol_trend = 8  # 明显放量
+            elif vol_ratio >= 1.0:
+                vol_trend = 6  # 温和放量
+            elif vol_ratio >= 0.8:
+                vol_trend = 3  # 轻微缩量
+            # < 0.8: 0
+    elif n >= 5:
+        # 降级：只有5天数据，给基础分
+        vol_trend = 2
+    raw_score += vol_trend
+    breakdown["volume_trend"] = round(vol_trend, 2)
+
+    # 3.3 日均成交额（6分）
+    amount_score = 0.0
+    if n >= 5:
+        recent_5_amounts = [b.get("amount", 0) or 0 for b in bars[-5:]]
+        avg_amount = sum(recent_5_amounts) / len(recent_5_amounts)
+        if avg_amount >= 5e8:
+            amount_score = 6
+        elif avg_amount >= 2e8:
+            amount_score = 4
+        elif avg_amount >= 1e8:
+            amount_score = 3
+        elif avg_amount >= 5e7:
+            amount_score = 2
+        elif avg_amount > 0:
+            amount_score = 1
+    raw_score += amount_score
+    breakdown["avg_amount"] = round(amount_score, 2)
+
+    # ============================================================
+    # 四、风险控制（14分）
+    # ============================================================
+
+    # 4.1 20日最大回撤（8分）
+    drawdown_score = 0.0
     if n >= 3:
-        peak = bars[0].get("close", 0)
+        peak = bars[0].get("close", 0) or 0
         max_dd_pct = 0.0
         for b in bars:
-            close_v = b.get("close", 0)
+            close_v = b.get("close", 0) or 0
             if close_v > peak:
                 peak = close_v
             if peak > 0:
@@ -156,89 +353,216 @@ def _compute_enhanced_quant_score(stock: Dict, bars: List[Dict]) -> float:
                 if dd > max_dd_pct:
                     max_dd_pct = dd
         if max_dd_pct <= 2:
-            score += 10
+            drawdown_score = 8
         elif max_dd_pct <= 5:
-            score += 8
+            drawdown_score = 6
         elif max_dd_pct <= 10:
-            score += 5
+            drawdown_score = 4
         elif max_dd_pct <= 15:
-            score += 3
-        # >15%: 0
+            drawdown_score = 2
+    raw_score += drawdown_score
+    breakdown["drawdown"] = round(drawdown_score, 2)
 
-    # --- 5 日平均成交额分（10分满分）---
-    if n >= 5:
-        recent_5 = bars[-5:]
-        avg_amounts = [b.get("amount", 0) or 0 for b in recent_5]
-        avg_amount = sum(avg_amounts) / len(avg_amounts) if avg_amounts else 0
-        # 日均成交额 >= 5 亿 → 满分
-        if avg_amount >= 5e8:
-            score += 10
-        elif avg_amount >= 2e8:
-            score += 7
-        elif avg_amount >= 1e8:
-            score += 5
-        elif avg_amount >= 5e7:
-            score += 3
-        elif avg_amount > 0:
-            score += 1
+    # 4.2 20日波动率（6分）— 日收益率标准差
+    vol_score = 0.0
+    if n >= 10:
+        closes = [b.get("close", 0) or 0 for b in bars]
+        rets = []
+        for i in range(1, len(closes)):
+            if closes[i - 1] > 0:
+                rets.append((closes[i] - closes[i - 1]) / closes[i - 1])
+        if rets and len(rets) > 1:
+            mean_r = sum(rets) / len(rets)
+            var_r = sum((r - mean_r) ** 2 for r in rets) / len(rets)
+            daily_vol = var_r ** 0.5
+            annual_vol = daily_vol * (252 ** 0.5)
+            # 年化波动率 < 20% → 满分, < 30% → 4, < 50% → 2
+            if annual_vol <= 0.20:
+                vol_score = 6
+            elif annual_vol <= 0.30:
+                vol_score = 4
+            elif annual_vol <= 0.50:
+                vol_score = 2
+    raw_score += vol_score
+    breakdown["volatility"] = round(vol_score, 2)
 
-    # --- 资金流因子 (Phase 15, max 5 points) ---
+    # ============================================================
+    # 五、资金面（14分）
+    # ============================================================
+
+    # 5.1 主力净流入（8分）
+    ff_score = 0.0
     ff = stock.get("_fund_flow")
-    if ff and ff.get("available") is not False:
+    if ff and isinstance(ff, dict) and ff.get("available") is not False:
         main_inflow = ff.get("main_net_inflow")
-        if main_inflow is not None and isinstance(main_inflow, (int, float)) and main_inflow > 0:
-            # Scale: 1亿→1pt, 5亿→3pt, 10亿→5pt
-            yi = float(main_inflow) / 1e8
-            score += min(yi / 2.0, 5.0)
+        if main_inflow is not None and isinstance(main_inflow, (int, float)):
+            yi = float(main_inflow) / 1e8  # 转为亿
+            if yi > 0:
+                ff_score = min(yi / 2.0, 8.0)  # 2亿=满分
+            elif yi < -1:
+                ff_score = 0  # 大幅流出
+            else:
+                ff_score = 2  # 小幅流出不扣太多
+    raw_score += ff_score
+    breakdown["fund_flow"] = round(ff_score, 2)
 
-    return round(score, 2)
+    # 5.2 资金流持续性（6分）— 需要多日数据，单日降级
+    ff_persist = 0.0
+    if ff and isinstance(ff, dict):
+        # 如果有 recent_days 数据
+        recent_days = ff.get("recent_inflow_days")
+        if recent_days is not None and isinstance(recent_days, (int, float)):
+            ff_persist = min(recent_days / 3.0, 1.0) * 6
+        else:
+            # 单日降级：有正流入给3分
+            main_inflow = ff.get("main_net_inflow")
+            if main_inflow is not None and isinstance(main_inflow, (int, float)) and main_inflow > 0:
+                ff_persist = 3
+    raw_score += ff_persist
+    breakdown["fund_flow_persistence"] = round(ff_persist, 2)
+
+    # ============================================================
+    # 六、板块匹配（12分）
+    # ============================================================
+
+    # 6.1 板块趋势分（8分）
+    sector_trend = stock.get("sector_trend_score", 0) or 0
+    if sector_trend > 0:
+        s_trend = min(sector_trend / 100.0, 1.0) * 8
+    else:
+        s_trend = 0
+    raw_score += s_trend
+    breakdown["sector_trend"] = round(s_trend, 2)
+
+    # 6.2 板块轮动分（4分）
+    sector_burst = stock.get("sector_burst_score", 0) or 0
+    if sector_burst > 0:
+        s_burst = min(sector_burst / 100.0, 1.0) * 4
+    else:
+        s_burst = 0
+    raw_score += s_burst
+    breakdown["sector_burst"] = round(s_burst, 2)
+
+    # ============================================================
+    # 归一化到 0~100
+    # ============================================================
+    normalized = round(min(raw_score / raw_max * 100, 100.0), 2)
+    breakdown["raw_total"] = round(raw_score, 2)
+    breakdown["raw_max"] = raw_max
+    breakdown["normalized"] = normalized
+
+    return normalized, breakdown
 
 
-def _compute_fallback_quant_score(stock: Dict) -> float:
+def _compute_fallback_quant_score(stock: Dict) -> Tuple[float, Dict[str, float]]:
     """
-    降级量化评分：当 Qlib 不可用时使用。
+    降级量化评分 v2：当 K 线数据不可用时使用。
 
-    基于三个因子：
-    - 涨幅排名分（0~30分）
-    - 成交额排名分（0~30分）
-    - 估值适中分（0~40分）
+    基于可用的实时行情数据（无 K 线）：
+    - 涨幅分（0~15）：单日涨幅
+    - 市值适中分（0~15）：市值区间
+    - PE 估值分（0~12）：PE 绝对值
+    - PB 估值分（0~8）：PB 绝对值
+    - 板块趋势分（0~8）：板块趋势评分
+    - 板块短线分（0~4）：板块短线评分
+    - 资金流分（0~8）：主力净流入
 
     Returns:
-        0~100 的综合分
+        (归一化分数 0~100, 因子明细字典)
     """
-    score = 0.0
+    breakdown = {}
+    raw_score = 0.0
+    raw_max = 70.0  # 降级模式总分上限
 
-    # 涨幅分（30分满分）
-    change = stock.get("change_pct", 0)
+    # 1. 涨幅分（15分）
+    change = stock.get("change_pct", 0) or 0
     if change > 0:
-        score += min(change / 5.0, 1.0) * 30  # 涨5%拿满分
+        s_change = min(change / 5.0, 1.0) * 15
     elif change < -3:
-        score += 0  # 跌太多不给分
+        s_change = 0
+    else:
+        s_change = max(0, (change + 3) / 3) * 5
+    raw_score += s_change
+    breakdown["change_score"] = round(s_change, 2)
 
-    # 成交额分（30分满分）— 用 total_mv 作为流动性代理
-    mv = stock.get("total_mv", 0)
+    # 2. 市值适中分（15分）
+    mv = stock.get("total_mv", 0) or 0
+    mv_score = 0.0
     if mv > 0:
-        # 适中市值（50亿~500亿）给高分
         if 50 <= mv <= 500:
-            score += 30
+            mv_score = 15
         elif 20 <= mv < 50 or 500 < mv <= 1000:
-            score += 20
-        elif mv > 1000:
-            score += 15
+            mv_score = 10
+        elif 10 <= mv < 20 or 1000 < mv <= 2000:
+            mv_score = 7
+        elif mv > 2000:
+            mv_score = 5
         else:
-            score += 10
+            mv_score = 3
+    raw_score += mv_score
+    breakdown["market_cap"] = round(mv_score, 2)
 
-    # 估值分（40分满分）
-    pe = stock.get("pe", 0)
-    pb = stock.get("pb", 0)
-    if 0 < pe <= 200:
-        pe_score = max(0, min(1.0, (50 - min(pe, 50)) / 50)) * 20
-        score += pe_score
-    if 0 < pb <= 30:
-        pb_score = max(0, min(1.0, (10 - abs(pb - 2)) / 10)) * 20
-        score += pb_score
+    # 3. PE 估值分（12分）
+    pe = stock.get("pe", 0) or 0
+    pe_score = 0.0
+    if pe > 0:
+        if pe <= 20:
+            pe_score = 12
+        elif pe <= 30:
+            pe_score = 10
+        elif pe <= 50:
+            pe_score = 7
+        elif pe <= 100:
+            pe_score = 4
+        elif pe <= 200:
+            pe_score = 2
+    raw_score += pe_score
+    breakdown["pe_score"] = round(pe_score, 2)
 
-    return round(score, 2)
+    # 4. PB 估值分（8分）
+    pb = stock.get("pb", 0) or 0
+    pb_score = 0.0
+    if pb > 0:
+        if 0.5 <= pb <= 3:
+            pb_score = 8
+        elif 0.3 <= pb <= 5:
+            pb_score = 5
+        elif 0.1 <= pb <= 10:
+            pb_score = 2
+    raw_score += pb_score
+    breakdown["pb_score"] = round(pb_score, 2)
+
+    # 5. 板块趋势分（8分）
+    sector_trend = stock.get("sector_trend_score", 0) or 0
+    s_trend = min(sector_trend / 100.0, 1.0) * 8 if sector_trend > 0 else 0
+    raw_score += s_trend
+    breakdown["sector_trend"] = round(s_trend, 2)
+
+    # 6. 板块短线分（4分）
+    sector_burst = stock.get("sector_burst_score", 0) or 0
+    s_burst = min(sector_burst / 100.0, 1.0) * 4 if sector_burst > 0 else 0
+    raw_score += s_burst
+    breakdown["sector_burst"] = round(s_burst, 2)
+
+    # 7. 资金流分（8分）
+    ff = stock.get("_fund_flow")
+    ff_score = 0.0
+    if ff and isinstance(ff, dict) and ff.get("available") is not False:
+        main_inflow = ff.get("main_net_inflow")
+        if main_inflow is not None and isinstance(main_inflow, (int, float)):
+            yi = float(main_inflow) / 1e8
+            if yi > 0:
+                ff_score = min(yi / 2.0, 8.0)
+    raw_score += ff_score
+    breakdown["fund_flow"] = round(ff_score, 2)
+
+    # 归一化
+    normalized = round(min(raw_score / raw_max * 100, 100.0), 2)
+    breakdown["raw_total"] = round(raw_score, 2)
+    breakdown["raw_max"] = raw_max
+    breakdown["normalized"] = normalized
+
+    return normalized, breakdown
 
 
 def _try_qlib_quant_score(codes: List[str]) -> Optional[Dict[str, float]]:
@@ -259,6 +583,7 @@ def _try_qlib_quant_score(codes: List[str]) -> Optional[Dict[str, float]]:
 def compute_quant_scores(
     stocks: List[Dict],
     as_of_date: Optional[str] = None,
+    http_enabled: Optional[bool] = None,
 ) -> List[Dict]:
     """为个股列表计算量化评分。
 
@@ -279,7 +604,9 @@ def compute_quant_scores(
     codes = [s["code"] for s in stocks]
 
     # ---- Attempt 1: HTTP API stock bars ----
-    http_client = _get_http_client()
+    http_client = _get_http_client() if http_enabled is not False else None
+    if http_enabled is None and not _http_client_is_healthy(http_client):
+        http_client = None
     bars_cache: Dict[str, List[Dict]] = {}
 
     if http_client is not None and as_of_date:
@@ -345,16 +672,23 @@ def compute_quant_scores(
     # Track fund flow source in quant sources
     fund_flow_count = sum(1 for s in stocks if s.get("_fund_flow") is not None)
 
+    # v2: 数据核查统计
+    quality_reports = {}
+
     if bars_cache:
         # At least some stocks have HTTP bar data → use enhanced scorer where possible
         for s in stocks:
             code = s["code"]
             if code in bars_cache:
-                s["quant_score"] = _compute_enhanced_quant_score(s, bars_cache[code])
-                s["quant_source"] = "http_enhanced"
+                score, breakdown = _compute_enhanced_quant_score(s, bars_cache[code])
+                s["quant_score"] = score
+                s["quant_breakdown"] = breakdown
+                s["quant_source"] = "http_enhanced_v2"
             else:
-                s["quant_score"] = _compute_fallback_quant_score(s)
-                s["quant_source"] = "fallback"
+                score, breakdown = _compute_fallback_quant_score(s)
+                s["quant_score"] = score
+                s["quant_breakdown"] = breakdown
+                s["quant_source"] = "fallback_v2"
     else:
         # ---- Attempt 2: Qlib ----
         qlib_scores = _try_qlib_quant_score(codes)
@@ -362,11 +696,34 @@ def compute_quant_scores(
         if qlib_scores:
             for s in stocks:
                 s["quant_score"] = qlib_scores.get(s["code"], 50.0)
+                s["quant_breakdown"] = {"source": "qlib"}
                 s["quant_source"] = "qlib"
         else:
             for s in stocks:
-                s["quant_score"] = _compute_fallback_quant_score(s)
-                s["quant_source"] = "fallback"
+                score, breakdown = _compute_fallback_quant_score(s)
+                s["quant_score"] = score
+                s["quant_breakdown"] = breakdown
+                s["quant_source"] = "fallback_v2"
+
+    # ---- 数据核查（v2 新增）----
+    try:
+        from theme_sector_radar.quant_data_validator import (
+            compute_data_quality_for_stocks,
+            print_data_quality_summary,
+        )
+        quality_reports = compute_data_quality_for_stocks(stocks, bars_cache, as_of_date)
+        for s in stocks:
+            code = s["code"]
+            if code in quality_reports:
+                qr = quality_reports[code]
+                s["data_quality_score"] = qr.quality_score
+                s["factor_coverage"] = qr.factor_coverage
+                s["available_factors"] = qr.available_factors
+                s["missing_factors"] = qr.missing_factors
+                s["degraded_factors"] = qr.degraded_factors
+        print_data_quality_summary(quality_reports)
+    except ImportError:
+        pass  # 数据核查模块不可用时跳过
 
     # Track fund flow source (appended as suffix)
     if fund_flow_count > 0:
@@ -384,23 +741,33 @@ def compute_quant_scores(
 # 综合排序
 # ============================================================
 
-WEIGHT_QUANT = 0.6
-WEIGHT_RELEVANCE = 0.4
+WEIGHT_QUANT = 0.5
+WEIGHT_RELEVANCE = 0.3
+WEIGHT_SECTOR_MOMENTUM = 0.2
 
 
 def compute_final_scores(stocks: List[Dict]) -> List[Dict]:
     """
-    计算最终综合分。
+    计算最终综合分 v2。
 
-    final_score = quant_score * 0.6 + relevance_score * 40
+    v2 公式：
+    final_score = quant_score * 0.5 + relevance_score * 30 + sector_momentum * 20
+
+    其中 sector_momentum = (sector_trend_score + sector_burst_score) / 200
 
     假设 quant_score 已归一化到 0~100，relevance_score 已归一化到 0~1。
     """
     for s in stocks:
         quant = s.get("quant_score", 50.0) / 100.0  # 归一化到 0~1
         relevance = s.get("relevance_score", 0.5)
-        final = WEIGHT_QUANT * quant + WEIGHT_RELEVANCE * relevance
+        sector_trend = s.get("sector_trend_score", 0) or 0
+        sector_burst = s.get("sector_burst_score", 0) or 0
+        sector_momentum = (sector_trend + sector_burst) / 200.0  # 归一化到 0~1
+
+        final = (WEIGHT_QUANT * quant + WEIGHT_RELEVANCE * relevance +
+                 WEIGHT_SECTOR_MOMENTUM * sector_momentum)
         s["final_score"] = round(final * 100, 2)  # 输出 0~100
+        s["sector_momentum_component"] = round(sector_momentum * 100 * WEIGHT_SECTOR_MOMENTUM, 2)
 
     stocks.sort(key=lambda x: x["final_score"], reverse=True)
     return stocks
@@ -414,12 +781,7 @@ def compute_final_scores(stocks: List[Dict]) -> List[Dict]:
 def build_score_breakdown(stock: Dict) -> Dict[str, Any]:
     """Build a human-readable score breakdown for a single stock.
 
-    Reads ``quant_score``, ``relevance_score``, and ``final_score``
-    from *stock* and computes the contribution of each component
-    according to the actual formula in :func:`compute_final_scores`.
-
-    The fund-flow bonus (Phase 15/16) is already included in
-    ``quant_score``, so it is not extracted separately here.
+    v2: 展示新因子体系的完整拆解。
 
     Returns a dict safe for JSON serialisation.  Missing fields
     fall back to ``0`` rather than crashing.
@@ -428,28 +790,66 @@ def build_score_breakdown(stock: Dict) -> Dict[str, Any]:
     relevance_score = stock.get("relevance_score") or 0.0
     final_score = stock.get("final_score") or 0.0
     qsrc = stock.get("quant_source", "")
+    qbd = stock.get("quant_breakdown", {})
 
-    # Reconstitute components from the actual formula in compute_final_scores:
-    #   quant_norm  = quant_score / 100
-    #   final_score = (0.6 * quant_norm + 0.4 * relevance_score) * 100
-    #               = quant_score * 0.6 + relevance_score * 40
-    #   fund_flow (Phase 15/16) baked into quant_score (≤ +5pts)
+    # v2 公式组件
     quant_component = round(quant_score * WEIGHT_QUANT, 2)
     relevance_component = round(relevance_score * WEIGHT_RELEVANCE * 100, 2)
+    sector_momentum_component = stock.get("sector_momentum_component", 0.0)
 
-    # Estimate fund_flow_bonus: if fund_flow present, best guess from quant_score
-    has_fund_flow = "ff_" in qsrc
-    fund_flow_bonus = round(min(quant_score * 0.05, 5.0), 2) if has_fund_flow else 0.0
+    # 数据质量
+    data_quality_score = stock.get("data_quality_score", 0.0)
+    factor_coverage = stock.get("factor_coverage", 0.0)
 
-    return {
+    result = {
         "final_score": final_score,
         "quant_score_component": quant_component,
         "relevance_score_component": relevance_component,
-        "fund_flow_bonus": fund_flow_bonus,
+        "sector_momentum_component": sector_momentum_component,
         "penalty": 0.0,
-        "has_fund_flow": has_fund_flow,
-        "formula": "final_score = quant_score * 0.6 + relevance_score * 40 (quant 0-100→0-60pts, rel 0-1→0-40pts); fund_flow ≤5pts baked into quant",
+        "data_quality_score": data_quality_score,
+        "factor_coverage": factor_coverage,
+        "formula": "final = quant*0.5 + relevance*30 + sector_momentum*20",
     }
+
+    # v2: 增强模式因子明细
+    if qbd and "raw_total" in qbd:
+        result["quant_breakdown"] = {
+            "raw_total": qbd.get("raw_total", 0),
+            "raw_max": qbd.get("raw_max", 0),
+            "normalized": qbd.get("normalized", 0),
+            "factors": {
+                "动量质量": {
+                    "1d_momentum": qbd.get("1d_momentum", 0),
+                    "5d_momentum_quality": qbd.get("5d_momentum_quality", 0),
+                    "ma_alignment": qbd.get("ma_alignment", 0),
+                    "continuity": qbd.get("continuity", 0),
+                },
+                "估值合理": {
+                    "pe_score": qbd.get("pe_score", 0),
+                    "pb_score": qbd.get("pb_score", 0),
+                },
+                "流动性": {
+                    "market_cap": qbd.get("market_cap", 0),
+                    "volume_trend": qbd.get("volume_trend", 0),
+                    "avg_amount": qbd.get("avg_amount", 0),
+                },
+                "风险控制": {
+                    "drawdown": qbd.get("drawdown", 0),
+                    "volatility": qbd.get("volatility", 0),
+                },
+                "资金面": {
+                    "fund_flow": qbd.get("fund_flow", 0),
+                    "fund_flow_persistence": qbd.get("fund_flow_persistence", 0),
+                },
+                "板块匹配": {
+                    "sector_trend": qbd.get("sector_trend", 0),
+                    "sector_burst": qbd.get("sector_burst", 0),
+                },
+            },
+        }
+
+    return result
 
 
 def _annotate_score_breakdown(stocks: List[Dict]) -> List[Dict]:
@@ -965,6 +1365,11 @@ def run_pipeline(
     print(f"   时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"{'='*70}")
 
+    http_client = _get_http_client()
+    market_data_service_reachable = _http_client_is_healthy(http_client)
+    if not market_data_service_reachable:
+        result["warnings"].append("api_unavailable_fast_path")
+
     bridge_result = run_bridge(
         as_of_date=as_of_date,
         trend_top_n=trend_top_n,
@@ -995,7 +1400,7 @@ def run_pipeline(
 
         Phase 18: batch first with single fallback; Phase 17 rules preserved.
         """
-        http_client = _get_http_client()
+        http_client = _get_http_client() if market_data_service_reachable else None
         filtered: list = []
         code_set = list({s.get("code", "").strip() for s in stocks
                         if s.get("code", "").strip() and len(s.get("code", "").strip()) == 6})
@@ -1070,7 +1475,7 @@ def run_pipeline(
                     seen_codes.add(code)
                     s["sector_name"] = sec["sector_name"]
                     s["sector_trend_score"] = sec.get("trend_score", 0)
-                    s["sector_burst_score"] = sec.get("burst_score", 0)
+                    s["sector_burst_score"] = _get_sector_burst_score(sec)
                     all_stocks.append(s)
 
         if not all_stocks:
@@ -1085,7 +1490,11 @@ def run_pipeline(
 
         # 量化打分
         print(f"  [{label}] {len(all_stocks)} 只个股，计算量化评分...")
-        all_stocks = compute_quant_scores(all_stocks, as_of_date=bridge_result.get("as_of_date"))
+        all_stocks = compute_quant_scores(
+            all_stocks,
+            as_of_date=bridge_result.get("as_of_date"),
+            http_enabled=market_data_service_reachable,
+        )
 
         # 综合排序
         all_stocks = compute_final_scores(all_stocks)
@@ -1125,6 +1534,8 @@ def run_pipeline(
         "quant_score_sources": quant_sources,
         "fund_flow_source": getattr(compute_quant_scores, "_last_fund_flow_source", "fund_flow_neutral"),
         "stock_info_sources": dict(_stock_info_stats),
+        "market_data_service_reachable": market_data_service_reachable,
+        "api_fast_path": "http_enabled" if market_data_service_reachable else "api_unavailable_fast_path",
         "sector_input_source": bridge_result.get("sector_input_source", "legacy_sector_scores"),
         "has_unavailable_sectors": source_summary.get("unavailable", 0) > 0,
         "has_emergency_fallback": source_summary.get("local_emergency_mapping", 0) > 0,
@@ -1161,12 +1572,12 @@ def run_pipeline(
         "bridge_summary": {
             "trend_sectors": [
                 {"name": s["sector_name"], "trend_score": s["trend_score"],
-                 "burst_score": s["burst_score"], "count": s["high_relevance_count"]}
+                 "burst_score": _get_sector_burst_score(s), "count": s["high_relevance_count"]}
                 for s in bridge_result.get("trend_sectors", [])
             ],
             "burst_sectors": [
                 {"name": s["sector_name"], "trend_score": s["trend_score"],
-                 "burst_score": s["burst_score"], "count": s["high_relevance_count"]}
+                 "burst_score": _get_sector_burst_score(s), "count": s["high_relevance_count"]}
                 for s in bridge_result.get("burst_sectors", [])
             ],
             "cross_sectors": bridge_result.get("cross_sectors", []),
@@ -1266,3 +1677,4 @@ if __name__ == "__main__":
     from multiprocessing import freeze_support
     freeze_support()
     main()
+

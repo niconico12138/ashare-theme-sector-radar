@@ -1,127 +1,179 @@
-# Theme Sector Radar - A股行业/概念板块雷达
+# A-Share Theme Sector Radar
 
-独立盘后行业/概念板块雷达子系统，服务于 A 股短线板块筛选研究。
+A research-oriented A-share theme/sector rotation and stock-candidate analysis framework.
 
-## 项目定位
+中文定位：一个面向 A 股主题/板块轮动的研究型选股框架，支持候选股发现、因子评分、Agent 辅助分析、历史验证与 shadow score 研究。
 
-- 独立 CLI 子系统，不接入 LangGraph
-- 盘后分析，不支持盘中实时判断
-- 规则评分为主，不依赖 LLM
-- 只输出板块强弱筛选，不输出个股推荐或买卖建议
+## Disclaimer
 
-## 明确边界
+This project is for research, education, and workflow automation only. It is not investment advice, not a stock recommendation service, not an investment advisory service, and not an automated trading system. Outputs must not be used as buy, sell, hold, or return-guarantee instructions.
 
-**本项目：**
-- ✅ 输出板块强弱筛选
-- ✅ 输出行业/概念 Top N
-- ✅ 输出板块轮动变化
-- ✅ 输出 JSON + Markdown 报告
+## Core Capabilities
 
-**本项目不做：**
-- ❌ 不输出个股推荐
-- ❌ 不输出 buy/sell/hold 建议
-- ❌ 不输出买入、卖出、持有建议
-- ❌ 不接入自动交易
-- ❌ 不做盘中实时交易判断
-- ❌ 不修改 ai-hedge-fund 原项目
+- A-share industry and concept board analysis.
+- Candidate stock pool generation for research workflows.
+- Rule-based factor scoring and risk decomposition.
+- Daily pipeline reports in JSON and Markdown.
+- Historical selection validation.
+- Shadow score research, including V5 Regime Router Shadow Score.
+- Optional Agent-assisted analysis with strict research boundaries.
 
-## 快速开始
+## Current Research Status
 
-### 1. 安装依赖
+The latest internal validation window covers 2026-01-05 to 2026-07-08 with 120 valid validation days. Production `decision_score` remains unchanged and has ordinary 120d performance. The strongest current research model is V5 Regime Router Shadow Score:
+
+- 120d Top-Bottom Gap: +4.59
+- Hit Rate Diff: +56.0
+- Spearman rho: +0.54
+- Consistency: 55.0%
+- broad_up gap: +0.07
+- broad_down gap: +0.78
+- mixed gap: +0.15
+- Promotion Gate: `review_ready`
+
+Important: `review_ready` means ready for human review. It does not mean `production_enabled`.
+
+## Production vs Shadow Boundary
+
+- `production_change_allowed = false`
+- V5 is `shadow-only`
+- Production weights were not changed
+- Production ranking was not changed
+- `review_ready` is not automatic production adoption
+
+## Installation
+
+```bash
+python -m venv .venv
+. .venv/Scripts/activate  # Windows PowerShell users can also activate manually
+pip install -e .[dev]
+```
+
+Minimal dependency install:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. 运行 Fixture Smoke Test
+## Quick Start: Sample Mode
 
-```powershell
-# Windows PowerShell
-powershell -ExecutionPolicy Bypass -File scripts/run_daily_fixture.ps1
+Sample mode uses deterministic fixture/synthetic data. It does not require StockDB, market_data_service, API keys, or historical reports.
+
+```bash
+python scripts/export_top30_candidates.py --sample
+python scripts/run_selection_validation_batch.py --mode sample --force
+python scripts/evaluate_regime_router_shadow_score_v5.py --sample
 ```
 
-或直接运行 CLI：
+Core board radar fixture mode:
 
 ```bash
 python -m theme_sector_radar.cli --daily --as-of 2026-06-28 --offline-fixture --fixture-profile full --lookback-days 5 --report-root reports/theme_sector_radar
 ```
 
-### 3. 运行真实 AkShare 日报
+See [docs/sample_mode.md](docs/sample_mode.md).
 
-```powershell
-# Windows PowerShell
-powershell -ExecutionPolicy Bypass -File scripts/run_daily.ps1
-```
+## Real Data Configuration
 
-或直接运行 CLI：
+Real data workflows may use AkShare, a local `market_data_service`, and optionally StockDB.
 
-```bash
-python -m theme_sector_radar.cli --daily --as-of 2026-06-28 --provider akshare --refresh --lookback-days 5 --report-root reports/theme_sector_radar
-```
+1. Copy `.env.example` to `.env`.
+2. Set `MARKET_DATA_SERVICE_URL` if using the local HTTP service.
+3. Set StockDB settings only if you have StockDB installed.
+4. Keep `.env`, `data_cache/`, and `reports/` out of Git.
 
-### 4. Replay-Cache 回放
+See [docs/open_source_data_policy.md](docs/open_source_data_policy.md).
 
-```bash
-python -m theme_sector_radar.cli --replay-cache --start-date 2026-06-24 --end-date 2026-06-28 --lookback-days 5 --report-root reports/theme_sector_radar
-```
-
-## 输出路径
-
-### 报告目录
-
-```text
-reports/theme_sector_radar/YYYY-MM-DD/
-  ├── theme_sector_radar.json    # JSON 报告
-  ├── theme_sector_radar.md      # Markdown 报告
-  ├── raw_snapshot.json          # 原始快照
-  └── run_log.json               # 运行日志
-```
-
-### 索引文件
-
-```text
-reports/theme_sector_radar/
-  ├── index.json                 # 索引 JSON
-  └── index.md                   # 索引 Markdown
-```
-
-### 日志目录
-
-```text
-logs/daily_runs/
-  └── YYYY-MM-DD-run.log         # 脚本日志
-```
-
-## 常用命令
+## Daily Pipeline
 
 ```bash
-# Fixture Smoke Test
-python -m theme_sector_radar.cli --daily --as-of 2026-06-28 --offline-fixture --fixture-profile full --lookback-days 5 --report-root reports/theme_sector_radar
-
-# 真实 AkShare Daily
-python -m theme_sector_radar.cli --daily --as-of 2026-06-28 --provider akshare --refresh --lookback-days 5 --report-root reports/theme_sector_radar
-
-# Replay-Cache
-python -m theme_sector_radar.cli --replay-cache --start-date 2026-06-24 --end-date 2026-06-28 --lookback-days 5 --report-root reports/theme_sector_radar
-
-# 运行测试
-python -m pytest tests/theme_sector_radar/ -v
+python run_daily.py --as-of 2026-07-08 --mode fixture
+python scripts/run_daily_unified_pipeline.py --as-of 2026-07-08
 ```
 
-## 文档入口
+For production-like real data runs, confirm data source availability first and review all degradation flags. See [docs/runbook_daily_pipeline.md](docs/runbook_daily_pipeline.md).
 
-- [每日工作流](docs/runbooks/daily_workflow.md)
-- [Windows 任务计划配置](docs/runbooks/windows_task_scheduler.md)
-- [故障排查指南](docs/runbooks/troubleshooting.md)
-- [发布前验收清单](docs/release_checklist.md)
+## Top30 Candidate Export
 
-## 当前状态
+```bash
+python scripts/export_top30_candidates.py --as-of 2026-07-08 --stock-limit 30 --agent-stock-limit 10
+```
 
-- **版本**: 0.1.0
-- **阶段**: Phase 7.5 发布前验收
-- **测试**: 219 passed
-- **状态**: 独立 CLI，不接入 ai-hedge-fund LangGraph
+Sample export:
 
-## 许可证
+```bash
+python scripts/export_top30_candidates.py --sample --stock-limit 5 --agent-stock-limit 3
+```
 
-本项目仅用于板块强弱筛选和研究复盘，不作为个股操作依据或自动交易指令。
+The export hides raw rank and is intended for research handoff, not recommendations.
+
+## Historical Validation
+
+```bash
+python scripts/run_selection_validation_batch.py --start-date 2026-01-05 --end-date 2026-07-08 --mode existing-artifacts --source stockdb-sdk --force
+```
+
+See [docs/validation_methodology.md](docs/validation_methodology.md).
+
+## Shadow Score / V5
+
+V5 Regime Router Shadow Score routes between bull, defensive, and blended profiles by market regime. It is a research score only.
+
+```bash
+python scripts/evaluate_regime_router_shadow_score_v5.py --sample
+```
+
+For historical artifacts:
+
+```bash
+python scripts/evaluate_regime_router_shadow_score_v5.py --aggregate-path reports/selection_validation/aggregate/2026-01-05_to_2026-07-08/selection_validation_aggregate.json --validation-root reports/selection_validation --candidate-root reports/agent_bridge --output-dir reports/selection_validation/shadow_score_v5/2026-01-05_to_2026-07-08
+```
+
+## Project Structure
+
+```text
+theme_sector_radar/   core package
+scripts/              command-line research utilities
+tests/                pytest suite
+docs/                 architecture, runbooks, methodology, phase reports
+config/               example config files
+examples/             small sanitized examples only
+reports/              generated output, ignored by Git
+data_cache/           local cache, ignored by Git
+```
+
+## Tests
+
+Focused V5/open-source readiness checks:
+
+```bash
+python -m pytest tests/theme_sector_radar/test_defensive_shadow_score.py tests/theme_sector_radar/test_regime_router_shadow_score_v5.py tests/theme_sector_radar/test_shadow_v5_promotion_gate.py tests/theme_sector_radar/test_export_top30_candidates.py -q
+```
+
+Sample-mode checks:
+
+```bash
+python -m pytest tests/theme_sector_radar/test_export_top30_candidates.py::test_export_sample_top30_writes_demo_artifacts tests/theme_sector_radar/test_selection_validation_batch.py::test_run_sample_batch_writes_validation_artifacts tests/theme_sector_radar/test_regime_router_shadow_score_v5_evaluation.py::test_run_sample_evaluation_writes_shadow_v5_outputs -q
+```
+
+## FAQ
+
+**Is this a stock recommendation system?**  
+No. It is a research framework.
+
+**Can I run it without StockDB?**  
+Yes. Use sample mode and offline fixture mode.
+
+**Does V5 replace production ranking?**  
+No. V5 is `review_ready` and `shadow-only`, not `production_enabled`.
+
+**Should I commit reports?**  
+No. Full `reports/` and `data_cache/` are generated/local artifacts. Keep only small sanitized examples under `examples/`.
+
+## Sponsorship
+
+If this project helps your research workflow, you can support its maintenance. Sponsorship does not include investment advice, private stock recommendations, guaranteed support, or return promises.
+
+## License
+
+Add a project license before publishing publicly. MIT is assumed in `pyproject.toml` until replaced.

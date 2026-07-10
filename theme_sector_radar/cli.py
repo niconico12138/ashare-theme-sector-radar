@@ -1427,6 +1427,8 @@ def _run_multi_window_consensus(args):
                             "actual_history_days": score.get("actual_history_days", 0),
                             "history_coverage_ratio": score.get("history_coverage_ratio", 0),
                             "trend_window_status": score.get("trend_window_status", ""),
+                            # v2: 传递量能数据用于量价共振确认
+                            "volume_or_heat_component": score.get("burst_breakdown", {}).get("volume_or_heat_component", None),
                         }
 
         except Exception as e:

@@ -1,4 +1,4 @@
-# Windows 任务计划配置
+﻿# Windows 任务计划配置
 
 **重要说明**: 本项目不会自动创建任务计划。以下说明帮助用户手动创建。
 
@@ -24,8 +24,8 @@ Win + R -> taskschd.msc -> 回车
 ### 1.4 设置操作
 1. 选择"启动程序"
 2. 程序或脚本: `powershell.exe`
-3. 添加参数: `-ExecutionPolicy Bypass -File E:\Workspace\ai-stock-projects\theme-sector-radar-dev\scripts\run_daily.ps1`
-4. 起始于: `E:\Workspace\ai-stock-projects\theme-sector-radar-dev`
+3. 添加参数: `-ExecutionPolicy Bypass -File <path-to-a-share-theme-sector-radar>\scripts\run_daily.ps1`
+4. 起始于: `<path-to-a-share-theme-sector-radar>`
 5. 点击"下一步"
 
 ### 1.5 完成
@@ -63,3 +63,4 @@ Win + R -> taskschd.msc -> 回车
 - **网络依赖**: 真实 AkShare 模式需要网络连接
 - **失败处理**: 任务失败时会记录日志，不会自动重试
 - **时区**: 任务计划使用系统时区
+

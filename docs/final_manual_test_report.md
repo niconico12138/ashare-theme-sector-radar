@@ -1,4 +1,4 @@
-# Phase 1-13 完整集成测试验收报告
+﻿# Phase 1-13 完整集成测试验收报告
 
 **测试时间**: 2026-07-04 15:30-15:50  
 **测试人**: Claude Code  
@@ -119,7 +119,7 @@
 
 ```bash
 # 一键运行（推荐）
-cd E:\liaohua\01_projects\theme-sector-radar-dev
+cd <path-to-a-share-theme-sector-radar>
 python scripts/run_daily_unified_pipeline.py --as-of 2026-07-02 --mode quick
 
 # 查看历史
@@ -131,3 +131,4 @@ python -m theme_sector_radar.cli --daily --as-of 2026-07-02 \
   --report-root reports/theme_sector_radar \
   --include-unified-pipeline --unified-mode quick
 ```
+

@@ -11,29 +11,62 @@ venv/
 dist/
 build/
 
+# Secrets / local env
+.env
+.env.*
+!.env.example
+
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# 配置文件（本地配置不提交）
+# Local config
 config/daily.local.json
+config/*.local.*
 
-# 日志目录
+# Logs
 logs/
+*.log
 
-# 缓存目录
+# Runtime data and generated reports
 data_cache/
+reports/
+test_output/
 
-# 报告目录（可选，如果需要提交示例报告可注释掉）
-# reports/
+# Keep curated public samples outside reports/
+!examples/
+!examples/**
+!docs/samples/
+!docs/samples/**
 
-# pytest
+# Local StockDB / database files
+stockdb/
+stockdb_data/
+*.db
+*.sqlite
+*.sqlite3
+
+# pytest / coverage
 .pytest_cache/
 .coverage
 htmlcov/
 
-# 临时文件
+# Temporary files
 *.tmp
 *.bak
+
+# Local agent handoff prompts / private coordination notes
+PROMPT_FOR_CODEX.md
+# Local historical diagnostics / private coordination artifacts
+check_stockdb_freshness.py
+validate_data_quality.py
+scripts/*_result.json
+docs/diagnostics/
+docs/reviews/
+docs/phase[0-9]*.md
+docs/plans/phase*.md
+docs/data_optimization_plan.md
+docs/plans/TECHNICAL_DESIGN_V3.md
+docs/plans/todo_2026-07-08.md

@@ -42,6 +42,52 @@ def load_top30_candidates(date: str) -> dict | None:
         return None
 
 
+def summarize_filter_losses(funnel: dict) -> dict[str, int]:
+    trend_pool = funnel.get("trend_pool", {})
+    burst_pool = funnel.get("burst_pool", {})
+    return {
+        "non_main_board": int(trend_pool.get("filtered_non_main_board", 0) or 0)
+        + int(burst_pool.get("filtered_non_main_board", 0) or 0),
+        "st_filtered": int(trend_pool.get("filtered_st", 0) or 0)
+        + int(burst_pool.get("filtered_st", 0) or 0),
+        "invalid_code": int(trend_pool.get("filtered_invalid_code", 0) or 0)
+        + int(burst_pool.get("filtered_invalid_code", 0) or 0),
+        "empty_name": int(trend_pool.get("filtered_empty_name", 0) or 0)
+        + int(burst_pool.get("filtered_empty_name", 0) or 0),
+    }
+
+
+def explain_candidate_shortfall(final_count: int, target_count: int, funnel: dict, filter_losses: dict[str, int]) -> dict:
+    shortfall = max(target_count - final_count, 0)
+    top_loss_reasons = funnel.get("top_loss_reasons", [])
+    dominant = top_loss_reasons[0]["reason"] if top_loss_reasons else ""
+    if not dominant:
+        positive_losses = [(name, count) for name, count in filter_losses.items() if count > 0]
+        dominant = max(positive_losses, key=lambda item: item[1])[0] if positive_losses else ""
+
+    merge = funnel.get("merge", {})
+    if shortfall == 0:
+        recommendation = "candidate pool reached target"
+    elif dominant == "non_main_board":
+        recommendation = "main-board constraint is the dominant loss; keep the rule explicit and improve board coverage inside main-board names"
+    elif dominant == "st_filtered":
+        recommendation = "ST filtering is reducing the pool; keep the safety rule and improve upstream candidate breadth"
+    elif dominant in ("invalid_code", "empty_name"):
+        recommendation = "data normalization quality is reducing the pool; inspect upstream stock identity fields"
+    elif int(merge.get("duplicates_removed", 0) or 0) > 0:
+        recommendation = "deduplication reduced the pool; inspect overlapping trend/burst sources and add backfill candidates"
+    else:
+        recommendation = "raw eligible candidates are below target; expand upstream board constituent coverage"
+
+    return {
+        "target_count": target_count,
+        "final_count": final_count,
+        "shortfall": shortfall,
+        "dominant_loss_reason": dominant,
+        "recommendation": recommendation,
+    }
+
+
 def analyze_candidate_pool_quality(date: str) -> dict:
     """Analyze candidate pool quality for a given date."""
     data = load_top30_candidates(date)
@@ -80,9 +126,15 @@ def analyze_candidate_pool_quality(date: str) -> dict:
     burst_pool = funnel.get("burst_pool", {})
     merge = funnel.get("merge", {})
     top_loss_reasons = funnel.get("top_loss_reasons", [])
+    selection_policy = data.get("selection_policy", {})
+    target_count = int(selection_policy.get("stock_limit", data.get("candidate_count", 30)) or 30)
+    filter_loss_totals = summarize_filter_losses(funnel)
+    shortfall_analysis = explain_candidate_shortfall(final_count, target_count, funnel, filter_loss_totals)
 
     # Quality risk tags
     risk_tags = []
+    if final_count < target_count:
+        risk_tags.append("candidate_count_below_target")
     if final_count < 25:
         risk_tags.append("insufficient_candidates")
     if top1_board_ratio > 0.4:
@@ -134,6 +186,8 @@ def analyze_candidate_pool_quality(date: str) -> dict:
             "merge_after_dedup": merge.get("after_dedup", 0),
             "final_count": merge.get("final_count", 0),
         },
+        "filter_loss_totals": filter_loss_totals,
+        "shortfall_analysis": shortfall_analysis,
         "top_loss_reasons": top_loss_reasons,
         "quality_risk_tags": risk_tags,
     }
@@ -200,6 +254,27 @@ def generate_markdown_report(result: dict) -> str:
     lines.append(f"- **Merge After Dedup**: {funnel_summary.get('merge_after_dedup', 0)}")
     lines.append(f"- **Final Count**: {funnel_summary.get('final_count', 0)}")
     lines.append("")
+
+    shortfall = result.get("shortfall_analysis", {})
+    if shortfall:
+        lines.append("## Shortfall Analysis")
+        lines.append("")
+        lines.append(f"- **Target Count**: {shortfall.get('target_count', 0)}")
+        lines.append(f"- **Final Count**: {shortfall.get('final_count', 0)}")
+        lines.append(f"- **Shortfall**: {shortfall.get('shortfall', 0)}")
+        lines.append(f"- **Dominant Loss Reason**: {shortfall.get('dominant_loss_reason', '-') or '-'}")
+        lines.append(f"- **Recommendation**: {shortfall.get('recommendation', '-')}")
+        lines.append("")
+
+    filter_losses = result.get("filter_loss_totals", {})
+    if filter_losses:
+        lines.append("## Filter Loss Totals")
+        lines.append("")
+        lines.append("| Reason | Count |")
+        lines.append("|--------|------:|")
+        for reason, count in filter_losses.items():
+            lines.append(f"| {reason} | {count} |")
+        lines.append("")
 
     # Top loss reasons
     top_loss = result.get("top_loss_reasons", [])

@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Phase 24 Step 1: export_top30_candidates.py
@@ -26,6 +26,22 @@ if sys.stdout.encoding and sys.stdout.encoding.lower() in ("gbk", "cp936", "cp12
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+# New scoring modules
+from theme_sector_radar.scoring.stock_short_score import compute_stock_short_score
+from theme_sector_radar.scoring.stock_trend_score import compute_stock_trend_score
+from theme_sector_radar.scoring.sector_leader_score import compute_sector_leader_scores
+from theme_sector_radar.scoring.trade_risk import compute_trade_risk
+from theme_sector_radar.scoring.decision_score import compute_decision_score
+from theme_sector_radar.scoring.risk_decomposition import decompose_trade_risk
+from theme_sector_radar.scoring.shadow_decision_score import compute_shadow_decision_score_v2
+from theme_sector_radar.scoring.stock_short_score_v2 import compute_stock_short_score_v2
+from theme_sector_radar.scoring.shadow_decision_score_v3 import compute_shadow_decision_score_v3
+from theme_sector_radar.scoring.shadow_decision_score_v4 import compute_shadow_decision_score_v4
+from theme_sector_radar.scoring.defensive_shadow_score import compute_defensive_shadow_score
+from theme_sector_radar.scoring.regime_router_shadow_score_v5 import compute_regime_router_shadow_score_v5
 SECTOR_RESEARCH_DIR = PROJECT_ROOT / "reports" / "full90" / "sector_research"
 CONCEPT_RANK_DIR = PROJECT_ROOT / "reports" / "full_concept" / "unified_rank"
 UNIFIED_DIR = PROJECT_ROOT / "reports" / "unified"
@@ -33,6 +49,7 @@ OUTPUT_DIR = PROJECT_ROOT / "reports" / "agent_bridge"
 RESONANCE_DIR = PROJECT_ROOT / "reports" / "board_resonance"
 
 STOCK_LIMIT = 30
+AGENT_STOCK_LIMIT = 10
 
 
 def _build_board_context(date: str) -> dict:
@@ -530,6 +547,103 @@ def build_candidate_entry(
     }
 
 
+def enrich_candidates_with_scoring(candidates: list[dict]) -> list[dict]:
+    """Enrich candidates with stock-level scoring, leader identification, risk, and decision score.
+
+    This adds:
+    - stock_short_score, stock_short_breakdown, stock_short_tags
+    - stock_trend_score, stock_trend_breakdown, stock_trend_tags
+    - sector_leader_score, sector_role, leader_tags
+    - risk_penalty_score, risk_tags, trade_eligibility, invalid_reason
+    - decision_score, decision_breakdown
+
+    No bars are fetched — all scoring uses available fields with fallbacks.
+    """
+    if not candidates:
+        return candidates
+
+    for c in candidates:
+        # 1. Stock short score (no bars, uses existing fields)
+        short_result = compute_stock_short_score(c, bars=None, sector_context=None)
+        c["stock_short_score"] = short_result["stock_short_score"]
+        c["stock_short_breakdown"] = short_result["stock_short_breakdown"]
+        c["stock_short_tags"] = short_result["stock_short_tags"]
+
+        # 2. Stock trend score (no bars, uses existing fields)
+        trend_result = compute_stock_trend_score(c, bars=None)
+        c["stock_trend_score"] = trend_result["stock_trend_score"]
+        c["stock_trend_breakdown"] = trend_result["stock_trend_breakdown"]
+        c["stock_trend_tags"] = trend_result["stock_trend_tags"]
+
+    # 3. Sector leader scores (needs all candidates for intra-sector ranking)
+    candidates = compute_sector_leader_scores(candidates)
+
+    # 4. Trade risk + decision score (per-stock, after leader scores)
+    for c in candidates:
+        risk_result = compute_trade_risk(c)
+        c["risk_penalty_score"] = risk_result["risk_penalty_score"]
+        c["risk_tags"] = risk_result["risk_tags"]
+        c["trade_eligibility"] = risk_result["trade_eligibility"]
+        c["invalid_reason"] = risk_result["invalid_reason"]
+
+        # 5. Decision score
+        decision_result = compute_decision_score(c)
+        c["decision_score"] = decision_result["decision_score"]
+        c["decision_breakdown"] = decision_result["decision_breakdown"]
+
+        # 6. Risk decomposition (shadow experiment)
+        decomp_result = decompose_trade_risk(c)
+        c["hard_risk_penalty"] = decomp_result["hard_risk_penalty"]
+        c["trade_risk_penalty"] = decomp_result["trade_risk_penalty"]
+        c["volatility_elasticity_score"] = decomp_result["volatility_elasticity_score"]
+        c["drawdown_risk_score"] = decomp_result["drawdown_risk_score"]
+        c["risk_quality_tags"] = decomp_result["risk_quality_tags"]
+        c["risk_decomposition_tags"] = decomp_result["risk_decomposition_tags"]
+        c["risk_decomposition_breakdown"] = decomp_result["risk_decomposition_breakdown"]
+
+        # 7. Shadow decision score v2 (shadow experiment)
+        shadow_result = compute_shadow_decision_score_v2(c)
+        c["shadow_decision_score_v2"] = shadow_result["shadow_decision_score_v2"]
+        c["shadow_decision_breakdown_v2"] = shadow_result["shadow_decision_breakdown_v2"]
+        c["shadow_decision_tags_v2"] = shadow_result["shadow_decision_tags_v2"]
+
+        # 8. Stock short score v2 (shadow experiment)
+        short_v2_result = compute_stock_short_score_v2(c)
+        c["stock_short_score_v2"] = short_v2_result["stock_short_score_v2"]
+        c["stock_short_breakdown_v2"] = short_v2_result["stock_short_breakdown_v2"]
+        c["stock_short_v2_tags"] = short_v2_result["stock_short_v2_tags"]
+
+        # 9. Shadow decision score v3 (shadow experiment)
+        shadow_v3_result = compute_shadow_decision_score_v3(c)
+        c["shadow_decision_score_v3"] = shadow_v3_result["shadow_decision_score_v3"]
+        c["shadow_decision_breakdown_v3"] = shadow_v3_result["shadow_decision_breakdown_v3"]
+        c["shadow_decision_v3_tags"] = shadow_v3_result["shadow_decision_v3_tags"]
+
+        # 10. Shadow decision score v4 (shadow experiment, regime-aware)
+        shadow_v4_result = compute_shadow_decision_score_v4(c)
+        c["shadow_decision_score_v4"] = shadow_v4_result["shadow_decision_score_v4"]
+        c["shadow_decision_breakdown_v4"] = shadow_v4_result["shadow_decision_breakdown_v4"]
+        c["shadow_decision_v4_tags"] = shadow_v4_result["shadow_decision_v4_tags"]
+        c["shadow_decision_v4_regime_profile"] = shadow_v4_result["shadow_decision_v4_regime_profile"]
+
+        # 11. Defensive shadow score (shadow experiment, for bearish/mixed markets)
+        def_result = compute_defensive_shadow_score(c)
+        c["defensive_shadow_score"] = def_result["defensive_shadow_score"]
+        c["defensive_shadow_breakdown"] = def_result["defensive_shadow_breakdown"]
+        c["defensive_shadow_tags"] = def_result["defensive_shadow_tags"]
+
+        # 12. Regime router shadow score V5 (shadow experiment)
+        v5_result = compute_regime_router_shadow_score_v5(c)
+        c["regime_router_shadow_score_v5"] = v5_result["regime_router_shadow_score_v5"]
+        c["regime_router_shadow_breakdown_v5"] = v5_result["regime_router_shadow_breakdown_v5"]
+        c["regime_router_shadow_tags_v5"] = v5_result["regime_router_shadow_tags_v5"]
+        c["regime_router_selected_profile"] = v5_result["regime_router_selected_profile"]
+        c["bull_regime_shadow_score"] = v5_result["bull_regime_shadow_score"]
+        c["bull_regime_shadow_breakdown"] = v5_result["bull_regime_shadow_breakdown"]
+
+    return candidates
+
+
 def export_top30(date: str, stock_limit: int = STOCK_LIMIT) -> Path:
     """Main function: generate top30_candidates.json."""
     print(f"  Generating Top30 candidates for {date}...")
@@ -595,6 +709,9 @@ def export_top30(date: str, stock_limit: int = STOCK_LIMIT) -> Path:
         ],
     }
 
+    # Enrich built candidates with stock-level scoring, leader, risk, decision
+    output["candidates"] = enrich_candidates_with_scoring(output["candidates"])
+
     # Save
     out_dir = OUTPUT_DIR / date
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -621,6 +738,78 @@ def export_top30(date: str, stock_limit: int = STOCK_LIMIT) -> Path:
     return out_path
 
 
+def merge_agent_scores_into_candidates(
+    top30_path: Path,
+    ranking_path: Path,
+) -> bool:
+    """Merge agent_score fields from aihf_stock_ranking.json into top30_candidates.json.
+
+    This enables the scoring calibration pipeline to evaluate agent_score as a
+    score layer.  Only ``agent_score``, ``risk_adjusted_score``, and ``risk_level``
+    are copied — the ``rank`` field from the ranking is **never** exposed, and
+    the ``rank_hidden`` constraint on the candidates file is preserved.
+
+    Returns ``True`` on success, ``False`` when either file is missing or
+    parsing fails.
+    """
+    if not top30_path.exists() or not ranking_path.exists():
+        return False
+
+    try:
+        ranking_data = json.loads(ranking_path.read_text(encoding="utf-8"))
+        ranking_items = ranking_data.get("items", [])
+
+        # Build code -> agent fields lookup
+        ranking_lookup: dict[str, dict] = {}
+        for item in ranking_items:
+            code = str(item.get("code", "")).strip()
+            if code:
+                ranking_lookup[code] = {
+                    "agent_score": item.get("agent_score"),
+                    "risk_adjusted_score": item.get("risk_adjusted_score"),
+                    "risk_level": item.get("risk_level"),
+                }
+
+        top30_data = json.loads(top30_path.read_text(encoding="utf-8"))
+        candidates = top30_data.get("candidates", [])
+
+        merged_count = 0
+        for candidate in candidates:
+            code = str(candidate.get("code", "")).strip()
+            if code in ranking_lookup:
+                agent_data = ranking_lookup[code]
+                candidate["agent_score"] = agent_data.get("agent_score")
+                candidate["risk_adjusted_score"] = agent_data.get("risk_adjusted_score")
+                candidate["risk_level"] = agent_data.get("risk_level")
+                candidate["agent_score_available"] = True
+                candidate["agent_analysis_status"] = "analyzed"
+                merged_count += 1
+            else:
+                candidate["agent_score_available"] = False
+                if candidate.get("agent_analysis_status") != "skipped_by_agent_stock_limit":
+                    candidate["agent_analysis_status"] = "missing_agent_ranking"
+
+        # Metadata — does NOT include raw rank
+        top30_data["agent_score_merged"] = True
+        top30_data["agent_score_merge_count"] = merged_count
+        top30_data["agent_score_source"] = str(ranking_path)
+
+        top30_path.write_text(
+            json.dumps(top30_data, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+
+        print(f"  ✅ Merged agent scores into {top30_path}")
+        print(f"    - Candidates: {len(candidates)}")
+        print(f"    - Merged: {merged_count}")
+        print(f"    - Source: {ranking_path}")
+        return True
+
+    except Exception as exc:
+        print(f"  ❌ Failed to merge agent scores: {exc}")
+        return False
+
+
 def _collect_from_sectors(sector_data: dict) -> list[dict]:
     """Fallback: collect stocks from sector constituent data."""
     # This is a simplified fallback - actual implementation should
@@ -632,9 +821,29 @@ def generate_aihf_request(
     top30_path: Path,
     date: str,
     agent_preset: str = "full",
+    agent_stock_limit: int | None = AGENT_STOCK_LIMIT,
 ) -> Path:
     """Generate aihf_request.json from top30 candidates."""
     top30 = json.loads(top30_path.read_text(encoding="utf-8"))
+    candidates = top30.get("candidates", [])
+
+    selected_candidates = _select_agent_candidates(candidates, agent_stock_limit)
+    selected_codes = {str(c.get("code", "")).strip() for c in selected_candidates}
+    skipped_count = max(0, len(candidates) - len(selected_candidates))
+
+    top30["agent_analysis_policy"] = {
+        "source_candidate_count": len(candidates),
+        "agent_stock_limit": agent_stock_limit if agent_stock_limit and agent_stock_limit > 0 else len(candidates),
+        "agent_analyzed_count": len(selected_candidates),
+        "agent_skipped_count": skipped_count,
+        "selection_method": "balanced_trend_burst_then_final_score",
+    }
+    for c in candidates:
+        code = str(c.get("code", "")).strip()
+        c["agent_analysis_status"] = (
+            "pending_agent_analysis" if code in selected_codes else "skipped_by_agent_stock_limit"
+        )
+    top30_path.write_text(json.dumps(top30, ensure_ascii=False, indent=2), encoding="utf-8")
 
     # Build board_context from stable sector inputs
     board_context = _build_board_context(date)
@@ -645,6 +854,11 @@ def generate_aihf_request(
         "mode": "stock_agent_ranking",
         "agent_preset": agent_preset,
         "llm_enabled": True,
+        "source_candidate_count": len(candidates),
+        "agent_stock_limit": agent_stock_limit if agent_stock_limit and agent_stock_limit > 0 else len(candidates),
+        "agent_analyzed_count": len(selected_candidates),
+        "agent_skipped_count": skipped_count,
+        "selection_method": "balanced_trend_burst_then_final_score",
         "board_context": board_context,
         "stocks": [
             {
@@ -659,16 +873,159 @@ def generate_aihf_request(
                 "quant_score": c.get("quant_score", 0),
                 "final_score": c.get("final_score", 0),
                 "agent_label": c.get("agent_label", ""),
+                # New scoring fields for agent context
+                "stock_short_score": c.get("stock_short_score", 0),
+                "stock_trend_score": c.get("stock_trend_score", 0),
+                "sector_leader_score": c.get("sector_leader_score", 0),
+                "decision_score": c.get("decision_score", 0),
+                "trade_eligibility": c.get("trade_eligibility", "unknown"),
+                "risk_tags": c.get("risk_tags", []),
+                # Shadow experiment fields
+                "hard_risk_penalty": c.get("hard_risk_penalty", 0),
+                "trade_risk_penalty": c.get("trade_risk_penalty", 0),
+                "volatility_elasticity_score": c.get("volatility_elasticity_score", 50),
+                "drawdown_risk_score": c.get("drawdown_risk_score", 0),
+                "risk_quality_tags": c.get("risk_quality_tags", []),
+                "shadow_decision_score_v2": c.get("shadow_decision_score_v2", 0),
+                "stock_short_score_v2": c.get("stock_short_score_v2", 0),
+                "shadow_decision_score_v3": c.get("shadow_decision_score_v3", 0),
+                "shadow_decision_score_v4": c.get("shadow_decision_score_v4", 0),
+                "shadow_decision_v4_regime_profile": c.get("shadow_decision_v4_regime_profile", "default"),
+                "defensive_shadow_score": c.get("defensive_shadow_score", 0),
+                "bull_regime_shadow_score": c.get("bull_regime_shadow_score", 0),
+                "regime_router_shadow_score_v5": c.get("regime_router_shadow_score_v5", 0),
+                "regime_router_selected_profile": c.get("regime_router_selected_profile", "default"),
             }
-            for c in top30["candidates"]
+            for c in selected_candidates
         ],
     }
 
     out_path = top30_path.parent / "aihf_request.json"
     out_path.write_text(json.dumps(request, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"  ✅ AIHF request saved: {out_path}")
+    print(f"  🤖 AIHF stocks: {len(selected_candidates)}/{len(candidates)}")
     return out_path
 
+
+def _select_agent_candidates(candidates: list[dict], agent_stock_limit: int | None) -> list[dict]:
+    """Select a balanced subset for expensive agent analysis.
+
+    The top30 file keeps the full candidate pool.  This selector only limits
+    the AIHF request, preserving both trend and short-term burst representation.
+    """
+    if not agent_stock_limit or agent_stock_limit <= 0 or len(candidates) <= agent_stock_limit:
+        return list(candidates)
+
+    limit = min(agent_stock_limit, len(candidates))
+    trend_quota = limit // 2
+    burst_quota = limit - trend_quota
+
+    def sort_key(c: dict) -> float:
+        try:
+            return float(c.get("final_score", 0) or 0)
+        except (TypeError, ValueError):
+            return 0.0
+
+    trend_pool = [c for c in candidates if c.get("source_pool") in ("trend", "both")]
+    burst_pool = [c for c in candidates if c.get("source_pool") in ("burst", "both")]
+    trend_pool.sort(key=sort_key, reverse=True)
+    burst_pool.sort(key=sort_key, reverse=True)
+
+    selected: list[dict] = []
+    seen: set[str] = set()
+
+    def add_many(pool: list[dict], quota: int) -> None:
+        for c in pool:
+            if len([s for s in selected if s.get("source_pool") == c.get("source_pool")]) >= quota:
+                break
+            code = str(c.get("code", "")).strip()
+            if code and code not in seen:
+                selected.append(c)
+                seen.add(code)
+
+    add_many(trend_pool, trend_quota)
+    add_many(burst_pool, burst_quota)
+
+    if len(selected) < limit:
+        fallback = sorted(candidates, key=sort_key, reverse=True)
+        for c in fallback:
+            code = str(c.get("code", "")).strip()
+            if code and code not in seen:
+                selected.append(c)
+                seen.add(code)
+                if len(selected) >= limit:
+                    break
+
+    return selected[:limit]
+
+
+
+def _sample_candidates() -> list[dict]:
+    """Return deterministic demo candidates for open-source sample mode."""
+    base = [
+        {"code": "600001", "name": "Sample Alpha", "sector_name": "AI Infrastructure", "sector_type": "concept", "source_pool": "trend", "trend_score": 76.0, "burst_score": 58.0, "relevance_score": 82.0, "quant_score": 64.0, "final_score": 78.0, "market_regime": "broad_up", "change_pct": 2.4, "amount": 120000000, "turnover_rate": 2.1},
+        {"code": "600002", "name": "Sample Beta", "sector_name": "Advanced Manufacturing", "sector_type": "industry", "source_pool": "burst", "trend_score": 61.0, "burst_score": 74.0, "relevance_score": 77.0, "quant_score": 60.0, "final_score": 73.0, "market_regime": "mixed", "change_pct": 1.6, "amount": 98000000, "turnover_rate": 1.7},
+        {"code": "000001", "name": "Sample Gamma", "sector_name": "Dividend Defense", "sector_type": "industry", "source_pool": "both", "trend_score": 59.0, "burst_score": 52.0, "relevance_score": 70.0, "quant_score": 68.0, "final_score": 69.0, "market_regime": "broad_down", "change_pct": -0.4, "amount": 150000000, "turnover_rate": 1.2},
+        {"code": "000002", "name": "Sample Delta", "sector_name": "Energy Storage", "sector_type": "concept", "source_pool": "trend", "trend_score": 66.0, "burst_score": 62.0, "relevance_score": 74.0, "quant_score": 59.0, "final_score": 67.0, "market_regime": "mixed", "change_pct": 0.8, "amount": 86000000, "turnover_rate": 1.5},
+        {"code": "002001", "name": "Sample Epsilon", "sector_name": "Semiconductor Materials", "sector_type": "concept", "source_pool": "burst", "trend_score": 63.0, "burst_score": 69.0, "relevance_score": 72.0, "quant_score": 57.0, "final_score": 65.0, "market_regime": "broad_up", "change_pct": 3.2, "amount": 102000000, "turnover_rate": 2.4},
+    ]
+    return [dict(item, boards=[item["sector_name"]], board_types=[item["sector_type"]]) for item in base]
+
+
+def export_sample_top30(date: str = "2026-06-28", stock_limit: int = STOCK_LIMIT, agent_stock_limit: int | None = AGENT_STOCK_LIMIT) -> Path:
+    """Generate a minimal top30/aihf_request demo without StockDB, reports, or API keys."""
+    candidates = _sample_candidates()[:stock_limit]
+    candidates = enrich_candidates_with_scoring(candidates)
+    out_dir = OUTPUT_DIR / date
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    output = {
+        "schema_version": "1.0",
+        "as_of": date,
+        "source": "theme-sector-radar-dev-sample",
+        "sample_mode": True,
+        "candidate_count": len(candidates),
+        "rank_hidden": True,
+        "production_change_allowed": False,
+        "disclaimer": "Research sample only. Not investment advice or stock recommendation.",
+        "selection_policy": {
+            "sample_fixture": True,
+            "stock_limit": stock_limit,
+            "exclude_st": True,
+            "main_board_only": True,
+        },
+        "shadow_score_policy": {
+            "v5_status": "review_ready_shadow_only",
+            "production_enabled": False,
+            "review_ready_means": "human_review_required_not_auto_production",
+        },
+        "board_snapshot": {
+            "industry_top": [{"name": "Advanced Manufacturing", "type": "industry"}],
+            "concept_top": [{"name": "AI Infrastructure", "type": "concept"}],
+        },
+        "candidates": candidates,
+    }
+
+    top30_path = out_dir / "top30_candidates.json"
+    top30_path.write_text(json.dumps(output, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    selected = _select_agent_candidates(candidates, agent_stock_limit)
+    request = {
+        "schema_version": "1.0",
+        "as_of": date,
+        "mode": "stock_agent_ranking_sample",
+        "sample_mode": True,
+        "llm_enabled": False,
+        "source_candidate_count": len(candidates),
+        "agent_stock_limit": agent_stock_limit if agent_stock_limit and agent_stock_limit > 0 else len(candidates),
+        "agent_analyzed_count": len(selected),
+        "agent_skipped_count": max(0, len(candidates) - len(selected)),
+        "disclaimer": "Research sample only. Not investment advice or stock recommendation.",
+        "stocks": selected,
+    }
+    (out_dir / "aihf_request.json").write_text(json.dumps(request, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"  Sample Top30 candidates saved: {top30_path}")
+    return top30_path
 
 # ============================================================
 # CLI
@@ -677,17 +1034,27 @@ def generate_aihf_request(
 
 def main():
     parser = argparse.ArgumentParser(description="Export Top30 candidates for ai-hedge-fund")
-    parser.add_argument("--as-of", required=True, help="Date YYYY-MM-DD")
+    parser.add_argument("--sample", action="store_true", help="Run deterministic sample mode without StockDB or historical reports")
+    parser.add_argument("--as-of", default=None, help="Date YYYY-MM-DD")
     parser.add_argument("--stock-limit", type=int, default=STOCK_LIMIT, help="Max stocks")
+    parser.add_argument("--agent-stock-limit", type=int, default=AGENT_STOCK_LIMIT, help="Max stocks sent to AIHF agents")
     args = parser.parse_args()
+
+    if args.sample:
+        export_sample_top30(args.as_of or "2026-06-28", args.stock_limit, args.agent_stock_limit)
+        return
+
+    if not args.as_of:
+        parser.error("--as-of is required unless --sample is used")
 
     top30_path = export_top30(args.as_of, args.stock_limit)
     if top30_path:
-        generate_aihf_request(top30_path, args.as_of)
+        generate_aihf_request(top30_path, args.as_of, agent_stock_limit=args.agent_stock_limit)
 
 
 if __name__ == "__main__":
     main()
+
 
 
 

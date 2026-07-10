@@ -1,4 +1,4 @@
-# 三项目联合选股系统 — 完整使用说明
+﻿# 三项目联合选股系统 — 完整使用说明
 
 > **最后验证**: 2026-07-06 实际运行通过
 > **项目**: theme-sector-radar-dev + market-data-service + ai-hedge-fund
@@ -37,14 +37,14 @@
 
 ### 启动 StockDB
 
-**位置**: `C:\Users\Administrator\Desktop\stockdb\stockdb.exe`
+**位置**: `<path-to-stockdb>\\stockdb.exe`
 
 ```bash
 # 方式1: 双击启动
-# 双击 C:\Users\Administrator\Desktop\stockdb\stockdb.exe
+# 双击 <path-to-stockdb>\\stockdb.exe
 
 # 方式2: 命令行启动
-C:\Users\Administrator\Desktop\stockdb\stockdb.exe
+<path-to-stockdb>\\stockdb.exe
 ```
 
 - 监听 `127.0.0.1:7899`（配置在 `stockdb.conf`，不要修改）
@@ -54,7 +54,7 @@ C:\Users\Administrator\Desktop\stockdb\stockdb.exe
 ### 启动 market_data_service API
 
 ```bash
-cd E:\liaohua\01_projects\market_data_service
+cd <path-to-market_data_service>
 python -m market_data_service.api_server --host 127.0.0.1 --port 8000
 ```
 
@@ -100,7 +100,7 @@ API health 返回示例：
 ### Step 1: Daily Radar — 板块筛选基础数据
 
 ```bash
-cd E:\liaohua\01_projects\theme-sector-radar-dev
+cd <path-to-a-share-theme-sector-radar>
 
 python -m theme_sector_radar.cli --daily --as-of 2026-07-04 --provider akshare --refresh --lookback-days 5 --report-root reports/theme_sector_radar
 ```
@@ -190,7 +190,7 @@ python scripts/run_daily_bridge_report.py --as-of 2026-07-03 --agent-preset full
 ### 方式1: Unified Pipeline（最简单）
 
 ```bash
-cd E:\liaohua\01_projects\theme-sector-radar-dev
+cd <path-to-a-share-theme-sector-radar>
 python scripts/run_daily_unified_pipeline.py
 ```
 
@@ -199,7 +199,7 @@ python scripts/run_daily_unified_pipeline.py
 ### 方式2: PowerShell 脚本
 
 ```powershell
-cd E:\liaohua\01_projects\theme-sector-radar-dev
+cd <path-to-a-share-theme-sector-radar>
 powershell -ExecutionPolicy Bypass -File scripts/run_daily.ps1
 ```
 
@@ -209,7 +209,7 @@ powershell -ExecutionPolicy Bypass -File scripts/run_daily.ps1
 # 创建每日15:30盘后任务（需管理员）
 $Action = New-ScheduledTaskAction -Execute "python" `
   -Argument "scripts/run_daily_unified_pipeline.py --fail-on-health-fail" `
-  -WorkingDirectory "E:\liaohua\01_projects\theme-sector-radar-dev"
+  -WorkingDirectory "<path-to-a-share-theme-sector-radar>"
 
 $Trigger = New-ScheduledTaskTrigger -Daily -At "15:30"
 
@@ -278,7 +278,7 @@ Register-ScheduledTask -TaskName "ThemeSectorRadarDaily" `
 
 | 症状 | 可能原因 | 解决方案 |
 |------|----------|----------|
-| StockDB 不可达 (port 7899) | stockdb.exe 未运行 | 双击 `C:\Users\Administrator\Desktop\stockdb\stockdb.exe` |
+| StockDB 不可达 (port 7899) | stockdb.exe 未运行 | 双击 `<path-to-stockdb>\\stockdb.exe` |
 | API 不可达 (port 8000) | market_data_service 未启动 | `cd market_data_service && python -m market_data_service.api_server --host 127.0.0.1 --port 8000` |
 | API 启动报错 | StockDB 未启动 | 先启动 stockdb.exe，再启动 API |
 | 全部 `http_mapping` (WARN) | Eastmoney EM 被代理封锁 | 预期行为，mapping 数据已覆盖 107 板块 |
@@ -309,3 +309,4 @@ Register-ScheduledTask -TaskName "ThemeSectorRadarDaily" `
 ---
 
 *本文档由 Hermes Agent 基于 2026-07-06 实际运行验证生成*
+

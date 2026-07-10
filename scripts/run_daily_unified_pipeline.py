@@ -540,7 +540,7 @@ def main():
         print()
         print("❌ market_data_service API 未启动，请先启动：")
         print()
-        print("    cd E:\\liaohua\\01_projects\\market_data_service")
+        print("    cd <path-to-market_data_service>")
         print("    python -m market_data_service.api_server --host 127.0.0.1 --port 8000")
         print()
         print("   然后重新运行本脚本。")
@@ -622,3 +622,4 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+

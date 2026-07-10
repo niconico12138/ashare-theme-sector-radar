@@ -16,9 +16,11 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import socket
 import subprocess
 import sys
 import time
+import urllib.request
 from datetime import datetime
 from pathlib import Path
 
@@ -29,6 +31,56 @@ if sys.stdout.encoding and sys.stdout.encoding.lower() in ("gbk", "cp936", "cp12
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 AIHEDGE_ROOT = PROJECT_ROOT.parent / "ai-hedge-fund"
 DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "reports" / "daily_ai_stock_report"
+_open_socket = socket.create_connection
+_urllib_request = urllib.request
+
+
+def check_dependency_details(as_of: str) -> dict[str, dict]:
+    api_url = os.environ.get("MARKET_DATA_SERVICE_URL", "http://127.0.0.1:8000").rstrip("/")
+    sector_research_path = PROJECT_ROOT / "reports" / "full90" / "sector_research" / as_of / "sector_research.json"
+    concept_rank_path = PROJECT_ROOT / "reports" / "full_concept" / "unified_rank" / as_of / "concept_unified_rank.csv"
+    results: dict[str, dict] = {}
+
+    try:
+        sock = _open_socket(("127.0.0.1", 7899), timeout=3)
+        sock.close()
+        results["stockdb"] = {"ok": True, "detail": "127.0.0.1:7899 reachable", "action": ""}
+    except Exception as exc:
+        results["stockdb"] = {
+            "ok": False,
+            "detail": f"127.0.0.1:7899 not reachable: {exc}",
+            "action": "Set STOCKDB_EXE_PATH or start your local StockDB service",
+        }
+
+    try:
+        resp = _urllib_request.urlopen(f"{api_url}/health", timeout=10)
+        ok = resp.status == 200
+        results["api"] = {
+            "ok": ok,
+            "detail": f"{api_url}/health returned {resp.status}",
+            "action": "" if ok else "start market_data_service and verify /health",
+        }
+    except Exception as exc:
+        results["api"] = {
+            "ok": False,
+            "detail": f"{api_url}/health unavailable: {exc}",
+            "action": "start market_data_service and verify /health",
+        }
+
+    results["sector_research"] = {
+        "ok": sector_research_path.exists(),
+        "detail": str(sector_research_path),
+        "action": "generate full90 sector_research for this date",
+    }
+    results["concept_rank"] = {
+        "ok": concept_rank_path.exists(),
+        "detail": str(concept_rank_path),
+        "action": "generate full_concept unified_rank for this date",
+    }
+    for item in ("sector_research", "concept_rank"):
+        if results[item]["ok"]:
+            results[item]["action"] = ""
+    return results
 
 
 # ─── Pre-flight checks ──────────────────────────────────────
@@ -441,51 +493,183 @@ def build_markdown_report(
     bc = (stock_ranking or {}).get("board_context", {})
     enriched = build_stock_agent_top10(ranking_items, bc) if ranking_items else []
 
-    lines.append(f"## 4. 个股 Agent 排名 Top{min(top_n, len(enriched))}")
+    # ─── v3: 计算综合排名分 ──────────────────────────────────
+    if str(PROJECT_ROOT) not in sys.path:
+        sys.path.insert(0, str(PROJECT_ROOT))
+    try:
+        from theme_sector_radar.scoring.board_composite_score import compute_board_score
+        from theme_sector_radar.convergence_scoring import compute_final_score as v3_final_score
+        for item in enriched:
+            boards = item.get("source_boards", [])
+            board_name = boards[0] if boards else ""
+            # 从板块数据获取趋势/短线分
+            bt = 0
+            bb = 0
+            for sec in (sector_data.get("industries", []) + sector_data.get("concepts", [])):
+                if sec.get("name") == board_name:
+                    bt = sec.get("trend_score", 0) or 0
+                    bb = sec.get("burst_score", 0) or 0
+                    break
+            board_score, regime, _ = compute_board_score(bt, bb)
+
+            quant = item.get("quant_score", 50)
+            agent = item.get("agent_score", 50)
+            risk_level = item.get("risk_level", "unknown")
+            risk_map = {"low": 0, "medium": 3, "high": 8, "unknown": 1}
+            risk_penalty = risk_map.get(risk_level, 1)
+
+            # Agent投票推算趋势/短线分
+            bullish = item.get("bullish_count", 0)
+            bearish = item.get("bearish_count", 0)
+            if bullish > bearish:
+                ta = min(100, agent + (bullish - bearish) * 2)
+                sa = min(100, agent + (bullish - bearish) * 1.5)
+            elif bearish > bullish:
+                ta = max(0, agent - (bearish - bullish) * 2)
+                sa = max(0, agent - (bearish - bullish) * 1.5)
+            else:
+                ta = agent
+                sa = agent
+
+            r = v3_final_score(board_trend_score=bt, board_burst_score=bb,
+                               trend_agent_score=ta, short_agent_score=sa,
+                               quant_score=quant, risk_penalty=risk_penalty)
+            item["v3_final_score"] = r["final_score"]
+            item["v3_convergence_bonus"] = r["convergence_bonus"]
+            item["v3_convergence_label"] = r["convergence_label"]
+            item["v3_trend_agent"] = round(ta, 1)
+            item["v3_short_agent"] = round(sa, 1)
+            item["v3_board_score"] = board_score
+            item["v3_regime"] = regime
+
+        enriched.sort(key=lambda x: x.get("v3_final_score", 0), reverse=True)
+        for i, item in enumerate(enriched, 1):
+            item["v3_rank"] = i
+    except (ImportError, Exception) as e:
+        for item in enriched:
+            item["v3_final_score"] = item.get("final_score", 0)
+            item["v3_convergence_bonus"] = 0
+            item["v3_convergence_label"] = "N/A"
+            item["v3_rank"] = item.get("rank", 0)
+
+    # ─── 快速决策表（放在最前面）─────────────────────────────
+    lines.append(f"## 快速决策")
     lines.append("")
-    lines.append("| 排名 | 代码 | 名称 | 来源池 | 来源板块 | 趋势分 | 短线分 | 关联度 | 量化分 | 初筛综合 | Agent分 | 风险调整 | 风险 | 贡献 |")
-    lines.append("|---:|---|---|---|---|---:|---:|---:|---:|---:|---:|---:|---|---:|")
-    for item in enriched[:top_n]:
-        boards = ",".join(item.get("source_boards", [])) or "-"
-        lines.append(
-            f"| {item['rank']} | {item['code']} | {item['name']} | {item.get('source_pool','-')} | {boards} | "
-            f"{_fmt(item.get('trend_score'), 1)} | {_fmt(item.get('burst_score'), 1)} | "
-            f"{_pct01(item.get('relevance_score'))} | {_fmt(item.get('quant_score'), 1)} | {_fmt(item.get('final_score'), 1)} | "
-            f"{_fmt(item.get('agent_score'), 1)} | {_fmt(item.get('risk_adjusted_score'), 1)} | "
-            f"{item.get('risk_level','-')} | {item.get('contributing_agents', 0)} |"
-        )
+    lines.append("> 综合分 = 板块趋势×0.20 + Agent趋势×0.15 + 板块短线×0.20 + Agent短线×0.15 + 量化×0.30 + 共振加分")
     lines.append("")
 
-    lines.append(f"## 5. 个股分析明细 Top{min(top_n, len(enriched))}")
-    lines.append("")
-    for item in enriched[:top_n]:
-        ctx = item.get("board_context_match", {})
-        lines.append(f"### {item['rank']}. {item['code']} {item['name']}")
-        lines.append(f"- **来源池**: {item['source_pool']}")
-        lines.append(f"- **来源板块**: {', '.join(item['source_boards'])}")
-        lines.append(
-            f"- **板块/初筛分**: 趋势={_fmt(item.get('trend_score'), 1)}, 短线={_fmt(item.get('burst_score'), 1)}, "
-            f"关联度={_pct01(item.get('relevance_score'))}, 量化={_fmt(item.get('quant_score'), 1)}, 初筛综合={_fmt(item.get('final_score'), 1)}"
-        )
-        if ctx.get("matched"):
-            lines.append(f"- **板块上下文**: {ctx['board_type']} 第{ctx['rank']}，score={_fmt(ctx.get('score'), 1)}")
-        else:
-            lines.append("- **板块上下文**: 未匹配")
-        lines.append(f"- **Agent分**: {_fmt(item['agent_score'], 1)}  **风险调整分**: {_fmt(item['risk_adjusted_score'], 1)}")
-        lines.append(f"- **投票**: 看多 {item['bullish_count']} / 中性 {item['neutral_count']} / 看空 {item['bearish_count']}")
-        pos = item.get("top_positive_agents", [])
-        neg = item.get("top_negative_agents", [])
-        fb = item.get("fallback_agents", [])
-        if pos:
-            lines.append("- **主要支持**: " + ", ".join(f"{a['agent']}({a['signal']})" for a in pos[:3]))
-        if neg:
-            lines.append("- **主要反对**: " + ", ".join(f"{a['agent']}({a['signal']})" for a in neg[:3]))
-        if fb:
-            lines.append("- **Fallback**: " + ", ".join(a["agent"] for a in fb[:3]))
+    # 分类
+    confirmed = [x for x in enriched if x.get("v3_convergence_bonus", 0) > 0 and x.get("v3_final_score", 0) >= 60]
+    watch = [x for x in enriched if x.get("v3_convergence_bonus", 0) == 0 and x.get("v3_final_score", 0) >= 55]
+    caution = [x for x in enriched if x.get("v3_final_score", 0) < 55]
+
+    if confirmed:
+        lines.append("### ✅ 重点关注（趋势+短线共振确认）")
+        lines.append("")
+        lines.append("| # | 代码 | 名称 | 板块 | 综合分 | 量化 | Agent | 风险 | 投票(多/空) | 理由 |")
+        lines.append("|---:|---|---|---|---:|---:|---:|---|---:|---|")
+        for item in confirmed[:5]:
+            vote = f"{item.get('bullish_count',0)}/{item.get('bearish_count',0)}"
+            reason = item.get("summary", "")[:40]
+            risk_icon = "⚠️" if item.get("risk_level") == "high" else ""
+            lines.append(
+                f"| {item.get('v3_rank',0)} | {item.get('code','')} | {item.get('name','')} | "
+                f"{','.join(item.get('source_boards',['-']))} | "
+                f"**{item.get('v3_final_score',0):.1f}** | {item.get('quant_score',0):.0f} | "
+                f"{item.get('agent_score',0):.0f} | {item.get('risk_level','-')[:3]}{risk_icon} | "
+                f"{vote} | {reason} |"
+            )
         lines.append("")
 
+    if watch:
+        lines.append("### 📋 观察（综合分尚可，待确认）")
+        lines.append("")
+        lines.append("| # | 代码 | 名称 | 板块 | 综合分 | 量化 | Agent | 风险 | 投票(多/空) | 理由 |")
+        lines.append("|---:|---|---|---|---:|---:|---:|---|---:|---|")
+        for item in watch[:5]:
+            vote = f"{item.get('bullish_count',0)}/{item.get('bearish_count',0)}"
+            reason = item.get("summary", "")[:40]
+            risk_icon = "⚠️" if item.get("risk_level") == "high" else ""
+            lines.append(
+                f"| {item.get('v3_rank',0)} | {item.get('code','')} | {item.get('name','')} | "
+                f"{','.join(item.get('source_boards',['-']))} | "
+                f"{item.get('v3_final_score',0):.1f} | {item.get('quant_score',0):.0f} | "
+                f"{item.get('agent_score',0):.0f} | {item.get('risk_level','-')[:3]}{risk_icon} | "
+                f"{vote} | {reason} |"
+            )
+        lines.append("")
+
+    if caution:
+        lines.append("### ⚠️ 谨慎（综合分偏低或风险高）")
+        lines.append("")
+        lines.append("| # | 代码 | 名称 | 综合分 | Agent | 风险 | 原因 |")
+        lines.append("|---:|---|---|---:|---:|---|---|")
+        for item in caution[:5]:
+            risk_icon = "⚠️" if item.get("risk_level") == "high" else ""
+            reason = item.get("summary", "")[:50]
+            lines.append(
+                f"| {item.get('v3_rank',0)} | {item.get('code','')} | {item.get('name','')} | "
+                f"{item.get('v3_final_score',0):.1f} | {item.get('agent_score',0):.0f} | "
+                f"{item.get('risk_level','-')[:3]}{risk_icon} | {reason} |"
+            )
+        lines.append("")
+
+    # ─── 板块摘要 ────────────────────────────────────────────
+    lines.append("## 板块主线")
+    lines.append("")
+    lines.append("### 行业 Top10")
+    lines.append("")
+    lines.append("| # | 行业 | 标签 | 排序分 | 趋势 | 短线 |")
+    lines.append("|---:|---|---|---:|---:|---:|")
+    for i, s in enumerate(sector_data.get("industries", [])[:10], 1):
+        lines.append(
+            f"| {i} | {s.get('name','-')} | {s.get('agent_label','-')} | "
+            f"{_fmt(s.get('ranking_score'), 2)} | {_fmt(s.get('trend_score'), 1)} | {_fmt(s.get('burst_score'), 1)} |"
+        )
+    lines.append("")
+
+    # ─── 个股完整排名 ────────────────────────────────────────
+    lines.append(f"## 个股完整排名（v3）")
+    lines.append("")
+    lines.append("| # | 代码 | 名称 | 板块 | 板块分 | 量化 | Agent | 趋势A | 短线A | 风险 | 多/中/空 | 共振 | 综合分 |")
+    lines.append("|---:|---|---|---|---:|---:|---:|---:|---:|---|---:|---:|---:|")
+    for item in enriched:
+        boards = ",".join(item.get("source_boards", [])) or "-"
+        vote = f"{item.get('bullish_count',0)}/{item.get('neutral_count',0)}/{item.get('bearish_count',0)}"
+        risk_icon = "⚠️" if item.get("risk_level") == "high" else ""
+        bonus = item.get("v3_convergence_bonus", 0)
+        bonus_str = f"+{int(bonus)}" if bonus > 0 else str(int(bonus))
+        lines.append(
+            f"| {item.get('v3_rank',0)} | {item.get('code','')} | {item.get('name','')} | {boards} | "
+            f"{item.get('v3_board_score',0):.0f} | {item.get('quant_score',0):.0f} | "
+            f"{item.get('agent_score',0):.0f} | {item.get('v3_trend_agent',0):.0f} | "
+            f"{item.get('v3_short_agent',0):.0f} | {item.get('risk_level','-')[:3]}{risk_icon} | "
+            f"{vote} | {bonus_str} | **{item.get('v3_final_score',0):.1f}** |"
+        )
+    lines.append("")
+
+    # ─── 个股分析明细（精简版）────────────────────────────────
+    lines.append(f"## 个股分析明细")
+    lines.append("")
+    for item in enriched[:top_n]:
+        pos = item.get("top_positive_agents", [])
+        neg = item.get("top_negative_agents", [])
+        pos_str = ", ".join(f"{a['agent']}" for a in pos[:2]) if pos else "-"
+        neg_str = ", ".join(f"{a['agent']}" for a in neg[:2]) if neg else "-"
+        risk_icon = "⚠️" if item.get("risk_level") == "high" else ""
+        bonus = item.get("v3_convergence_bonus", 0)
+        bonus_str = f" +{int(bonus)}" if bonus > 0 else ""
+
+        lines.append(f"**{item.get('v3_rank',0)}. {item.get('code','')} {item.get('name','')}** — 综合分 {item.get('v3_final_score',0):.1f}{bonus_str}")
+        lines.append(f"- 板块: {','.join(item.get('source_boards',['-']))} (板块分{item.get('v3_board_score',0):.0f}) | 量化: {item.get('quant_score',0):.0f} | Agent: {item.get('agent_score',0):.0f} | 风险: {item.get('risk_level','-')}{risk_icon}")
+        lines.append(f"- 投票: 看多{item.get('bullish_count',0)} / 中性{item.get('neutral_count',0)} / 看空{item.get('bearish_count',0)}")
+        lines.append(f"- 支持: {pos_str} | 反对: {neg_str}")
+        lines.append(f"- {item.get('summary','')}")
+        lines.append("")
+
+    # ─── Agent 运行统计 ──────────────────────────────────────
     agent_summary = build_agent_execution_summary(meta, ranking_items)
-    lines.append("## 6. Agent 运行统计")
+    lines.append("## Agent 运行统计")
     lines.append("")
     lines.append("| Agent | 调用 | 成功 | 降级 | 失败 |")
     lines.append("|---|---:|---:|---:|---:|")
@@ -493,22 +677,16 @@ def build_markdown_report(
         lines.append(f"| {a['agent']} | {a['called']} | {a['succeeded']} | {a['fallback']} | {a['failed']} |")
     lines.append("")
 
+    # ─── 数据源 ──────────────────────────────────────────────
     risk = build_data_risk_summary(deps or {}, as_of)
-    lines.append("## 7. 数据源与风险")
+    lines.append("## 数据源")
     lines.append("")
-    lines.append(f"- **StockDB**: {'可用' if risk.get('stockdb_available') else '不可用'}")
-    lines.append(f"- **market_data_service**: {'可用' if risk.get('api_available') else '不可用'}")
-    lines.append(f"- **板块评分**: {'可用' if risk.get('sector_research_available') else '不可用'}")
-    lines.append(f"- **概念排名**: {'可用' if risk.get('concept_rank_available') else '不可用'}")
+    lines.append(f"- StockDB: {'✅' if risk.get('stockdb_available') else '❌'} | "
+                 f"API: {'✅' if risk.get('api_available') else '❌'} | "
+                 f"板块评分: {'✅' if risk.get('sector_research_available') else '❌'} | "
+                 f"概念排名: {'✅' if risk.get('concept_rank_available') else '❌'}")
     lines.append("")
-
-    lines.append("## 8. 趋势与说明")
-    lines.append("")
-    lines.append("- 板块 Top10 固定展示趋势、短线、Agent、机会、风控等字段，便于后续新增分数横向比较。")
-    lines.append("- 个股 TopN 固定展示板块来源分、关联度、量化分、初筛综合分、Agent分和风险调整分。")
-    lines.append("- Agent 分数由加权投票生成；fallback Agent 数据不足时自动降级，不计入有效贡献。")
-    lines.append("- 本报告仅供研究观察，不构成投资建议。")
-    lines.append("")
+    lines.append("> 本报告仅供研究观察，不构成投资建议。")
 
     return "\n".join(lines)
 
@@ -540,10 +718,16 @@ def main():
     print()
 
     # Pre-flight
-    deps = check_dependencies(date)
+    dependency_details = check_dependency_details(date)
+    deps = {name: bool(detail.get("ok")) for name, detail in dependency_details.items()}
     missing = [k for k, v in deps.items() if not v]
     if missing:
         print(f"  ❌ 前置依赖不满足: {missing}")
+        for name in missing:
+            detail = dependency_details[name]
+            print(f"    - {name}: {detail.get('detail', '')}")
+            if detail.get("action"):
+                print(f"      action: {detail['action']}")
         return 1
 
     # Load sector data
@@ -562,6 +746,45 @@ def main():
             for s in data.get("research_results",[]) if s.get("sector_type") == "industry"
         ]
 
+    # Fallback: 从 sector_scores.json 补充行业趋势/短线分
+    # sector_scores.json 有10个行业带趋势/短线分，sector_research.json 有90个行业但没有这些分
+    score_path = PROJECT_ROOT / "reports" / "sector_scores" / date / "sector_scores.json"
+    if score_path.exists():
+        try:
+            with open(score_path, "r", encoding="utf-8") as f:
+                score_data = json.load(f)
+            # 建立 sector_scores.json 的趋势/短线分映射
+            score_map = {}
+            for s in score_data.get("scores", []):
+                score_map[s.get("sector_name", "")] = {
+                    "trend": float(s.get("trend_continuation_score", 0) or 0),
+                    "burst": float(s.get("short_term_burst_score", 0) or 0),
+                }
+            # 补充行业数据
+            for ind in sector_data["industries"]:
+                sm = score_map.get(ind["name"], {})
+                if sm:
+                    ind["trend_score"] = sm["trend"]
+                    ind["burst_score"] = sm["burst"]
+            # 把 sector_scores.json 中有但 sector_research.json 中没有的行业也加进去
+            existing_names = {ind["name"] for ind in sector_data["industries"]}
+            for s in score_data.get("scores", []):
+                if s.get("sector_type") == "industry" and s["sector_name"] not in existing_names:
+                    interp = s.get("score_interpretation", {})
+                    sector_data["industries"].append({
+                        "name": s["sector_name"],
+                        "agent_label": interp.get("profile", ""),
+                        "ranking_score": float(s.get("sector_selection_score", 0) or 0),
+                        "opportunity_score": 0, "evidence_score": 0,
+                        "risk_control_score": 1.0, "confidence_score": 0.9,
+                        "trend_score": float(s.get("trend_continuation_score", 0) or 0),
+                        "burst_score": float(s.get("short_term_burst_score", 0) or 0),
+                    })
+            # 按 ranking_score 排序
+            sector_data["industries"].sort(key=lambda x: x.get("ranking_score", 0), reverse=True)
+        except Exception:
+            pass
+
     concept_path = PROJECT_ROOT / "reports" / "full_concept" / "unified_rank" / date / "concept_unified_rank.csv"
     if concept_path.exists():
         with open(concept_path, "r", encoding="utf-8-sig") as f:
@@ -577,6 +800,31 @@ def main():
                     "agent_opportunity_score": float(row.get("agent_opportunity_score",0) or 0),
                     "risk_control_score": float(row.get("risk_control_score",0) or 0),
                 })
+
+    # Fallback: 如果 CSV 为空，从 sector_scores.json 读取概念数据
+    if not sector_data["concepts"]:
+        score_path = PROJECT_ROOT / "reports" / "sector_scores" / date / "sector_scores.json"
+        if score_path.exists():
+            try:
+                with open(score_path, "r", encoding="utf-8") as f:
+                    score_data = json.load(f)
+                for s in score_data.get("scores", []):
+                    if s.get("sector_type") == "concept":
+                        interp = s.get("score_interpretation", {})
+                        sector_data["concepts"].append({
+                            "name": s.get("sector_name", ""),
+                            "agent_label": interp.get("profile", ""),
+                            "composite_score": float(s.get("sector_selection_score", 0) or 0),
+                            "trend_score": float(s.get("trend_continuation_score", 0) or 0),
+                            "trend_level": s.get("trend_level_cn", s.get("trend_level", "")),
+                            "burst_score": float(s.get("short_term_burst_score", 0) or 0),
+                            "burst_level": s.get("burst_level_cn", s.get("burst_level", "")),
+                            "agent_ranking_score": 0,
+                            "agent_opportunity_score": 0,
+                            "risk_control_score": 0,
+                        })
+            except Exception:
+                pass
 
     # Run bridge
     print("  Running bridge report...")
@@ -651,3 +899,4 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+

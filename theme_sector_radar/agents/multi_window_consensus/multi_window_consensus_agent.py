@@ -11,6 +11,11 @@
 - weak_all_windows: 5/10/20 均 < 45
 - conflicted_windows: 不符合以上规则或窗口差异 >= 25
 - insufficient_history: 任一窗口 status != ok 或 coverage < 1.0
+
+v2 改进（2026-07-08）：
+A. 自适应权重：根据市场环境动态调整 5/10/20 日窗口权重
+B. 动量方向加分：(5日分-10日分)×0.3 + (10日分-20日分)×0.3，±10分
+D. 量价共振确认：放量+趋势高→加分，缩量+趋势高→打折
 """
 
 from typing import Any, Dict, List, Optional, Tuple
@@ -35,12 +40,34 @@ CONSENSUS_STRENGTH_THRESHOLDS = {
     "very_weak": 0.0,
 }
 
-# 窗口权重
+# 默认窗口权重（兼容旧版）
 WINDOW_WEIGHTS = {
     "5": 0.25,
     "10": 0.35,
     "20": 0.40,
 }
+
+# 自适应权重配置（A. Adaptive Weights）
+# 根据市场环境动态调整窗口权重
+ADAPTIVE_WEIGHT_PROFILES = {
+    # 趋势行情：看长窗口，20日权重最大
+    "trending": {"5": 0.15, "10": 0.30, "20": 0.55},
+    # 震荡行情：看短窗口，5日权重最大
+    "oscillating": {"5": 0.35, "10": 0.35, "20": 0.30},
+    # 突破行情：看短线爆发，5日权重最大
+    "breakout": {"5": 0.40, "10": 0.35, "20": 0.25},
+}
+
+# 动量方向加分系数
+MOMENTUM_COEFFICIENT = 0.3
+MOMENTUM_CAP = 10.0
+
+# 量价共振阈值
+VOLUME_HIGH_THRESHOLD = 7.0   # volume_or_heat_component >= 7 视为放量
+VOLUME_LOW_THRESHOLD = 3.0    # volume_or_heat_component <= 3 视为缩量
+VOLUME_HIGH_RATIO = 1.1       # 放量且趋势高 → 加分 10%
+VOLUME_LOW_RATIO = 0.9        # 缩量且趋势高 → 打折 10%
+VOLUME_NEUTRAL_RATIO = 1.0    # 中性
 
 
 class MultiWindowConsensusAgent:
@@ -78,30 +105,161 @@ class MultiWindowConsensusAgent:
 
         return False
 
+    def _detect_market_regime(
+        self,
+        window_scores: Dict[str, float],
+    ) -> str:
+        """
+        A. 检测市场环境（趋势/震荡/突破）
+
+        根据三个窗口分的离散系数（标准差/均值）判断：
+        - CV > 0.15 → trending（趋势行情，看长窗口）
+        - CV < 0.08 → oscillating（震荡行情，看短窗口）
+        - 否则 → breakout（突破行情，看短线爆发）
+
+        Args:
+            window_scores: 窗口分数字典 {"5": float, "10": float, "20": float}
+
+        Returns:
+            市场环境类型: "trending", "oscillating", "breakout"
+        """
+        import math
+
+        scores = [window_scores.get("5", 0.0), window_scores.get("10", 0.0), window_scores.get("20", 0.0)]
+        mean_score = sum(scores) / len(scores) if scores else 0.0
+
+        if mean_score <= 0:
+            return "oscillating"
+
+        # 计算标准差
+        variance = sum((s - mean_score) ** 2 for s in scores) / len(scores)
+        std_dev = math.sqrt(variance)
+
+        # 离散系数 CV = std / mean
+        cv = std_dev / mean_score
+
+        if cv > 0.15:
+            return "trending"
+        elif cv < 0.08:
+            return "oscillating"
+        else:
+            return "breakout"
+
+    def _get_adaptive_weights(
+        self,
+        window_scores: Dict[str, float],
+    ) -> Dict[str, float]:
+        """
+        A. 获取自适应权重
+
+        根据市场环境动态调整 5/10/20 日窗口权重。
+
+        Args:
+            window_scores: 窗口分数字典
+
+        Returns:
+            权重字典 {"5": float, "10": float, "20": float}
+        """
+        regime = self._detect_market_regime(window_scores)
+        return ADAPTIVE_WEIGHT_PROFILES[regime].copy()
+
+    def _calculate_momentum_bonus(
+        self,
+        window_scores: Dict[str, float],
+    ) -> float:
+        """
+        B. 计算动量方向加分
+
+        公式：(5日分 - 10日分) × 0.3 + (10日分 - 20日分) × 0.3
+        - 5日 > 10日 > 20日 → 趋势加速 → 正加分
+        - 5日 < 10日 < 20日 → 趋势减速 → 负加分
+        - 上下限 ±10 分
+
+        Args:
+            window_scores: 窗口分数字典
+
+        Returns:
+            动量加分（-10 ~ +10）
+        """
+        score_5 = window_scores.get("5", 0.0)
+        score_10 = window_scores.get("10", 0.0)
+        score_20 = window_scores.get("20", 0.0)
+
+        bonus = (score_5 - score_10) * MOMENTUM_COEFFICIENT + (score_10 - score_20) * MOMENTUM_COEFFICIENT
+
+        # 限制在 ±10 分
+        return max(-MOMENTUM_CAP, min(MOMENTUM_CAP, round(bonus, 2)))
+
+    def _calculate_volume_confirmation_ratio(
+        self,
+        windows: Dict[str, Dict[str, Any]],
+        consensus_score: float,
+    ) -> float:
+        """
+        D. 计算量价共振确认比例
+
+        - 5日放量（volume_or_heat >= 7）且趋势分高（>= 50）→ ratio = 1.1（加分）
+        - 5日缩量（volume_or_heat <= 3）且趋势分高（>= 50）→ ratio = 0.9（打折）
+        - 其他情况 → ratio = 1.0（不加不减）
+
+        Args:
+            windows: 窗口数据字典
+            consensus_score: 共识分数
+
+        Returns:
+            量价确认比例
+        """
+        # 从 5 日窗口获取 volume_or_heat_component
+        window_5 = windows.get("5", {})
+        volume_heat = window_5.get("volume_or_heat_component", None)
+
+        # 如果没有量能数据，返回中性
+        if volume_heat is None:
+            return VOLUME_NEUTRAL_RATIO
+
+        # 趋势分高时才应用量价共振
+        if consensus_score >= 50:
+            if volume_heat >= VOLUME_HIGH_THRESHOLD:
+                return VOLUME_HIGH_RATIO
+            elif volume_heat <= VOLUME_LOW_THRESHOLD:
+                return VOLUME_LOW_RATIO
+
+        return VOLUME_NEUTRAL_RATIO
+
     def _calculate_consensus_score(
         self,
-        windows: Dict[str, Dict[str, float]],
-    ) -> float:
+        window_scores: Dict[str, float],
+        adaptive: bool = True,
+    ) -> Tuple[float, Dict[str, float], str]:
         """
         计算共识分数 (加权平均)
 
         Args:
-            windows: 窗口分数字典
+            window_scores: 窗口分数字典
+            adaptive: 是否使用自适应权重（v2 默认开启）
 
         Returns:
-            共识分数
+            (共识分数, 使用的权重, 市场环境)
         """
+        # 获取权重
+        if adaptive:
+            weights = self._get_adaptive_weights(window_scores)
+            regime = self._detect_market_regime(window_scores)
+        else:
+            weights = WINDOW_WEIGHTS.copy()
+            regime = "fixed"
+
         total_weight = 0.0
         weighted_sum = 0.0
 
-        for window_key, weight in WINDOW_WEIGHTS.items():
-            score = windows.get(window_key, 0.0)
+        for window_key, weight in weights.items():
+            score = window_scores.get(window_key, 0.0)
             weighted_sum += score * weight
             total_weight += weight
 
         if total_weight > 0:
-            return round(weighted_sum / total_weight, 2)
-        return 0.0
+            return round(weighted_sum / total_weight, 2), weights, regime
+        return 0.0, weights, regime
 
     def _get_consensus_strength(self, consensus_score: float) -> str:
         """
@@ -311,8 +469,21 @@ class MultiWindowConsensusAgent:
             window_scores[window_key] = window_data.get("trend_continuation_score", 0.0)
             window_levels[window_key] = window_data.get("trend_level", "")
 
-        # 计算共识分数
-        consensus_score = self._calculate_consensus_score(window_scores)
+        # A. 计算共识分数（自适应权重）
+        base_consensus, adaptive_weights, market_regime = self._calculate_consensus_score(window_scores)
+
+        # B. 动量方向加分
+        momentum_bonus = self._calculate_momentum_bonus(window_scores)
+
+        # 先计算带加分的共识分（用于量价共振判断）
+        consensus_with_bonus = round(base_consensus + momentum_bonus, 2)
+
+        # D. 量价共振确认
+        volume_ratio = self._calculate_volume_confirmation_ratio(windows, consensus_with_bonus)
+        volume_adjusted = round(consensus_with_bonus * volume_ratio, 2)
+
+        # 最终共识分 = (基础分 + 动量加分) × 量价确认比例
+        consensus_score = volume_adjusted
 
         # 确定共识强度
         consensus_strength = self._get_consensus_strength(consensus_score)
@@ -340,6 +511,12 @@ class MultiWindowConsensusAgent:
             "window_conflicts": window_conflicts,
             "watch_points": watch_points,
             "data_warnings": data_warnings,
+            # v2 新增字段
+            "base_consensus": base_consensus,
+            "momentum_bonus": momentum_bonus,
+            "volume_confirmation_ratio": volume_ratio,
+            "market_regime": market_regime,
+            "adaptive_weights": adaptive_weights,
         }
 
     def analyze_sectors(

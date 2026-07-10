@@ -9,7 +9,7 @@ Phase 41: Concept Coverage Analysis for Reports
   python scripts/analyze_concept_coverage_for_reports.py \
     --dates 2026-07-01,2026-07-02,2026-07-03,2026-07-06 \
     --top-n 20 \
-    --market-data-root E:\liaohua\01_projects\market_data_service
+    --market-data-root <path-to-market_data_service>
 """
 
 from __future__ import annotations
@@ -317,3 +317,4 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+

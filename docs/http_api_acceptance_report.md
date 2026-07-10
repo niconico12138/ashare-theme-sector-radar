@@ -1,4 +1,4 @@
-# market_data_service HTTP API 联调验收报告
+﻿# market_data_service HTTP API 联调验收报告
 
 **日期**: 2026-07-04  
 **验收人**: Claude Code  
@@ -142,3 +142,4 @@ HTTP API stock bars (/stocks/{code}/bars)
 - sector_stock_bridge.py ✅ (成功完成, 降级路径正常工作)
 - unified_pipeline.py ✅ (成功完成, quant_source=http_enhanced)
 - source 标记清晰: mapping 用于成分股, http_enhanced 用于 K 线量化评分
+

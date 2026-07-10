@@ -245,6 +245,86 @@ SECTOR_STOCK_MAPPING = {
 
 
 # ============================================================
+# 新浪财经板块代码映射（东方财富被封锁时的降级方案）
+# ============================================================
+
+_SINA_SECTOR_MAP = {
+    "半导体": "new_dzqj", "电子化学品": "new_dzqj", "光学光电子": "new_dzqj",
+    "电子": "new_dzqj", "元件": "new_dzqj", "消费电子": "new_dzqj",
+    "游戏": "new_cmyl", "传媒": "new_cmyl", "影视院线": "new_cmyl",
+    "文化传媒": "new_cmyl",
+    "人工智能": "new_dzxx", "计算机": "new_dzxx", "通信": "new_dzxx",
+    "通信设备": "new_dzxx", "软件开发": "new_dzxx",
+    "证券": "new_jrhy", "银行": "new_jrhy", "保险": "new_jrhy",
+    "房地产": "new_fdc", "钢铁": "new_gthy", "有色金属": "new_ysjs",
+    "煤炭": "new_mthy", "石油石化": "new_syhy",
+    "电力设备": "new_dlhy", "电力": "new_dlhy",
+    "机械设备": "new_jxhy", "工程机械": "new_jxhy", "自动化设备": "new_jxhy",
+    "专用设备": "new_jxhy", "通用设备": "new_jxhy",
+    "食品饮料": "new_sphy", "白酒": "new_ljhy", "酿酒行业": "new_ljhy",
+    "医药生物": "new_swzz", "中药": "new_swzz", "医疗器械": "new_ylqx",
+    "化学制药": "new_swzz", "生物制品": "new_swzz", "医疗服务": "new_ylqx",
+    "美容护理": "new_ylqx", "护理": "new_ylqx",
+    "汽车制造": "new_qczz", "汽车服务及其他": "new_qczz",
+    "汽车整车": "new_qczz", "汽车零部件": "new_qczz",
+    "纺织服饰": "new_fzhy", "家用电器": "new_jdhy", "黑色家电": "new_jdhy",
+    "白色家电": "new_jdhy", "小家电": "new_jdhy",
+    "塑料制品": "new_slzp", "包装印刷": "new_ysbz", "造纸行业": "new_zzhy",
+    "造纸": "new_zzhy",
+    "建筑建材": "new_jzjc", "环保行业": "new_hbhy", "环境治理": "new_hbhy",
+    "化工行业": "new_hghy", "化肥": "new_nyhf",
+    "交通运输": "new_jtys", "机场航运": "new_jtys", "物流": "new_jtys",
+    "航空运输": "new_jtys", "航运港口": "new_jtys",
+    "农林牧渔": "new_nlmy", "养殖业": "new_nlmy",
+    "商业百货": "new_sybh", "互联网电商": "new_sybh",
+    "煤炭行业": "new_mthy", "光伏设备": "new_fdsb", "光伏": "new_fdsb",
+    "电池": "new_fdsb", "其他电源设备": "new_fdsb",
+    "金属新材料": "new_ysjs", "能源金属": "new_ysjs", "小金属": "new_ysjs",
+    "纺织机械": "new_fzjx", "燃气": "new_gsgq", "供水供气": "new_gsgq",
+    "多元金融": "new_jrhy", "公路铁路运输": "new_glql",
+    "船舶制造": "new_cbzz", "飞机制造": "new_fjzz", "摩托车": "new_mtc",
+    "仪器仪表": "new_yqyb", "家具行业": "new_jjhy", "家居用品": "new_jjhy",
+    "开发区": "new_kfq", "次新股": "new_stock", "综合行业": "new_zhhy",
+    "陶瓷行业": "new_tchy", "玻璃行业": "new_blhy",
+}
+
+
+def _fetch_sina_constituents(sector_name: str) -> List[Dict]:
+    """通过新浪财经获取板块成分股（东方财富不可用时的替代方案）"""
+    sina_code = _SINA_SECTOR_MAP.get(sector_name)
+    if not sina_code:
+        return []
+
+    import requests
+    stocks = []
+    page = 1
+    while page <= 10:
+        url = (
+            f"https://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/"
+            f"Market_Center.getHQNodeData?page={page}&num=80&sort=symbol&asc=1"
+            f"&node={sina_code}&symbol=&_s_r_a=page"
+        )
+        try:
+            resp = requests.get(url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
+            data = json.loads(resp.text)
+            if not data:
+                break
+            for d in data:
+                code = d.get("code", "")
+                name = d.get("name", "")
+                mv = d.get("mktcap", 0) or 0
+                if code and name and not name.startswith("*ST"):
+                    stocks.append({"code": code, "name": name, "mktcap": mv})
+            if len(data) < 80:
+                break
+            page += 1
+        except Exception:
+            break
+
+    return stocks
+
+
+# ============================================================
 # 报告读取
 # ============================================================
 
@@ -357,19 +437,46 @@ def load_stable_sector_inputs(as_of_date: str) -> Dict[str, Any]:
 
     # --- Load industry from sector_research.json ---
     industry_path = STABLE_RESEARCH_DIR / as_of_date / "sector_research.json"
+    # Also load trend/burst scores and level labels from sector_scores.json for industries
+    _industry_score_map = {}
+    _scores_path = PROJECT_ROOT / "reports" / "sector_scores" / as_of_date / "sector_scores.json"
+    if _scores_path.exists():
+        try:
+            _scores_data = json.loads(_scores_path.read_text(encoding="utf-8"))
+            for _s in _scores_data.get("scores", []):
+                if _s.get("sector_type") == "industry":
+                    _industry_score_map[_s["sector_name"]] = {
+                        "trend_score": _s.get("trend_continuation_score", 0),
+                        "burst_score": _s.get("short_term_burst_score", 0),
+                        "trend_level": _s.get("trend_level", ""),
+                        "trend_level_cn": _s.get("trend_level_cn", ""),
+                        "burst_level": _s.get("burst_level", ""),
+                        "burst_level_cn": _s.get("burst_level_cn", ""),
+                    }
+        except Exception:
+            pass
+
     if industry_path.exists():
         try:
             data = json.loads(industry_path.read_text(encoding="utf-8"))
             for item in data.get("research_results", []):
                 if item.get("sector_type") != "industry":
                     continue
+                _name = item.get("sector_name", "")
+                _scores = _industry_score_map.get(_name, {})
                 result["industries"].append({
-                    "sector_name": item.get("sector_name", ""),
+                    "sector_name": _name,
                     "sector_type": "industry",
                     "ranking_score": item.get("ranking_score", 0),
                     "opportunity_score": item.get("opportunity_score", 0),
                     "evidence_score": item.get("evidence_score", 0),
                     "confidence_score": item.get("confidence_score", 0),
+                    "trend_score": _scores.get("trend_score", 0),
+                    "burst_score": _scores.get("burst_score", 0),
+                    "trend_level": _scores.get("trend_level", ""),
+                    "trend_level_cn": _scores.get("trend_level_cn", ""),
+                    "burst_level": _scores.get("burst_level", ""),
+                    "burst_level_cn": _scores.get("burst_level_cn", ""),
                     "agent_label": item.get("consensus_label", ""),
                 })
         except Exception:
@@ -437,8 +544,8 @@ def extract_top_sectors_from_stable(
             "sector_type": s.get("sector_type", "industry"),
             "trend_score": s.get("trend_score", 0) or s.get("ranking_score", 0),
             "burst_score": s.get("burst_score", 0),
-            "trend_level": s.get("agent_label", ""),
-            "trend_level_cn": "",
+            "trend_level": s.get("trend_level", "") or s.get("agent_label", ""),
+            "trend_level_cn": s.get("trend_level_cn", ""),
         })
 
     # --- Burst pool: sort by burst_score > composite_score ---
@@ -454,35 +561,7 @@ def extract_top_sectors_from_stable(
             "sector_type": s.get("sector_type", "industry"),
             "trend_score": s.get("trend_score", 0) or s.get("ranking_score", 0),
             "burst_score": s.get("burst_score", 0),
-            "burst_level": s.get("agent_label", ""),
-            "burst_level_cn": "",
-        })
-
-    return trend_sectors, burst_sectors
-
-    # 趋势 Top N
-    trend_sorted = sorted(scores, key=lambda x: x.get("trend_continuation_score", 0), reverse=True)
-    trend_sectors = []
-    for s in trend_sorted[:trend_top_n]:
-        trend_sectors.append({
-            "sector_name": s["sector_name"],
-            "sector_type": s.get("sector_type", "industry"),
-            "trend_score": s.get("trend_continuation_score", 0),
-            "burst_score": s.get("short_term_burst_score", 0),
-            "trend_level": s.get("trend_level", ""),
-            "trend_level_cn": s.get("trend_level_cn", ""),
-        })
-
-    # 短线 Top N
-    burst_sorted = sorted(scores, key=lambda x: x.get("short_term_burst_score", 0), reverse=True)
-    burst_sectors = []
-    for s in burst_sorted[:burst_top_n]:
-        burst_sectors.append({
-            "sector_name": s["sector_name"],
-            "sector_type": s.get("sector_type", "industry"),
-            "trend_score": s.get("trend_continuation_score", 0),
-            "burst_score": s.get("short_term_burst_score", 0),
-            "burst_level": s.get("burst_level", ""),
+            "burst_level": s.get("burst_level", "") or s.get("agent_label", ""),
             "burst_level_cn": s.get("burst_level_cn", ""),
         })
 
@@ -665,6 +744,29 @@ def fetch_sector_constituents(sector_name: str, sector_type: str = "industry", a
     #   timeout, 5xx).  DO NOT use when HTTP returned 200 with mapping
     #   data — market_data_service already did its own fallback.
     # ----------------------------------------------------------------
+
+    # Attempt 2a: Sina Finance fallback
+    if not http_ok:
+        sina_stocks = _fetch_sina_constituents(sector_name)
+        if sina_stocks:
+            total_mv = sum(s.get("mktcap", 0) for s in sina_stocks) or 1
+            equal_w = 1.0 / len(sina_stocks)
+            result["stocks"] = [
+                {
+                    "code": s["code"],
+                    "name": s["name"],
+                    "weight": round(s.get("mktcap", 0) / total_mv, 4) if total_mv > 0 else equal_w,
+                }
+                for s in sina_stocks
+            ]
+            result["status"] = "degraded"
+            result["fallback_used"] = True
+            result["source"] = "sina_fallback"
+            result["error"] = f"使用新浪财经成分股（{len(sina_stocks)}只）"
+            _save_cache(cache_key, result)
+            return result
+
+    # Attempt 2b: local SECTOR_STOCK_MAPPING (emergency fallback)
     if not http_ok and sector_name in SECTOR_STOCK_MAPPING:
         mapping = SECTOR_STOCK_MAPPING[sector_name]
         equal_w = 1.0 / len(mapping) if mapping else 0
@@ -818,17 +920,54 @@ def fetch_sector_fund_flow(sector_name: str) -> Dict[str, Any]:
     except Exception as e:
         result["error"] = f"东方财富板块资金流失败: {str(e)[:100]}"
 
-    # 降级：尝试新浪财经
+    # 降级：尝试新浪财经（含 THS→新浪名称映射）
     try:
         import requests
-        # 新浪行业资金流接口
-        url = f"https://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/MoneyFlow.ssl_bkzj_bk?page=1&num=20&sort=netamount&asc=0&fenlei=1"
-        resp = requests.get(url, timeout=10)
+        url = "https://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/MoneyFlow.ssl_bkzj_bk?page=1&num=50&sort=netamount&asc=0&fenlei=0"
+        resp = requests.get(url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
         if resp.status_code == 200:
             data = resp.json()
-            for item in data:
-                if item.get("name") == sector_name:
-                    net = float(item.get("netamount", 0))
+            sina_flow = {item.get("name"): float(item.get("netamount", 0)) for item in data}
+
+            # 1. 精确匹配
+            if sector_name in sina_flow:
+                net = sina_flow[sector_name]
+                result["net_flow"] = net
+                result["direction"] = "inflow" if net > 0 else "outflow" if net < 0 else "neutral"
+                result["status"] = "ok"
+                result["error"] = None
+                return result
+
+            # 2. THS→新浪名称映射
+            _THS_TO_SINA_MAP = {
+                "电子化学品": "电子器件", "电子元件": "电子器件",
+                "游戏": "传媒娱乐", "影视院线": "传媒娱乐", "文化传媒": "传媒娱乐",
+                "半导体": "电子信息", "互联网电商": "电子信息",
+                "美容护理": "化工行业", "造纸": "造纸行业",
+                "工程机械": "机械行业", "专用设备": "机械行业", "通用设备": "机械行业",
+                "化学制药": "生物制药", "生物制品": "生物制药", "医疗服务": "医疗器械",
+                "白酒": "酿酒行业", "证券": "金融行业", "银行": "金融行业",
+                "保险": "金融行业", "房地产": "房地产",
+                "汽车整车": "汽车制造", "汽车零部件": "汽车制造",
+                "煤炭": "煤炭行业", "石油石化": "石油行业",
+                "电力": "电力行业", "燃气": "供水供气", "环保": "环保行业",
+                "建筑装饰": "建筑建材", "建筑材料": "建筑建材",
+                "交通运输": "交通运输", "航空运输": "交通运输", "航运港口": "交通运输",
+                "食品饮料": "食品行业", "纺织服装": "纺织行业",
+                "家电": "家电行业", "白色家电": "家电行业", "小家电": "家电行业",
+            }
+            mapped_name = _THS_TO_SINA_MAP.get(sector_name)
+            if mapped_name and mapped_name in sina_flow:
+                net = sina_flow[mapped_name]
+                result["net_flow"] = net
+                result["direction"] = "inflow" if net > 0 else "outflow" if net < 0 else "neutral"
+                result["status"] = "ok"
+                result["error"] = None
+                return result
+
+            # 3. 模糊匹配
+            for sina_name, net in sina_flow.items():
+                if sector_name in sina_name or sina_name in sector_name:
                     result["net_flow"] = net
                     result["direction"] = "inflow" if net > 0 else "outflow" if net < 0 else "neutral"
                     result["status"] = "ok"

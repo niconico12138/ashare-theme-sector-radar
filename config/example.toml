@@ -1,0 +1,30 @@
+# Example configuration for open-source users.
+# Local paths are optional. Leave them empty when using sample mode.
+
+[project]
+name = "a-share-theme-sector-radar"
+mode = "research"
+disclaimer = "Research tooling only. Not investment advice."
+
+[data]
+provider = "akshare"
+market_data_service_url = "http://127.0.0.1:8000"
+cache_dir = "data_cache"
+report_dir = "reports"
+
+[stockdb]
+enabled = false
+host = "127.0.0.1"
+port = 7899
+sdk_path = ""
+exe_path = ""
+
+[sample]
+enabled = true
+as_of = "2026-06-28"
+fixture_profile = "full"
+
+[scoring]
+production_change_allowed = false
+v5_status = "review_ready_shadow_only"
+production_enabled = false

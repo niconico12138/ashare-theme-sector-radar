@@ -4,7 +4,7 @@
 
 本项目位于：
 
-E:\Workspace\ai-stock-projects\theme-sector-radar-dev
+<path-to-a-share-theme-sector-radar>
 
 项目目标是构建一个 A 股行业板块与概念板块的研究型雷达系统，用于盘后复盘、板块强弱观察、趋势评分、短线热度判断、多 Agent 综合研判和后续回测验证。
 
@@ -443,3 +443,4 @@ python -m theme_sector_radar.cli --unified-rank
 - 回测框架：已有基础能力
 - 实时 AkShare 网络：仍存在环境不稳定问题
 - 推荐日常主路径：sector_history replay + 全覆盖评分 + Agent 研判
+

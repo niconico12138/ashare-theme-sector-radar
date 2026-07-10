@@ -50,8 +50,8 @@ def generate_multi_window_consensus_report(
     consensus = report_data.get("consensus", [])
     lines.append(f"## 共识 Top {len(consensus)}")
     lines.append("")
-    lines.append("| 排名 | 板块 | 共识标签 | 共识分 | 5日分 | 10日分 | 20日分 | 共识强度 | 观察要点 |")
-    lines.append("|------|------|----------|--------|-------|--------|--------|----------|----------|")
+    lines.append("| 排名 | 板块 | 共识标签 | 共识分 | 基础分 | 动量加分 | 量价比 | 5日分 | 10日分 | 20日分 | 市场环境 | 共识强度 | 观察要点 |")
+    lines.append("|------|------|----------|--------|--------|----------|--------|-------|--------|--------|----------|----------|----------|")
 
     for i, item in enumerate(consensus, 1):
         window_scores = item.get("window_scores", {})
@@ -62,12 +62,36 @@ def generate_multi_window_consensus_report(
             f"| {i} | {item.get('sector_name', '')} | "
             f"{item.get('multi_window_label', '')} | "
             f"{item.get('consensus_score', 0):.1f} | "
+            f"{item.get('base_consensus', 0):.1f} | "
+            f"{item.get('momentum_bonus', 0):+.1f} | "
+            f"{item.get('volume_confirmation_ratio', 1.0):.2f} | "
             f"{window_scores.get('5', 0):.1f} | "
             f"{window_scores.get('10', 0):.1f} | "
             f"{window_scores.get('20', 0):.1f} | "
+            f"{item.get('market_regime', '-')} | "
             f"{item.get('consensus_strength', '')} | "
             f"{watch_summary[:30]}... |"
         )
+    lines.append("")
+
+    # 自适应权重说明
+    lines.append("### 自适应权重说明")
+    lines.append("")
+    lines.append("| 市场环境 | 5日权重 | 10日权重 | 20日权重 | 判断条件 |")
+    lines.append("|----------|---------|----------|----------|----------|")
+    lines.append("| 趋势行情 (trending) | 0.15 | 0.30 | 0.55 | CV > 0.15，看长窗口 |")
+    lines.append("| 震荡行情 (oscillating) | 0.35 | 0.35 | 0.30 | CV < 0.08，看短窗口 |")
+    lines.append("| 突破行情 (breakout) | 0.40 | 0.35 | 0.25 | 0.08 ≤ CV ≤ 0.15 |")
+    lines.append("")
+    lines.append("> CV = 窗口分标准差 / 窗口分均值，反映三个窗口的分歧程度")
+    lines.append("")
+
+    # 量价共振说明
+    lines.append("### 量价共振说明")
+    lines.append("")
+    lines.append("- 放量（volume_or_heat ≥ 7）+ 趋势分高（≥ 50）→ 共识分 ×1.1")
+    lines.append("- 缩量（volume_or_heat ≤ 3）+ 趋势分高（≥ 50）→ 共识分 ×0.9（假突破风险）")
+    lines.append("- 其他情况 → 不调整")
     lines.append("")
 
     # 窗口分歧

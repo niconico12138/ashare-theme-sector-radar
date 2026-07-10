@@ -1,4 +1,4 @@
-# 每日运行 Unified Pipeline Runbook
+﻿# 每日运行 Unified Pipeline Runbook
 
 ## 概述
 
@@ -14,7 +14,7 @@
 ## 一键运行
 
 ```powershell
-cd E:\liaohua\01_projects\theme-sector-radar-dev
+cd <path-to-a-share-theme-sector-radar>
 python scripts/run_daily_unified_pipeline.py
 ```
 
@@ -42,7 +42,7 @@ python scripts/run_daily_unified_pipeline.py
 ### 启动 market_data_service API
 
 ```powershell
-cd E:\liaohua\01_projects\market_data_service
+cd <path-to-market_data_service>
 python -m market_data_service.api_server --host 127.0.0.1 --port 8000
 ```
 
@@ -115,7 +115,7 @@ python -c "from theme_sector_radar.data.market_data_http_client import MarketDat
 # 创建任务（需管理员）
 $Action = New-ScheduledTaskAction -Execute "python" `
   -Argument "scripts/run_daily_unified_pipeline.py --fail-on-health-fail" `
-  -WorkingDirectory "E:\liaohua\01_projects\theme-sector-radar-dev"
+  -WorkingDirectory "<path-to-a-share-theme-sector-radar>"
 
 $Trigger = New-ScheduledTaskTrigger -Daily -At "15:30"
 
@@ -132,3 +132,4 @@ Register-ScheduledTask -TaskName "ThemeSectorRadarDaily" `
 | 全部 http_mapping (WARN) | Eastmoney EM 被代理封锁 | 预期行为，mapping 数据已覆盖 107 板块 |
 | 多个 unavailable (FAIL) | 板块不在 mapping 中 | 扩充 constituents_mapping.json |
 | fallback quant > 50% (FAIL) | StockDB 无数据 | 检查 StockDB 和网络 |
+

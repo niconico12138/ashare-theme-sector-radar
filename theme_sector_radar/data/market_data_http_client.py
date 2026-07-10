@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 DEFAULT_BASE_URL = "http://127.0.0.1:8000"
-DEFAULT_TIMEOUT = 10  # seconds
+DEFAULT_TIMEOUT = 60  # seconds (batch requests need more time)
 DEFAULT_RETRIES = 2
 
 
@@ -273,17 +273,26 @@ class MarketDataHttpClient:
         unique = list({c.strip() for c in codes if c.strip()})
         if not unique:
             return {"items": {}, "missing": [], "source": "security_master"}
-        try:
-            import json as _json
-            url = f"{self.base_url}/stocks/info/batch"
-            resp = self._session.post(url, json={"codes": unique}, timeout=self.timeout)
-            if resp.status_code == 200:
-                return resp.json()
-            logger.warning("Batch stock info returned %d for %d codes", resp.status_code, len(unique))
-            return None
-        except Exception as exc:
-            logger.warning("Batch stock info failed: %s", exc)
-            return None
+        # Split into chunks of 500 (API max_length)
+        all_items = {}
+        all_missing = []
+        for i in range(0, len(unique), 500):
+            chunk = unique[i : i + 500]
+            try:
+                import json as _json
+                url = f"{self.base_url}/stocks/info/batch"
+                resp = self._session.post(url, json={"codes": chunk}, timeout=self.timeout)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    if data and data.get("items"):
+                        all_items.update(data["items"])
+                    if data and data.get("missing"):
+                        all_missing.extend(data["missing"])
+                else:
+                    logger.warning("Batch stock info returned %d for %d codes", resp.status_code, len(chunk))
+            except Exception as exc:
+                logger.warning("Batch stock info failed: %s", exc)
+        return {"items": all_items, "missing": all_missing, "source": "security_master"}
 
     def get_stock_fund_flow(self, code: str) -> Optional[Dict[str, Any]]:
         """Call ``GET /stocks/{code}/fund-flow``.
@@ -307,22 +316,30 @@ class MarketDataHttpClient:
         unique = list({c.strip() for c in codes if c.strip()})
         if not unique:
             return {"items": {}, "missing": [], "source": "fund_flow_neutral"}
-        try:
-            import json as _json
-            url = f"{self.base_url}/stocks/fund-flow/batch"
-            resp = self._session.post(
-                url,
-                json={"codes": unique},
-                timeout=self.timeout,
-            )
-            if resp.status_code == 200:
-                return resp.json()
-            # Non-200 → log and return None for fallback
-            logger.warning("Batch fund flow returned %d for %d codes", resp.status_code, len(unique))
-            return None
-        except Exception as exc:
-            logger.warning("Batch fund flow failed: %s", exc)
-            return None
+        # Split into chunks of 500 (API max_length)
+        all_items = {}
+        all_missing = []
+        for i in range(0, len(unique), 500):
+            chunk = unique[i : i + 500]
+            try:
+                import json as _json
+                url = f"{self.base_url}/stocks/fund-flow/batch"
+                resp = self._session.post(
+                    url,
+                    json={"codes": chunk},
+                    timeout=self.timeout,
+                )
+                if resp.status_code == 200:
+                    data = resp.json()
+                    if data and data.get("items"):
+                        all_items.update(data["items"])
+                    if data and data.get("missing"):
+                        all_missing.extend(data["missing"])
+                else:
+                    logger.warning("Batch fund flow returned %d for %d codes", resp.status_code, len(chunk))
+            except Exception as exc:
+                logger.warning("Batch fund flow failed: %s", exc)
+        return {"items": all_items, "missing": all_missing, "source": "fund_flow_ths"}
 
     def close(self):
         """Close the underlying session."""
