@@ -42,6 +42,10 @@ from theme_sector_radar.scoring.shadow_decision_score_v3 import compute_shadow_d
 from theme_sector_radar.scoring.shadow_decision_score_v4 import compute_shadow_decision_score_v4
 from theme_sector_radar.scoring.defensive_shadow_score import compute_defensive_shadow_score
 from theme_sector_radar.scoring.regime_router_shadow_score_v5 import compute_regime_router_shadow_score_v5
+from theme_sector_radar.factors.snapshot import build_factor_snapshot
+from theme_sector_radar.scoring.factor_composite_shadow_score import compute_factor_composite_shadow_score
+from theme_sector_radar.scoring.factor_composite_shadow_score_v2 import compute_factor_composite_shadow_score_v2
+from theme_sector_radar.scoring.display_score_shadow import compute_display_score_shadow
 SECTOR_RESEARCH_DIR = PROJECT_ROOT / "reports" / "full90" / "sector_research"
 CONCEPT_RANK_DIR = PROJECT_ROOT / "reports" / "full_concept" / "unified_rank"
 UNIFIED_DIR = PROJECT_ROOT / "reports" / "unified"
@@ -547,7 +551,10 @@ def build_candidate_entry(
     }
 
 
-def enrich_candidates_with_scoring(candidates: list[dict]) -> list[dict]:
+def enrich_candidates_with_scoring(
+    candidates: list[dict],
+    bars_map: dict[str, list[dict]] | None = None,
+) -> list[dict]:
     """Enrich candidates with stock-level scoring, leader identification, risk, and decision score.
 
     This adds:
@@ -556,6 +563,13 @@ def enrich_candidates_with_scoring(candidates: list[dict]) -> list[dict]:
     - sector_leader_score, sector_role, leader_tags
     - risk_penalty_score, risk_tags, trade_eligibility, invalid_reason
     - decision_score, decision_breakdown
+    - factor_snapshot (with bars factors if bars_map provided)
+
+    Args:
+        candidates: List of candidate dicts
+        bars_map: Optional dict mapping stock code to bars data.
+                  If provided, bar-based factors will be calculated.
+                  Phase 2: reserved for future use.
 
     No bars are fetched — all scoring uses available fields with fallbacks.
     """
@@ -640,6 +654,36 @@ def enrich_candidates_with_scoring(candidates: list[dict]) -> list[dict]:
         c["regime_router_selected_profile"] = v5_result["regime_router_selected_profile"]
         c["bull_regime_shadow_score"] = v5_result["bull_regime_shadow_score"]
         c["bull_regime_shadow_breakdown"] = v5_result["bull_regime_shadow_breakdown"]
+
+    # 13. Build factor snapshot (Phase 2: support bars calculation)
+    for c in candidates:
+        code = c.get("code", "")
+        # Get bars for this stock if available
+        bars = bars_map.get(code) if bars_map else None
+        c["factor_snapshot"] = build_factor_snapshot(c, as_of=None, bars=bars)
+
+    # 14. Compute factor composite shadow score (Phase 3: shadow-only)
+    for c in candidates:
+        composite_result = compute_factor_composite_shadow_score(c)
+        c["factor_composite_shadow_score"] = composite_result["factor_composite_shadow_score"]
+        c["factor_composite_breakdown"] = composite_result["factor_composite_breakdown"]
+        c["factor_composite_tags"] = composite_result["factor_composite_tags"]
+
+    # 15. Compute factor composite shadow score v2 (Phase 10: shadow-only experiment)
+    for c in candidates:
+        composite_v2_result = compute_factor_composite_shadow_score_v2(c)
+        c["factor_composite_shadow_score_v2"] = composite_v2_result["factor_composite_shadow_score_v2"]
+        c["factor_composite_breakdown_v2"] = composite_v2_result["factor_composite_breakdown_v2"]
+        c["factor_composite_tags_v2"] = composite_v2_result["factor_composite_tags_v2"]
+
+    # 16. Compute display score shadow (Phase 12: shadow-only)
+    for c in candidates:
+        display_result = compute_display_score_shadow(c)
+        c["display_score_shadow_90_10"] = display_result["display_score_shadow_90_10"]
+        c["display_score_shadow_80_20"] = display_result["display_score_shadow_80_20"]
+        c["display_score_shadow_70_30"] = display_result["display_score_shadow_70_30"]
+        c["display_score_shadow_breakdown"] = display_result["display_score_shadow_breakdown"]
+        c["display_score_shadow_tags"] = display_result["display_score_shadow_tags"]
 
     return candidates
 
@@ -895,6 +939,22 @@ def generate_aihf_request(
                 "bull_regime_shadow_score": c.get("bull_regime_shadow_score", 0),
                 "regime_router_shadow_score_v5": c.get("regime_router_shadow_score_v5", 0),
                 "regime_router_selected_profile": c.get("regime_router_selected_profile", "default"),
+                # Factor snapshot (Phase 1: pass-through, nullable)
+                "factor_snapshot": c.get("factor_snapshot", None),
+                # Factor composite shadow score (Phase 3: shadow-only)
+                "factor_composite_shadow_score": c.get("factor_composite_shadow_score", 50.0),
+                "factor_composite_breakdown": c.get("factor_composite_breakdown", {}),
+                "factor_composite_tags": c.get("factor_composite_tags", []),
+                # Factor composite shadow score v2 (Phase 10: shadow-only experiment)
+                "factor_composite_shadow_score_v2": c.get("factor_composite_shadow_score_v2", 50.0),
+                "factor_composite_breakdown_v2": c.get("factor_composite_breakdown_v2", {}),
+                "factor_composite_tags_v2": c.get("factor_composite_tags_v2", []),
+                # Display score shadow (Phase 12: shadow-only)
+                "display_score_shadow_90_10": c.get("display_score_shadow_90_10", None),
+                "display_score_shadow_80_20": c.get("display_score_shadow_80_20", None),
+                "display_score_shadow_70_30": c.get("display_score_shadow_70_30", None),
+                "display_score_shadow_breakdown": c.get("display_score_shadow_breakdown", {}),
+                "display_score_shadow_tags": c.get("display_score_shadow_tags", []),
             }
             for c in selected_candidates
         ],

@@ -29,8 +29,18 @@ STOCKDB_HOST = os.environ.get("STOCKDB_HOST", "127.0.0.1")
 STOCKDB_PORT = int(os.environ.get("STOCKDB_PORT", "7899"))
 STOCKDB_ROOT = Path(os.environ.get("STOCKDB_ROOT", ""))
 STOCKDB_EXE = STOCKDB_ROOT / "stockdb.exe"
-STOCKDB_UPDATE_EXE = STOCKDB_ROOT / "数据更新.exe"
 
+
+def resolve_stockdb_update_exe(root: Path) -> Path:
+    candidates = ["数据更新.exe"]
+    for name in candidates:
+        candidate = root / name
+        if candidate.exists():
+            return candidate
+    return root / candidates[0]
+
+
+STOCKDB_UPDATE_EXE = resolve_stockdb_update_exe(STOCKDB_ROOT)
 
 def normalize_date(value: str | None) -> str | None:
     if value is None:

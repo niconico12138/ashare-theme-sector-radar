@@ -2,7 +2,7 @@
 
 ## 1. Summary
 
-- **Commit Hash**: e5ec896
+- **Commit Hash**: 901f4a7
 - **Commit Message**: "chore: snapshot factor shadow validation system"
 - **Test Command**: `python -m pytest tests/theme_sector_radar/test_factor_schema.py tests/theme_sector_radar/test_factor_calculators.py tests/theme_sector_radar/test_selection_quality.py tests/theme_sector_radar/test_daily_decision_summary.py tests/theme_sector_radar/test_daily_compact_report.py tests/theme_sector_radar/test_bars_factor_shadow_policy_evaluation.py tests/theme_sector_radar/test_bars_data_lineage.py -q`
 - **Test Result**: 122 passed in 0.62s

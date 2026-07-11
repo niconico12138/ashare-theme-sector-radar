@@ -31,9 +31,12 @@ if sys.stderr.encoding and sys.stderr.encoding.lower() in ("gbk", "cp936", "cp12
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 
-# ---- Load .env from ai-hedge-fund if available ----
+# ---- Load local .env files if available ----
 try:
     from dotenv import load_dotenv
+    _project_env = PROJECT_ROOT / ".env"
+    if _project_env.exists():
+        load_dotenv(_project_env, override=False)
     _aihedge_env = PROJECT_ROOT.parent / "ai-hedge-fund" / ".env"
     if _aihedge_env.exists():
         load_dotenv(_aihedge_env, override=False)
@@ -120,6 +123,113 @@ def _normalize_date(value: Any) -> str:
     if len(text) >= 10 and text[4] == "-" and text[7] == "-":
         return text[:10]
     return ""
+
+
+
+def _env_flag(name: str, default: bool = False) -> bool:
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "y", "on"}
+
+
+def _env_int(name: str, default: int) -> int:
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    try:
+        return int(value)
+    except ValueError:
+        return default
+
+
+def should_auto_update_data_source(
+    preflight: dict[str, Any],
+    as_of: str | None,
+    enabled: bool,
+    today: str | None = None,
+) -> tuple[bool, str]:
+    if not enabled:
+        return False, "disabled"
+    target = _normalize_date(as_of)
+    current_day = _normalize_date(today or datetime.now().strftime("%Y-%m-%d"))
+    if not target:
+        return False, "missing_as_of"
+    if target != current_day:
+        return False, "not_today"
+    freshness = preflight.get("data_freshness", {})
+    if freshness.get("status") != "stale":
+        return False, "not_stale"
+    if not preflight.get("stockdb_available"):
+        return False, "stockdb_unavailable"
+    return True, "today_data_stale"
+
+
+def run_stockdb_update(expected_date: str, wait_seconds: int, poll_seconds: int) -> dict[str, Any]:
+    cmd = [
+        sys.executable,
+        "scripts/update_stockdb_and_verify.py",
+        "--expected-date",
+        expected_date,
+        "--wait-seconds",
+        str(wait_seconds),
+        "--poll-seconds",
+        str(poll_seconds),
+        "--json",
+    ]
+    result = subprocess.run(
+        cmd,
+        cwd=str(PROJECT_ROOT),
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        timeout=max(wait_seconds + 120, 180),
+        env=_subprocess_env(),
+    )
+    try:
+        payload: dict[str, Any] = json.loads(result.stdout or "{}")
+    except json.JSONDecodeError:
+        payload = {}
+    payload.setdefault("status", "failed" if result.returncode else "unknown")
+    payload["returncode"] = result.returncode
+    payload["stdout_tail"] = _tail_lines(result.stdout)
+    payload["stderr_tail"] = _tail_lines(result.stderr)
+    return payload
+
+
+def maybe_auto_update_data_source(
+    preflight: dict[str, Any],
+    api_url: str,
+    as_of: str,
+    enabled: bool,
+    wait_seconds: int,
+    poll_seconds: int,
+) -> dict[str, Any]:
+    should_update, reason = should_auto_update_data_source(preflight, as_of, enabled)
+    attempt: dict[str, Any] = {
+        "enabled": enabled,
+        "attempted": False,
+        "reason": reason,
+    }
+    if not should_update:
+        updated = dict(preflight)
+        updated["data_update_attempt"] = attempt
+        return updated
+
+    expected_date = _normalize_date(as_of).replace("-", "")
+    print(f"\n[INFO] Today's data is stale; updating StockDB to {expected_date} before running steps...")
+    attempt["attempted"] = True
+    attempt["expected_date"] = expected_date
+    attempt["result"] = run_stockdb_update(expected_date, wait_seconds, poll_seconds)
+    refreshed = run_preflight(api_url, as_of=as_of)
+    refreshed["data_update_attempt"] = attempt
+    if refreshed.get("data_freshness", {}).get("status") == "stale":
+        flags = list(refreshed.get("degradation_flags", []))
+        if "data_update_failed" not in flags:
+            flags.append("data_update_failed")
+        refreshed["degradation_flags"] = flags
+    return refreshed
 
 
 def _find_latest_data_date(value: Any) -> str:
@@ -690,6 +800,24 @@ def main() -> None:
     parser.add_argument("--skip-agent", action="store_true", help="跳过 Agent 分析（Step 6-7）")
     parser.add_argument("--quick", action="store_true", help="快速模式（仅 Step 1-5）")
     parser.add_argument("--api-url", default=DEFAULT_API_URL, help="market_data_service API URL")
+    parser.add_argument(
+        "--auto-update-data-source",
+        action=argparse.BooleanOptionalAction,
+        default=_env_flag("THEME_RADAR_AUTO_UPDATE_TODAY_DATA", False),
+        help="Auto-update StockDB when --as-of is today and preflight reports stale data.",
+    )
+    parser.add_argument(
+        "--data-update-wait-seconds",
+        type=int,
+        default=_env_int("THEME_RADAR_DATA_UPDATE_WAIT_SECONDS", 1200),
+        help="Maximum seconds to wait for automatic StockDB update.",
+    )
+    parser.add_argument(
+        "--data-update-poll-seconds",
+        type=int,
+        default=_env_int("THEME_RADAR_DATA_UPDATE_POLL_SECONDS", 30),
+        help="Seconds between automatic StockDB freshness checks.",
+    )
     parser.add_argument("--preflight-only", action="store_true", help="只检查前置依赖，不构建或执行步骤")
     parser.add_argument("--dry-run", action="store_true", help="只列出将执行的步骤并写入诊断报告，不执行 subprocess")
     parser.add_argument(
@@ -702,6 +830,16 @@ def main() -> None:
     date = args.as_of
     started_at = datetime.now().isoformat(timespec="seconds")
     preflight = run_preflight(args.api_url, as_of=date)
+
+    if not args.preflight_only and not args.dry_run:
+        preflight = maybe_auto_update_data_source(
+            preflight,
+            args.api_url,
+            as_of=date,
+            enabled=args.auto_update_data_source,
+            wait_seconds=args.data_update_wait_seconds,
+            poll_seconds=args.data_update_poll_seconds,
+        )
 
     if args.preflight_only:
         _print_preflight(preflight)
