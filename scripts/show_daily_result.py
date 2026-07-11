@@ -23,6 +23,8 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 SECTOR_RESEARCH_DIR = PROJECT_ROOT / "reports" / "full90" / "sector_research"
 CONCEPT_RANK_DIR = PROJECT_ROOT / "reports" / "full_concept" / "unified_rank"
 UNIFIED_DIR = PROJECT_ROOT / "reports" / "unified"
+V2_SHADOW_MONITOR_PATH = PROJECT_ROOT / "reports" / "factor_composite_shadow_score" / "v2_shadow_monitor.json"
+DAILY_DECISION_SUMMARY_DIR = PROJECT_ROOT / "reports" / "daily_decision_summary"
 
 
 def _field(row: dict, *keys, default="-"):
@@ -240,10 +242,16 @@ def main():
     parser = argparse.ArgumentParser(description="每日运行结果摘要")
     parser.add_argument("--as-of", required=True, help="日期 YYYY-MM-DD")
     parser.add_argument("--top-n", type=int, default=10, help="Top N 数量")
+    parser.add_argument("--format", choices=["verbose", "compact", "json"], default="verbose",
+                        help="输出格式: verbose (旧版详细), compact (新版简报), json (机器友好)")
+    parser.add_argument("--output-dir", default=str(DAILY_DECISION_SUMMARY_DIR),
+                        help="输出目录 (compact/json 格式)")
     args = parser.parse_args()
 
     date = args.as_of
     top_n = args.top_n
+    output_format = args.format
+    output_dir = Path(args.output_dir)
 
     # Load data
     report = load_unified_report(date)
@@ -256,6 +264,28 @@ def main():
     sectors = load_sector_research(date)
     concepts = load_concept_rank(date)
 
+    # Load V2 monitor (optional)
+    v2_monitor = None
+    try:
+        sys.path.insert(0, str(PROJECT_ROOT))
+        from theme_sector_radar.reporting.v2_shadow_monitor_section import load_v2_shadow_monitor
+        v2_monitor = load_v2_shadow_monitor(V2_SHADOW_MONITOR_PATH)
+    except Exception:
+        pass
+
+    if output_format == "verbose":
+        # 旧版详细输出
+        _run_verbose(report, date, top_n, sectors, concepts)
+    elif output_format == "compact":
+        # 新版简洁简报
+        _run_compact(report, date, top_n, sectors, concepts, v2_monitor, output_dir)
+    elif output_format == "json":
+        # 机器友好 JSON
+        _run_json(report, date, top_n, sectors, concepts, v2_monitor, output_dir)
+
+
+def _run_verbose(report: dict, date: str, top_n: int, sectors: list, concepts: list):
+    """旧版详细输出。"""
     # Build sector_agent_map: sector_name -> {agent_label, ranking_score, ...}
     sector_agent_map = {}
     for s in sectors:
@@ -309,6 +339,104 @@ def main():
 
     # Part 6: Data sources
     print_data_sources(report)
+
+    # Part 7: V2 Shadow Monitor
+    print_v2_shadow_monitor()
+
+
+def _run_compact(report: dict, date: str, top_n: int, sectors: list, concepts: list,
+                  v2_monitor: dict | None, output_dir: Path):
+    """新版简洁简报。"""
+    try:
+        sys.path.insert(0, str(PROJECT_ROOT))
+        from theme_sector_radar.reporting.daily_decision_summary import build_daily_decision_summary
+        from theme_sector_radar.reporting.daily_compact_report import build_daily_compact_markdown
+
+        # 构建 decision summary
+        summary = build_daily_decision_summary(
+            as_of=date,
+            unified_report=report,
+            sectors=sectors,
+            concepts=concepts,
+            v2_monitor=v2_monitor,
+            top_n=top_n,
+        )
+
+        # 生成 compact markdown
+        markdown = build_daily_compact_markdown(summary, top_n)
+        print(markdown)
+
+        # 写出文件
+        out_dir = output_dir / date
+        out_dir.mkdir(parents=True, exist_ok=True)
+
+        # 写 JSON
+        json_path = out_dir / "decision_summary.json"
+        json_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
+
+        # 写 Markdown
+        md_path = out_dir / "decision_summary.md"
+        md_path.write_text(markdown, encoding="utf-8")
+
+        print(f"\n✅ 已生成:")
+        print(f"   JSON: {json_path}")
+        print(f"   Markdown: {md_path}")
+
+    except Exception as e:
+        print(f"❌ 生成 compact 报告失败: {e}")
+        import traceback
+        traceback.print_exc()
+
+
+def _run_json(report: dict, date: str, top_n: int, sectors: list, concepts: list,
+              v2_monitor: dict | None, output_dir: Path):
+    """机器友好 JSON 输出。"""
+    try:
+        sys.path.insert(0, str(PROJECT_ROOT))
+        from theme_sector_radar.reporting.daily_decision_summary import build_daily_decision_summary
+
+        # 构建 decision summary
+        summary = build_daily_decision_summary(
+            as_of=date,
+            unified_report=report,
+            sectors=sectors,
+            concepts=concepts,
+            v2_monitor=v2_monitor,
+            top_n=top_n,
+        )
+
+        # 输出 JSON
+        print(json.dumps(summary, ensure_ascii=False, indent=2))
+
+        # 写出文件
+        out_dir = output_dir / date
+        out_dir.mkdir(parents=True, exist_ok=True)
+        json_path = out_dir / "decision_summary.json"
+        json_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
+
+        print(f"\n✅ 已生成: {json_path}", file=sys.stderr)
+
+    except Exception as e:
+        print(f"❌ 生成 JSON 报告失败: {e}", file=sys.stderr)
+        import traceback
+        traceback.print_exc()
+
+
+def print_v2_shadow_monitor():
+    """Part 7: V2 Shadow Monitor 风险/防守复核"""
+    try:
+        sys.path.insert(0, str(PROJECT_ROOT))
+        from theme_sector_radar.reporting.v2_shadow_monitor_section import (
+            load_v2_shadow_monitor,
+            build_v2_shadow_monitor_markdown,
+        )
+
+        monitor = load_v2_shadow_monitor(V2_SHADOW_MONITOR_PATH)
+        markdown = build_v2_shadow_monitor_markdown(monitor)
+        print(markdown)
+    except Exception as e:
+        print("## V2 Shadow Monitor\n")
+        print(f"V2 Shadow Monitor 加载失败: {e}\n")
 
 
 if __name__ == "__main__":

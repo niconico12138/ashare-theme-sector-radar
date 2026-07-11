@@ -58,7 +58,15 @@ class StockDBSdkClient:
             spec.loader.exec_module(module)
             stockdb_client_cls = module.StockDBClient
         else:
-            from stock_sdk import StockDBClient as stockdb_client_cls
+            try:
+                from stock_sdk import StockDBClient as stockdb_client_cls
+            except ImportError as e:
+                # 处理 typing import 错误
+                if "override" in str(e):
+                    raise ImportError(
+                        f"StockDB SDK requires Python 3.12+ or typing_extensions: {e}"
+                    )
+                raise
 
         self._client = stockdb_client_cls(host=host, port=port)
 

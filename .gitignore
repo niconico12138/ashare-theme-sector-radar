@@ -67,6 +67,7 @@ docs/diagnostics/
 docs/reviews/*
 !docs/reviews/phase42_version_audit_snapshot.md
 !docs/reviews/phase43_version_freeze_report.md
+!docs/reviews/phase44_workspace_residue_audit.md
 docs/phase[0-9]*.md
 docs/plans/phase*.md
 docs/data_optimization_plan.md

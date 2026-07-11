@@ -1,4 +1,4 @@
-from scripts.update_stockdb_and_verify import StockDBUpdateRunner
+from scripts.update_stockdb_and_verify import StockDBUpdateRunner, resolve_stockdb_update_exe
 
 
 class FakeOps:
@@ -64,3 +64,10 @@ def test_update_times_out_when_latest_date_never_reaches_expected():
     assert result["latest_daily_date"] == "20260708"
     assert result["expected_date"] == "20260709"
     assert "start_database" in ops.actions
+
+
+def test_resolve_stockdb_update_exe_prefers_correct_chinese_filename(tmp_path):
+    update_exe = tmp_path / "数据更新.exe"
+    update_exe.write_text("", encoding="utf-8")
+
+    assert resolve_stockdb_update_exe(tmp_path) == update_exe

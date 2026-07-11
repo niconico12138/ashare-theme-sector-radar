@@ -70,6 +70,80 @@ def test_preflight_flags_stale_market_data_date(monkeypatch):
     assert "data_stale" in preflight["degradation_flags"]
 
 
+def test_should_auto_update_data_source_only_for_today_stale_data():
+    stale_preflight = {
+        "stockdb_available": True,
+        "data_freshness": {"status": "stale", "latest_data_date": "2026-07-09"},
+    }
+    fresh_preflight = {
+        "stockdb_available": True,
+        "data_freshness": {"status": "fresh", "latest_data_date": "2026-07-10"},
+    }
+
+    should_update, reason = run_daily.should_auto_update_data_source(
+        stale_preflight,
+        as_of="2026-07-10",
+        enabled=True,
+        today="2026-07-10",
+    )
+
+    assert should_update is True
+    assert reason == "today_data_stale"
+    assert run_daily.should_auto_update_data_source(stale_preflight, "2026-07-09", True, today="2026-07-10") == (False, "not_today")
+    assert run_daily.should_auto_update_data_source(stale_preflight, "2026-07-10", False, today="2026-07-10") == (False, "disabled")
+    assert run_daily.should_auto_update_data_source(fresh_preflight, "2026-07-10", True, today="2026-07-10") == (False, "not_stale")
+
+
+def test_maybe_auto_update_data_source_refreshes_preflight_after_success(monkeypatch):
+    stale_preflight = {
+        "run_mode": "full_real",
+        "stockdb_available": True,
+        "api_available": True,
+        "llm_configured": True,
+        "data_freshness": {"status": "stale", "latest_data_date": "2026-07-09"},
+        "degradation_flags": ["data_stale"],
+    }
+    fresh_preflight = {
+        "run_mode": "full_real",
+        "stockdb_available": True,
+        "api_available": True,
+        "llm_configured": True,
+        "data_freshness": {"status": "fresh", "latest_data_date": "2026-07-10"},
+        "degradation_flags": [],
+    }
+    calls = []
+
+    monkeypatch.setattr(
+        run_daily,
+        "should_auto_update_data_source",
+        lambda preflight, as_of, enabled: (True, "today_data_stale"),
+    )
+    monkeypatch.setattr(
+        run_daily,
+        "run_stockdb_update",
+        lambda expected_date, wait_seconds, poll_seconds: calls.append((expected_date, wait_seconds, poll_seconds)) or {
+            "status": "updated",
+            "latest_daily_date": expected_date,
+            "returncode": 0,
+        },
+    )
+    monkeypatch.setattr(run_daily, "run_preflight", lambda api_url, as_of=None: fresh_preflight)
+
+    updated = run_daily.maybe_auto_update_data_source(
+        stale_preflight,
+        "http://127.0.0.1:8000",
+        as_of="2026-07-10",
+        enabled=True,
+        wait_seconds=120,
+        poll_seconds=5,
+    )
+
+    assert calls == [("20260710", 120, 5)]
+    assert updated["data_freshness"]["status"] == "fresh"
+    assert updated["data_update_attempt"]["attempted"] is True
+    assert updated["data_update_attempt"]["result"]["status"] == "updated"
+
+
 def test_write_daily_run_report_records_steps_and_preflight(tmp_path):
     preflight = {
         "run_mode": "data_degraded",
