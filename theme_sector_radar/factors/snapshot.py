@@ -150,6 +150,10 @@ def build_factor_snapshot(
                 candidate_with_bar = dict(candidate)
                 candidate_with_bar[metadata.factor_id] = bar_factors[metadata.factor_id]
                 fv = _extract_factor_value(candidate_with_bar, metadata)
+                # 检查是否有 calculator 预计算的 score (以 _factor_score 为 key)
+                precomputed_score_key = f"_{metadata.factor_id}_score"
+                if precomputed_score_key in bar_factors and bar_factors[precomputed_score_key] is not None:
+                    fv.score = bar_factors[precomputed_score_key]
                 # 标记为 bars 计算
                 if "bars_calculated" not in fv.tags:
                     fv.tags.append("bars_calculated")

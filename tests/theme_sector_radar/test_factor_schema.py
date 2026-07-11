@@ -36,8 +36,8 @@ class TestRegistry:
     """测试因子元数据注册表。"""
 
     def test_registry_has_24_factors(self):
-        """注册表应包含 24 个因子（13 + 6 bars + 5 stock quality 因子）。"""
-        assert len(FACTOR_REGISTRY) == 24
+        """注册表应包含全部启用因子。"""
+        assert len(FACTOR_REGISTRY) == 84
 
     def test_core_factors_exist(self):
         """核心因子必须存在。"""
@@ -70,8 +70,83 @@ class TestRegistry:
     def test_list_enabled_factors(self):
         """list_enabled_factors 应返回所有启用的因子。"""
         enabled = list_enabled_factors()
-        assert len(enabled) == 24
+        assert len(enabled) == 84
         assert all(f.enabled for f in enabled)
+
+    def test_short_emotion_factors_are_registered_as_shadow_only(self):
+        """Short-burst emotion factors should be registered but shadow-only."""
+        short_factors = [
+            "short_emotion_heat_score",
+            "sector_burst_breadth_score",
+            "limit_attention_score",
+            "intraday_reversal_risk_score",
+            "close_strength_score",
+            "volume_burst_quality_score",
+            "single_name_overheat_score",
+            "next_day_cashout_risk_score",
+            "short_burst_emotion_score_v1",
+            "short_burst_emotion_score_v2",
+            "market_short_emotion_score",
+            "limit_up_breadth_score",
+            "limit_up_failure_risk",
+            "leader_continuation_score",
+            "short_burst_environment_score",
+            "crowding_heat_score",
+            "news_heat_score",
+            "policy_catalyst_score",
+            "earnings_catalyst_score",
+            "event_freshness_score",
+            "event_continuation_score",
+            "negative_news_risk_score",
+            "rumor_hype_risk_score",
+            "short_burst_news_emotion_score_shadow",
+        ]
+        for factor_id in short_factors:
+            meta = get_factor_metadata(factor_id)
+            assert meta is not None
+            assert meta.category in {"short_emotion", "risk", "volume", "market_emotion", "catalyst"}
+            assert "short_burst_shadow" in meta.tags
+
+    def test_intraday_factors_are_registered_as_shadow_only(self):
+        """Intraday factors should be registered for shadow validation only."""
+        intraday_factors = [
+            "intraday_close_position_score",
+            "intraday_high_pullback_risk_score",
+            "intraday_volume_price_confirm_score",
+            "intraday_sector_breadth_score",
+            "intraday_late_strength_score",
+            "short_burst_intraday_emotion_score_shadow",
+            "late_return_30m_score",
+            "late_vwap_support_score",
+            "late_volume_share_score",
+            "late_high_near_close_score",
+            "high_to_close_drawdown_score",
+            "morning_spike_fade_score",
+            "afternoon_fade_score",
+            "max_gain_giveback_ratio",
+            "close_vs_vwap_score",
+            "late_price_above_vwap_ratio",
+            "vwap_slope_score",
+            "vwap_reclaim_score",
+            "volume_without_price_progress_risk",
+            "late_volume_efficiency_score",
+            "amount_acceleration_score",
+            "volume_spike_exhaustion_score",
+            "opening_drive_score",
+            "morning_strength_persist_score",
+            "morning_pullback_repair_score",
+            "open_to_midday_resilience_score",
+            "sector_intraday_breadth_change",
+            "sector_late_breadth_score",
+            "leader_follower_sync_score",
+            "stock_vs_sector_intraday_alpha",
+        ]
+        for factor_id in intraday_factors:
+            meta = get_factor_metadata(factor_id)
+            assert meta is not None
+            assert meta.category == "intraday"
+            assert "intraday_shadow" in meta.tags
+            assert "no_execution_signal" in meta.tags
 
 
 # ============================================================
@@ -251,10 +326,10 @@ class TestSnapshot:
         assert snapshot["as_of"] == "2026-07-10"
         assert snapshot["code"] == "600001"
         assert snapshot["name"] == "测试股A"
-        assert len(snapshot["factors"]) == 24
+        assert len(snapshot["factors"]) == 84
 
         # 检查 summary
-        assert snapshot["summary"]["factor_count"] == 24
+        assert snapshot["summary"]["factor_count"] == 84
         assert snapshot["summary"]["missing_count"] >= 0
 
     def test_build_factor_snapshot_missing_fields(self):
@@ -266,17 +341,17 @@ class TestSnapshot:
         snapshot = build_factor_snapshot(candidate, as_of="2026-07-10")
 
         assert snapshot["schema_version"] == "1.0"
-        assert len(snapshot["factors"]) == 24
+        assert len(snapshot["factors"]) == 84
 
         # 所有因子都应标记为 missing
         missing_factors = [f for f in snapshot["factors"] if f["quality"] == "missing"]
-        assert len(missing_factors) == 24
+        assert len(missing_factors) == 84
 
     def test_build_factor_snapshot_empty_candidate(self):
         """空 candidate 不会异常。"""
         snapshot = build_factor_snapshot({}, as_of="2026-07-10")
         assert snapshot["schema_version"] == "1.0"
-        assert len(snapshot["factors"]) == 24
+        assert len(snapshot["factors"]) == 84
 
     def test_build_factor_snapshot_returns_dict(self):
         """返回值应为普通 dict。"""
@@ -318,7 +393,7 @@ class TestExportTop30Integration:
         snapshot = enriched[0]["factor_snapshot"]
         assert snapshot["schema_version"] == "1.0"
         assert snapshot["code"] == "600001"
-        assert len(snapshot["factors"]) == 24
+        assert len(snapshot["factors"]) == 84
 
     def test_enrich_empty_list(self):
         """空列表不应异常。"""

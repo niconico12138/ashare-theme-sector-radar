@@ -357,10 +357,10 @@ def generate_markdown_report(diagnosis: dict, output_path: Path) -> None:
     # 下一阶段建议
     lines.append("## 9. 下一阶段建议\n")
     lines.append("- 继续保持 shadow-only 状态")
-    lines.append("- breakout_distance_20 校准后再决定是否保留 trigger_candidate")
-    lines.append("- drawdown_depth_20 校准后再决定是否保留 soft_warning")
+    lines.append("- breakout_distance_20 保持 structure_candidate (非 trigger)")
+    lines.append("- drawdown_depth_20 保持 repair_context (非 soft_warning)")
     lines.append("- liquidity_state 保持 profile_only")
-    lines.append("- 不进入买入点阶段")
+    lines.append("- 继续 shadow-only，不进入交易阶段")
     lines.append("")
 
     output_path.write_text("\n".join(lines), encoding="utf-8")

@@ -236,15 +236,26 @@ def analyze_by_field(
             field_value = c.get(field_name)
 
         # 3. 从 reason_codes fallback
+        # 包含 legacy reason codes 以兼容历史数据
         if field_value is None:
             reason_codes = c.get("reason_codes", [])
             reason_mapping = {
                 "breakout_structure": {
+                    # Phase 46+ new codes
+                    "structure_near_high_position": "near",
+                    "structure_neutral_position": "neutral",
+                    "structure_far_from_high": "far",
+                    # Legacy codes (backward compat for old data)
                     "near_breakout_structure": "near",
                     "breakout_structure_watch": "neutral",
                     "far_from_breakout": "far",
                 },
                 "drawdown_state": {
+                    # Phase 46+ new codes
+                    "shallow_pullback_state": "healthy",
+                    "normal_pullback_state": "normal",
+                    "deep_pullback_repair_context": "deep",
+                    # Legacy codes (backward compat for old data)
                     "healthy_drawdown": "healthy",
                     "deep_drawdown_risk": "deep",
                 },
@@ -265,10 +276,14 @@ def analyze_by_field(
                         break
 
         # 4. 从 invalidation_flags fallback
+        # 包含 legacy flags 以兼容历史数据
         if field_value is None:
             invalidation_flags = c.get("invalidation_flags", [])
             flag_mapping = {
                 "drawdown_state": {
+                    # Phase 46+ new flags
+                    "deep_pullback_requires_context": "deep",
+                    # Legacy flags (backward compat for old data)
                     "drawdown_too_deep": "deep",
                 },
                 "liquidity_state": {
@@ -605,20 +620,20 @@ def generate_markdown_report(analysis: dict, output_path: Path) -> None:
     lines.append("## 8. Shadow Policy 建议\n")
     lines.append("| 标签 | 当前 Policy | 建议 Policy | 原因 |")
     lines.append("|------|-------------|-------------|------|")
-    lines.append("| breakout_structure=near | trigger_candidate | keep_trigger_candidate | near 组有正向收益潜力 |")
-    lines.append("| drawdown_state=deep | soft_warning | keep_soft_warning | deep 组有风险提示价值 |")
-    lines.append("| liquidity_state=weak | profile_only | profile_only | weak 组需要关注 |")
-    lines.append("| overheat_state=high | profile_only | display_only | 高动量可能是机会 |")
+    lines.append("| breakout_structure=near | structure_candidate | keep_structure_candidate | 仅作为结构位置标签，非触发信号 |")
+    lines.append("| drawdown_state=deep | repair_context | keep_repair_context | deep可能是修复机会，非自动负面信号 |")
+    lines.append("| liquidity_state=weak | profile_only | insufficient_sample | weak组样本不足，继续观察 |")
+    lines.append("| overheat_state=high | soft_warning | keep_soft_warning | 高分组历史表现较弱，有风险提示价值 |")
     lines.append("")
 
     # 9. 下一阶段建议
     lines.append("## 9. 下一阶段建议\n")
     lines.append("- 继续保持 shadow-only 状态")
-    lines.append("- breakout_structure 保持 trigger_candidate 标记")
-    lines.append("- drawdown_state 保持 soft_warning")
-    lines.append("- liquidity_state 保持 profile_only")
-    lines.append("- overheat_state 保持 profile_only")
-    lines.append("- 不进入交易触发阶段")
+    lines.append("- breakout_structure 保持 structure_candidate (非 trigger)")
+    lines.append("- drawdown_state 保持 repair_context (非 soft_warning)")
+    lines.append("- liquidity_state 保持 profile_only (weak样本不足)")
+    lines.append("- overheat_state 保持 soft_warning")
+    lines.append("- 继续 shadow-only，不进入交易阶段")
     lines.append("")
 
     output_path.write_text("\n".join(lines), encoding="utf-8")

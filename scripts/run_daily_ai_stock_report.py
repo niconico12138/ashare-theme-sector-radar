@@ -49,7 +49,7 @@ def check_dependency_details(as_of: str) -> dict[str, dict]:
         results["stockdb"] = {
             "ok": False,
             "detail": f"127.0.0.1:7899 not reachable: {exc}",
-            "action": "Set STOCKDB_EXE_PATH or start your local StockDB service",
+            "action": "Set STOCKDB_EXE_PATH to stockdb.exe or start your local StockDB service",
         }
 
     try:

@@ -17,6 +17,65 @@ def test_build_steps_uses_longer_bridge_timeout():
     assert bridge.required_mode == "agent_only"
 
 
+def test_build_steps_appends_joint_decision_after_available_inputs():
+    quick_steps = run_daily.build_steps("2026-07-08", sys.executable, quick=True, skip_agent=False)
+    full_steps = run_daily.build_steps("2026-07-08", sys.executable, quick=False, skip_agent=False)
+
+    assert quick_steps[-2].name == "Joint Decision"
+    assert quick_steps[-2].cmd == [sys.executable, "scripts/run_joint_decision.py", "--as-of", "2026-07-08"]
+    assert quick_steps[-2].required_mode == "data_degraded"
+    assert quick_steps[-1].name == "Decision Summary"
+
+    assert full_steps[-2].name == "Joint Decision"
+    assert full_steps[-3].name == "Bridge Report"
+    assert full_steps[-1].name == "Decision Summary"
+
+
+def test_expected_artifacts_include_joint_decision_outputs():
+    artifacts = run_daily.expected_artifacts("2026-07-08", quick=True, skip_agent=False)
+
+    assert Path("reports/joint_decision/2026-07-08/joint_decision_summary.json") in artifacts
+    assert Path("reports/joint_decision/2026-07-08/joint_decision_summary.md") in artifacts
+
+
+def test_build_steps_appends_daily_decision_summary_after_joint_decision():
+    steps = run_daily.build_steps("2026-07-08", sys.executable, quick=True, skip_agent=False)
+
+    assert steps[-2].name == "Joint Decision"
+    assert steps[-1].name == "Decision Summary"
+    assert steps[-1].cmd == [
+        sys.executable,
+        "scripts/show_daily_result.py",
+        "--as-of",
+        "2026-07-08",
+        "--format",
+        "compact",
+        "--top-n",
+        "5",
+    ]
+    assert steps[-1].required_mode == "data_degraded"
+
+
+def test_expected_artifacts_include_daily_decision_summary_outputs():
+    artifacts = run_daily.expected_artifacts("2026-07-08", quick=True, skip_agent=False)
+
+    assert Path("reports/daily_decision_summary/2026-07-08/decision_summary.json") in artifacts
+    assert Path("reports/daily_decision_summary/2026-07-08/decision_summary.md") in artifacts
+
+
+def test_report_date_consistency_includes_joint_decision_summary(tmp_path):
+    as_of = "2026-07-08"
+    report_path = tmp_path / "reports" / "joint_decision" / as_of / "joint_decision_summary.json"
+    report_path.parent.mkdir(parents=True)
+    report_path.write_text(json.dumps({"as_of": as_of}), encoding="utf-8")
+
+    checks = run_daily.check_report_date_consistency(as_of, project_root=tmp_path)
+
+    by_path = {item["path"]: item for item in checks}
+    joint = by_path[f"reports/joint_decision/{as_of}/joint_decision_summary.json"]
+    assert joint["status"] == "matched"
+
+
 def test_run_step_handles_none_output_without_masking_return_code(monkeypatch, tmp_path):
     def fake_run(*args, **kwargs):
         return subprocess.CompletedProcess(args=args[0], returncode=1, stdout=None, stderr=None)

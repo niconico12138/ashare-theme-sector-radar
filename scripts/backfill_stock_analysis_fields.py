@@ -31,7 +31,13 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from theme_sector_radar.reporting.daily_decision_summary import normalize_stock_item
-from theme_sector_radar.reporting.selection_quality import classify_stock_candidate
+from theme_sector_radar.reporting.selection_quality import (
+    INTRADAY_ATOMIC_FACTOR_IDS,
+    SHORT_BURST_NEWS_EMOTION_FACTOR_IDS,
+    annotate_market_regime_scores,
+    annotate_sector_peer_rank_scores,
+    classify_stock_candidate,
+)
 from theme_sector_radar.reporting.stock_profile import build_stock_profile
 from theme_sector_radar.reporting.stock_explanation import build_stock_explanation
 
@@ -138,6 +144,8 @@ def backfill_stock_analysis_fields(data: dict) -> dict:
     # 深拷贝数据
     result = json.loads(json.dumps(data))
     candidates = result.get("candidates", [])
+    annotate_sector_peer_rank_scores(candidates)
+    annotate_market_regime_scores(candidates)
 
     for c in candidates:
         # 1. 推断 source_pool
@@ -153,6 +161,45 @@ def backfill_stock_analysis_fields(data: dict) -> dict:
         c["selection_bucket"] = classification["selection_bucket"]
         c["selection_score"] = classification["selection_score"]
         c["selection_score_adjusted"] = classification["selection_score_adjusted"]
+        c["optimized_watch_score"] = classification.get("optimized_watch_score")
+        c["factor_value_overlay"] = classification.get("factor_value_overlay", {})
+        c["sector_peer_rank_score"] = classification.get("sector_peer_rank_score")
+        c["risk_adjusted_watch_score_shadow"] = classification.get("risk_adjusted_watch_score_shadow")
+        c["risk_gate_decision"] = classification.get("risk_gate_decision", {})
+        c["market_regime_score"] = classification.get("risk_gate_decision", {}).get("market_gate", {}).get("score")
+        c["market_regime_components"] = c.get("market_regime_components", {})
+        c["short_burst_risk_adjusted_score_shadow"] = classification.get(
+            "short_burst_risk_adjusted_score_shadow"
+        )
+        c["short_burst_risk_gate"] = classification.get("short_burst_risk_gate")
+        c["short_burst_emotion_overlay_shadow"] = classification.get(
+            "short_burst_emotion_overlay_shadow"
+        )
+        c["short_burst_news_emotion_overlay_shadow"] = classification.get(
+            "short_burst_news_emotion_overlay_shadow"
+        )
+        for factor_id in SHORT_BURST_NEWS_EMOTION_FACTOR_IDS:
+            c[factor_id] = classification.get(factor_id)
+        c["intraday_factor_snapshot"] = classification.get("intraday_factor_snapshot", {})
+        c["intraday_close_position_score"] = classification.get("intraday_close_position_score")
+        c["intraday_high_pullback_risk_score"] = classification.get("intraday_high_pullback_risk_score")
+        c["intraday_volume_price_confirm_score"] = classification.get("intraday_volume_price_confirm_score")
+        c["intraday_sector_breadth_score"] = classification.get("intraday_sector_breadth_score")
+        c["intraday_late_strength_score"] = classification.get("intraday_late_strength_score")
+        c["short_burst_intraday_emotion_score_shadow"] = classification.get(
+            "short_burst_intraday_emotion_score_shadow"
+        )
+        for factor_id in INTRADAY_ATOMIC_FACTOR_IDS:
+            c[factor_id] = classification.get(factor_id)
+        c["short_burst_intraday_emotion_overlay_shadow"] = classification.get(
+            "short_burst_intraday_emotion_overlay_shadow"
+        )
+        c["short_burst_observation_rank_shadow"] = classification.get(
+            "short_burst_observation_rank_shadow"
+        )
+        c["optimized_watch_score_v2_shadow"] = classification.get("optimized_watch_score_v2_shadow")
+        c["factor_value_overlay_v2_shadow"] = classification.get("factor_value_overlay_v2_shadow", {})
+        c["watch_ranking_decision"] = classification.get("watch_ranking_decision", {})
         c["quality_level"] = classification["quality_level"]
         c["quality_confirmations"] = classification["quality_confirmations"]
         c["soft_warnings"] = classification["soft_warnings"]

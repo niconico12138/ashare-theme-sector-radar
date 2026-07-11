@@ -189,54 +189,65 @@ class TestNewFactorExplanation:
         assert "liquidity_weak" in result["reason_codes"]
 
     def test_overheat_risk_high_reason_code(self):
-        """chasing_risk_score >= 75 应生成 overheat_risk_high reason code。"""
+        """chasing_risk_score >= 70 应生成 overheat_risk_high reason code。"""
         candidate = {
             "selection_bucket": "core_watch",
-            "chasing_risk_score": 80.0,
+            "chasing_risk_score": 75.0,
         }
 
         result = build_stock_explanation(candidate)
 
         assert "overheat_risk_high" in result["reason_codes"]
 
-    def test_healthy_drawdown_reason_code(self):
-        """drawdown_depth_20 5-20 应生成 healthy_drawdown。"""
+    def test_overheat_risk_watch_reason_code(self):
+        """chasing_risk_score 60-70 应生成 overheat_risk_watch reason code。"""
+        candidate = {
+            "selection_bucket": "core_watch",
+            "chasing_risk_score": 65.0,
+        }
+
+        result = build_stock_explanation(candidate)
+
+        assert "overheat_risk_watch" in result["reason_codes"]
+
+    def test_shallow_pullback_reason_code(self):
+        """drawdown_depth_20 <= 5 应生成 shallow_pullback_state。"""
         candidate = {
             "selection_bucket": "v2_opportunity",
-            "drawdown_depth_20": 10.0,
+            "drawdown_depth_20": 3.0,
         }
 
         result = build_stock_explanation(candidate)
 
-        assert "healthy_drawdown" in result["reason_codes"]
+        assert "shallow_pullback_state" in result["reason_codes"]
 
-    def test_deep_drawdown_risk_reason_code(self):
-        """drawdown_depth_20 > 35 应生成 deep_drawdown_risk。"""
+    def test_deep_pullback_repair_context_reason_code(self):
+        """drawdown_depth_20 > 15 应生成 deep_pullback_repair_context。"""
         candidate = {
             "selection_bucket": "core_watch",
-            "drawdown_depth_20": 40.0,
+            "drawdown_depth_20": 20.0,
         }
 
         result = build_stock_explanation(candidate)
 
-        assert "deep_drawdown_risk" in result["reason_codes"]
+        assert "deep_pullback_repair_context" in result["reason_codes"]
 
-    def test_near_breakout_structure_reason_code(self):
-        """breakout_distance_20 <= 5 应生成 near_breakout_structure。"""
+    def test_structure_near_high_position_reason_code(self):
+        """breakout_distance_20 <= 3 应生成 structure_near_high_position。"""
         candidate = {
             "selection_bucket": "core_watch",
-            "breakout_distance_20": 3.0,
+            "breakout_distance_20": 2.0,
         }
 
         result = build_stock_explanation(candidate)
 
-        assert "near_breakout_structure" in result["reason_codes"]
+        assert "structure_near_high_position" in result["reason_codes"]
 
     def test_overheat_risk_present_invalidation_flag(self):
-        """chasing_risk_score >= 75 应生成 overheat_risk_present invalidation flag。"""
+        """chasing_risk_score >= 70 应生成 overheat_risk_present invalidation flag。"""
         candidate = {
             "selection_bucket": "core_watch",
-            "chasing_risk_score": 80.0,
+            "chasing_risk_score": 75.0,
         }
 
         result = build_stock_explanation(candidate)
@@ -254,16 +265,16 @@ class TestNewFactorExplanation:
 
         assert "liquidity_condition_weak" in result["invalidation_flags"]
 
-    def test_drawdown_too_deep_invalidation_flag(self):
-        """drawdown_depth_20 > 35 应生成 drawdown_too_deep invalidation flag。"""
+    def test_deep_pullback_requires_context_invalidation_flag(self):
+        """drawdown_depth_20 > 15 应生成 deep_pullback_requires_context invalidation flag。"""
         candidate = {
             "selection_bucket": "core_watch",
-            "drawdown_depth_20": 40.0,
+            "drawdown_depth_20": 20.0,
         }
 
         result = build_stock_explanation(candidate)
 
-        assert "drawdown_too_deep" in result["invalidation_flags"]
+        assert "deep_pullback_requires_context" in result["invalidation_flags"]
 
     def test_sector_support_score_strong_reason_codes(self):
         """sector_support_score >= 65 应生成 sector_supported 和 sector_support_confirmed。"""

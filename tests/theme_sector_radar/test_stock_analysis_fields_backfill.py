@@ -143,6 +143,78 @@ class TestBackfill:
         assert "sector_support_state" in result["candidates"][0]
 
 
+    def test_backfill_adds_sector_peer_rank_and_v2_shadow_score(self):
+        data = {
+            "candidates": [
+                {"code": "600001", "name": "A", "sector_name": "AI", "final_score": 75.0, "stock_trend_score": 80.0},
+                {"code": "600002", "name": "B", "sector_name": "AI", "final_score": 70.0, "stock_trend_score": 55.0},
+            ]
+        }
+
+        result = backfill_stock_analysis_fields(data)
+        by_code = {candidate["code"]: candidate for candidate in result["candidates"]}
+
+        assert by_code["600001"]["sector_peer_rank_score"] > by_code["600002"]["sector_peer_rank_score"]
+        assert "optimized_watch_score_v2_shadow" in by_code["600001"]
+        assert "risk_adjusted_watch_score_shadow" in by_code["600001"]
+        assert by_code["600001"]["risk_gate_decision"]["policy"] == "watch_ranking_shadow_only"
+        assert by_code["600001"]["factor_value_overlay_v2_shadow"]["policy"] == "shadow_watch_ranking_only"
+        assert by_code["600001"]["watch_ranking_decision"]["current_sort_model"] == "risk_adjusted_watch_score_shadow"
+
+    def test_backfill_persists_short_burst_emotion_overlay(self):
+        data = {
+            "candidates": [
+                {
+                    "code": "600003",
+                    "name": "C",
+                    "source_pool": "burst_top",
+                    "final_score": 66.0,
+                    "v2_score": 58.0,
+                    "short_burst_emotion_score_v2": 61.0,
+                    "volume_burst_quality_score": 65.0,
+                    "limit_attention_score": 42.0,
+                    "next_day_cashout_risk_score": 35.0,
+                },
+            ]
+        }
+
+        result = backfill_stock_analysis_fields(data)
+        candidate = result["candidates"][0]
+
+        assert candidate["opportunity_type"] == "short_burst"
+        assert candidate["short_burst_emotion_overlay_shadow"]["policy"] == "shadow_observation_only"
+        assert candidate["watch_ranking_decision"]["short_burst_shadow_model"] == "short_burst_emotion_score_v2"
+
+    def test_backfill_persists_intraday_shadow_overlay(self):
+        data = {
+            "candidates": [
+                {
+                    "code": "600004",
+                    "name": "D",
+                    "source_pool": "burst_top",
+                    "final_score": 66.0,
+                    "v2_score": 58.0,
+                    "prev_close": 100.0,
+                    "sector_intraday_breadth_score": 72.0,
+                    "intraday_bars": [
+                        {"time": "09:30", "price": 100.0, "amount": 8_000_000.0},
+                        {"time": "10:30", "price": 101.0, "amount": 10_000_000.0},
+                        {"time": "13:30", "price": 102.0, "amount": 12_000_000.0},
+                        {"time": "14:30", "price": 103.0, "amount": 16_000_000.0},
+                        {"time": "14:55", "price": 104.0, "amount": 20_000_000.0},
+                    ],
+                },
+            ]
+        }
+
+        result = backfill_stock_analysis_fields(data)
+        candidate = result["candidates"][0]
+
+        assert candidate["intraday_factor_snapshot"]["schema_version"] == "intraday_factor_snapshot.v1"
+        assert candidate["short_burst_intraday_emotion_overlay_shadow"]["policy"] == "shadow_observation_only"
+        assert candidate["watch_ranking_decision"]["intraday_shadow_model"] == "short_burst_intraday_emotion_score_shadow"
+
+
 # ============================================================
 # Report Tests
 # ============================================================

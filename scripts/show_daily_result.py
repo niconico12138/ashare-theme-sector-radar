@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 show_daily_result.py — 每日运行结果输出模板
@@ -25,6 +25,7 @@ CONCEPT_RANK_DIR = PROJECT_ROOT / "reports" / "full_concept" / "unified_rank"
 UNIFIED_DIR = PROJECT_ROOT / "reports" / "unified"
 V2_SHADOW_MONITOR_PATH = PROJECT_ROOT / "reports" / "factor_composite_shadow_score" / "v2_shadow_monitor.json"
 DAILY_DECISION_SUMMARY_DIR = PROJECT_ROOT / "reports" / "daily_decision_summary"
+JOINT_DECISION_DIR = PROJECT_ROOT / "reports" / "joint_decision"
 
 
 def _field(row: dict, *keys, default="-"):
@@ -98,6 +99,20 @@ def load_unified_report(date: str) -> dict:
         return {}
     try:
         return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+def load_joint_decision_summary(date: str) -> dict:
+    """Load the unified joint decision summary when it has already been built."""
+    path = JOINT_DECISION_DIR / date / "joint_decision_summary.json"
+    if not path.exists():
+        return {}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        sys.path.insert(0, str(PROJECT_ROOT))
+        from theme_sector_radar.joint_decision.contract import validate_joint_decision_summary
+
+        return data if not validate_joint_decision_summary(data) else {}
     except Exception:
         return {}
 
@@ -255,6 +270,12 @@ def main():
 
     # Load data
     report = load_unified_report(date)
+    if not report and output_format in ("compact", "json") and load_joint_decision_summary(date):
+        if output_format == "compact":
+            _run_compact({}, date, top_n, [], [], None, output_dir)
+        else:
+            _run_json({}, date, top_n, [], [], None, output_dir)
+        return
     if not report:
         print(f"❌ 未找到 reports/unified/{date}/unified_report.json")
         print(f"   请先运行:")
@@ -347,6 +368,29 @@ def _run_verbose(report: dict, date: str, top_n: int, sectors: list, concepts: l
 def _run_compact(report: dict, date: str, top_n: int, sectors: list, concepts: list,
                   v2_monitor: dict | None, output_dir: Path):
     """新版简洁简报。"""
+    joint_summary = load_joint_decision_summary(date)
+    if joint_summary:
+        try:
+            sys.path.insert(0, str(PROJECT_ROOT))
+            from theme_sector_radar.joint_decision.report import render_joint_decision_markdown
+
+            markdown = render_joint_decision_markdown(joint_summary, top_n)
+            print(markdown)
+
+            out_dir = output_dir / date
+            out_dir.mkdir(parents=True, exist_ok=True)
+            json_path = out_dir / "decision_summary.json"
+            json_path.write_text(json.dumps(joint_summary, ensure_ascii=False, indent=2), encoding="utf-8")
+            md_path = out_dir / "decision_summary.md"
+            md_path.write_text(markdown, encoding="utf-8")
+
+            print(f"\nGenerated:")
+            print(f"   JSON: {json_path}")
+            print(f"   Markdown: {md_path}")
+            return
+        except Exception as e:
+            print(f"Joint decision compact output failed, falling back: {e}")
+
     try:
         sys.path.insert(0, str(PROJECT_ROOT))
         from theme_sector_radar.reporting.daily_decision_summary import build_daily_decision_summary
@@ -391,6 +435,21 @@ def _run_compact(report: dict, date: str, top_n: int, sectors: list, concepts: l
 def _run_json(report: dict, date: str, top_n: int, sectors: list, concepts: list,
               v2_monitor: dict | None, output_dir: Path):
     """机器友好 JSON 输出。"""
+    joint_summary = load_joint_decision_summary(date)
+    if joint_summary:
+        try:
+            print(json.dumps(joint_summary, ensure_ascii=False, indent=2))
+
+            out_dir = output_dir / date
+            out_dir.mkdir(parents=True, exist_ok=True)
+            json_path = out_dir / "decision_summary.json"
+            json_path.write_text(json.dumps(joint_summary, ensure_ascii=False, indent=2), encoding="utf-8")
+
+            print(f"\nGenerated: {json_path}", file=sys.stderr)
+            return
+        except Exception as e:
+            print(f"Joint decision JSON output failed, falling back: {e}", file=sys.stderr)
+
     try:
         sys.path.insert(0, str(PROJECT_ROOT))
         from theme_sector_radar.reporting.daily_decision_summary import build_daily_decision_summary

@@ -1,29 +1,26 @@
 """
-因子元数据注册表
+鍥犲瓙鍏冩暟鎹敞鍐岃〃
 
-定义首批 13 个因子的元数据信息。
-每个因子包含：factor_id, display_name, category, source_project, direction, lookback_days, enabled, description
+瀹氫箟棣栨壒 13 涓洜瀛愮殑鍏冩暟鎹俊鎭€?姣忎釜鍥犲瓙鍖呭惈锛歠actor_id, display_name, category, source_project, direction, lookback_days, enabled, description
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 
 @dataclass
 class FactorMetadata:
-    """因子元数据定义。
-
+    """鍥犲瓙鍏冩暟鎹畾涔夈€?
     Attributes:
-        factor_id: 因子唯一标识符
-        display_name: 中文显示名
-        category: 因子类别
-        source_project: 来源项目/模块
-        direction: 评分方向
-        lookback_days: 回溯天数
-        enabled: 是否启用
-        description: 因子描述
+        factor_id: 鍥犲瓙鍞竴鏍囪瘑绗?        display_name: 涓枃鏄剧ず鍚?        category: 鍥犲瓙绫诲埆
+        source_project: 鏉ユ簮椤圭洰/妯″潡
+        direction: 璇勫垎鏂瑰悜
+        lookback_days: 鍥炴函澶╂暟
+        enabled: 鏄惁鍚敤
+        description: 鍥犲瓙鎻忚堪
+        tags: 鏍囩鍒楄〃
     """
 
     factor_id: str
@@ -34,330 +31,661 @@ class FactorMetadata:
     lookback_days: int | None
     enabled: bool
     description: str
+    tags: list[str] = field(default_factory=list)
 
 
-# 批量定义因子元数据
+# 鎵归噺瀹氫箟鍥犲瓙鍏冩暟鎹?FACTOR_REGISTRY: dict[str, FactorMetadata] = {}
 FACTOR_REGISTRY: dict[str, FactorMetadata] = {}
 
 
 def _register(factor: FactorMetadata) -> None:
-    """注册一个因子。"""
+    """Register one factor."""
     FACTOR_REGISTRY[factor.factor_id] = factor
 
-
 # ============================================================
-# 趋势类因子 (trend)
+# 瓒嬪娍绫诲洜瀛?(trend)
 # ============================================================
 
 _register(FactorMetadata(
     factor_id="ma20_slope_5",
-    display_name="MA20斜率(5日)",
+    display_name="ma20_slope_5",
     category="trend",
     source_project="theme-sector-radar-dev",
     direction="higher_is_better",
     lookback_days=5,
     enabled=True,
-    description="MA20 均线在最近5个交易日的斜率百分比，衡量中期趋势方向",
+    description="Metadata for ma20_slope_5.",
 ))
 
 _register(FactorMetadata(
     factor_id="stock_trend_score",
-    display_name="个股趋势分",
+    display_name="stock_trend_score",
     category="trend",
     source_project="theme-sector-radar-dev",
     direction="already_scored",
     lookback_days=20,
     enabled=True,
-    description="个股维度中长线趋势评分(0-100)，基于MA均线体系、突破前高、回撤控制、量价配合",
+    description="Metadata for stock_trend_score.",
 ))
 
 # ============================================================
-# 动量类因子 (momentum)
+# 鍔ㄩ噺绫诲洜瀛?(momentum)
 # ============================================================
 
 _register(FactorMetadata(
     factor_id="stock_short_score",
-    display_name="个股短线分",
+    display_name="stock_short_score",
     category="momentum",
     source_project="theme-sector-radar-dev",
     direction="already_scored",
     lookback_days=5,
     enabled=True,
-    description="个股维度短线动量评分(0-100)，区别于板块级burst_score",
+    description="Metadata for stock_short_score.",
 ))
 
 _register(FactorMetadata(
     factor_id="stock_short_score_v2",
-    display_name="个股短线分V2",
+    display_name="stock_short_score_v2",
     category="momentum",
     source_project="theme-sector-radar-dev",
     direction="already_scored",
     lookback_days=5,
     enabled=True,
-    description="个股短线动量评分V2(shadow实验)，改进短线评分逻辑",
+    description="Metadata for stock_short_score_v2.",
 ))
 
 # ============================================================
-# 风险类因子 (risk)
+# 椋庨櫓绫诲洜瀛?(risk)
 # ============================================================
 
 _register(FactorMetadata(
     factor_id="drawdown_risk_score",
-    display_name="回撤风险分",
+    display_name="drawdown_risk_score",
     category="risk",
     source_project="theme-sector-radar-dev",
     direction="lower_is_better",
     lookback_days=10,
     enabled=True,
-    description="真实回撤风险评分(0-50)，包括冲高回落、超涨、趋势走弱等信号",
+    description="Metadata for drawdown_risk_score.",
 ))
 
 _register(FactorMetadata(
     factor_id="risk_penalty_score",
-    display_name="风险惩罚分",
+    display_name="risk_penalty_score",
     category="risk",
     source_project="theme-sector-radar-dev",
     direction="lower_is_better",
     lookback_days=None,
     enabled=True,
-    description="综合风险惩罚评分，包括ST、退市、流动性、数据缺失等硬风险",
+    description="Metadata for risk_penalty_score.",
 ))
 
 # ============================================================
-# 影子评分因子 (agent)
+# 褰卞瓙璇勫垎鍥犲瓙 (agent)
 # ============================================================
 
 _register(FactorMetadata(
     factor_id="regime_router_shadow_score_v5",
-    display_name="Regime路由影子分V5",
+    display_name="regime_router_shadow_score_v5",
     category="agent",
     source_project="theme-sector-radar-dev",
     direction="already_scored",
     lookback_days=None,
     enabled=True,
-    description="Regime Router Shadow Score V5(shadow-only)，根据市场regime选择合适的影子评分",
+    description="Metadata for regime_router_shadow_score_v5.",
 ))
 
 # ============================================================
-# 板块类因子 (sector)
+# 鏉垮潡绫诲洜瀛?(sector)
 # ============================================================
 
 _register(FactorMetadata(
     factor_id="sector_trend_score",
-    display_name="板块趋势分",
+    display_name="sector_trend_score",
     category="sector",
     source_project="theme-sector-radar-dev",
     direction="already_scored",
     lookback_days=20,
     enabled=True,
-    description="板块维度趋势评分(0-100)，衡量板块整体趋势强度",
+    description="Metadata for sector_trend_score.",
 ))
 
 _register(FactorMetadata(
     factor_id="sector_burst_score",
-    display_name="板块短线分",
+    display_name="sector_burst_score",
     category="sector",
     source_project="theme-sector-radar-dev",
     direction="already_scored",
     lookback_days=5,
     enabled=True,
-    description="板块维度短线爆发评分(0-100)，衡量板块短期热度",
+    description="Metadata for sector_burst_score.",
 ))
 
 # ============================================================
-# 综合评分因子 (composite)
+# 缁煎悎璇勫垎鍥犲瓙 (composite)
 # ============================================================
 
 _register(FactorMetadata(
     factor_id="final_score",
-    display_name="最终综合分",
+    display_name="final_score",
     category="composite",
     source_project="theme-sector-radar-dev",
     direction="already_scored",
     lookback_days=None,
     enabled=True,
-    description="综合多个维度的最终评分，用于候选池排序",
+    description="Metadata for final_score.",
 ))
 
 # ============================================================
-# Agent 评分因子 (agent)
+# Agent 璇勫垎鍥犲瓙 (agent)
 # ============================================================
 
 _register(FactorMetadata(
     factor_id="agent_score",
-    display_name="Agent综合分",
+    display_name="agent_score",
     category="agent",
     source_project="ai-hedge-fund",
     direction="already_scored",
     lookback_days=None,
     enabled=True,
-    description="AI Agent 综合评分，由 24 Agent 分析后产出",
+    description="Metadata for agent_score.",
 ))
 
 _register(FactorMetadata(
     factor_id="trend_agent_score",
-    display_name="趋势Agent分",
+    display_name="trend_agent_score",
     category="agent",
     source_project="ai-hedge-fund",
     direction="already_scored",
     lookback_days=None,
     enabled=True,
-    description="趋势类 Agent 评分",
+    description="Metadata for trend_agent_score.",
 ))
 
 _register(FactorMetadata(
     factor_id="short_agent_score",
-    display_name="短线Agent分",
+    display_name="short_agent_score",
     category="agent",
     source_project="ai-hedge-fund",
     direction="already_scored",
     lookback_days=None,
     enabled=True,
-    description="短线动量类 Agent 评分",
+    description="Metadata for short_agent_score.",
 ))
 
 # ============================================================
-# Bars 因子 (trend/volatility/volume) - 第二阶段新增
+# Bars 鍥犲瓙 (trend/volatility/volume) - 绗簩闃舵鏂板
 # ============================================================
 
 _register(FactorMetadata(
     factor_id="near_high_250",
-    display_name="距250日新高",
+    display_name="near_high_250",
     category="trend",
     source_project="theme-sector-radar-dev",
     direction="higher_is_better",
     lookback_days=250,
     enabled=True,
-    description="当前价格距离250日（约一年）最高价的百分比，衡量长期趋势位置",
+    description="Metadata for near_high_250.",
 ))
 
 _register(FactorMetadata(
     factor_id="contraction_score",
-    display_name="收缩评分",
+    display_name="contraction_score",
     category="volatility",
     source_project="theme-sector-radar-dev",
     direction="higher_is_better",
     lookback_days=20,
     enabled=True,
-    description="ATR/价格比和振幅收缩程度的综合评分，收缩后往往有方向选择",
+    description="Metadata for contraction_score.",
 ))
 
 _register(FactorMetadata(
     factor_id="atr10_atr50",
-    display_name="ATR10/ATR50",
+    display_name="atr10_atr50",
     category="volatility",
     source_project="theme-sector-radar-dev",
     direction="neutral",
     lookback_days=50,
     enabled=True,
-    description="10日ATR与50日ATR的比值，衡量短期波动相对于长期波动的变化",
+    description="Metadata for atr10_atr50.",
 ))
 
 _register(FactorMetadata(
     factor_id="range10_range20",
-    display_name="振幅10/振幅20",
+    display_name="range10_range20",
     category="volatility",
     source_project="theme-sector-radar-dev",
     direction="neutral",
     lookback_days=20,
     enabled=True,
-    description="10日振幅与20日振幅的比值，衡量短期振幅相对于中期振幅的变化",
+    description="Metadata for range10_range20.",
 ))
 
 _register(FactorMetadata(
     factor_id="range20_range60",
-    display_name="振幅20/振幅60",
+    display_name="range20_range60",
     category="volatility",
     source_project="theme-sector-radar-dev",
     direction="neutral",
     lookback_days=60,
     enabled=True,
-    description="20日振幅与60日振幅的比值，衡量中期振幅相对于长期振幅的变化",
+    description="Metadata for range20_range60.",
 ))
 
 _register(FactorMetadata(
     factor_id="amount_ratio_20",
-    display_name="成交额比(20日)",
+    display_name="amount_ratio_20",
     category="volume",
     source_project="theme-sector-radar-dev",
     direction="higher_is_better",
     lookback_days=20,
     enabled=True,
-    description="最近5日平均成交额与20日平均成交额的比值，衡量近期资金活跃度变化",
+    description="Metadata for amount_ratio_20.",
 ))
 
 # ============================================================
-# 个股增强因子 (stock_quality) - 第二十一阶段-B 新增
+# 涓偂澧炲己鍥犲瓙 (stock_quality) - 绗簩鍗佷竴闃舵-B 鏂板
 # ============================================================
 
 _register(FactorMetadata(
     factor_id="liquidity_score",
-    display_name="流动性评分",
+    display_name="liquidity_score",
     category="liquidity",
     source_project="theme-sector-radar-dev",
     direction="higher_is_better",
     lookback_days=20,
     enabled=True,
-    description="基于近20日成交额水平的流动性评分，分数越高表示流动性越好",
+    description="Metadata for liquidity_score.",
+    tags=["profile_only", "liquidity_context"],
 ))
 
 _register(FactorMetadata(
     factor_id="chasing_risk_score",
-    display_name="追高风险评分",
+    display_name="chasing_risk_score",
     category="risk",
     source_project="theme-sector-radar-dev",
-    direction="lower_is_better",
+    direction="already_scored",
     lookback_days=10,
     enabled=True,
-    description="基于短期涨幅和价格位置的追高风险评分，分数越高表示短期过热风险越高",
+    description="Metadata for chasing_risk_score.",
+    tags=["overheat_risk", "shadow_warning", "no_execution_signal"],
 ))
 
 _register(FactorMetadata(
     factor_id="drawdown_depth_20",
-    display_name="20日回撤深度",
+    display_name="drawdown_depth_20",
     category="risk",
     source_project="theme-sector-radar-dev",
-    direction="lower_is_better",
+    direction="already_scored",
     lookback_days=20,
     enabled=True,
-    description="当前价格相对近20日高点的回撤幅度",
+    description="Metadata for drawdown_depth_20.",
+    tags=["overlaps_with_breakout_distance_20", "pullback_repair_context", "shadow_only", "not_hard_blocker"],
 ))
 
 _register(FactorMetadata(
     factor_id="breakout_distance_20",
-    display_name="距20日突破距离",
+    display_name="breakout_distance_20",
     category="trend",
     source_project="theme-sector-radar-dev",
-    direction="neutral",
+    direction="already_scored",
     lookback_days=20,
     enabled=True,
-    description="当前价格距离近20日高点的百分比距离，仅用于观察结构，不作为交易触发",
+    description="Metadata for breakout_distance_20.",
+    tags=["structure_position", "shadow_only", "no_execution_signal"],
 ))
 
 _register(FactorMetadata(
+    factor_id="relative_strength_20",
+    display_name="relative_strength_20",
+    category="momentum",
+    source_project="theme-sector-radar-dev",
+    direction="already_scored",
+    lookback_days=20,
+    enabled=True,
+    description="Metadata for relative_strength_20.",
+    tags=["shadow_v2", "watch_ranking_only"],
+))
+
+_register(FactorMetadata(
+    factor_id="relative_strength_60",
+    display_name="relative_strength_60",
+    category="momentum",
+    source_project="theme-sector-radar-dev",
+    direction="already_scored",
+    lookback_days=60,
+    enabled=True,
+    description="Metadata for relative_strength_60.",
+    tags=["shadow_v2", "watch_ranking_only"],
+))
+
+_register(FactorMetadata(
+    factor_id="risk_adjusted_return_20",
+    display_name="risk_adjusted_return_20",
+    category="risk",
+    source_project="theme-sector-radar-dev",
+    direction="already_scored",
+    lookback_days=20,
+    enabled=True,
+    description="Metadata for risk_adjusted_return_20.",
+    tags=["shadow_v2", "watch_ranking_only"],
+))
+
+_register(FactorMetadata(
+    factor_id="volume_stability_score",
+    display_name="volume_stability_score",
+    category="volume",
+    source_project="theme-sector-radar-dev",
+    direction="already_scored",
+    lookback_days=20,
+    enabled=True,
+    description="Metadata for volume_stability_score.",
+    tags=["shadow_v2", "watch_ranking_only"],
+))
+
+_register(FactorMetadata(
+    factor_id="trend_persistence_score",
+    display_name="trend_persistence_score",
+    category="trend",
+    source_project="theme-sector-radar-dev",
+    direction="already_scored",
+    lookback_days=40,
+    enabled=True,
+    description="Metadata for trend_persistence_score.",
+    tags=["shadow_v2", "watch_ranking_only"],
+))
+
+_register(FactorMetadata(
+    factor_id="sector_peer_rank_score",
+    display_name="sector_peer_rank_score",
+    category="sector",
+    source_project="theme-sector-radar-dev",
+    direction="already_scored",
+    lookback_days=None,
+    enabled=True,
+    description="Metadata for sector_peer_rank_score.",
+    tags=["shadow_v2", "watch_ranking_only"],
+))
+
+_register(FactorMetadata(
+    factor_id="short_emotion_heat_score",
+    display_name="short_emotion_heat_score",
+    category="short_emotion",
+    source_project="theme-sector-radar-dev",
+    direction="already_scored",
+    lookback_days=5,
+    enabled=True,
+    description="Metadata for short_emotion_heat_score.",
+    tags=["short_burst_shadow", "research_only", "watch_ranking_only"],
+))
+
+_register(FactorMetadata(
+    factor_id="sector_burst_breadth_score",
+    display_name="sector_burst_breadth_score",
+    category="short_emotion",
+    source_project="theme-sector-radar-dev",
+    direction="already_scored",
+    lookback_days=5,
+    enabled=True,
+    description="Metadata for sector_burst_breadth_score.",
+    tags=["short_burst_shadow", "research_only", "watch_ranking_only"],
+))
+
+_register(FactorMetadata(
+    factor_id="limit_attention_score",
+    display_name="limit_attention_score",
+    category="short_emotion",
+    source_project="theme-sector-radar-dev",
+    direction="already_scored",
+    lookback_days=1,
+    enabled=True,
+    description="Metadata for limit_attention_score.",
+    tags=["short_burst_shadow", "research_only", "no_execution_signal"],
+))
+
+_register(FactorMetadata(
+    factor_id="intraday_reversal_risk_score",
+    display_name="intraday_reversal_risk_score",
+    category="risk",
+    source_project="theme-sector-radar-dev",
+    direction="already_scored",
+    lookback_days=1,
+    enabled=True,
+    description="Metadata for intraday_reversal_risk_score.",
+    tags=["short_burst_shadow", "research_only", "risk_review"],
+))
+
+_register(FactorMetadata(
+    factor_id="close_strength_score",
+    display_name="close_strength_score",
+    category="short_emotion",
+    source_project="theme-sector-radar-dev",
+    direction="already_scored",
+    lookback_days=1,
+    enabled=True,
+    description="Metadata for close_strength_score.",
+    tags=["short_burst_shadow", "research_only", "watch_ranking_only"],
+))
+
+_register(FactorMetadata(
+    factor_id="volume_burst_quality_score",
+    display_name="volume_burst_quality_score",
+    category="volume",
+    source_project="theme-sector-radar-dev",
+    direction="already_scored",
+    lookback_days=20,
+    enabled=True,
+    description="Metadata for volume_burst_quality_score.",
+    tags=["short_burst_shadow", "research_only", "watch_ranking_only"],
+))
+
+_register(FactorMetadata(
+    factor_id="single_name_overheat_score",
+    display_name="single_name_overheat_score",
+    category="risk",
+    source_project="theme-sector-radar-dev",
+    direction="already_scored",
+    lookback_days=20,
+    enabled=True,
+    description="Metadata for single_name_overheat_score.",
+    tags=["short_burst_shadow", "research_only", "risk_review"],
+))
+
+_register(FactorMetadata(
+    factor_id="next_day_cashout_risk_score",
+    display_name="next_day_cashout_risk_score",
+    category="risk",
+    source_project="theme-sector-radar-dev",
+    direction="already_scored",
+    lookback_days=20,
+    enabled=True,
+    description="Metadata for next_day_cashout_risk_score.",
+    tags=["short_burst_shadow", "research_only", "risk_review"],
+))
+
+_register(FactorMetadata(
+    factor_id="short_burst_emotion_score_v1",
+    display_name="short_burst_emotion_score_v1",
+    category="short_emotion",
+    source_project="theme-sector-radar-dev",
+    direction="already_scored",
+    lookback_days=20,
+    enabled=True,
+    description="Metadata for short_burst_emotion_score_v1.",
+    tags=["short_burst_shadow", "research_only", "watch_ranking_only"],
+))
+
+_register(FactorMetadata(
+    factor_id="short_burst_emotion_score_v2",
+    display_name="short_burst_emotion_score_v2",
+    category="short_emotion",
+    source_project="theme-sector-radar-dev",
+    direction="already_scored",
+    lookback_days=20,
+    enabled=True,
+    description="Metadata for short_burst_emotion_score_v2.",
+    tags=["short_burst_shadow", "research_only", "watch_ranking_only"],
+))
+
+_register(FactorMetadata(
+    factor_id="intraday_close_position_score",
+    display_name="intraday_close_position_score",
+    category="intraday",
+    source_project="theme-sector-radar-dev",
+    direction="already_scored",
+    lookback_days=1,
+    enabled=True,
+    description="Metadata for intraday_close_position_score.",
+    tags=["intraday_shadow", "short_burst_shadow", "research_only", "no_execution_signal"],
+))
+
+_register(FactorMetadata(
+    factor_id="intraday_high_pullback_risk_score",
+    display_name="intraday_high_pullback_risk_score",
+    category="intraday",
+    source_project="theme-sector-radar-dev",
+    direction="lower_is_better",
+    lookback_days=1,
+    enabled=True,
+    description="Metadata for intraday_high_pullback_risk_score.",
+    tags=["intraday_shadow", "short_burst_shadow", "research_only", "no_execution_signal"],
+))
+
+_register(FactorMetadata(
+    factor_id="intraday_volume_price_confirm_score",
+    display_name="intraday_volume_price_confirm_score",
+    category="intraday",
+    source_project="theme-sector-radar-dev",
+    direction="already_scored",
+    lookback_days=1,
+    enabled=True,
+    description="Metadata for intraday_volume_price_confirm_score.",
+    tags=["intraday_shadow", "short_burst_shadow", "research_only", "no_execution_signal"],
+))
+
+_register(FactorMetadata(
+    factor_id="intraday_sector_breadth_score",
+    display_name="intraday_sector_breadth_score",
+    category="intraday",
+    source_project="theme-sector-radar-dev",
+    direction="already_scored",
+    lookback_days=1,
+    enabled=True,
+    description="Metadata for intraday_sector_breadth_score.",
+    tags=["intraday_shadow", "short_burst_shadow", "research_only", "no_execution_signal"],
+))
+
+_register(FactorMetadata(
+    factor_id="intraday_late_strength_score",
+    display_name="intraday_late_strength_score",
+    category="intraday",
+    source_project="theme-sector-radar-dev",
+    direction="already_scored",
+    lookback_days=1,
+    enabled=True,
+    description="Metadata for intraday_late_strength_score.",
+    tags=["intraday_shadow", "short_burst_shadow", "research_only", "no_execution_signal"],
+))
+
+_register(FactorMetadata(
+    factor_id="short_burst_intraday_emotion_score_shadow",
+    display_name="short_burst_intraday_emotion_score_shadow",
+    category="intraday",
+    source_project="theme-sector-radar-dev",
+    direction="already_scored",
+    lookback_days=1,
+    enabled=True,
+    description="Metadata for short_burst_intraday_emotion_score_shadow.",
+    tags=["intraday_shadow", "short_burst_shadow", "research_only", "watch_ranking_only", "no_execution_signal"],
+))
+
+_INTRADAY_ATOMIC_FACTOR_DIRECTIONS = {
+    "late_return_30m_score": "already_scored",
+    "late_vwap_support_score": "already_scored",
+    "late_volume_share_score": "already_scored",
+    "late_high_near_close_score": "already_scored",
+    "high_to_close_drawdown_score": "lower_is_better",
+    "morning_spike_fade_score": "lower_is_better",
+    "afternoon_fade_score": "lower_is_better",
+    "max_gain_giveback_ratio": "lower_is_better",
+    "close_vs_vwap_score": "already_scored",
+    "late_price_above_vwap_ratio": "already_scored",
+    "vwap_slope_score": "already_scored",
+    "vwap_reclaim_score": "already_scored",
+    "volume_without_price_progress_risk": "lower_is_better",
+    "late_volume_efficiency_score": "already_scored",
+    "amount_acceleration_score": "already_scored",
+    "volume_spike_exhaustion_score": "lower_is_better",
+    "opening_drive_score": "already_scored",
+    "morning_strength_persist_score": "already_scored",
+    "morning_pullback_repair_score": "already_scored",
+    "open_to_midday_resilience_score": "already_scored",
+    "sector_intraday_breadth_change": "already_scored",
+    "sector_late_breadth_score": "already_scored",
+    "leader_follower_sync_score": "already_scored",
+    "stock_vs_sector_intraday_alpha": "already_scored",
+}
+
+for _factor_id, _direction in _INTRADAY_ATOMIC_FACTOR_DIRECTIONS.items():
+    _register(FactorMetadata(
+        factor_id=_factor_id,
+        display_name=_factor_id,
+        category="intraday",
+        source_project="theme-sector-radar-dev",
+        direction=_direction,
+        lookback_days=1,
+        enabled=True,
+        description=f"Metadata for {_factor_id}.",
+        tags=["intraday_shadow", "short_burst_shadow", "research_only", "no_execution_signal"],
+    ))
+
+_SHORT_BURST_NEWS_EMOTION_FACTOR_SPECS = {
+    "market_short_emotion_score": ("market_emotion", "already_scored"),
+    "limit_up_breadth_score": ("market_emotion", "already_scored"),
+    "limit_up_failure_risk": ("market_emotion", "lower_is_better"),
+    "leader_continuation_score": ("market_emotion", "already_scored"),
+    "short_burst_environment_score": ("market_emotion", "already_scored"),
+    "crowding_heat_score": ("market_emotion", "lower_is_better"),
+    "news_heat_score": ("catalyst", "already_scored"),
+    "policy_catalyst_score": ("catalyst", "already_scored"),
+    "earnings_catalyst_score": ("catalyst", "already_scored"),
+    "event_freshness_score": ("catalyst", "already_scored"),
+    "event_continuation_score": ("catalyst", "already_scored"),
+    "negative_news_risk_score": ("catalyst", "lower_is_better"),
+    "rumor_hype_risk_score": ("catalyst", "lower_is_better"),
+    "short_burst_news_emotion_score_shadow": ("short_emotion", "already_scored"),
+}
+
+for _factor_id, (_category, _direction) in _SHORT_BURST_NEWS_EMOTION_FACTOR_SPECS.items():
+    _register(FactorMetadata(
+        factor_id=_factor_id,
+        display_name=_factor_id,
+        category=_category,
+        source_project="theme-sector-radar-dev",
+        direction=_direction,
+        lookback_days=3,
+        enabled=True,
+        description=f"Metadata for {_factor_id}.",
+        tags=["short_burst_shadow", "research_only", "watch_ranking_only", "no_execution_signal"],
+    ))
+
+_register(FactorMetadata(
     factor_id="sector_support_score",
-    display_name="板块支持评分",
+    display_name="sector_support_score",
     category="sector",
     source_project="theme-sector-radar-dev",
     direction="higher_is_better",
     lookback_days=20,
     enabled=True,
-    description="个股所属板块对个股观察的支持程度",
+    description="Metadata for sector_support_score.",
 ))
 
 
 def get_factor_metadata(factor_id: str) -> FactorMetadata | None:
-    """获取因子元数据。
-
-    Args:
-        factor_id: 因子唯一标识符
-
-    Returns:
-        FactorMetadata 或 None（如果因子不存在）
-    """
+    """Return metadata for a registered factor."""
     return FACTOR_REGISTRY.get(factor_id)
 
 
 def list_enabled_factors() -> list[FactorMetadata]:
-    """列出所有启用的因子。"""
+    """Return all enabled factors."""
     return [f for f in FACTOR_REGISTRY.values() if f.enabled]

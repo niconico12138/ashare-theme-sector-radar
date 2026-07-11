@@ -402,6 +402,32 @@ def build_steps(date: str, py: str, quick: bool = False, skip_agent: bool = Fals
                 required_mode="agent_only",
             ),
         ])
+
+    steps.append(
+        Step(
+            "Joint Decision",
+            [py, "scripts/run_joint_decision.py", "--as-of", date],
+            timeout_seconds=180,
+            required_mode="data_degraded",
+        )
+    )
+    steps.append(
+        Step(
+            "Decision Summary",
+            [
+                py,
+                "scripts/show_daily_result.py",
+                "--as-of",
+                date,
+                "--format",
+                "compact",
+                "--top-n",
+                "5",
+            ],
+            timeout_seconds=120,
+            required_mode="data_degraded",
+        )
+    )
     return steps
 
 
@@ -511,6 +537,10 @@ def expected_artifacts(as_of: str, quick: bool = False, skip_agent: bool = False
         Path("reports") / "sector_research" / as_of / "sector_research.md",
         Path("reports") / "unified" / as_of / "unified_report.json",
         Path("reports") / "unified" / as_of / "unified_report.md",
+        Path("reports") / "joint_decision" / as_of / "joint_decision_summary.json",
+        Path("reports") / "joint_decision" / as_of / "joint_decision_summary.md",
+        Path("reports") / "daily_decision_summary" / as_of / "decision_summary.json",
+        Path("reports") / "daily_decision_summary" / as_of / "decision_summary.md",
     ]
     if not quick and not skip_agent:
         paths.extend([
@@ -532,6 +562,7 @@ def expected_report_date_files(as_of: str) -> list[Path]:
         Path("reports") / "sector_consensus" / as_of / "multi_window_consensus.json",
         Path("reports") / "sector_research" / as_of / "sector_research.json",
         Path("reports") / "unified" / as_of / "unified_report.json",
+        Path("reports") / "joint_decision" / as_of / "joint_decision_summary.json",
     ]
 
 

@@ -21,7 +21,7 @@ def _safe_float(value: Any, default: float = 0.0) -> float:
 
 
 def _get_factor_score(candidate: dict, factor_id: str) -> float | None:
-    """从 factor_snapshot 中获取因子分数。"""
+    """从 factor_snapshot 中获取因子分数。如果 factor_snapshot 中没有，尝试从 candidate 直接读取。"""
     factor_snapshot = candidate.get("factor_snapshot")
     if factor_snapshot is None:
         factor_snapshot = {}
@@ -34,11 +34,16 @@ def _get_factor_score(candidate: dict, factor_id: str) -> float | None:
                 return None
             return _safe_float(f.get("score"))
 
+    # fallback: 从 candidate 直接读取
+    val = candidate.get(factor_id)
+    if val is not None:
+        return _safe_float(val)
+
     return None
 
 
 def _get_factor_raw_value(candidate: dict, factor_id: str) -> float | None:
-    """从 factor_snapshot 中获取因子原始值。"""
+    """从 factor_snapshot 中获取因子原始值。如果 factor_snapshot 中没有，尝试从 candidate 直接读取。"""
     factor_snapshot = candidate.get("factor_snapshot")
     if factor_snapshot is None:
         factor_snapshot = {}
@@ -54,6 +59,11 @@ def _get_factor_raw_value(candidate: dict, factor_id: str) -> float | None:
                 return _safe_float(raw_value)
             # 如果 raw_value 缺失，返回 score 作为 fallback
             return _safe_float(f.get("score"))
+
+    # fallback: 从 candidate 直接读取
+    val = candidate.get(factor_id)
+    if val is not None:
+        return _safe_float(val)
 
     return None
 
@@ -80,11 +90,13 @@ def build_stock_profile(candidate: dict) -> dict:
     stock_trend_score = _get_field(candidate, "stock_trend_score")
     ma20_slope = _get_factor_score(candidate, "ma20_slope_5")
     near_high_250 = _get_factor_score(candidate, "near_high_250")
-    breakout_distance = _get_factor_score(candidate, "breakout_distance_20")
-
-    # 如果 factor_snapshot 中没有，尝试从 candidate 直接读取
-    if breakout_distance is None:
-        breakout_distance = _get_field(candidate, "breakout_distance_20")
+    # 使用 raw_value 而非 score 来判断 breakout 距离
+    breakout_distance_raw_val = _get_factor_raw_value(candidate, "breakout_distance_20")
+    breakout_distance_score_val = _get_factor_score(candidate, "breakout_distance_20")
+    breakout_distance_val = breakout_distance_raw_val if breakout_distance_raw_val is not None else breakout_distance_score_val
+    # fallback to candidate field
+    if breakout_distance_val is None:
+        breakout_distance_val = _get_field(candidate, "breakout_distance_20")
 
     if stock_trend_score is not None and stock_trend_score >= 70:
         trend_state = "uptrend"
@@ -94,7 +106,7 @@ def build_stock_profile(candidate: dict) -> dict:
         trend_state = "repair"
     elif near_high_250 is not None and near_high_250 >= 60:
         trend_state = "repair"
-    elif breakout_distance is not None and breakout_distance <= 5:
+    elif breakout_distance_val is not None and breakout_distance_val <= 5:
         trend_state = "repair"
     elif stock_trend_score is not None and stock_trend_score < 45:
         trend_state = "weak"
@@ -262,53 +274,69 @@ def build_stock_profile(candidate: dict) -> dict:
     else:
         liquidity_state = "unknown"
 
-    # 过热状态 - 使用 raw_value 分桶
+    # 过热状态 - 使用 chasing_risk_score.raw_value 分桶
+    # chasing_risk_score: raw_value 即风险评分(0-100), direction lower_is_better
     chasing_risk_raw = _get_factor_raw_value(candidate, "chasing_risk_score")
-    chasing_risk_score = _get_factor_score(candidate, "chasing_risk_score")
+    chasing_risk_score_val = _get_factor_score(candidate, "chasing_risk_score")
 
-    # 优先使用 raw_value，如果缺失则使用 score
-    chasing_risk = chasing_risk_raw if chasing_risk_raw is not None else chasing_risk_score
+    # 优先使用 raw_value (风险评分本身)
+    chasing_risk_val = chasing_risk_raw if chasing_risk_raw is not None else chasing_risk_score_val
 
-    if chasing_risk is not None and chasing_risk >= 70:
+    if chasing_risk_val is not None and chasing_risk_val >= 70:
         overheat_state = "high"
-    elif chasing_risk is not None and chasing_risk >= 50:
+    elif chasing_risk_val is not None and chasing_risk_val >= 60:
+        overheat_state = "watch"
+    elif chasing_risk_val is not None:
         overheat_state = "normal"
-    elif chasing_risk is not None:
-        overheat_state = "low"
     else:
         overheat_state = "unknown"
 
-    # 回撤状态 - 使用 raw_value 分桶
+    # 回撤状态 - 使用 drawdown_depth_20.raw_value 分桶
+    # drawdown_depth_20: raw_value = (high_20 - close_t) / high_20 * 100
     drawdown_depth_raw = _get_factor_raw_value(candidate, "drawdown_depth_20")
-    drawdown_depth_score = _get_factor_score(candidate, "drawdown_depth_20")
+    drawdown_depth_score_val = _get_factor_score(candidate, "drawdown_depth_20")
 
-    # 优先使用 raw_value，如果缺失则使用 score
-    drawdown_depth = drawdown_depth_raw if drawdown_depth_raw is not None else drawdown_depth_score
+    # 优先使用 raw_value
+    drawdown_depth_val = drawdown_depth_raw if drawdown_depth_raw is not None else drawdown_depth_score_val
 
-    if drawdown_depth is not None and drawdown_depth > 15:
+    if drawdown_depth_val is not None and drawdown_depth_val > 15:
         drawdown_state = "deep"
-    elif drawdown_depth is not None and drawdown_depth <= 5:
+    elif drawdown_depth_val is not None and drawdown_depth_val <= 5:
         drawdown_state = "healthy"
-    elif drawdown_depth is not None:
+    elif drawdown_depth_val is not None:
         drawdown_state = "normal"
     else:
         drawdown_state = "unknown"
 
-    # 突破结构 - 使用 raw_value 分桶
+    # 突破结构 - 使用 breakout_distance_20.raw_value 分桶
+    # breakout_distance_20: raw_value = (high_20 - close_t) / high_20 * 100
+    # 注意：near 不一定优于 far，仅作为结构位置标签
     breakout_distance_raw = _get_factor_raw_value(candidate, "breakout_distance_20")
-    breakout_distance_score = _get_factor_score(candidate, "breakout_distance_20")
+    breakout_distance_score_val = _get_factor_score(candidate, "breakout_distance_20")
 
-    # 优先使用 raw_value，如果缺失则使用 score
-    breakout_distance = breakout_distance_raw if breakout_distance_raw is not None else breakout_distance_score
+    # 优先使用 raw_value
+    breakout_distance_val = breakout_distance_raw if breakout_distance_raw is not None else breakout_distance_score_val
 
-    if breakout_distance is not None and breakout_distance <= 5:
+    if breakout_distance_val is not None and breakout_distance_val <= 3:
         breakout_structure = "near"
-    elif breakout_distance is not None and breakout_distance <= 15:
+    elif breakout_distance_val is not None and breakout_distance_val <= 10:
         breakout_structure = "neutral"
-    elif breakout_distance is not None and breakout_distance > 15:
+    elif breakout_distance_val is not None and breakout_distance_val > 10:
         breakout_structure = "far"
     else:
         breakout_structure = "unknown"
+
+    # 结构位置说明：仅作为位置标签，非触发信号
+    structure_position_note = "position_only_not_trigger"
+
+    # 回撤上下文：deep 不等于风险恶化，可能是修复机会
+    drawdown_context_map = {
+        "healthy": "shallow_pullback",
+        "normal": "normal_pullback",
+        "deep": "repair_opportunity_possible",
+        "unknown": "unknown",
+    }
+    drawdown_context = drawdown_context_map.get(drawdown_state, "unknown")
 
     # 更新 risk_state（如果需要）
     if drawdown_state == "deep" and risk_state in ("unknown", "low"):
@@ -330,4 +358,6 @@ def build_stock_profile(candidate: dict) -> dict:
         "overheat_state": overheat_state,
         "drawdown_state": drawdown_state,
         "breakout_structure": breakout_structure,
+        "structure_position_note": structure_position_note,
+        "drawdown_context": drawdown_context,
     }

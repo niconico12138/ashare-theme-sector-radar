@@ -847,11 +847,11 @@ def generate_markdown_report(attribution: dict, output_path: Path) -> None:
     lines.append(f"- 有 forward return 的天数: {summary['dates_with_returns']}")
     lines.append(f"- 总候选股数: {summary['total_candidates']}")
     lines.append(f"- Horizon: {summary['horizon']}")
-    lines.append(f"- composite Rank IC: {attribution['overall_ic']}" if attribution['overall_ic'] is not None else "- composite Rank IC: N/A")
-    lines.append(f"- composite_v2 Rank IC: {attribution['v2_overall_ic']}" if attribution['v2_overall_ic'] is not None else "- composite_v2 Rank IC: N/A")
-    lines.append(f"- final_score Rank IC: {attribution['final_overall_ic']}" if attribution['final_overall_ic'] is not None else "- final_score Rank IC: N/A")
-    lines.append(f"- composite vs final 相关性: {attribution['composite_final_correlation']}" if attribution['composite_final_correlation'] is not None else "- composite vs final 相关性: N/A")
-    lines.append(f"- v2 vs final 相关性: {attribution['v2_final_correlation']}" if attribution['v2_final_correlation'] is not None else "- v2 vs final 相关性: N/A")
+    lines.append(f"- composite Rank IC: {attribution['overall_ic']}" if attribution.get("overall_ic") is not None else "- composite Rank IC: N/A")
+    lines.append(f"- composite_v2 Rank IC: {attribution['v2_overall_ic']}" if attribution.get("v2_overall_ic") is not None else "- composite_v2 Rank IC: N/A")
+    lines.append(f"- final_score Rank IC: {attribution['final_overall_ic']}" if attribution.get("final_overall_ic") is not None else "- final_score Rank IC: N/A")
+    lines.append(f"- composite vs final 相关性: {attribution['composite_final_correlation']}" if attribution.get("composite_final_correlation") is not None else "- composite vs final 相关性: N/A")
+    lines.append(f"- v2 vs final 相关性: {attribution['v2_final_correlation']}" if attribution.get("v2_final_correlation") is not None else "- v2 vs final 相关性: N/A")
     lines.append("")
 
     # 数据覆盖率

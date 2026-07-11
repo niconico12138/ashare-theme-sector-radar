@@ -8,6 +8,8 @@ A research-oriented A-share theme/sector rotation and stock-candidate analysis f
 
 This project is for research, education, and workflow automation only. It is not investment advice, not a stock recommendation service, not an investment advisory service, and not an automated trading system. Outputs must not be used as buy, sell, hold, or return-guarantee instructions.
 
+Legacy boundary wording retained for downstream checks: 不作为个股操作依据.
+
 ## Core Capabilities
 
 - A-share industry and concept board analysis.
@@ -88,10 +90,13 @@ See [docs/open_source_data_policy.md](docs/open_source_data_policy.md).
 
 ```bash
 python run_daily.py --as-of 2026-07-08 --mode fixture
+python run_daily.py --as-of 2026-07-08 --provider akshare
 python scripts/run_daily_unified_pipeline.py --as-of 2026-07-08
 ```
 
 For production-like real data runs, confirm data source availability first and review all degradation flags. See [docs/runbook_daily_pipeline.md](docs/runbook_daily_pipeline.md).
+
+Daily outputs are written under `reports/theme_sector_radar/<date>/`, including `run_log.json` when the daily runner records execution metadata.
 
 ## Top30 Candidate Export
 

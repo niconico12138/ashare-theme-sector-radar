@@ -44,6 +44,9 @@ python scripts/run_scoring_calibration_batch.py --horizons 1 --lookahead-days 3 
 | `--preflight-only` | `run_daily.py` | Check StockDB, market_data_service API, and LLM configuration without building or running steps. |
 | `--dry-run` | `run_daily.py` | Print the planned steps and write a diagnostic report without executing subprocesses. |
 | `--fail-on-stale-artifact` | `run_daily.py` | Return exit code 3 when expected artifacts are stale or missing after otherwise successful steps. |
+| `--auto-update-data-source` / `--no-auto-update-data-source` | `run_daily.py` | Enable or disable automatic StockDB update when `--as-of` is today and preflight reports stale data. Defaults from `THEME_RADAR_AUTO_UPDATE_TODAY_DATA`. |
+| `--data-update-wait-seconds` | `run_daily.py` | Maximum seconds to wait for the automatic StockDB update. Defaults from `THEME_RADAR_DATA_UPDATE_WAIT_SECONDS` or 1200. |
+| `--data-update-poll-seconds` | `run_daily.py` | Seconds between automatic freshness checks. Defaults from `THEME_RADAR_DATA_UPDATE_POLL_SECONDS` or 30. |
 | `--resume` | `scripts/run_daily_bridge_report.py` | Reuse existing `top30_candidates.json` and `aihf_stock_ranking.json` when both are available. |
 | `--horizons` | `scripts/build_forward_returns.py` | Choose future trading-day horizons, for example `1,3,5`. |
 | `--returns-json` | `scripts/evaluate_scoring_calibration.py` | Read code-level future-return observations for scoring calibration. |
@@ -74,7 +77,11 @@ The manifest is the first file to inspect when a report exists but may have been
 
 The preflight stage also records market-data freshness when the API health payload exposes a date field such as `latest_daily_date`, `latest_trade_date`, `latest_trading_date`, or `latest_date`.
 
-If the latest data date is earlier than `--as-of`, `run_daily.py` adds `data_stale` to `degradation_flags`. This does not stop the run by itself, but it makes stale input explicit in the daily run report and manifest.
+If the latest data date is earlier than `--as-of`, `run_daily.py` adds `data_stale` to `degradation_flags`.
+
+When `THEME_RADAR_AUTO_UPDATE_TODAY_DATA=1` or `--auto-update-data-source` is set, `run_daily.py` automatically runs `scripts/update_stockdb_and_verify.py` before execution only when `--as-of` is the current local date and the preflight status is stale. Historical dates do not trigger the updater. After the updater finishes, preflight is run again and the `data_update_attempt` record is written into the daily report and artifact manifest. If the refreshed data is still stale, `data_update_failed` is added to `degradation_flags` and the run continues with the stale condition explicit.
+
+Set `STOCKDB_ROOT` to the desktop StockDB folder, for example `C:\Users\Administrator\Desktop\stockdb`, so the updater can locate `stockdb.exe` and `数据更新.exe`.
 
 ## Report Date Consistency
 

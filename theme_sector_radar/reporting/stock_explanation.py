@@ -120,28 +120,37 @@ def build_stock_explanation(candidate: dict, profile: dict | None = None) -> dic
         elif liquidity_score < 40:
             reason_codes.append("liquidity_weak")
 
+    # chasing_risk_score: raw_value 即风险评分(0-100), lower_is_better
     chasing_risk = _get_field(candidate, "chasing_risk_score")
     if chasing_risk is not None:
-        if chasing_risk >= 75:
+        if chasing_risk >= 70:
             reason_codes.append("overheat_risk_high")
         elif chasing_risk >= 60:
             reason_codes.append("overheat_risk_watch")
+        else:
+            reason_codes.append("overheat_risk_normal")
 
+    # drawdown_depth_20: raw_value = 回撤百分比
+    # deep 不等于风险恶化，可能是修复机会
     drawdown_depth = _get_field(candidate, "drawdown_depth_20")
     if drawdown_depth is not None:
-        if drawdown_depth > 35:
-            reason_codes.append("deep_drawdown_risk")
-        elif 5 <= drawdown_depth <= 20:
-            reason_codes.append("healthy_drawdown")
+        if drawdown_depth > 15:
+            reason_codes.append("deep_pullback_repair_context")
+        elif drawdown_depth <= 5:
+            reason_codes.append("shallow_pullback_state")
+        else:
+            reason_codes.append("normal_pullback_state")
 
+    # breakout_distance_20: raw_value = 距高点百分比距离
+    # near 不一定优于 far，仅作为结构位置标签
     breakout_distance = _get_field(candidate, "breakout_distance_20")
     if breakout_distance is not None:
-        if breakout_distance <= 5:
-            reason_codes.append("near_breakout_structure")
-        elif breakout_distance <= 15:
-            reason_codes.append("breakout_structure_watch")
+        if breakout_distance <= 3:
+            reason_codes.append("structure_near_high_position")
+        elif breakout_distance <= 10:
+            reason_codes.append("structure_neutral_position")
         else:
-            reason_codes.append("far_from_breakout")
+            reason_codes.append("structure_far_from_high")
 
     sector_support_score = _get_field(candidate, "sector_support_score")
     if sector_support_score is not None:
@@ -176,10 +185,11 @@ def build_stock_explanation(candidate: dict, profile: dict | None = None) -> dic
     # 新增 invalidation_flags (第二十一阶段-B & 第三十二阶段: bars 因子)
     if liquidity_score is not None and liquidity_score < 40:
         invalidation_flags.append("liquidity_condition_weak")
-    if chasing_risk is not None and chasing_risk >= 75:
+    if chasing_risk is not None and chasing_risk >= 70:
         invalidation_flags.append("overheat_risk_present")
-    if drawdown_depth is not None and drawdown_depth > 35:
-        invalidation_flags.append("drawdown_too_deep")
+    # deep pullback 不是自动负面信号，标记为需关注上下文
+    if drawdown_depth is not None and drawdown_depth > 15:
+        invalidation_flags.append("deep_pullback_requires_context")
 
     # 新增 invalidation_flags (第二十四阶段: sector_support_score)
     if sector_support_score is not None and sector_support_score < 50:
@@ -187,7 +197,7 @@ def build_stock_explanation(candidate: dict, profile: dict | None = None) -> dic
 
     # 新增 invalidation_flags (第三十二阶段: bars 因子)
     breakout_distance = _get_field(candidate, "breakout_distance_20")
-    if breakout_distance is not None and breakout_distance > 15 and opportunity_type == "trend_follow":
+    if breakout_distance is not None and breakout_distance > 10 and opportunity_type == "trend_follow":
         invalidation_flags.append("breakout_structure_not_ready")
 
     # ============================================================

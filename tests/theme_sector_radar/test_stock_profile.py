@@ -277,12 +277,94 @@ class TestNewFactorProfile:
         assert result["trend_state"] == "repair"
 
     def test_drawdown_depth_high_risk(self):
-        """drawdown_depth_20 > 30 应判断 risk_state 为 high。"""
-        candidate = {"drawdown_depth_20": 35.0}
+        """drawdown_depth_20 > 15 应判断 drawdown_state 为 deep。"""
+        candidate = {"drawdown_depth_20": 20.0}
 
         result = build_stock_profile(candidate)
 
-        assert result["risk_state"] == "high"
+        assert result["drawdown_state"] == "deep"
+
+    def test_drawdown_state_healthy(self):
+        """drawdown_depth_20 <= 5 应判断 drawdown_state 为 healthy。"""
+        candidate = {"drawdown_depth_20": 3.0}
+
+        result = build_stock_profile(candidate)
+
+        assert result["drawdown_state"] == "healthy"
+
+    def test_drawdown_state_normal(self):
+        """drawdown_depth_20 5-15 应判断 drawdown_state 为 normal。"""
+        candidate = {"drawdown_depth_20": 10.0}
+
+        result = build_stock_profile(candidate)
+
+        assert result["drawdown_state"] == "normal"
+
+    def test_breakout_structure_near(self):
+        """breakout_distance_20 raw <= 3 应判断 breakout_structure 为 near。"""
+        candidate = {
+            "factor_snapshot": {
+                "factors": [
+                    {"factor_id": "breakout_distance_20", "raw_value": 2.0, "score": 90.0, "quality": "good"},
+                ]
+            }
+        }
+
+        result = build_stock_profile(candidate)
+
+        assert result["breakout_structure"] == "near"
+
+    def test_breakout_structure_neutral(self):
+        """breakout_distance_20 raw 3-10 应判断 breakout_structure 为 neutral。"""
+        candidate = {
+            "factor_snapshot": {
+                "factors": [
+                    {"factor_id": "breakout_distance_20", "raw_value": 7.0, "score": 65.0, "quality": "good"},
+                ]
+            }
+        }
+
+        result = build_stock_profile(candidate)
+
+        assert result["breakout_structure"] == "neutral"
+
+    def test_breakout_structure_far(self):
+        """breakout_distance_20 raw > 10 应判断 breakout_structure 为 far。"""
+        candidate = {
+            "factor_snapshot": {
+                "factors": [
+                    {"factor_id": "breakout_distance_20", "raw_value": 15.0, "score": 25.0, "quality": "good"},
+                ]
+            }
+        }
+
+        result = build_stock_profile(candidate)
+
+        assert result["breakout_structure"] == "far"
+
+    def test_overheat_state_high(self):
+        """chasing_risk_score >= 70 应判断 overheat_state 为 high。"""
+        candidate = {"chasing_risk_score": 75.0}
+
+        result = build_stock_profile(candidate)
+
+        assert result["overheat_state"] == "high"
+
+    def test_overheat_state_watch(self):
+        """chasing_risk_score 60-70 应判断 overheat_state 为 watch。"""
+        candidate = {"chasing_risk_score": 65.0}
+
+        result = build_stock_profile(candidate)
+
+        assert result["overheat_state"] == "watch"
+
+    def test_overheat_state_normal(self):
+        """chasing_risk_score < 60 应判断 overheat_state 为 normal。"""
+        candidate = {"chasing_risk_score": 40.0}
+
+        result = build_stock_profile(candidate)
+
+        assert result["overheat_state"] == "normal"
 
     def test_missing_new_factors_no_impact(self):
         """缺失新因子不影响旧逻辑。"""
@@ -295,3 +377,59 @@ class TestNewFactorProfile:
 
         assert result["trend_state"] == "uptrend"
         assert result["sector_support"] == "strong"
+
+
+class TestProfileContextFields:
+    """测试新增的语义上下文字段。"""
+
+    def test_structure_position_note(self):
+        """breakout_structure 应附带 structure_position_note。"""
+        candidate = {
+            "factor_snapshot": {
+                "factors": [
+                    {"factor_id": "breakout_distance_20", "raw_value": 2.0, "score": 90.0, "quality": "good"},
+                ]
+            }
+        }
+
+        result = build_stock_profile(candidate)
+
+        assert result["breakout_structure"] == "near"
+        assert result["structure_position_note"] == "position_only_not_trigger"
+
+    def test_drawdown_context_deep(self):
+        """drawdown_state=deep 应映射为 repair_opportunity_possible。"""
+        candidate = {"drawdown_depth_20": 20.0}
+
+        result = build_stock_profile(candidate)
+
+        assert result["drawdown_state"] == "deep"
+        assert result["drawdown_context"] == "repair_opportunity_possible"
+
+    def test_drawdown_context_healthy(self):
+        """drawdown_state=healthy 应映射为 shallow_pullback。"""
+        candidate = {"drawdown_depth_20": 3.0}
+
+        result = build_stock_profile(candidate)
+
+        assert result["drawdown_state"] == "healthy"
+        assert result["drawdown_context"] == "shallow_pullback"
+
+    def test_drawdown_context_normal(self):
+        """drawdown_state=normal 应映射为 normal_pullback。"""
+        candidate = {"drawdown_depth_20": 10.0}
+
+        result = build_stock_profile(candidate)
+
+        assert result["drawdown_state"] == "normal"
+        assert result["drawdown_context"] == "normal_pullback"
+
+    def test_all_profile_fields_present(self):
+        """profile 应包含所有新增字段。"""
+        candidate = {}
+        result = build_stock_profile(candidate)
+
+        assert "structure_position_note" in result
+        assert "drawdown_context" in result
+        assert result["structure_position_note"] == "position_only_not_trigger"
+        assert result["drawdown_context"] == "unknown"
