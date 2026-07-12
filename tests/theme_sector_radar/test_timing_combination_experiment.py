@@ -3,6 +3,7 @@ from theme_sector_radar.timing.combination_experiment import (
     StrategyVersion,
     build_default_strategy_versions,
     evaluate_strategy_versions,
+    evaluate_strategy_stability,
 )
 
 
@@ -82,6 +83,46 @@ def test_combination_experiment_penalizes_large_tail_losses():
     tail_result = next(item for item in report["versions"] if item["version_id"] == "tail_heavy")
     assert tail_result["selected_tail_loss_count"] == 1
     assert tail_result["selected_tail_loss_rate"] == 0.3333
+
+
+def test_strategy_stability_reports_period_sensitivity():
+    samples = [
+        _sample("600001", 3.0, _sample_date="2026-06-01", quality=80),
+        _sample("600002", 2.0, _sample_date="2026-06-02", quality=80),
+        _sample("600003", -6.0, _sample_date="2026-06-03", quality=80),
+        _sample("600004", -1.0, _sample_date="2026-06-04", quality=20),
+        _sample("600005", 4.0, _sample_date="2026-06-05", quality=80),
+        _sample("600006", 1.0, _sample_date="2026-06-06", quality=80),
+    ]
+    version = StrategyVersion("quality", "quality filter", (FactorCondition("quality", ">=", 70),))
+
+    stability = evaluate_strategy_stability(samples, [version], min_selected=1, period_count=3)
+    result = stability["versions"][0]
+
+    assert stability["summary"]["period_count"] == 3
+    assert result["version_id"] == "quality"
+    assert result["periods"][0]["selected_count"] == 2
+    assert result["periods"][1]["selected_tail_loss_count"] == 1
+    assert result["worst_period_avg_return_pct"] == -6.0
+    assert result["positive_period_rate"] == 0.6667
+    assert result["active_period_rate"] == 1.0
+    assert result["min_period_selected_count"] == 1
+
+
+def test_strategy_stability_exposes_inactive_periods():
+    samples = [
+        _sample("600001", 3.0, _sample_date="2026-06-01", quality=80),
+        _sample("600002", 2.0, _sample_date="2026-06-02", quality=80),
+        _sample("600003", -1.0, _sample_date="2026-06-03", quality=20),
+    ]
+    version = StrategyVersion("quality", "quality filter", (FactorCondition("quality", ">=", 70),))
+
+    stability = evaluate_strategy_stability(samples, [version], min_selected=1, period_count=3)
+    result = stability["versions"][0]
+
+    assert result["periods"][2]["selected_count"] == 0
+    assert result["active_period_rate"] == 0.6667
+    assert result["min_period_selected_count"] == 0
 
 
 def test_default_strategy_versions_are_paper_only_factor_combinations():

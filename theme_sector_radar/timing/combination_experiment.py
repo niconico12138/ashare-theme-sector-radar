@@ -375,6 +375,90 @@ def evaluate_strategy_versions(
     }
 
 
+def evaluate_strategy_stability(
+    samples: Sequence[Mapping[str, Any]],
+    versions: Sequence[StrategyVersion],
+    *,
+    date_field: str = "_sample_date",
+    return_field: str = "forward_return_pct",
+    min_selected: int = 20,
+    win_return_pct: float = 0.0,
+    tail_loss_pct: float = -5.0,
+    period_count: int = 3,
+) -> dict[str, Any]:
+    rows = [dict(row) for row in samples if row.get(date_field)]
+    dates = sorted({str(row.get(date_field)) for row in rows})
+    periods = _date_periods(dates, period_count)
+    version_reports = []
+    for version in versions:
+        period_reports = []
+        for index, period_dates in enumerate(periods, start=1):
+            period_rows = [row for row in rows if str(row.get(date_field)) in period_dates]
+            report = _evaluate_version(
+                period_rows,
+                version,
+                return_field,
+                min_selected=1,
+                win_return_pct=win_return_pct,
+                tail_loss_pct=tail_loss_pct,
+            )
+            period_reports.append(
+                {
+                    "period_index": index,
+                    "start": period_dates[0] if period_dates else None,
+                    "end": period_dates[-1] if period_dates else None,
+                    "sample_count": len(period_rows),
+                    "selected_count": report["selected_count"],
+                    "selected_avg_return_pct": report["selected_avg_return_pct"],
+                    "selected_win_rate": report["selected_win_rate"],
+                    "selected_min_return_pct": report["selected_min_return_pct"],
+                    "selected_tail_loss_count": report["selected_tail_loss_count"],
+                    "selected_tail_loss_rate": report["selected_tail_loss_rate"],
+                }
+            )
+        period_avgs = [
+            item["selected_avg_return_pct"]
+            for item in period_reports
+            if item["selected_avg_return_pct"] is not None
+        ]
+        selected_counts = [int(item["selected_count"]) for item in period_reports]
+        active_period_count = sum(1 for count in selected_counts if count > 0)
+        positive_periods = [value for value in period_avgs if value > win_return_pct]
+        version_reports.append(
+            {
+                "version_id": version.version_id,
+                "periods": period_reports,
+                "evaluated_period_count": len(period_avgs),
+                "active_period_rate": _round(active_period_count / len(period_reports)) if period_reports else None,
+                "min_period_selected_count": min(selected_counts) if selected_counts else 0,
+                "positive_period_rate": _round(len(positive_periods) / len(period_avgs)) if period_avgs else None,
+                "worst_period_avg_return_pct": _round(min(period_avgs)) if period_avgs else None,
+                "best_period_avg_return_pct": _round(max(period_avgs)) if period_avgs else None,
+            }
+        )
+    version_reports.sort(
+        key=lambda item: (
+            item["active_period_rate"] or -1.0,
+            item["positive_period_rate"] or -1.0,
+            item["worst_period_avg_return_pct"] if item["worst_period_avg_return_pct"] is not None else -999.0,
+        ),
+        reverse=True,
+    )
+    return {
+        "schema_version": "timing_strategy_stability.v1",
+        "summary": {
+            "sample_count": len(rows),
+            "date_count": len(dates),
+            "period_count": len(periods),
+            "min_selected": min_selected,
+            "tail_loss_pct": tail_loss_pct,
+        },
+        "versions": version_reports,
+        "paper_trading_only": True,
+        "no_execution_signals": True,
+    }
+
+
 def _evaluate_version(
     rows: list[Mapping[str, Any]],
     version: StrategyVersion,
@@ -430,6 +514,18 @@ def _evaluate_version(
         "paper_trading_only": True,
         "no_execution_signals": True,
     }
+
+
+def _date_periods(dates: list[str], period_count: int) -> list[list[str]]:
+    if not dates:
+        return []
+    count = max(1, min(period_count, len(dates)))
+    periods = []
+    for index in range(count):
+        start = index * len(dates) // count
+        end = (index + 1) * len(dates) // count
+        periods.append(dates[start:end])
+    return periods
 
 
 def _research_score(

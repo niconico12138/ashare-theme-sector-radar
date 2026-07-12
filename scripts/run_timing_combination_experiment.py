@@ -15,6 +15,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from theme_sector_radar.timing.combination_experiment import (  # noqa: E402
     build_default_strategy_versions,
+    evaluate_strategy_stability,
     evaluate_strategy_versions,
 )
 
@@ -48,15 +49,23 @@ def run_timing_combination_experiment(
             dates_without_selection_validation.append(date)
         for row in _candidate_rows(_load_json(path)):
             code = str(row.get("code") or "").strip()
+            row["_sample_date"] = date
             if row.get("forward_return_pct") is None and code in dated_returns:
                 row["forward_return_pct"] = dated_returns[code]
             samples.append(row)
 
+    versions = build_default_strategy_versions()
     report = evaluate_strategy_versions(
         samples,
-        build_default_strategy_versions(),
+        versions,
         min_selected=min_selected,
     )
+    report["stability"] = evaluate_strategy_stability(
+        samples,
+        versions,
+        min_selected=min_selected,
+    )
+    _annotate_stability_adjusted_scores(report)
     report["as_of"] = as_of
     report["snapshot_label"] = snapshot_label
     report["data_coverage"] = {
@@ -78,6 +87,34 @@ def run_timing_combination_experiment(
     json_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     markdown_path.write_text(_markdown(report), encoding="utf-8")
     return {"status": "ok", "json_path": json_path, "markdown_path": markdown_path, "report": report}
+
+
+def _annotate_stability_adjusted_scores(report: dict[str, Any]) -> None:
+    stability_by_version = {
+        item.get("version_id"): item
+        for item in (report.get("stability") or {}).get("versions") or []
+        if item.get("version_id")
+    }
+    for item in report.get("versions") or []:
+        stability = stability_by_version.get(item.get("version_id")) or {}
+        research_score = _float(item.get("research_score")) or -999.0
+        active_period_rate = _float(stability.get("active_period_rate")) or 0.0
+        worst_period_avg = _float(stability.get("worst_period_avg_return_pct"))
+        min_period_selected = int(stability.get("min_period_selected_count") or 0)
+        inactive_period_rate = 1.0 - active_period_rate
+        adjusted = (
+            research_score
+            + active_period_rate * 0.50
+            - inactive_period_rate * 0.90
+            + max(-5.0, worst_period_avg if worst_period_avg is not None else -5.0) * 0.10
+            - max(0, 3 - min_period_selected) * 0.08
+        )
+        item["stability_adjusted_score"] = round(adjusted, 4)
+    report["stability_adjusted_versions"] = sorted(
+        [dict(item) for item in report.get("versions") or []],
+        key=lambda item: (item.get("is_valid"), item.get("stability_adjusted_score", -999.0)),
+        reverse=True,
+    )
 
 
 def _discover_candidate_files(candidate_root: Path, start: str | None, end: str | None) -> list[Path]:
@@ -155,8 +192,8 @@ def _markdown(report: dict[str, Any]) -> str:
         "",
         "## Ranked Versions",
         "",
-        "| Version | Selected | Avg return % | Spread % | Win rate | Min return % | Tail losses | Tail rate | Score | Valid |",
-        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---|",
+        "| Version | Selected | Avg return % | Spread % | Win rate | Min return % | Tail losses | Tail rate | Score | Stability adjusted | Valid |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|",
     ]
     for item in report.get("versions") or []:
         lines.append(
@@ -164,7 +201,39 @@ def _markdown(report: dict[str, Any]) -> str:
             f"{item.get('selected_avg_return_pct') or ''} | {item.get('spread_vs_rejected_pct') or ''} | "
             f"{item.get('selected_win_rate') or ''} | {item.get('selected_min_return_pct') or ''} | "
             f"{item.get('selected_tail_loss_count') or 0} | {item.get('selected_tail_loss_rate') or ''} | "
-            f"{item.get('research_score') or ''} | `{item.get('is_valid')}` |"
+            f"{item.get('research_score') or ''} | {item.get('stability_adjusted_score') or ''} | "
+            f"`{item.get('is_valid')}` |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Stability Adjusted Ranking",
+            "",
+            "| Version | Stability adjusted | Selected | Avg return % | Tail losses |",
+            "|---|---:|---:|---:|---:|",
+        ]
+    )
+    for item in (report.get("stability_adjusted_versions") or [])[:10]:
+        lines.append(
+            f"| `{item.get('version_id')}` | {item.get('stability_adjusted_score') or ''} | "
+            f"{item.get('selected_count')} | {item.get('selected_avg_return_pct') or ''} | "
+            f"{item.get('selected_tail_loss_count') or 0} |"
+        )
+    stability = report.get("stability") or {}
+    lines.extend(
+        [
+            "",
+            "## Stability Check",
+            "",
+            "| Version | Active periods | Positive periods | Min period selected | Worst period avg % | Best period avg % |",
+            "|---|---:|---:|---:|---:|---:|",
+        ]
+    )
+    for item in (stability.get("versions") or [])[:10]:
+        lines.append(
+            f"| `{item.get('version_id')}` | {item.get('active_period_rate') or ''} | "
+            f"{item.get('positive_period_rate') or ''} | {item.get('min_period_selected_count') or 0} | "
+            f"{item.get('worst_period_avg_return_pct') or ''} | {item.get('best_period_avg_return_pct') or ''} |"
         )
     lines.extend(
         [

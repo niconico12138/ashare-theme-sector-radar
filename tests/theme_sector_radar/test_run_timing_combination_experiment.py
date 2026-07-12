@@ -73,5 +73,9 @@ def test_run_timing_combination_experiment_writes_report(tmp_path):
     assert report["summary"]["labeled_sample_count"] == 2
     assert report["best_version"]["selected_avg_return_pct"] == 3.0
     assert "selected_tail_loss_count" in report["best_version"]
+    assert report["stability"]["summary"]["date_count"] == 1
+    assert "stability_adjusted_score" in report["best_version"]
     markdown = result["markdown_path"].read_text(encoding="utf-8")
     assert "Tail losses" in markdown
+    assert "Stability Check" in markdown
+    assert "Stability adjusted" in markdown
