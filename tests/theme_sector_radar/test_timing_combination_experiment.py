@@ -66,12 +66,39 @@ def test_combination_experiment_ranks_best_version_by_return_and_spread():
     assert report["versions"][0]["research_score"] > report["versions"][1]["research_score"]
 
 
+def test_combination_experiment_penalizes_large_tail_losses():
+    samples = [
+        _sample("600001", 4.0, broad=80, strict=80),
+        _sample("600002", 3.0, broad=80, strict=20),
+        _sample("600003", -8.0, broad=80, strict=20),
+        _sample("600004", -1.0, broad=20, strict=20),
+    ]
+    tail_heavy = StrategyVersion("tail_heavy", "contains tail loss", (FactorCondition("broad", ">=", 70),))
+    clean = StrategyVersion("clean", "avoids tail loss", (FactorCondition("strict", ">=", 70),))
+
+    report = evaluate_strategy_versions(samples, [tail_heavy, clean], min_selected=1)
+
+    assert report["best_version"]["version_id"] == "clean"
+    tail_result = next(item for item in report["versions"] if item["version_id"] == "tail_heavy")
+    assert tail_result["selected_tail_loss_count"] == 1
+    assert tail_result["selected_tail_loss_rate"] == 0.3333
+
+
 def test_default_strategy_versions_are_paper_only_factor_combinations():
     versions = build_default_strategy_versions()
 
-    assert len(versions) >= 15
+    assert len(versions) >= 27
     assert all(version.version_id for version in versions)
     all_fields = {condition.factor_id for version in versions for condition in version.conditions}
     assert "open_to_midday_resilience_score" in all_fields
     assert "vwap_above_ratio_score" in all_fields
     assert "high_to_close_drawdown_score" in all_fields
+    assert "risk_adjusted_watch_score_shadow" in all_fields
+    assert "optimized_watch_score" in all_fields
+    assert "sector_breadth_quality_score" in all_fields
+    assert not {
+        "final_score",
+        "v2_score",
+        "selection_score",
+        "selection_score_adjusted",
+    } & all_fields

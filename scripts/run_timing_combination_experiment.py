@@ -149,17 +149,22 @@ def _markdown(report: dict[str, Any]) -> str:
         f"- Avg return: `{best.get('selected_avg_return_pct')}`",
         f"- Spread vs rejected: `{best.get('spread_vs_rejected_pct')}`",
         f"- Win rate: `{best.get('selected_win_rate')}`",
+        f"- Min return: `{best.get('selected_min_return_pct')}`",
+        f"- Tail loss count: `{best.get('selected_tail_loss_count')}`",
+        f"- Tail loss rate: `{best.get('selected_tail_loss_rate')}`",
         "",
         "## Ranked Versions",
         "",
-        "| Version | Selected | Avg return % | Spread % | Win rate | Score | Valid |",
-        "|---|---:|---:|---:|---:|---:|---|",
+        "| Version | Selected | Avg return % | Spread % | Win rate | Min return % | Tail losses | Tail rate | Score | Valid |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---|",
     ]
     for item in report.get("versions") or []:
         lines.append(
             f"| `{item.get('version_id')}` | {item.get('selected_count')} | "
             f"{item.get('selected_avg_return_pct') or ''} | {item.get('spread_vs_rejected_pct') or ''} | "
-            f"{item.get('selected_win_rate') or ''} | {item.get('research_score') or ''} | `{item.get('is_valid')}` |"
+            f"{item.get('selected_win_rate') or ''} | {item.get('selected_min_return_pct') or ''} | "
+            f"{item.get('selected_tail_loss_count') or 0} | {item.get('selected_tail_loss_rate') or ''} | "
+            f"{item.get('research_score') or ''} | `{item.get('is_valid')}` |"
         )
     lines.extend(
         [
