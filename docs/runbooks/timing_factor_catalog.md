@@ -69,6 +69,78 @@ The `volume_money_flow` category now contains eleven paper-only research factors
 
 All new fields are `higher_is_better` except `volume_spike_exhaustion_score`, which remains `lower_is_better`.
 
+### Expanded Remaining Category Sets
+
+The remaining six categories now contain ten paper-only research factors each.
+
+`vwap_mean_price` additions:
+
+| Factor | Meaning |
+|---|---|
+| `open_vwap_reclaim_score` | Open-session reclaim above VWAP. |
+| `midday_vwap_support_score` | Midday support around VWAP. |
+| `vwap_distance_stability_score` | Stable, controlled distance from VWAP. |
+| `vwap_pullback_support_score` | Pullback support near VWAP followed by recovery. |
+| `vwap_breakout_confirm_score` | Breakout quality confirmed by VWAP position. |
+| `vwap_above_ratio_score` | Full-session share of bars above VWAP. |
+
+`intraday_position` additions:
+
+| Factor | Meaning |
+|---|---|
+| `open_to_high_progress_score` | Progress from open toward the high area. |
+| `close_above_midrange_score` | Close quality relative to the day range midpoint. |
+| `low_reclaim_position_score` | Reclaim strength from intraday low. |
+| `late_range_expansion_score` | Late range expansion with strong close. |
+| `high_area_acceptance_score` | Acceptance near the intraday high. |
+| `close_location_stability_score` | Stable high-quality close location. |
+
+`sector_confirmation` additions:
+
+| Factor | Meaning |
+|---|---|
+| `sector_breadth_persistence_score` | Persistent sector breadth. |
+| `sector_late_acceleration_score` | Late-session sector acceleration. |
+| `leader_sync_persistence_score` | Persistent leader/follower synchronization. |
+| `sector_alpha_confirmation_score` | Stock alpha confirmed by sector breadth. |
+| `sector_breadth_quality_score` | Quality of sector breadth support. |
+| `theme_confirmation_composite_score` | Composite theme confirmation. |
+
+`relative_strength` additions:
+
+| Factor | Meaning |
+|---|---|
+| `stock_intraday_rank_proxy_score` | Intraday rank proxy inside the peer group. |
+| `stock_vs_market_intraday_alpha_score` | Stock alpha versus the broad market intraday. |
+| `relative_late_strength_score` | Late-session strength relative to sector context. |
+| `relative_vwap_strength_score` | VWAP structure relative to peers. |
+| `relative_breakout_leadership_score` | Breakout leadership versus peers. |
+| `relative_resilience_score` | Relative resilience during intraday swings. |
+
+`risk_reversal` additions:
+
+| Factor | Meaning |
+|---|---|
+| `open_high_reversal_risk` | Risk that early high strength reverses. |
+| `late_breakdown_risk` | Late-session breakdown risk. |
+| `failed_breakout_risk` | Failed breakout and giveback risk. |
+| `lower_low_sequence_risk` | Intraday lower-low sequence risk. |
+| `volatility_expansion_reversal_risk` | Wide-range reversal risk. |
+| `weak_close_after_volume_risk` | Weak close after volume expansion. |
+
+All six `risk_reversal` additions are `lower_is_better`.
+
+`time_structure` additions:
+
+| Factor | Meaning |
+|---|---|
+| `first_hour_follow_through_score` | First-hour follow-through after opening behavior. |
+| `midday_hold_score` | Midday hold quality. |
+| `afternoon_recovery_score` | Afternoon recovery from intraday weakness. |
+| `late_session_acceleration_score` | Late-session acceleration. |
+| `session_consistency_score` | Full-session consistency. |
+| `close_auction_strength_proxy_score` | Closing strength proxy. |
+
 ### 5m Then 1m Validation
 
 Run the full price-momentum set on 5-minute bars first. Only a factor rated `valuable` or `watchlist` in that 5-minute report is eligible for 1-minute comparison. A factor is `1m_confirmed` only when its direction agrees, its 1-minute rating is `valuable` or `watchlist`, and its 1-minute adjusted spread is positive. Missing 1-minute coverage is reported as `insufficient_1m_coverage`; it is not treated as a pass.

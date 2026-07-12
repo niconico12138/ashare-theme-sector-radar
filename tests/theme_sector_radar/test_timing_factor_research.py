@@ -154,6 +154,72 @@ def test_volume_money_flow_research_has_at_least_eleven_factors():
     }
 
 
+def test_remaining_timing_categories_have_at_least_ten_factors():
+    expected = {
+        "vwap_mean_price": {
+            "open_vwap_reclaim_score",
+            "midday_vwap_support_score",
+            "vwap_distance_stability_score",
+            "vwap_pullback_support_score",
+            "vwap_breakout_confirm_score",
+            "vwap_above_ratio_score",
+        },
+        "intraday_position": {
+            "open_to_high_progress_score",
+            "close_above_midrange_score",
+            "low_reclaim_position_score",
+            "late_range_expansion_score",
+            "high_area_acceptance_score",
+            "close_location_stability_score",
+        },
+        "sector_confirmation": {
+            "sector_breadth_persistence_score",
+            "sector_late_acceleration_score",
+            "leader_sync_persistence_score",
+            "sector_alpha_confirmation_score",
+            "sector_breadth_quality_score",
+            "theme_confirmation_composite_score",
+        },
+        "relative_strength": {
+            "stock_intraday_rank_proxy_score",
+            "stock_vs_market_intraday_alpha_score",
+            "relative_late_strength_score",
+            "relative_vwap_strength_score",
+            "relative_breakout_leadership_score",
+            "relative_resilience_score",
+        },
+        "risk_reversal": {
+            "open_high_reversal_risk",
+            "late_breakdown_risk",
+            "failed_breakout_risk",
+            "lower_low_sequence_risk",
+            "volatility_expansion_reversal_risk",
+            "weak_close_after_volume_risk",
+        },
+        "time_structure": {
+            "first_hour_follow_through_score",
+            "midday_hold_score",
+            "afternoon_recovery_score",
+            "late_session_acceleration_score",
+            "session_consistency_score",
+            "close_auction_strength_proxy_score",
+        },
+    }
+
+    for category, factor_ids in expected.items():
+        specs = [spec for spec in INTRADAY_FACTOR_RESEARCH_SPECS if spec.category == category]
+        assert len(specs) >= 10, category
+        assert {spec.factor_id for spec in specs} >= factor_ids
+
+    risk_specs = {
+        spec.factor_id: spec
+        for spec in INTRADAY_FACTOR_RESEARCH_SPECS
+        if spec.category == "risk_reversal"
+    }
+    for factor_id in expected["risk_reversal"]:
+        assert risk_specs[factor_id].direction == "lower_is_better"
+
+
 def test_frequency_validation_only_confirms_promoted_5m_price_momentum_factors():
     report_5m = {
         "factors": {
