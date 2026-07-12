@@ -2,6 +2,7 @@ import json
 
 from theme_sector_radar.timing.factor_research import (
     INTRADAY_FACTOR_RESEARCH_SPECS,
+    compare_frequency_factor_reports,
     evaluate_intraday_factor_research,
 )
 from theme_sector_radar.timing.factor_catalog import TIMING_FACTOR_CATEGORIES
@@ -119,3 +120,63 @@ def test_intraday_factor_research_specs_keep_each_factor_in_one_category():
 
     assert len(factor_ids) == len(set(factor_ids))
     assert set(spec.category for spec in INTRADAY_FACTOR_RESEARCH_SPECS) == set(TIMING_FACTOR_CATEGORIES)
+
+
+def test_price_momentum_research_has_at_least_eleven_factors():
+    specs = [spec for spec in INTRADAY_FACTOR_RESEARCH_SPECS if spec.category == "price_momentum"]
+
+    assert len(specs) >= 11
+    assert {spec.factor_id for spec in specs} >= {
+        "return_5m_strength_score",
+        "return_15m_strength_score",
+        "return_60m_strength_score",
+        "positive_bar_ratio_score",
+        "rolling_price_slope_score",
+        "intraday_breakout_strength_score",
+        "breakout_hold_score",
+        "pullback_reclaim_momentum_score",
+    }
+
+
+def test_frequency_validation_only_confirms_promoted_5m_price_momentum_factors():
+    report_5m = {
+        "factors": {
+            "opening_drive_score": {
+                "category": "price_momentum",
+                "direction": "higher_is_better",
+                "rating": "valuable",
+            },
+            "late_return_30m_score": {
+                "category": "price_momentum",
+                "direction": "higher_is_better",
+                "rating": "weak",
+            },
+            "amount_acceleration_score": {
+                "category": "volume_money_flow",
+                "direction": "higher_is_better",
+                "rating": "valuable",
+            },
+        }
+    }
+    report_1m = {
+        "factors": {
+            "opening_drive_score": {
+                "direction": "higher_is_better",
+                "rating": "watchlist",
+                "adjusted_spread_pct": 0.4,
+                "labeled_sample_count": 52,
+            },
+            "late_return_30m_score": {
+                "direction": "higher_is_better",
+                "rating": "valuable",
+                "adjusted_spread_pct": 1.2,
+                "labeled_sample_count": 52,
+            },
+        }
+    }
+
+    comparison = compare_frequency_factor_reports(report_5m, report_1m)
+
+    assert comparison["eligible_factor_ids"] == ["opening_drive_score"]
+    assert comparison["factors"]["opening_drive_score"]["confirmation_status"] == "1m_confirmed"
+    assert "late_return_30m_score" not in comparison["factors"]

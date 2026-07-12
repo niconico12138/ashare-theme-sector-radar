@@ -101,3 +101,32 @@ def test_backfill_intraday_candidates_can_store_raw_bars_when_requested():
 
     assert len(result["data"]["candidates"][0]["intraday_bars"]) == 5
     json.dumps(result, ensure_ascii=False)
+
+
+def test_backfill_intraday_candidates_persists_expanded_price_momentum_fields():
+    data = {
+        "candidates": [
+            {
+                "code": "600001",
+                "name": "ShortBurst",
+                "source_pool": "burst_top",
+                "opportunity_type": "short_burst",
+                "final_score": 66.0,
+                "v2_score": 58.0,
+                "prev_close": 99.0,
+            }
+        ]
+    }
+
+    result = backfill_intraday_candidates(
+        data,
+        "2026-07-02",
+        client=FakeIntradayClient(),
+        frequency="5m",
+        store_bars=True,
+    )
+    candidate = result["data"]["candidates"][0]
+
+    assert candidate["return_5m_strength_score"] is not None
+    assert candidate["positive_bar_ratio_score"] is not None
+    assert candidate["intraday_breakout_strength_score"] is not None

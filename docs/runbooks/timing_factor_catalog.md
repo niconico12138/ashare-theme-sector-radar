@@ -29,6 +29,30 @@ This catalog is for paper-only intraday buy and exit timing experiments. It does
 
 `theme_sector_radar.timing.factor_research` evaluates the eight timing categories as paper-only research. It uses candidate-level factor values plus a future return label, then splits each factor into high/low groups and compares adjusted forward-return spread.
 
+### Expanded Price Momentum Set
+
+The `price_momentum` category now contains eleven paper-only research factors:
+
+| Factor | Meaning |
+|---|---|
+| `opening_drive_score` | Strength of the opening launch. |
+| `morning_strength_persist_score` | Ability to retain early-session strength. |
+| `late_return_30m_score` | Late 30-minute return strength. |
+| `return_5m_strength_score` | Latest 5-minute return strength. |
+| `return_15m_strength_score` | Latest 15-minute return strength. |
+| `return_60m_strength_score` | Latest 60-minute return strength. |
+| `positive_bar_ratio_score` | Share of rising intraday bars. |
+| `rolling_price_slope_score` | Slope of the trailing intraday price path. |
+| `intraday_breakout_strength_score` | Strength of the latest new-high breakout. |
+| `breakout_hold_score` | Ability to hold the breakout above the earlier high. |
+| `pullback_reclaim_momentum_score` | Momentum of the latest pullback recovery. |
+
+All eleven use `higher_is_better`. They are research fields only and do not alter official candidate scores.
+
+### 5m Then 1m Validation
+
+Run the full price-momentum set on 5-minute bars first. Only a factor rated `valuable` or `watchlist` in that 5-minute report is eligible for 1-minute comparison. A factor is `1m_confirmed` only when its direction agrees, its 1-minute rating is `valuable` or `watchlist`, and its 1-minute adjusted spread is positive. Missing 1-minute coverage is reported as `insufficient_1m_coverage`; it is not treated as a pass.
+
 Direction handling:
 
 - `higher_is_better`: high factor values should have better future returns.

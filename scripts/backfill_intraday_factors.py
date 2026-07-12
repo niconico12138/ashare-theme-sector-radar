@@ -17,6 +17,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from scripts.backfill_stock_analysis_fields import backfill_stock_analysis_fields  # noqa: E402
 from theme_sector_radar.data.market_data_http_client import MarketDataHttpClient  # noqa: E402
+from theme_sector_radar.factors.calculators import calculate_intraday_factors  # noqa: E402
 
 
 DEFAULT_CANDIDATE_ROOT = PROJECT_ROOT / "reports" / "agent_bridge"
@@ -158,6 +159,7 @@ def backfill_intraday_candidates(
 
     enriched = backfill_stock_analysis_fields(result_data)
     for candidate in _candidate_rows(enriched):
+        candidate.update(calculate_intraday_factors(candidate))
         if not store_bars:
             candidate.pop("intraday_bars", None)
 

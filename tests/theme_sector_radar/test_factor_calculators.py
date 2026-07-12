@@ -634,6 +634,52 @@ class TestNewFactors:
         assert result["close_vs_vwap_score"] is None
         assert result["volume_spike_exhaustion_score"] is None
 
+    def test_intraday_price_momentum_expansion_rewards_sustained_strength(self):
+        factor_ids = (
+            "return_5m_strength_score",
+            "return_15m_strength_score",
+            "return_60m_strength_score",
+            "positive_bar_ratio_score",
+            "rolling_price_slope_score",
+            "intraday_breakout_strength_score",
+            "breakout_hold_score",
+            "pullback_reclaim_momentum_score",
+        )
+        strong = calculate_intraday_factors(
+            {
+                "prev_close": 100.0,
+                "intraday_bars": _make_intraday_bars(
+                    [100.0, 100.4, 100.8, 101.3, 101.8, 102.5, 103.1, 103.8, 104.4, 105.0, 105.6, 106.2, 106.8, 107.5],
+                ),
+            }
+        )
+        weak = calculate_intraday_factors(
+            {
+                "prev_close": 100.0,
+                "intraday_bars": _make_intraday_bars(
+                    [100.0, 103.2, 102.4, 101.8, 101.1, 100.6, 100.0, 99.6, 99.3, 99.0, 98.7, 98.4, 98.1, 97.8],
+                ),
+            }
+        )
+
+        for factor_id in factor_ids:
+            assert strong[factor_id] > weak[factor_id]
+
+    def test_intraday_price_momentum_expansion_is_missing_without_bars(self):
+        factor_ids = (
+            "return_5m_strength_score",
+            "return_15m_strength_score",
+            "return_60m_strength_score",
+            "positive_bar_ratio_score",
+            "rolling_price_slope_score",
+            "intraday_breakout_strength_score",
+            "breakout_hold_score",
+            "pullback_reclaim_momentum_score",
+        )
+        result = calculate_intraday_factors({})
+
+        assert all(result[factor_id] is None for factor_id in factor_ids)
+
     def test_intraday_atomic_factors_cover_six_factor_families(self):
         """intraday atomic factors should separate support, VWAP, fade, volume, open, and sector context."""
         supported = calculate_intraday_factors(

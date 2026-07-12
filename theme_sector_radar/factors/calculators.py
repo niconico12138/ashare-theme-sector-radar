@@ -132,6 +132,27 @@ def _extract_intraday_price(point: dict) -> float:
     return 0.0
 
 
+PRICE_MOMENTUM_EXPANSION_IDS = (
+    "return_5m_strength_score",
+    "return_15m_strength_score",
+    "return_60m_strength_score",
+    "positive_bar_ratio_score",
+    "rolling_price_slope_score",
+    "intraday_breakout_strength_score",
+    "breakout_hold_score",
+    "pullback_reclaim_momentum_score",
+)
+
+
+def _intraday_return_strength(prices: list[float], bars: int) -> float:
+    if len(prices) <= bars:
+        return 50.0
+    anchor = prices[-bars - 1]
+    if anchor <= 0:
+        return 50.0
+    return _clamp_score(50.0 + (prices[-1] / anchor - 1.0) * 1200.0)
+
+
 def calculate_intraday_factors(candidate: dict) -> dict[str, float | None]:
     """Calculate shadow-only intraday factors when intraday bars are available."""
     empty = {
@@ -165,6 +186,14 @@ def calculate_intraday_factors(candidate: dict) -> dict[str, float | None]:
         "sector_late_breadth_score": None,
         "leader_follower_sync_score": None,
         "stock_vs_sector_intraday_alpha": None,
+        "return_5m_strength_score": None,
+        "return_15m_strength_score": None,
+        "return_60m_strength_score": None,
+        "positive_bar_ratio_score": None,
+        "rolling_price_slope_score": None,
+        "intraday_breakout_strength_score": None,
+        "breakout_hold_score": None,
+        "pullback_reclaim_momentum_score": None,
     }
     intraday_bars = candidate.get("intraday_bars") or candidate.get("minute_bars") or candidate.get("ticks")
     if not isinstance(intraday_bars, list) or len(intraday_bars) < 3:
@@ -296,6 +325,24 @@ def calculate_intraday_factors(candidate: dict) -> dict[str, float | None]:
         open_to_midday_return = (midday_price - open_price) / open_price * 100.0 if open_price > 0 else 0.0
         open_to_midday_resilience_score = _clamp_score(50.0 + open_to_midday_return * 12.0 - max(0.0, (open_price - morning_low) / open_price * 100.0 if open_price > 0 else 0.0) * 8.0)
 
+        positive_bar_ratio_score = _clamp_score(
+            sum(1 for previous, current_price in zip(prices, prices[1:]) if current_price > previous)
+            / max(1, len(prices) - 1)
+            * 100.0
+        )
+        slope_window = prices[-min(6, len(prices)):]
+        slope_anchor = slope_window[0]
+        rolling_price_slope_score = _clamp_score(
+            50.0 + ((slope_window[-1] / slope_anchor - 1.0) * 1200.0 if slope_anchor > 0 else 0.0)
+        )
+        prior_high = max(prices[:-1])
+        breakout_pct = (current - prior_high) / prior_high * 100.0 if prior_high > 0 else 0.0
+        intraday_breakout_strength_score = _clamp_score(50.0 + breakout_pct * 12.0)
+        breakout_hold_score = _clamp_score(50.0 + breakout_pct * 18.0)
+        reclaim_low = min(prices[-min(4, len(prices)):])
+        reclaim_pct = (current - reclaim_low) / reclaim_low * 100.0 if reclaim_low > 0 else 0.0
+        pullback_reclaim_momentum_score = _clamp_score(50.0 + reclaim_pct * 18.0)
+
         close_position_score = _clamp_score(close_position)
         pullback_risk_score = _clamp_score(pullback_risk)
         emotion_score = _clamp_score(
@@ -339,6 +386,14 @@ def calculate_intraday_factors(candidate: dict) -> dict[str, float | None]:
             "sector_late_breadth_score": sector_late_breadth,
             "leader_follower_sync_score": leader_follower_sync,
             "stock_vs_sector_intraday_alpha": stock_sector_alpha,
+            "return_5m_strength_score": _intraday_return_strength(prices, 1),
+            "return_15m_strength_score": _intraday_return_strength(prices, 3),
+            "return_60m_strength_score": _intraday_return_strength(prices, 12),
+            "positive_bar_ratio_score": positive_bar_ratio_score,
+            "rolling_price_slope_score": rolling_price_slope_score,
+            "intraday_breakout_strength_score": intraday_breakout_strength_score,
+            "breakout_hold_score": breakout_hold_score,
+            "pullback_reclaim_momentum_score": pullback_reclaim_momentum_score,
         }
     except Exception:
         return empty

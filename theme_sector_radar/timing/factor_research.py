@@ -21,6 +21,14 @@ INTRADAY_FACTOR_RESEARCH_SPECS = [
     IntradayFactorResearchSpec("opening_drive_score", "price_momentum", description="Opening launch strength."),
     IntradayFactorResearchSpec("morning_strength_persist_score", "price_momentum", description="Morning momentum persistence."),
     IntradayFactorResearchSpec("late_return_30m_score", "price_momentum", description="Late 30-minute return strength."),
+    IntradayFactorResearchSpec("return_5m_strength_score", "price_momentum", description="Latest five-minute return strength."),
+    IntradayFactorResearchSpec("return_15m_strength_score", "price_momentum", description="Latest fifteen-minute return strength."),
+    IntradayFactorResearchSpec("return_60m_strength_score", "price_momentum", description="Latest sixty-minute return strength."),
+    IntradayFactorResearchSpec("positive_bar_ratio_score", "price_momentum", description="Share of rising intraday bars."),
+    IntradayFactorResearchSpec("rolling_price_slope_score", "price_momentum", description="Trailing intraday price slope."),
+    IntradayFactorResearchSpec("intraday_breakout_strength_score", "price_momentum", description="Strength of a new intraday high breakout."),
+    IntradayFactorResearchSpec("breakout_hold_score", "price_momentum", description="Ability to hold above the prior intraday high."),
+    IntradayFactorResearchSpec("pullback_reclaim_momentum_score", "price_momentum", description="Momentum of the latest pullback reclaim."),
     IntradayFactorResearchSpec("amount_acceleration_score", "volume_money_flow", description="Intraday amount acceleration."),
     IntradayFactorResearchSpec("late_volume_efficiency_score", "volume_money_flow", description="Late volume efficiency."),
     IntradayFactorResearchSpec("volume_spike_exhaustion_score", "volume_money_flow", "lower_is_better", "Volume spike exhaustion risk."),
@@ -96,6 +104,50 @@ def evaluate_intraday_factor_research(
         "shadow_only": True,
         "paper_trading_only": True,
         "does_not_modify_official_scores": True,
+        "no_execution_signals": True,
+    }
+
+
+def compare_frequency_factor_reports(report_5m: Mapping[str, Any], report_1m: Mapping[str, Any]) -> dict[str, Any]:
+    """Compare 1m validation only for 5m-promoted price-momentum factors."""
+    factors_5m = report_5m.get("factors") or {}
+    factors_1m = report_1m.get("factors") or {}
+    eligible_factor_ids = sorted(
+        factor_id
+        for factor_id, result in factors_5m.items()
+        if result.get("category") == "price_momentum"
+        and result.get("rating") in {"valuable", "watchlist"}
+    )
+    compared = {}
+    for factor_id in eligible_factor_ids:
+        result_5m = factors_5m[factor_id]
+        result_1m = factors_1m.get(factor_id)
+        if not result_1m or result_1m.get("labeled_sample_count", 0) == 0:
+            status = "insufficient_1m_coverage"
+        elif result_1m.get("direction") != result_5m.get("direction"):
+            status = "direction_mismatch"
+        elif (
+            result_1m.get("rating") in {"valuable", "watchlist"}
+            and (result_1m.get("adjusted_spread_pct") or 0.0) > 0.0
+        ):
+            status = "1m_confirmed"
+        else:
+            status = "1m_not_confirmed"
+        compared[factor_id] = {
+            "factor_id": factor_id,
+            "direction": result_5m.get("direction"),
+            "rating_5m": result_5m.get("rating"),
+            "rating_1m": result_1m.get("rating") if result_1m else None,
+            "coverage_5m": result_5m.get("labeled_sample_count"),
+            "coverage_1m": result_1m.get("labeled_sample_count") if result_1m else 0,
+            "adjusted_spread_pct_5m": result_5m.get("adjusted_spread_pct"),
+            "adjusted_spread_pct_1m": result_1m.get("adjusted_spread_pct") if result_1m else None,
+            "confirmation_status": status,
+        }
+    return {
+        "eligible_factor_ids": eligible_factor_ids,
+        "factors": compared,
+        "paper_trading_only": True,
         "no_execution_signals": True,
     }
 
