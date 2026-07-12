@@ -178,6 +178,14 @@ def calculate_intraday_factors(candidate: dict) -> dict[str, float | None]:
         "late_volume_efficiency_score": None,
         "amount_acceleration_score": None,
         "volume_spike_exhaustion_score": None,
+        "early_amount_surge_score": None,
+        "midday_amount_sustain_score": None,
+        "late_amount_surge_score": None,
+        "amount_trend_persistence_score": None,
+        "volume_price_alignment_score": None,
+        "breakout_volume_confirm_score": None,
+        "pullback_volume_dryup_score": None,
+        "late_money_flow_concentration_score": None,
         "opening_drive_score": None,
         "morning_strength_persist_score": None,
         "morning_pullback_repair_score": None,
@@ -314,6 +322,74 @@ def calculate_intraday_factors(candidate: dict) -> dict[str, float | None]:
         avg_amount = total_amount / len(amounts) if amounts else 0.0
         spike_ratio = max_amount / avg_amount if avg_amount > 0 else 1.0
         volume_spike_exhaustion_score = _clamp_score(max(0.0, spike_ratio - 1.8) * 25.0 + max_gain_giveback_ratio * 0.45)
+        early_amount_surge_score = 50.0
+        midday_amount_sustain_score = 50.0
+        late_amount_surge_score = 50.0
+        amount_trend_persistence_score = 50.0
+        volume_price_alignment_score = 50.0
+        breakout_volume_confirm_score = 50.0
+        pullback_volume_dryup_score = 50.0
+        late_money_flow_concentration_score = 50.0
+        if amounts and len(amounts) == len(prices) and avg_amount > 0:
+            early_window = max(2, min(4, len(amounts) // 3 or 2))
+            early_avg_amount = sum(amounts[:early_window]) / early_window
+            late_avg_amount = sum(late_amounts) / len(late_amounts) if late_amounts else avg_amount
+            first_half_avg_amount = first_half_amount / len(first_half_amounts) if first_half_amounts else avg_amount
+            second_half_avg_amount = second_half_amount / len(second_half_amounts) if second_half_amounts else avg_amount
+            prior_late_amount = sum(amounts[:-late_window]) / len(amounts[:-late_window]) if len(amounts) > late_window else avg_amount
+            early_return_for_flow = (prices[early_window - 1] / open_price - 1.0) * 100.0 if open_price > 0 else 0.0
+            late_amount_ratio = late_avg_amount / prior_late_amount if prior_late_amount > 0 else 1.0
+            early_amount_ratio = early_avg_amount / amounts[0] if amounts[0] > 0 else 1.0
+            sustain_ratio = second_half_avg_amount / first_half_avg_amount if first_half_avg_amount > 0 else 1.0
+
+            amount_up_count = sum(1 for previous, current_amount in zip(amounts, amounts[1:]) if current_amount >= previous)
+            price_up_count = sum(1 for previous, current_price in zip(prices, prices[1:]) if current_price >= previous)
+            aligned_count = sum(
+                1
+                for previous_price, current_price, previous_amount, current_amount
+                in zip(prices, prices[1:], amounts, amounts[1:])
+                if (current_price >= previous_price and current_amount >= previous_amount)
+                or (current_price < previous_price and current_amount <= previous_amount)
+            )
+            down_amounts = [
+                current_amount
+                for previous_price, current_price, current_amount in zip(prices, prices[1:], amounts[1:])
+                if current_price < previous_price
+            ]
+            down_avg_amount = sum(down_amounts) / len(down_amounts) if down_amounts else 0.0
+            down_amount_ratio = down_avg_amount / avg_amount if avg_amount > 0 else 0.0
+            prior_high_for_volume = max(prices[:-1])
+            breakout_pct_for_volume = (current / prior_high_for_volume - 1.0) * 100.0 if prior_high_for_volume > 0 else 0.0
+
+            early_amount_surge_score = _clamp_score(
+                50.0 + (early_amount_ratio - 1.0) * 16.0 + early_return_for_flow * 8.0 - max_gain_giveback_ratio * 0.6
+            )
+            midday_amount_sustain_score = _clamp_score(
+                50.0 + (sustain_ratio - 1.0) * 28.0 + max(0.0, day_return) * 4.0 - max_gain_giveback_ratio * 0.45
+            )
+            late_amount_surge_score = _clamp_score(
+                50.0 + (late_amount_ratio - 1.0) * 24.0 + late_return * 10.0 - max_gain_giveback_ratio * 0.55
+            )
+            amount_trend_persistence_score = _clamp_score(
+                (amount_up_count / max(1, len(amounts) - 1) * 45.0)
+                + (price_up_count / max(1, len(prices) - 1) * 35.0)
+                + max(0.0, day_return) * 3.0
+                - max_gain_giveback_ratio * 0.25
+            )
+            volume_price_alignment_score = _clamp_score(
+                aligned_count / max(1, len(prices) - 1) * 100.0
+                + max(0.0, day_return) * 2.0
+                - max_gain_giveback_ratio * 0.35
+            )
+            breakout_volume_confirm_score = _clamp_score(
+                50.0 + breakout_pct_for_volume * 22.0 + (late_amount_ratio - 1.0) * 22.0 - max_gain_giveback_ratio * 0.5
+            )
+            pullback_volume_dryup_score = _clamp_score(
+                78.0 - down_amount_ratio * 28.0 + max(0.0, day_return) * 2.0 - max_gain_giveback_ratio * 0.45
+            )
+            late_money_flow_concentration_score = _clamp_score(
+                late_volume_share_score * 0.45 + late_amount_surge_score * 0.35 + late_volume_efficiency_score * 0.20
+            )
 
         opening_drive = (prices[min(1, len(prices) - 1)] - prev_close) / prev_close * 100.0 if prev_close > 0 else 0.0
         opening_drive_score = _clamp_score(50.0 + opening_drive * 12.0)
@@ -378,6 +454,14 @@ def calculate_intraday_factors(candidate: dict) -> dict[str, float | None]:
             "late_volume_efficiency_score": late_volume_efficiency_score,
             "amount_acceleration_score": amount_acceleration_score,
             "volume_spike_exhaustion_score": volume_spike_exhaustion_score,
+            "early_amount_surge_score": early_amount_surge_score,
+            "midday_amount_sustain_score": midday_amount_sustain_score,
+            "late_amount_surge_score": late_amount_surge_score,
+            "amount_trend_persistence_score": amount_trend_persistence_score,
+            "volume_price_alignment_score": volume_price_alignment_score,
+            "breakout_volume_confirm_score": breakout_volume_confirm_score,
+            "pullback_volume_dryup_score": pullback_volume_dryup_score,
+            "late_money_flow_concentration_score": late_money_flow_concentration_score,
             "opening_drive_score": opening_drive_score,
             "morning_strength_persist_score": morning_strength_persist_score,
             "morning_pullback_repair_score": morning_pullback_repair_score,

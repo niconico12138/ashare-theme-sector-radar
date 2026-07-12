@@ -138,6 +138,22 @@ def test_price_momentum_research_has_at_least_eleven_factors():
     }
 
 
+def test_volume_money_flow_research_has_at_least_eleven_factors():
+    specs = [spec for spec in INTRADAY_FACTOR_RESEARCH_SPECS if spec.category == "volume_money_flow"]
+
+    assert len(specs) >= 11
+    assert {spec.factor_id for spec in specs} >= {
+        "early_amount_surge_score",
+        "midday_amount_sustain_score",
+        "late_amount_surge_score",
+        "amount_trend_persistence_score",
+        "volume_price_alignment_score",
+        "breakout_volume_confirm_score",
+        "pullback_volume_dryup_score",
+        "late_money_flow_concentration_score",
+    }
+
+
 def test_frequency_validation_only_confirms_promoted_5m_price_momentum_factors():
     report_5m = {
         "factors": {
@@ -180,3 +196,48 @@ def test_frequency_validation_only_confirms_promoted_5m_price_momentum_factors()
     assert comparison["eligible_factor_ids"] == ["opening_drive_score"]
     assert comparison["factors"]["opening_drive_score"]["confirmation_status"] == "1m_confirmed"
     assert "late_return_30m_score" not in comparison["factors"]
+
+
+def test_frequency_validation_filters_requested_category():
+    report_5m = {
+        "factors": {
+            "opening_drive_score": {
+                "category": "price_momentum",
+                "direction": "higher_is_better",
+                "rating": "valuable",
+            },
+            "amount_acceleration_score": {
+                "category": "volume_money_flow",
+                "direction": "higher_is_better",
+                "rating": "valuable",
+            },
+            "late_volume_efficiency_score": {
+                "category": "volume_money_flow",
+                "direction": "higher_is_better",
+                "rating": "weak",
+            },
+        }
+    }
+    report_1m = {
+        "factors": {
+            "opening_drive_score": {
+                "direction": "higher_is_better",
+                "rating": "valuable",
+                "adjusted_spread_pct": 1.2,
+                "labeled_sample_count": 52,
+            },
+            "amount_acceleration_score": {
+                "direction": "higher_is_better",
+                "rating": "watchlist",
+                "adjusted_spread_pct": 0.3,
+                "labeled_sample_count": 52,
+            },
+        }
+    }
+
+    comparison = compare_frequency_factor_reports(report_5m, report_1m, category="volume_money_flow")
+
+    assert comparison["category"] == "volume_money_flow"
+    assert comparison["eligible_factor_ids"] == ["amount_acceleration_score"]
+    assert comparison["factors"]["amount_acceleration_score"]["confirmation_status"] == "1m_confirmed"
+    assert "opening_drive_score" not in comparison["factors"]

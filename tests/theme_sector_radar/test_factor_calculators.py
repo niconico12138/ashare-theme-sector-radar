@@ -680,6 +680,54 @@ class TestNewFactors:
 
         assert all(result[factor_id] is None for factor_id in factor_ids)
 
+    def test_intraday_volume_money_flow_expansion_rewards_supported_flow(self):
+        factor_ids = (
+            "early_amount_surge_score",
+            "midday_amount_sustain_score",
+            "late_amount_surge_score",
+            "amount_trend_persistence_score",
+            "volume_price_alignment_score",
+            "breakout_volume_confirm_score",
+            "pullback_volume_dryup_score",
+            "late_money_flow_concentration_score",
+        )
+        supported = calculate_intraday_factors(
+            {
+                "prev_close": 100.0,
+                "intraday_bars": _make_intraday_bars(
+                    [100.0, 100.8, 101.5, 102.0, 102.4, 103.1, 103.8, 104.5, 105.4],
+                    amounts=[8_000_000.0, 12_000_000.0, 14_000_000.0, 16_000_000.0, 18_000_000.0, 20_000_000.0, 24_000_000.0, 28_000_000.0, 32_000_000.0],
+                ),
+            }
+        )
+        exhausted = calculate_intraday_factors(
+            {
+                "prev_close": 100.0,
+                "intraday_bars": _make_intraday_bars(
+                    [100.0, 104.0, 104.8, 103.2, 102.0, 101.4, 100.8, 100.4, 100.1],
+                    amounts=[8_000_000.0, 30_000_000.0, 34_000_000.0, 24_000_000.0, 16_000_000.0, 12_000_000.0, 9_000_000.0, 8_500_000.0, 8_000_000.0],
+                ),
+            }
+        )
+
+        for factor_id in factor_ids:
+            assert supported[factor_id] > exhausted[factor_id]
+
+    def test_intraday_volume_money_flow_expansion_is_missing_without_bars(self):
+        factor_ids = (
+            "early_amount_surge_score",
+            "midday_amount_sustain_score",
+            "late_amount_surge_score",
+            "amount_trend_persistence_score",
+            "volume_price_alignment_score",
+            "breakout_volume_confirm_score",
+            "pullback_volume_dryup_score",
+            "late_money_flow_concentration_score",
+        )
+        result = calculate_intraday_factors({})
+
+        assert all(result[factor_id] is None for factor_id in factor_ids)
+
     def test_intraday_atomic_factors_cover_six_factor_families(self):
         """intraday atomic factors should separate support, VWAP, fade, volume, open, and sector context."""
         supported = calculate_intraday_factors(

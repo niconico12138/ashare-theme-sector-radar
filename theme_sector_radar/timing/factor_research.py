@@ -32,6 +32,14 @@ INTRADAY_FACTOR_RESEARCH_SPECS = [
     IntradayFactorResearchSpec("amount_acceleration_score", "volume_money_flow", description="Intraday amount acceleration."),
     IntradayFactorResearchSpec("late_volume_efficiency_score", "volume_money_flow", description="Late volume efficiency."),
     IntradayFactorResearchSpec("volume_spike_exhaustion_score", "volume_money_flow", "lower_is_better", "Volume spike exhaustion risk."),
+    IntradayFactorResearchSpec("early_amount_surge_score", "volume_money_flow", description="Early amount surge with price retention."),
+    IntradayFactorResearchSpec("midday_amount_sustain_score", "volume_money_flow", description="Midday amount persistence."),
+    IntradayFactorResearchSpec("late_amount_surge_score", "volume_money_flow", description="Late-session amount surge."),
+    IntradayFactorResearchSpec("amount_trend_persistence_score", "volume_money_flow", description="Persistent intraday amount trend."),
+    IntradayFactorResearchSpec("volume_price_alignment_score", "volume_money_flow", description="Alignment between volume and price movement."),
+    IntradayFactorResearchSpec("breakout_volume_confirm_score", "volume_money_flow", description="Volume confirmation around intraday breakout."),
+    IntradayFactorResearchSpec("pullback_volume_dryup_score", "volume_money_flow", description="Volume dry-up during pullbacks."),
+    IntradayFactorResearchSpec("late_money_flow_concentration_score", "volume_money_flow", description="Late money-flow concentration quality."),
     IntradayFactorResearchSpec("close_vs_vwap_score", "vwap_mean_price", description="Close price versus VWAP."),
     IntradayFactorResearchSpec("late_price_above_vwap_ratio", "vwap_mean_price", description="Late time-above-VWAP ratio."),
     IntradayFactorResearchSpec("vwap_slope_score", "vwap_mean_price", description="VWAP slope strength."),
@@ -108,14 +116,19 @@ def evaluate_intraday_factor_research(
     }
 
 
-def compare_frequency_factor_reports(report_5m: Mapping[str, Any], report_1m: Mapping[str, Any]) -> dict[str, Any]:
-    """Compare 1m validation only for 5m-promoted price-momentum factors."""
+def compare_frequency_factor_reports(
+    report_5m: Mapping[str, Any],
+    report_1m: Mapping[str, Any],
+    *,
+    category: str = "price_momentum",
+) -> dict[str, Any]:
+    """Compare 1m validation only for 5m-promoted factors in one category."""
     factors_5m = report_5m.get("factors") or {}
     factors_1m = report_1m.get("factors") or {}
     eligible_factor_ids = sorted(
         factor_id
         for factor_id, result in factors_5m.items()
-        if result.get("category") == "price_momentum"
+        if result.get("category") == category
         and result.get("rating") in {"valuable", "watchlist"}
     )
     compared = {}
@@ -145,6 +158,7 @@ def compare_frequency_factor_reports(report_5m: Mapping[str, Any], report_1m: Ma
             "confirmation_status": status,
         }
     return {
+        "category": category,
         "eligible_factor_ids": eligible_factor_ids,
         "factors": compared,
         "paper_trading_only": True,

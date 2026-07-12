@@ -49,6 +49,26 @@ The `price_momentum` category now contains eleven paper-only research factors:
 
 All eleven use `higher_is_better`. They are research fields only and do not alter official candidate scores.
 
+### Expanded Volume Money Flow Set
+
+The `volume_money_flow` category now contains eleven paper-only research factors:
+
+| Factor | Meaning |
+|---|---|
+| `amount_acceleration_score` | Second-half amount acceleration versus first half. |
+| `late_volume_efficiency_score` | Whether late volume produces price progress without crowding. |
+| `volume_spike_exhaustion_score` | Exhaustion risk from abnormal volume spikes and giveback. |
+| `early_amount_surge_score` | Early amount surge that still retains price progress. |
+| `midday_amount_sustain_score` | Whether amount remains active through the middle of the day. |
+| `late_amount_surge_score` | Late-session amount expansion with late price strength. |
+| `amount_trend_persistence_score` | Persistence of intraday amount expansion alongside rising prices. |
+| `volume_price_alignment_score` | Bar-by-bar alignment between amount changes and price movement. |
+| `breakout_volume_confirm_score` | Whether a new intraday high has late volume support. |
+| `pullback_volume_dryup_score` | Whether pullbacks happen on reduced amount. |
+| `late_money_flow_concentration_score` | Quality of late money-flow concentration. |
+
+All new fields are `higher_is_better` except `volume_spike_exhaustion_score`, which remains `lower_is_better`.
+
 ### 5m Then 1m Validation
 
 Run the full price-momentum set on 5-minute bars first. Only a factor rated `valuable` or `watchlist` in that 5-minute report is eligible for 1-minute comparison. A factor is `1m_confirmed` only when its direction agrees, its 1-minute rating is `valuable` or `watchlist`, and its 1-minute adjusted spread is positive. Missing 1-minute coverage is reported as `insufficient_1m_coverage`; it is not treated as a pass.
