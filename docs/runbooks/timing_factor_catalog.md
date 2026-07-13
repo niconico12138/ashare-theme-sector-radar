@@ -14,6 +14,10 @@ This catalog is for paper-only intraday buy and exit timing experiments. It does
 | `relative_strength` | Prefer stocks stronger than their sector or market. | stock vs sector alpha, sector rank, stock vs index strength |
 | `risk_reversal` | Penalize false breakouts, chasing, and reversal risk. | anti-chasing, spike fade, volume-without-price-progress, high-open failure |
 | `time_structure` | Account for when the signal occurs during the day. | open drive, morning persistence, afternoon recovery, late strength |
+| `execution_liquidity` | Check whether a paper signal would be practical to execute. | amount continuity, spread proxy, turnover depth, limit-up room |
+| `cashout_risk` | Detect late-session overheat and next-day cashout pressure. | late surge risk, high-volume stall, close giveback, VWAP instability |
+| `sector_continuation` | Test whether sector support can continue beyond the trigger day. | breadth persistence, leader sync, theme quality, concentration balance |
+| `market_environment` | Gate timing signals by broad market context. | index trend, market VWAP, breadth, limit-up/down pressure |
 
 ## Current Implemented Factors
 
@@ -27,7 +31,7 @@ This catalog is for paper-only intraday buy and exit timing experiments. It does
 
 ## Factor Research V1
 
-`theme_sector_radar.timing.factor_research` evaluates the eight timing categories as paper-only research. It uses candidate-level factor values plus a future return label, then splits each factor into high/low groups and compares adjusted forward-return spread.
+`theme_sector_radar.timing.factor_research` evaluates the timing categories as paper-only research. It uses candidate-level factor values plus a future return label, then splits each factor into high/low groups and compares adjusted forward-return spread.
 
 ### Expanded Price Momentum Set
 
@@ -140,6 +144,70 @@ All six `risk_reversal` additions are `lower_is_better`.
 | `late_session_acceleration_score` | Late-session acceleration. |
 | `session_consistency_score` | Full-session consistency. |
 | `close_auction_strength_proxy_score` | Closing strength proxy. |
+
+### Operational Readiness Factor Sets
+
+Four operational categories extend the original intraday timing library. They are still paper-only research fields and do not change official candidate scores.
+
+`execution_liquidity` contains ten factors for practical execution quality:
+
+| Factor | Meaning |
+|---|---|
+| `execution_liquidity_amount_score` | Intraday traded amount liquidity. |
+| `execution_amount_continuity_score` | Continuity of amount flow with price alignment. |
+| `execution_price_impact_risk` | Estimated price-impact risk from thin or spiky flow. |
+| `execution_vwap_slippage_risk` | Slippage risk around unstable VWAP distance. |
+| `execution_spread_proxy_score` | Bid-ask spread proxy quality. |
+| `execution_turnover_depth_score` | Turnover depth quality. |
+| `execution_tradeability_score` | Composite tradeability score. |
+| `execution_gap_to_limit_up_score` | Remaining room before limit-up constraint. |
+| `execution_gap_to_limit_down_risk` | Downside limit-distance risk. |
+| `execution_microstructure_quality_score` | Composite microstructure quality. |
+
+`cashout_risk` contains ten lower-is-better factors:
+
+| Factor | Meaning |
+|---|---|
+| `cashout_late_surge_risk` | Late amount surge cashout risk. |
+| `cashout_late_fade_risk` | Late-session fade risk. |
+| `cashout_high_volume_stall_risk` | High-volume price stall risk. |
+| `cashout_close_giveback_risk` | Close giveback risk. |
+| `cashout_tail_amount_concentration_risk` | Tail amount concentration risk. |
+| `cashout_overheat_without_breadth_risk` | Single-name overheat without breadth. |
+| `cashout_vwap_extension_risk` | VWAP instability cashout risk. |
+| `cashout_failed_late_breakout_risk` | Failed late breakout risk. |
+| `cashout_auction_weakness_risk` | Closing weakness proxy. |
+| `cashout_next_day_pressure_proxy` | Composite next-day pressure proxy. |
+
+`sector_continuation` contains ten continuation-support factors:
+
+| Factor | Meaning |
+|---|---|
+| `sector_continuation_breadth_score` | Sector breadth continuation. |
+| `sector_continuation_late_breadth_score` | Late sector breadth continuation. |
+| `sector_continuation_leader_sync_score` | Leader synchronization continuation. |
+| `sector_continuation_alpha_support_score` | Stock alpha supported by sector. |
+| `sector_continuation_peer_rank_score` | Peer rank support. |
+| `sector_continuation_theme_quality_score` | Theme quality continuation. |
+| `sector_continuation_market_alignment_score` | Sector alignment with market. |
+| `sector_continuation_breadth_acceleration_score` | Sector breadth acceleration. |
+| `sector_continuation_concentration_balance_score` | Balanced heat concentration. |
+| `sector_continuation_composite_score` | Composite sector continuation. |
+
+`market_environment` contains ten broad-context factors:
+
+| Factor | Meaning |
+|---|---|
+| `market_environment_index_trend_score` | Market intraday index trend. |
+| `market_environment_vwap_support_score` | Market VWAP support. |
+| `market_environment_breadth_score` | Broad market breadth. |
+| `market_environment_limit_up_breadth_score` | Limit-up breadth. |
+| `market_environment_limit_down_risk` | Limit-down pressure risk. |
+| `market_environment_failure_risk` | Limit-up failure risk. |
+| `market_environment_leader_continuation_score` | Leader continuation environment. |
+| `market_environment_crowding_risk` | Crowding risk. |
+| `market_environment_risk_appetite_score` | Composite risk appetite. |
+| `market_environment_composite_score` | Composite market environment. |
 
 ### 5m Then 1m Validation
 

@@ -14,7 +14,7 @@ def _sample(code, forward_return_pct, **factors):
     return row
 
 
-def test_intraday_factor_research_covers_all_eight_categories_and_ranks_value():
+def test_intraday_factor_research_covers_all_categories_and_ranks_value():
     samples = [
         _sample(
             "600001",
@@ -69,7 +69,7 @@ def test_intraday_factor_research_covers_all_eight_categories_and_ranks_value():
     report = evaluate_intraday_factor_research(samples, min_labeled_samples=4)
 
     assert report["schema_version"] == "intraday_factor_research.v1"
-    assert report["summary"]["category_count"] == 8
+    assert report["summary"]["category_count"] == 12
     assert set(report["categories"]) == set(TIMING_FACTOR_CATEGORIES)
     assert report["paper_trading_only"] is True
     assert report["no_execution_signals"] is True
@@ -218,6 +218,80 @@ def test_remaining_timing_categories_have_at_least_ten_factors():
     }
     for factor_id in expected["risk_reversal"]:
         assert risk_specs[factor_id].direction == "lower_is_better"
+
+
+def test_operational_timing_categories_have_at_least_ten_factors():
+    expected = {
+        "execution_liquidity": {
+            "execution_liquidity_amount_score",
+            "execution_amount_continuity_score",
+            "execution_price_impact_risk",
+            "execution_vwap_slippage_risk",
+            "execution_spread_proxy_score",
+            "execution_turnover_depth_score",
+            "execution_tradeability_score",
+            "execution_gap_to_limit_up_score",
+            "execution_gap_to_limit_down_risk",
+            "execution_microstructure_quality_score",
+        },
+        "cashout_risk": {
+            "cashout_late_surge_risk",
+            "cashout_late_fade_risk",
+            "cashout_high_volume_stall_risk",
+            "cashout_close_giveback_risk",
+            "cashout_tail_amount_concentration_risk",
+            "cashout_overheat_without_breadth_risk",
+            "cashout_vwap_extension_risk",
+            "cashout_failed_late_breakout_risk",
+            "cashout_auction_weakness_risk",
+            "cashout_next_day_pressure_proxy",
+        },
+        "sector_continuation": {
+            "sector_continuation_breadth_score",
+            "sector_continuation_late_breadth_score",
+            "sector_continuation_leader_sync_score",
+            "sector_continuation_alpha_support_score",
+            "sector_continuation_peer_rank_score",
+            "sector_continuation_theme_quality_score",
+            "sector_continuation_market_alignment_score",
+            "sector_continuation_breadth_acceleration_score",
+            "sector_continuation_concentration_balance_score",
+            "sector_continuation_composite_score",
+        },
+        "market_environment": {
+            "market_environment_index_trend_score",
+            "market_environment_vwap_support_score",
+            "market_environment_breadth_score",
+            "market_environment_limit_up_breadth_score",
+            "market_environment_limit_down_risk",
+            "market_environment_failure_risk",
+            "market_environment_leader_continuation_score",
+            "market_environment_crowding_risk",
+            "market_environment_risk_appetite_score",
+            "market_environment_composite_score",
+        },
+    }
+
+    specs_by_category = {
+        category: [spec for spec in INTRADAY_FACTOR_RESEARCH_SPECS if spec.category == category]
+        for category in expected
+    }
+    for category, factor_ids in expected.items():
+        specs = specs_by_category[category]
+        assert len(specs) >= 10, category
+        assert {spec.factor_id for spec in specs} >= factor_ids
+
+    risk_factor_ids = expected["cashout_risk"] | {
+        "execution_price_impact_risk",
+        "execution_vwap_slippage_risk",
+        "execution_gap_to_limit_down_risk",
+        "market_environment_limit_down_risk",
+        "market_environment_failure_risk",
+        "market_environment_crowding_risk",
+    }
+    specs = {spec.factor_id: spec for spec in INTRADAY_FACTOR_RESEARCH_SPECS}
+    for factor_id in risk_factor_ids:
+        assert specs[factor_id].direction == "lower_is_better"
 
 
 def test_frequency_validation_only_confirms_promoted_5m_price_momentum_factors():

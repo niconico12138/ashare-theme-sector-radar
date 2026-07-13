@@ -241,6 +241,46 @@ def calculate_intraday_factors(candidate: dict) -> dict[str, float | None]:
         "intraday_breakout_strength_score": None,
         "breakout_hold_score": None,
         "pullback_reclaim_momentum_score": None,
+        "execution_liquidity_amount_score": None,
+        "execution_amount_continuity_score": None,
+        "execution_price_impact_risk": None,
+        "execution_vwap_slippage_risk": None,
+        "execution_spread_proxy_score": None,
+        "execution_turnover_depth_score": None,
+        "execution_tradeability_score": None,
+        "execution_gap_to_limit_up_score": None,
+        "execution_gap_to_limit_down_risk": None,
+        "execution_microstructure_quality_score": None,
+        "cashout_late_surge_risk": None,
+        "cashout_late_fade_risk": None,
+        "cashout_high_volume_stall_risk": None,
+        "cashout_close_giveback_risk": None,
+        "cashout_tail_amount_concentration_risk": None,
+        "cashout_overheat_without_breadth_risk": None,
+        "cashout_vwap_extension_risk": None,
+        "cashout_failed_late_breakout_risk": None,
+        "cashout_auction_weakness_risk": None,
+        "cashout_next_day_pressure_proxy": None,
+        "sector_continuation_breadth_score": None,
+        "sector_continuation_late_breadth_score": None,
+        "sector_continuation_leader_sync_score": None,
+        "sector_continuation_alpha_support_score": None,
+        "sector_continuation_peer_rank_score": None,
+        "sector_continuation_theme_quality_score": None,
+        "sector_continuation_market_alignment_score": None,
+        "sector_continuation_breadth_acceleration_score": None,
+        "sector_continuation_concentration_balance_score": None,
+        "sector_continuation_composite_score": None,
+        "market_environment_index_trend_score": None,
+        "market_environment_vwap_support_score": None,
+        "market_environment_breadth_score": None,
+        "market_environment_limit_up_breadth_score": None,
+        "market_environment_limit_down_risk": None,
+        "market_environment_failure_risk": None,
+        "market_environment_leader_continuation_score": None,
+        "market_environment_crowding_risk": None,
+        "market_environment_risk_appetite_score": None,
+        "market_environment_composite_score": None,
     }
     intraday_bars = candidate.get("intraday_bars") or candidate.get("minute_bars") or candidate.get("ticks")
     if not isinstance(intraday_bars, list) or len(intraday_bars) < 3:
@@ -534,6 +574,156 @@ def calculate_intraday_factors(candidate: dict) -> dict[str, float | None]:
         session_consistency_score = _clamp_score(positive_bar_ratio_score * 0.45 + (100.0 - max_gain_giveback_ratio) * 0.30 + close_position * 0.25)
         close_auction_strength_proxy_score = _clamp_score(late_high_near_close_score * 0.45 + late_strength * 0.35 + close_position * 0.20)
 
+        spread_bps = _safe_float(candidate.get("bid_ask_spread_bps"), None)
+        turnover_rate_pct = _safe_float(candidate.get("turnover_rate_pct"), None)
+        limit_up_price = _safe_float(candidate.get("limit_up_price"), None)
+        limit_down_price = _safe_float(candidate.get("limit_down_price"), None)
+        amount_continuity = amount_trend_persistence_score
+        execution_liquidity_amount_score = _clamp_score(math.log10(max(total_amount, 1.0)) * 20.0 - 90.0)
+        execution_amount_continuity_score = _clamp_score(amount_continuity * 0.65 + volume_price_alignment_score * 0.35)
+        execution_price_impact_risk = _clamp_score(max(0.0, spike_ratio - 1.4) * 24.0 + max(0.0, avg_vwap_distance - 1.2) * 12.0 + max(0.0, 60.0 - execution_liquidity_amount_score) * 0.45)
+        execution_vwap_slippage_risk = _clamp_score(
+            avg_vwap_distance * 10.0
+            + max(0.0, 65.0 - vwap_distance_stability_score) * 0.35
+            + max(0.0, 60.0 - volume_price_alignment_score) * 0.25
+            + max(0.0, 50.0 - close_position) * 0.20
+        )
+        execution_spread_proxy_score = (
+            _clamp_score(100.0 - spread_bps * 1.8)
+            if spread_bps is not None
+            else _clamp_score(70.0 - execution_price_impact_risk * 0.35)
+        )
+        execution_turnover_depth_score = (
+            _clamp_score(turnover_rate_pct * 18.0)
+            if turnover_rate_pct is not None
+            else _clamp_score(execution_liquidity_amount_score * 0.70 + amount_continuity * 0.30)
+        )
+        execution_gap_to_limit_up_score = (
+            _clamp_score((limit_up_price - current) / current * 600.0 if current > 0 and limit_up_price and limit_up_price > current else 20.0)
+            if limit_up_price is not None
+            else _clamp_score(100.0 - max(0.0, day_return - 7.0) * 12.0)
+        )
+        execution_gap_to_limit_down_risk = (
+            _clamp_score((current - limit_down_price) / current * -350.0 + 80.0 if current > 0 and limit_down_price and limit_down_price < current else 70.0)
+            if limit_down_price is not None
+            else _clamp_score(max(0.0, -day_return) * 12.0 + late_breakdown_risk * 0.4)
+        )
+        execution_tradeability_score = _clamp_score(
+            execution_liquidity_amount_score * 0.26
+            + execution_amount_continuity_score * 0.20
+            + execution_spread_proxy_score * 0.18
+            + execution_turnover_depth_score * 0.16
+            + execution_gap_to_limit_up_score * 0.10
+            + (100.0 - execution_price_impact_risk) * 0.10
+        )
+        execution_microstructure_quality_score = _clamp_score(
+            execution_tradeability_score * 0.45
+            + (100.0 - execution_vwap_slippage_risk) * 0.20
+            + (100.0 - execution_gap_to_limit_down_risk) * 0.15
+            + volume_price_alignment_score * 0.20
+        )
+
+        cashout_late_surge_risk = _clamp_score(max(0.0, late_amount_surge_score - 55.0) * 1.1 + max(0.0, late_volume_share_score - 70.0) * 0.75)
+        cashout_late_fade_risk = _clamp_score(late_breakdown_risk * 0.60 + max(0.0, 50.0 - late_return_score) * 0.55)
+        cashout_high_volume_stall_risk = _clamp_score(max(0.0, late_amount_surge_score - 55.0) * 0.65 + max(0.0, 55.0 - late_return_score) * 0.85 + volume_without_price_progress_risk * 0.35)
+        cashout_close_giveback_risk = _clamp_score(high_to_close_drawdown_score * 0.75 + max_gain_giveback_ratio * 0.35)
+        cashout_tail_amount_concentration_risk = _clamp_score(max(0.0, late_volume_share_score - 55.0) * 0.95 + max(0.0, spike_ratio - 1.8) * 18.0)
+        cashout_overheat_without_breadth_risk = _clamp_score(max(0.0, day_return - 4.0) * 10.0 + max(0.0, 55.0 - sector_breadth_quality_score) * 0.75)
+        cashout_vwap_extension_risk = _clamp_score(
+            avg_vwap_distance * 8.0
+            + max(0.0, 65.0 - late_vwap_support_score) * 0.45
+            + max(0.0, 60.0 - sector_breadth_quality_score) * 0.25
+        )
+        cashout_failed_late_breakout_risk = _clamp_score(failed_breakout_risk * 0.65 + max(0.0, 60.0 - breakout_hold_score) * 0.55)
+        cashout_auction_weakness_risk = _clamp_score(max(0.0, 60.0 - close_auction_strength_proxy_score) * 1.1 + max(0.0, -late_return) * 12.0)
+        cashout_next_day_pressure_proxy = _clamp_score(
+            cashout_late_surge_risk * 0.16
+            + cashout_late_fade_risk * 0.14
+            + cashout_high_volume_stall_risk * 0.12
+            + cashout_close_giveback_risk * 0.12
+            + cashout_tail_amount_concentration_risk * 0.10
+            + cashout_overheat_without_breadth_risk * 0.12
+            + cashout_vwap_extension_risk * 0.10
+            + cashout_failed_late_breakout_risk * 0.08
+            + cashout_auction_weakness_risk * 0.06
+        )
+
+        hot_sector_concentration = _safe_float(candidate.get("market_hot_sector_concentration"), None)
+        concentration_balance = (
+            _clamp_score(100.0 - abs(hot_sector_concentration - 0.45) * 140.0)
+            if hot_sector_concentration is not None
+            else _clamp_score(100.0 - max(0.0, sector_late_breadth - sector_breadth_score) * 0.15)
+        )
+        sector_continuation_breadth_score = sector_breadth_persistence_score
+        sector_continuation_late_breadth_score = sector_late_acceleration_score
+        sector_continuation_leader_sync_score = leader_sync_persistence_score
+        sector_continuation_alpha_support_score = sector_alpha_confirmation_score
+        sector_continuation_peer_rank_score = _clamp_score(sector_peer_rank * 0.70 + stock_sector_alpha * 0.30)
+        sector_continuation_theme_quality_score = theme_confirmation_composite_score
+        sector_continuation_market_alignment_score = _clamp_score(sector_breadth_quality_score * 0.65 + market_regime * 0.35)
+        sector_continuation_breadth_acceleration_score = _clamp_score(sector_breadth_change * 0.55 + sector_late_breadth * 0.45)
+        sector_continuation_concentration_balance_score = concentration_balance
+        sector_continuation_composite_score = _clamp_score(
+            sector_continuation_breadth_score * 0.14
+            + sector_continuation_late_breadth_score * 0.13
+            + sector_continuation_leader_sync_score * 0.12
+            + sector_continuation_alpha_support_score * 0.12
+            + sector_continuation_peer_rank_score * 0.10
+            + sector_continuation_theme_quality_score * 0.13
+            + sector_continuation_market_alignment_score * 0.10
+            + sector_continuation_breadth_acceleration_score * 0.09
+            + sector_continuation_concentration_balance_score * 0.07
+        )
+
+        market_vwap_position_score = _clamp_score(_safe_float(candidate.get("market_vwap_position_score"), 50.0))
+        market_breadth_score = _clamp_score(_safe_float(candidate.get("market_breadth_score"), market_regime))
+        market_limit_up_count = _safe_float(candidate.get("market_limit_up_count"), None)
+        market_limit_down_count = _safe_float(candidate.get("market_limit_down_count"), None)
+        market_limit_failure_rate = _safe_float(candidate.get("market_limit_up_failure_rate"), None)
+        leader_continuation_rate = _safe_float(candidate.get("leader_continuation_rate"), None)
+        market_environment_index_trend_score = _clamp_score(50.0 + market_intraday_return * 12.0 + market_regime * 0.35)
+        market_environment_vwap_support_score = market_vwap_position_score
+        market_environment_breadth_score = market_breadth_score
+        market_environment_limit_up_breadth_score = (
+            _clamp_score(market_limit_up_count / 80.0 * 100.0)
+            if market_limit_up_count is not None
+            else _clamp_score(market_regime * 0.6 + sector_breadth_score * 0.4)
+        )
+        market_environment_limit_down_risk = (
+            _clamp_score(market_limit_down_count / 30.0 * 100.0)
+            if market_limit_down_count is not None
+            else _clamp_score(max(0.0, -market_intraday_return) * 18.0)
+        )
+        market_environment_failure_risk = (
+            _clamp_score(market_limit_failure_rate * 100.0)
+            if market_limit_failure_rate is not None
+            else _clamp_score(max(0.0, 55.0 - market_breadth_score) * 0.8)
+        )
+        market_environment_leader_continuation_score = (
+            _clamp_score(leader_continuation_rate * 100.0)
+            if leader_continuation_rate is not None
+            else _clamp_score(leader_follower_sync * 0.60 + sector_leader * 0.40)
+        )
+        market_environment_crowding_risk = (
+            _clamp_score(hot_sector_concentration * 100.0)
+            if hot_sector_concentration is not None
+            else _clamp_score(max(0.0, market_environment_limit_up_breadth_score - 80.0) * 0.8)
+        )
+        market_environment_risk_appetite_score = _clamp_score(
+            market_environment_index_trend_score * 0.28
+            + market_environment_breadth_score * 0.24
+            + market_environment_limit_up_breadth_score * 0.18
+            + market_environment_leader_continuation_score * 0.18
+            + (100.0 - market_environment_limit_down_risk) * 0.12
+        )
+        market_environment_composite_score = _clamp_score(
+            market_environment_risk_appetite_score * 0.45
+            + market_environment_vwap_support_score * 0.18
+            + (100.0 - market_environment_failure_risk) * 0.16
+            + (100.0 - market_environment_crowding_risk) * 0.10
+            + market_environment_leader_continuation_score * 0.11
+        )
+
         close_position_score = _clamp_score(close_position)
         pullback_risk_score = _clamp_score(pullback_risk)
         emotion_score = _clamp_score(
@@ -632,6 +822,46 @@ def calculate_intraday_factors(candidate: dict) -> dict[str, float | None]:
             "intraday_breakout_strength_score": intraday_breakout_strength_score,
             "breakout_hold_score": breakout_hold_score,
             "pullback_reclaim_momentum_score": pullback_reclaim_momentum_score,
+            "execution_liquidity_amount_score": execution_liquidity_amount_score,
+            "execution_amount_continuity_score": execution_amount_continuity_score,
+            "execution_price_impact_risk": execution_price_impact_risk,
+            "execution_vwap_slippage_risk": execution_vwap_slippage_risk,
+            "execution_spread_proxy_score": execution_spread_proxy_score,
+            "execution_turnover_depth_score": execution_turnover_depth_score,
+            "execution_tradeability_score": execution_tradeability_score,
+            "execution_gap_to_limit_up_score": execution_gap_to_limit_up_score,
+            "execution_gap_to_limit_down_risk": execution_gap_to_limit_down_risk,
+            "execution_microstructure_quality_score": execution_microstructure_quality_score,
+            "cashout_late_surge_risk": cashout_late_surge_risk,
+            "cashout_late_fade_risk": cashout_late_fade_risk,
+            "cashout_high_volume_stall_risk": cashout_high_volume_stall_risk,
+            "cashout_close_giveback_risk": cashout_close_giveback_risk,
+            "cashout_tail_amount_concentration_risk": cashout_tail_amount_concentration_risk,
+            "cashout_overheat_without_breadth_risk": cashout_overheat_without_breadth_risk,
+            "cashout_vwap_extension_risk": cashout_vwap_extension_risk,
+            "cashout_failed_late_breakout_risk": cashout_failed_late_breakout_risk,
+            "cashout_auction_weakness_risk": cashout_auction_weakness_risk,
+            "cashout_next_day_pressure_proxy": cashout_next_day_pressure_proxy,
+            "sector_continuation_breadth_score": sector_continuation_breadth_score,
+            "sector_continuation_late_breadth_score": sector_continuation_late_breadth_score,
+            "sector_continuation_leader_sync_score": sector_continuation_leader_sync_score,
+            "sector_continuation_alpha_support_score": sector_continuation_alpha_support_score,
+            "sector_continuation_peer_rank_score": sector_continuation_peer_rank_score,
+            "sector_continuation_theme_quality_score": sector_continuation_theme_quality_score,
+            "sector_continuation_market_alignment_score": sector_continuation_market_alignment_score,
+            "sector_continuation_breadth_acceleration_score": sector_continuation_breadth_acceleration_score,
+            "sector_continuation_concentration_balance_score": sector_continuation_concentration_balance_score,
+            "sector_continuation_composite_score": sector_continuation_composite_score,
+            "market_environment_index_trend_score": market_environment_index_trend_score,
+            "market_environment_vwap_support_score": market_environment_vwap_support_score,
+            "market_environment_breadth_score": market_environment_breadth_score,
+            "market_environment_limit_up_breadth_score": market_environment_limit_up_breadth_score,
+            "market_environment_limit_down_risk": market_environment_limit_down_risk,
+            "market_environment_failure_risk": market_environment_failure_risk,
+            "market_environment_leader_continuation_score": market_environment_leader_continuation_score,
+            "market_environment_crowding_risk": market_environment_crowding_risk,
+            "market_environment_risk_appetite_score": market_environment_risk_appetite_score,
+            "market_environment_composite_score": market_environment_composite_score,
         }
     except Exception:
         return empty

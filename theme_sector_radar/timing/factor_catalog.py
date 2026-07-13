@@ -19,6 +19,10 @@ TIMING_FACTOR_CATEGORIES = [
     "relative_strength",
     "risk_reversal",
     "time_structure",
+    "execution_liquidity",
+    "cashout_risk",
+    "sector_continuation",
+    "market_environment",
 ]
 
 

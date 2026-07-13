@@ -877,6 +877,160 @@ class TestNewFactors:
 
         assert all(result[factor_id] is None for factor_id in factor_ids)
 
+    def test_operational_intraday_factor_expansions_reward_executable_setup(self):
+        higher_is_better = (
+            "execution_liquidity_amount_score",
+            "execution_amount_continuity_score",
+            "execution_spread_proxy_score",
+            "execution_turnover_depth_score",
+            "execution_tradeability_score",
+            "execution_gap_to_limit_up_score",
+            "execution_microstructure_quality_score",
+            "sector_continuation_breadth_score",
+            "sector_continuation_late_breadth_score",
+            "sector_continuation_leader_sync_score",
+            "sector_continuation_alpha_support_score",
+            "sector_continuation_peer_rank_score",
+            "sector_continuation_theme_quality_score",
+            "sector_continuation_market_alignment_score",
+            "sector_continuation_breadth_acceleration_score",
+            "sector_continuation_concentration_balance_score",
+            "sector_continuation_composite_score",
+            "market_environment_index_trend_score",
+            "market_environment_vwap_support_score",
+            "market_environment_breadth_score",
+            "market_environment_limit_up_breadth_score",
+            "market_environment_leader_continuation_score",
+            "market_environment_risk_appetite_score",
+            "market_environment_composite_score",
+        )
+        lower_is_better = (
+            "execution_price_impact_risk",
+            "execution_vwap_slippage_risk",
+            "execution_gap_to_limit_down_risk",
+            "cashout_late_surge_risk",
+            "cashout_late_fade_risk",
+            "cashout_high_volume_stall_risk",
+            "cashout_close_giveback_risk",
+            "cashout_tail_amount_concentration_risk",
+            "cashout_overheat_without_breadth_risk",
+            "cashout_vwap_extension_risk",
+            "cashout_failed_late_breakout_risk",
+            "cashout_auction_weakness_risk",
+            "cashout_next_day_pressure_proxy",
+            "market_environment_limit_down_risk",
+            "market_environment_failure_risk",
+            "market_environment_crowding_risk",
+        )
+        executable = calculate_intraday_factors(
+            {
+                "prev_close": 100.0,
+                "bid_ask_spread_bps": 8,
+                "turnover_rate_pct": 3.5,
+                "limit_up_price": 112.0,
+                "limit_down_price": 90.0,
+                "sector_intraday_breadth_score": 78.0,
+                "sector_intraday_breadth_change": 74.0,
+                "sector_late_breadth_score": 80.0,
+                "leader_follower_sync_score": 76.0,
+                "sector_peer_rank_score": 82.0,
+                "sector_leader_score": 78.0,
+                "market_regime_score": 72.0,
+                "market_intraday_return_pct": 0.8,
+                "market_vwap_position_score": 74.0,
+                "market_breadth_score": 76.0,
+                "market_limit_up_count": 75,
+                "market_limit_down_count": 2,
+                "market_limit_up_failure_rate": 0.08,
+                "leader_continuation_rate": 0.72,
+                "market_hot_sector_concentration": 0.35,
+                "intraday_bars": _make_intraday_bars(
+                    [100.0, 100.4, 100.9, 101.3, 101.7, 102.0, 102.4, 102.8, 103.0, 103.3],
+                    amounts=[50_000_000.0, 55_000_000.0, 60_000_000.0, 65_000_000.0, 70_000_000.0, 75_000_000.0, 80_000_000.0, 85_000_000.0, 90_000_000.0, 95_000_000.0],
+                ),
+            }
+        )
+        stressed = calculate_intraday_factors(
+            {
+                "prev_close": 100.0,
+                "bid_ask_spread_bps": 45,
+                "turnover_rate_pct": 0.4,
+                "limit_up_price": 104.5,
+                "limit_down_price": 95.0,
+                "sector_intraday_breadth_score": 35.0,
+                "sector_intraday_breadth_change": 28.0,
+                "sector_late_breadth_score": 25.0,
+                "leader_follower_sync_score": 30.0,
+                "sector_peer_rank_score": 26.0,
+                "sector_leader_score": 28.0,
+                "market_regime_score": 32.0,
+                "market_intraday_return_pct": -1.2,
+                "market_vwap_position_score": 30.0,
+                "market_breadth_score": 28.0,
+                "market_limit_up_count": 18,
+                "market_limit_down_count": 25,
+                "market_limit_up_failure_rate": 0.42,
+                "leader_continuation_rate": 0.22,
+                "market_hot_sector_concentration": 0.86,
+                "intraday_bars": _make_intraday_bars(
+                    [100.0, 103.5, 104.2, 103.7, 102.5, 101.5, 100.8, 100.2, 99.7, 99.3],
+                    amounts=[10_000_000.0, 12_000_000.0, 15_000_000.0, 18_000_000.0, 20_000_000.0, 24_000_000.0, 30_000_000.0, 42_000_000.0, 60_000_000.0, 82_000_000.0],
+                ),
+            }
+        )
+
+        for factor_id in higher_is_better:
+            assert executable[factor_id] > stressed[factor_id], factor_id
+        for factor_id in lower_is_better:
+            assert executable[factor_id] < stressed[factor_id], factor_id
+
+    def test_operational_intraday_factor_expansions_are_missing_without_bars(self):
+        factor_ids = (
+            "execution_liquidity_amount_score",
+            "execution_amount_continuity_score",
+            "execution_price_impact_risk",
+            "execution_vwap_slippage_risk",
+            "execution_spread_proxy_score",
+            "execution_turnover_depth_score",
+            "execution_tradeability_score",
+            "execution_gap_to_limit_up_score",
+            "execution_gap_to_limit_down_risk",
+            "execution_microstructure_quality_score",
+            "cashout_late_surge_risk",
+            "cashout_late_fade_risk",
+            "cashout_high_volume_stall_risk",
+            "cashout_close_giveback_risk",
+            "cashout_tail_amount_concentration_risk",
+            "cashout_overheat_without_breadth_risk",
+            "cashout_vwap_extension_risk",
+            "cashout_failed_late_breakout_risk",
+            "cashout_auction_weakness_risk",
+            "cashout_next_day_pressure_proxy",
+            "sector_continuation_breadth_score",
+            "sector_continuation_late_breadth_score",
+            "sector_continuation_leader_sync_score",
+            "sector_continuation_alpha_support_score",
+            "sector_continuation_peer_rank_score",
+            "sector_continuation_theme_quality_score",
+            "sector_continuation_market_alignment_score",
+            "sector_continuation_breadth_acceleration_score",
+            "sector_continuation_concentration_balance_score",
+            "sector_continuation_composite_score",
+            "market_environment_index_trend_score",
+            "market_environment_vwap_support_score",
+            "market_environment_breadth_score",
+            "market_environment_limit_up_breadth_score",
+            "market_environment_limit_down_risk",
+            "market_environment_failure_risk",
+            "market_environment_leader_continuation_score",
+            "market_environment_crowding_risk",
+            "market_environment_risk_appetite_score",
+            "market_environment_composite_score",
+        )
+        result = calculate_intraday_factors({})
+
+        assert all(result[factor_id] is None for factor_id in factor_ids)
+
     def test_intraday_atomic_factors_cover_six_factor_families(self):
         """intraday atomic factors should separate support, VWAP, fade, volume, open, and sector context."""
         supported = calculate_intraday_factors(

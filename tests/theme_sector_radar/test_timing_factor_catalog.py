@@ -6,7 +6,7 @@ from theme_sector_radar.timing.factor_catalog import (
 )
 
 
-def test_timing_factor_catalog_defines_eight_intraday_categories():
+def test_timing_factor_catalog_defines_intraday_and_operational_categories():
     categories = list_timing_factor_categories()
 
     assert categories == [
@@ -18,6 +18,10 @@ def test_timing_factor_catalog_defines_eight_intraday_categories():
         "relative_strength",
         "risk_reversal",
         "time_structure",
+        "execution_liquidity",
+        "cashout_risk",
+        "sector_continuation",
+        "market_environment",
     ]
     assert set(TIMING_FACTOR_CATEGORIES) == set(categories)
 
