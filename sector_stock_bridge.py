@@ -1861,6 +1861,7 @@ def run_bridge(
     trend_top_n: int = DEFAULT_TREND_TOP_N,
     burst_top_n: int = DEFAULT_BURST_TOP_N,
     min_relevance: float = DEFAULT_MIN_RELEVANCE,
+    include_legacy_sector_paths: bool = True,
     _validated_score_report: Optional[Tuple[str, Path, Dict[str, Any]]] = None,
 ) -> Dict[str, Any]:
     """
@@ -1871,9 +1872,10 @@ def run_bridge(
         trend_top_n: 趋势板块 Top N
         burst_top_n: 短线板块 Top N
         min_relevance: 最小关联度阈值
+        include_legacy_sector_paths: 是否运行趋势/短线 legacy 路径
 
     Returns:
-        完整的桥接结果，包含 trend_sectors / burst_sectors / cross_sectors
+        完整的桥接结果；方向主路径模式下 legacy 三个结果为空并明确标记关闭
     """
     output = {
         "as_of_date": None,
@@ -1890,6 +1892,12 @@ def run_bridge(
         },
         "warnings": [],
         "generated_at": datetime.now().isoformat(),
+        "legacy_sector_paths_enabled": bool(include_legacy_sector_paths),
+        "active_sector_path": (
+            "legacy_trend_burst_plus_direction_shadow"
+            if include_legacy_sector_paths
+            else "direction_shadow_only"
+        ),
         "linkage_research": {
             "mode": "paper_shadow_research_only",
             "legacy_policy": legacy_linkage_policy_contract(),
@@ -1947,18 +1955,36 @@ def run_bridge(
         ),
     }
 
-    # Phase 22: try stable inputs first
-    stable = load_stable_sector_inputs(actual_date, score_data=validated_score_data)
-    if stable["available"]:
-        trend_sectors_meta, burst_sectors_meta = extract_top_sectors_from_stable(stable, trend_top_n, burst_top_n)
-        output["sector_input_source"] = stable["source"]
-        print(f"    ✅ 使用稳定产线数据: {stable['source']} "
-              f"(行业{len(stable['industries'])}个, 概念{len(stable['concepts'])}个)")
+    # Phase 22: legacy trend/burst extraction is skipped entirely for the
+    # direction-primary runtime.
+    if not include_legacy_sector_paths:
+        trend_sectors_meta = []
+        burst_sectors_meta = []
+        output["sector_input_source"] = "direction_shadow_only"
+        print("    旧趋势/短线路径已关闭，仅运行方向分主路径")
     else:
-        data = validated_score_data or load_sector_scores(report_path)
-        trend_sectors_meta, burst_sectors_meta = extract_top_sectors(data, trend_top_n, burst_top_n)
-        output["sector_input_source"] = "legacy_sector_scores"
-        print(f"    ⚠️ 使用旧评分数据 (无稳定产线数据)")
+        stable = load_stable_sector_inputs(
+            actual_date, score_data=validated_score_data
+        )
+        if stable["available"]:
+            trend_sectors_meta, burst_sectors_meta = (
+                extract_top_sectors_from_stable(
+                    stable, trend_top_n, burst_top_n
+                )
+            )
+            output["sector_input_source"] = stable["source"]
+            print(
+                f"    ✅ 使用稳定产线数据: {stable['source']} "
+                f"(行业{len(stable['industries'])}个, "
+                f"概念{len(stable['concepts'])}个)"
+            )
+        else:
+            data = validated_score_data or load_sector_scores(report_path)
+            trend_sectors_meta, burst_sectors_meta = extract_top_sectors(
+                data, trend_top_n, burst_top_n
+            )
+            output["sector_input_source"] = "legacy_sector_scores"
+            print("    ⚠️ 使用旧评分数据 (无稳定产线数据)")
 
     cross_sector_names = find_cross_sectors(trend_sectors_meta, burst_sectors_meta)
     output["cross_sectors"] = cross_sector_names
@@ -2010,10 +2036,16 @@ def run_bridge(
         status_emoji = "✅" if result["status"] == "ok" else "⚠️" if result["status"] == "degraded" else "❌"
         print(f"    {status_emoji} {name}: {len(result['stocks'])} 只成分股 [{src}]" +
               (f" ({result['error']})" if result["error"] else ""))
-        if name in legacy_sectors and "local_emergency" in result.get("source", ""):
+        if (
+            (name in legacy_sectors or not include_legacy_sector_paths)
+            and "local_emergency" in result.get("source", "")
+        ):
             output["api_status"]["http_constituents"] = "degraded"
 
-    output["constituent_source_summary"] = source_counter
+    output["legacy_constituent_source_summary"] = source_counter
+    output["constituent_source_summary"] = (
+        source_counter if include_legacy_sector_paths else direction_source_counter
+    )
     output["linkage_research"]["direction_constituent_source_summary"] = (
         direction_source_counter
     )
@@ -2029,12 +2061,13 @@ def run_bridge(
             elif s["code"] not in legacy_codes:
                 direction_codes.add(s["code"])
 
-    legacy_quotes = fetch_tencent_quotes(list(legacy_codes))
+    legacy_quotes = fetch_tencent_quotes(list(legacy_codes)) if legacy_codes else {}
     direction_quotes = (
         fetch_tencent_quotes(list(direction_codes)) if direction_codes else {}
     )
     quotes = {**legacy_quotes, **direction_quotes}
-    if not legacy_quotes:
+    active_quotes = legacy_quotes if include_legacy_sector_paths else quotes
+    if not active_quotes:
         output["api_status"]["tencent_quotes"] = "failed"
         output["warnings"].append("腾讯行情 API 无数据")
     else:
@@ -2049,16 +2082,26 @@ def run_bridge(
         status_emoji = "✅" if flow["status"] == "ok" else "⚠️"
         print(f"    {status_emoji} {name}: {flow['direction']}" +
               (f" ({flow['error']})" if flow.get("error") else ""))
-        if name in legacy_sectors and flow["status"] != "ok":
+        if (
+            (name in legacy_sectors or not include_legacy_sector_paths)
+            and flow["status"] != "ok"
+        ):
             output["api_status"]["fund_flow"] = "degraded"
 
     # 获取个股资金流
-    legacy_individual_flows = fetch_individual_fund_flow(list(legacy_codes))
+    legacy_individual_flows = (
+        fetch_individual_fund_flow(list(legacy_codes)) if legacy_codes else {}
+    )
     direction_individual_flows = (
         fetch_individual_fund_flow(list(direction_codes)) if direction_codes else {}
     )
     individual_flows = {**legacy_individual_flows, **direction_individual_flows}
-    if legacy_individual_flows:
+    active_individual_flows = (
+        legacy_individual_flows
+        if include_legacy_sector_paths
+        else individual_flows
+    )
+    if active_individual_flows:
         print(f"    ✅ 获取 {len(individual_flows)} 只个股资金流")
     else:
         print("    ⚠️ 个股资金流不可用，使用中性值")
@@ -2215,6 +2258,11 @@ def main():
     parser.add_argument("--trend-top-n", type=int, default=DEFAULT_TREND_TOP_N, help="趋势板块 Top N")
     parser.add_argument("--burst-top-n", type=int, default=DEFAULT_BURST_TOP_N, help="短线板块 Top N")
     parser.add_argument("--min-relevance", type=float, default=DEFAULT_MIN_RELEVANCE, help="最小关联度")
+    parser.add_argument(
+        "--include-legacy-sector-paths",
+        action="store_true",
+        help="显式启用已关闭的趋势/短线 legacy 研究路径",
+    )
     parser.add_argument("--output", type=str, default=None, help="输出目录")
     args = parser.parse_args()
 
@@ -2227,6 +2275,7 @@ def main():
         trend_top_n=args.trend_top_n,
         burst_top_n=args.burst_top_n,
         min_relevance=args.min_relevance,
+        include_legacy_sector_paths=args.include_legacy_sector_paths,
     )
 
     # 输出 JSON

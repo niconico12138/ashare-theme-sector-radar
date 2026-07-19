@@ -3,10 +3,14 @@
 from __future__ import annotations
 
 import logging
+import math
 from contextlib import contextmanager
+from datetime import datetime
+from pathlib import Path
 from typing import Any
 
 from .market_data_http_client import MarketDataHttpClient
+from .stock_bars_provider import get_stock_bars_for_factor
 from .stockdb_sdk_client import StockDBSdkClient
 
 HTTP_CLIENT_LOGGER = "theme_sector_radar.data.market_data_http_client"
@@ -58,13 +62,14 @@ def _suppress_expected_http_probe_warnings():
 
 
 class AutoBarsClient:
-    """Route stock bar reads to HTTP or local StockDB SDK based on freshness."""
+    """Route stock bar reads across HTTP, StockDB SDK, and local cache."""
 
     def __init__(
         self,
         http_client: Any | None = None,
         sdk_client: Any | None = None,
         expected_min_date: str | None = None,
+        cache_dir: str | Path | None = None,
     ):
         self.http_client = (
             http_client if http_client is not None else MarketDataHttpClient()
@@ -79,6 +84,7 @@ class AutoBarsClient:
                 self.sdk_client = None
                 self._sdk_init_error = str(exc)
         self.expected_min_date = normalize_date(expected_min_date)
+        self.cache_dir = Path(cache_dir or "data_cache/stock_bars")
         self.selection = self._select_source()
 
     def _select_source(self) -> dict[str, Any]:
@@ -145,6 +151,70 @@ class AutoBarsClient:
             "sdk_error": sdk_error,
         }
 
+    @staticmethod
+    def _cache_lookback(start: str, end: str) -> int:
+        """Convert a requested calendar range to the cache provider lookback."""
+        start_date = normalize_date(start)
+        end_date = normalize_date(end)
+        if not start_date or not end_date:
+            return 1
+        try:
+            span = (
+                datetime.strptime(end_date, "%Y%m%d")
+                - datetime.strptime(start_date, "%Y%m%d")
+            ).days
+        except ValueError:
+            return 1
+        return max(1, math.ceil(max(0, span) / 2))
+
+    def _get_local_cache_bars(
+        self,
+        code: str,
+        start: str,
+        end: str,
+        frequency: str,
+        fq: str | None,
+    ) -> list[dict[str, Any]]:
+        """Read only a date-complete daily cache; never use stale bars."""
+        if frequency not in {"1d", "day", "daily"} or fq not in {"qfq", None}:
+            return []
+        start_date = normalize_date(start)
+        end_date = normalize_date(end)
+        if not start_date or not end_date:
+            return []
+
+        result = get_stock_bars_for_factor(
+            code,
+            end_date,
+            lookback=self._cache_lookback(start, end),
+            source="cache",
+            cache_dir=self.cache_dir,
+        )
+        if result.get("status") != "ok":
+            return []
+
+        bars = []
+        for raw_bar in result.get("bars", []):
+            if not isinstance(raw_bar, dict):
+                continue
+            bar = dict(raw_bar)
+            bar_date = normalize_date(bar.get("date"))
+            if bar_date and start_date <= bar_date <= end_date:
+                bar["date"] = f"{bar_date[:4]}-{bar_date[4:6]}-{bar_date[6:8]}"
+                bars.append(bar)
+        return bars
+
+    def _mark_local_cache_used(self, bars: list[dict[str, Any]]) -> None:
+        dates = [normalize_date(bar.get("date")) for bar in bars]
+        dates = [date for date in dates if date]
+        self.selection = {
+            **self.selection,
+            "source": "local-cache",
+            "reason": "local_cache_fallback",
+            "cache_dir": str(self.cache_dir),
+            "cache_latest_daily_date": max(dates) if dates else None,
+        }
+
     def get_stock_bars(
         self,
         code: str,
@@ -153,7 +223,22 @@ class AutoBarsClient:
         frequency: str = "1d",
         fq: str | None = "qfq",
     ) -> list[dict[str, Any]]:
-        if self.selection["source"] == "unavailable":
-            return []
-        client = self.sdk_client if self.selection["source"] == "stockdb-sdk" else self.http_client
-        return client.get_stock_bars(code, start, end, frequency=frequency, fq=fq)
+        source = self.selection["source"]
+        if source != "unavailable":
+            client = self.sdk_client if source == "stockdb-sdk" else self.http_client
+            try:
+                bars = client.get_stock_bars(
+                    code, start, end, frequency=frequency, fq=fq
+                )
+                if bars:
+                    return bars
+            except Exception:
+                pass
+
+        # Keep the research chain usable when external services are down, but
+        # only with a cache that contains the requested as-of date.
+        cached = self._get_local_cache_bars(code, start, end, frequency, fq)
+        if cached:
+            self._mark_local_cache_used(cached)
+            return cached
+        return []

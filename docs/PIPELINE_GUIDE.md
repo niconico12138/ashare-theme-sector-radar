@@ -143,6 +143,8 @@ python -m theme_sector_radar.cli --research-agents --as-of 2026-07-04 --sector-t
 python unified_pipeline.py --as-of 2026-07-04 --mode quick
 ```
 
+当前默认候选链为 `direction_linkage_v2`。趋势/短线 TopN 路径默认关闭，仅在显式传入 `--candidate-chain legacy` 时运行。方向分报告或 Linkage V2 证据不足时，主链保持 fail-closed，不自动回退 legacy 候选。
+
 **耗时**: ~30秒
 **输出**:
 - `reports/unified/2026-07-04/unified_report.json`
@@ -309,4 +311,3 @@ Register-ScheduledTask -TaskName "ThemeSectorRadarDaily" `
 ---
 
 *本文档由 Hermes Agent 基于 2026-07-06 实际运行验证生成*
-

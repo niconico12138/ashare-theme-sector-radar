@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 from datetime import datetime
-import hashlib
 from pathlib import Path
 import sys
 from typing import Any
@@ -78,6 +77,7 @@ def _constituent_sources(
                 "sha256": sha256,
                 "as_of_date": as_of_date,
                 "sector_name": sector_name,
+                "sector_type": sector_type,
                 "source": payload.get("source"),
             }
         )
@@ -100,21 +100,41 @@ def _fetch_stock_bars(
         if result.get("status") != "ok":
             raise ValueError(f"stock bars unavailable for {code}: {result.get('missing_reason')}")
         bars[code] = list(result.get("bars") or [])
+        source_evidence_path = (
+            cache_dir / "ml_source_evidence" / f"{code}_{as_of_date}.json"
+        )
+        write_strict_json_atomic(
+            source_evidence_path,
+            {
+                "code": code,
+                "as_of": as_of_date,
+                "source": str(result.get("source") or ""),
+                "bars": bars[code],
+                "promotion_allowed": False,
+                "disclaimer": "Research output only; no broker connection and no live order instruction.",
+            },
+        )
+        _source_evidence, source_evidence_sha = load_strict_json_with_sha256(
+            source_evidence_path
+        )
         source_by_code[code] = {
             "requested_source": source,
             "actual_source": str(result.get("source") or ""),
-            "path": str((cache_dir / f"{code}.json").resolve()),
-            "sha256": hashlib.sha256(
-                (cache_dir / f"{code}.json").read_bytes()
-            ).hexdigest(),
+            "path": str(source_evidence_path.resolve()),
+            "sha256": source_evidence_sha,
         }
     return bars, source_by_code
 
 
 def _sector_bars(
-    path: Path, *, label_as_of_date: str
+    path: Path, *, label_as_of_date: str, sector_name: str, sector_type: str
 ) -> tuple[list[dict[str, Any]], dict[str, str]]:
     payload, sha256 = load_strict_json_with_sha256(path)
+    if (
+        payload.get("sector_name") != sector_name
+        or payload.get("sector_type") != sector_type
+    ):
+        raise ValueError(f"sector history identity mismatch: {sector_type}/{sector_name}")
     rows = payload.get("records")
     if not isinstance(rows, list):
         raise ValueError(f"sector history records are missing: {path}")
@@ -124,7 +144,11 @@ def _sector_bars(
         close = row.get("\u6536\u76d8\u4ef7")
         if day is not None and str(day) <= label_as_of_date:
             output.append({"date": str(day), "close": close})
-    return output, {"path": str(path.resolve()), "sha256": sha256}
+    return output, {
+        "sector_type": sector_type,
+        "path": str(path.resolve()),
+        "sha256": sha256,
+    }
 
 
 def _mature_labels(
@@ -186,7 +210,15 @@ def _mature_labels(
             continue
         baseline_rows = list(snapshot.get("baseline_rows") or [])
         target_codes = sorted({str(row["stock_code"]) for row in baseline_rows})
-        target_sectors = sorted({str(row["sector_name"]) for row in baseline_rows})
+        target_sectors = sorted(
+            {
+                (
+                    str(row.get("sector_type") or "industry"),
+                    str(row["sector_name"]),
+                )
+                for row in baseline_rows
+            }
+        )
         if not target_codes or not target_sectors:
             continue
         try:
@@ -198,11 +230,13 @@ def _mature_labels(
                 lookback=max(lookback, 80),
             )
             sector_results = {
-                sector: _sector_bars(
-                    sector_history_root / f"{sector}.json",
+                sector_name: _sector_bars(
+                    sector_history_root / f"{sector_name}.json",
                     label_as_of_date=run_as_of,
+                    sector_name=sector_name,
+                    sector_type=sector_type,
                 )
-                for sector in target_sectors
+                for sector_type, sector_name in target_sectors
             }
             sector_bars = {
                 sector: result[0] for sector, result in sector_results.items()

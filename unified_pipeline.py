@@ -1293,9 +1293,18 @@ def evaluate_run_health(data_source: Dict[str, Any]) -> Dict[str, Any]:
         "emergency_fallback_sectors": emergency,
         "http_enhanced_stocks": enhanced,
         "fallback_quant_stocks": fallback,
+        "candidate_chain": data_source.get("candidate_chain"),
+        "formal_candidate_status": data_source.get("formal_candidate_status"),
     }
 
     # ---- FAIL rules ----
+    if (
+        data_source.get("candidate_chain") == "direction_linkage_v2"
+        and data_source.get("formal_candidate_status")
+        != "active_for_paper_research"
+    ):
+        reasons.append("方向分主路径未形成经过验证的候选池")
+
     if total_constituent > 0 and unavailable / total_constituent >= 0.3:
         reasons.append(
             f"unavailable 板块占比 {unavailable}/{total_constituent} >= 30%"
@@ -1414,6 +1423,8 @@ def generate_markdown_report(
     top_n: int = 10,
     run_health: Optional[Dict[str, Any]] = None,
     data_quality: Optional[Dict[str, Any]] = None,
+    candidate_chain: str = "direction_linkage_v2",
+    active_candidates: Optional[List[Dict[str, Any]]] = None,
 ) -> str:
     """生成 Markdown 报告"""
     score_as_of_date = str(bridge_result.get("as_of_date") or as_of_date)
@@ -1423,6 +1434,16 @@ def generate_markdown_report(
     lines.append(f"**分析日期**: {as_of_date}")
     lines.append(f"**板块评分日期**: {score_as_of_date}")
     lines.append(f"**生成时间**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    legacy_sector_paths_enabled = bool(
+        bridge_result.get(
+            "legacy_sector_paths_enabled", candidate_chain == "legacy"
+        )
+    )
+    lines.append(f"**候选主路径**: {candidate_chain}")
+    lines.append(
+        "**趋势/短线路径**: "
+        + ("启用（legacy 研究模式）" if legacy_sector_paths_enabled else "关闭")
+    )
     lines.append(f"")
 
     # 健康门禁状态（Phase 6）
@@ -1460,7 +1481,13 @@ def generate_markdown_report(
     # 数据来源状态（Phase 5）
     source_summary = bridge_result.get("constituent_source_summary", {})
     quant_sources = {}
-    for s in (trend_stocks if trend_stocks else []) + (burst_stocks if burst_stocks else []):
+    score_source_rows = (
+        (trend_stocks if trend_stocks else [])
+        + (burst_stocks if burst_stocks else [])
+        if legacy_sector_paths_enabled
+        else list(active_candidates or [])
+    )
+    for s in score_source_rows:
         qs = s.get("quant_source", "fallback")
         quant_sources[qs] = quant_sources.get(qs, 0) + 1
 
@@ -1521,7 +1548,7 @@ def generate_markdown_report(
         lines.append(f"- **板块评分来源**: reports/sector_scores/{score_as_of_date}/")
     lines.append(f"- **板块关联度**: 成分股权重(0.2) + 涨幅排名(0.4) + 资金流对齐(0.4)")
     # Determine quant source description
-    first_stock = trend_stocks[0] if trend_stocks else None
+    first_stock = score_source_rows[0] if score_source_rows else None
     if first_stock:
         qs = first_stock.get("quant_source", "fallback")
         if qs == "http_enhanced":
@@ -1536,6 +1563,15 @@ def generate_markdown_report(
     lines.append(f"- **量化评分**: {quant_desc}")
     lines.append(f"- **API 状态**: {json.dumps(bridge_result.get('api_status', {}), ensure_ascii=False)}")
     lines.append(f"")
+
+    if not legacy_sector_paths_enabled:
+        lines.append("## 方向分 + Linkage V2 主路径候选")
+        lines.append("")
+        if active_candidates:
+            lines.append(_format_stock_table(active_candidates, top_n))
+        else:
+            lines.append("方向分主路径未形成可用候选，系统保持 fail-closed。")
+        lines.append("")
 
     # 趋势板块
     trend_sectors_info = bridge_result.get("trend_sectors", [])
@@ -1554,7 +1590,9 @@ def generate_markdown_report(
     # 趋势 Top10 个股
     lines.append(f"## 趋势板块 Top{top_n} 个股")
     lines.append(f"")
-    if trend_stocks:
+    if not legacy_sector_paths_enabled:
+        lines.append("趋势板块路径已关闭，本次不参与候选池。")
+    elif trend_stocks:
         lines.append(_format_stock_table(trend_stocks, top_n))
     else:
         lines.append(f"⚠️ 无符合条件的个股（关联度 >= {DEFAULT_MIN_RELEVANCE}）")
@@ -1577,7 +1615,9 @@ def generate_markdown_report(
     # 短线 Top10 个股
     lines.append(f"## 短线板块 Top{top_n} 个股")
     lines.append(f"")
-    if burst_stocks:
+    if not legacy_sector_paths_enabled:
+        lines.append("短线板块路径已关闭，本次不参与候选池。")
+    elif burst_stocks:
         lines.append(_format_stock_table(burst_stocks, top_n))
     else:
         lines.append(f"⚠️ 无符合条件的个股（关联度 >= {DEFAULT_MIN_RELEVANCE}）")
@@ -1621,7 +1661,7 @@ def run_pipeline(
     mode: str = "quick",
     sector_history_root: Optional[str] = None,
     sector_cluster_map_path: Optional[str] = None,
-    candidate_chain: str = "legacy",
+    candidate_chain: str = "direction_linkage_v2",
 ) -> Dict[str, Any]:
     """
     运行联合选股管线。
@@ -1633,10 +1673,12 @@ def run_pipeline(
         min_relevance: 最小关联度
         output_dir: 输出目录
         mode: "quick" 或 "deep"
+        candidate_chain: 默认使用 direction_linkage_v2；legacy 仅显式启用
 
     Returns:
         完整的管线结果
     """
+    legacy_sector_paths_enabled = candidate_chain == "legacy"
     result = {
         "status": "ok",
         "as_of_date": None,
@@ -1648,6 +1690,12 @@ def run_pipeline(
         "active_candidates_all": [],
         "formal_candidate_selection": {},
         "candidate_chain": candidate_chain,
+        "legacy_sector_paths_enabled": legacy_sector_paths_enabled,
+        "active_sector_path": (
+            "legacy_trend_burst"
+            if legacy_sector_paths_enabled
+            else "direction_score"
+        ),
         "direction_shadow_candidates_all": [],
         "direction_linkage_v2_selection_shadow": {},
         "direction_shadow_runtime_audit": {},
@@ -1682,6 +1730,7 @@ def run_pipeline(
         trend_top_n=trend_top_n,
         burst_top_n=burst_top_n,
         min_relevance=min_relevance,
+        include_legacy_sector_paths=legacy_sector_paths_enabled,
         _validated_score_report=validated_score_report,
     )
 
@@ -1843,8 +1892,16 @@ def run_pipeline(
         return all_stocks
 
     compute_quant_scores._last_fund_flow_source = "not_evaluated"
-    trend_stocks = _collect_and_score(bridge_result.get("trend_sectors", []), "趋势")
-    burst_stocks = _collect_and_score(bridge_result.get("burst_sectors", []), "短线")
+    if legacy_sector_paths_enabled:
+        trend_stocks = _collect_and_score(
+            bridge_result.get("trend_sectors", []), "趋势"
+        )
+        burst_stocks = _collect_and_score(
+            bridge_result.get("burst_sectors", []), "短线"
+        )
+    else:
+        trend_stocks = []
+        burst_stocks = []
 
     legacy_stock_info_stats = dict(_stock_info_stats)
     legacy_fund_flow_source = getattr(
@@ -2007,7 +2064,11 @@ def run_pipeline(
         )
 
     # Embed stock info stats into bridge result for reporting
-    bridge_result["stock_info_sources"] = dict(legacy_stock_info_stats)
+    bridge_result["stock_info_sources"] = (
+        dict(legacy_stock_info_stats)
+        if legacy_sector_paths_enabled
+        else dict(_stock_info_stats)
+    )
 
     # Save complete candidate lists for export_top30_candidates.py
     result["trend_top_stocks"] = trend_stocks[:10]  # Top10 for display
@@ -2017,20 +2078,38 @@ def run_pipeline(
 
     # Build source summaries
     quant_sources: Dict[str, int] = {}
-    for s in trend_stocks + burst_stocks:
+    scored_source_rows = (
+        trend_stocks + burst_stocks
+        if legacy_sector_paths_enabled
+        else direction_shadow_stocks
+    )
+    for s in scored_source_rows:
         qs = s.get("quant_source", "fallback")
         quant_sources[qs] = quant_sources.get(qs, 0) + 1
 
     source_summary = bridge_result.get("constituent_source_summary", {})
+    active_fund_flow_source = (
+        legacy_fund_flow_source
+        if legacy_sector_paths_enabled
+        else result["direction_shadow_runtime_audit"].get(
+            "fund_flow_source", "not_evaluated"
+        )
+    )
     result["data_source"] = {
         "constituent_sources": dict(source_summary),
         "quant_score_sources": quant_sources,
-        "fund_flow_source": legacy_fund_flow_source,
-        "stock_info_sources": dict(legacy_stock_info_stats),
+        "fund_flow_source": active_fund_flow_source,
+        "stock_info_sources": (
+            dict(legacy_stock_info_stats)
+            if legacy_sector_paths_enabled
+            else dict(_stock_info_stats)
+        ),
         "market_data_service_reachable": market_data_service_reachable,
         "api_fast_path": "http_enabled" if market_data_service_reachable else "api_unavailable_fast_path",
         "sector_input_source": bridge_result.get("sector_input_source", "legacy_sector_scores"),
         "candidate_chain": candidate_chain,
+        "legacy_sector_paths_enabled": legacy_sector_paths_enabled,
+        "active_sector_path": result["active_sector_path"],
         "formal_candidate_status": formal_candidate_selection["status"],
         "has_unavailable_sectors": source_summary.get("unavailable", 0) > 0,
         "has_emergency_fallback": source_summary.get("local_emergency_mapping", 0) > 0,
@@ -2067,6 +2146,8 @@ def run_pipeline(
         "active_candidates_all": result["active_candidates_all"],
         "formal_candidate_selection": result["formal_candidate_selection"],
         "candidate_chain": result["candidate_chain"],
+        "legacy_sector_paths_enabled": result["legacy_sector_paths_enabled"],
+        "active_sector_path": result["active_sector_path"],
         "trend_candidates_all": result["trend_candidates_all"],
         "burst_candidates_all": result["burst_candidates_all"],
         "direction_shadow_candidates_all": result[
@@ -2082,14 +2163,26 @@ def run_pipeline(
             "trend_sectors": [
                 {"name": s["sector_name"], "trend_score": s["trend_score"],
                  "burst_score": _get_sector_burst_score(s), "count": s["high_relevance_count"]}
-                for s in bridge_result.get("trend_sectors", [])
+                for s in (
+                    bridge_result.get("trend_sectors", [])
+                    if legacy_sector_paths_enabled
+                    else []
+                )
             ],
             "burst_sectors": [
                 {"name": s["sector_name"], "trend_score": s["trend_score"],
                  "burst_score": _get_sector_burst_score(s), "count": s["high_relevance_count"]}
-                for s in bridge_result.get("burst_sectors", [])
+                for s in (
+                    bridge_result.get("burst_sectors", [])
+                    if legacy_sector_paths_enabled
+                    else []
+                )
             ],
-            "cross_sectors": bridge_result.get("cross_sectors", []),
+            "cross_sectors": (
+                bridge_result.get("cross_sectors", [])
+                if legacy_sector_paths_enabled
+                else []
+            ),
             "score_as_of_date": result["score_as_of_date"],
             "api_status": bridge_result.get("api_status", {}),
             "constituent_source_summary": bridge_result.get("constituent_source_summary", {}),
@@ -2110,9 +2203,14 @@ def run_pipeline(
         "run_health": result["run_health"],
         "data_quality": result["data_quality"],
         "scoring_method": {
-            "quant_source": trend_stocks[0].get("quant_source", "fallback") if trend_stocks else "fallback",
+            "quant_source": (
+                scored_source_rows[0].get("quant_source", "fallback")
+                if scored_source_rows
+                else "unavailable"
+            ),
             "weights": {"quant": WEIGHT_QUANT, "relevance": WEIGHT_RELEVANCE},
             "min_relevance": min_relevance,
+            "legacy_sector_paths_enabled": legacy_sector_paths_enabled,
             "active_candidate_ranking": (
                 "linkage_selection_score"
                 if candidate_chain == "direction_linkage_v2"
@@ -2136,6 +2234,8 @@ def run_pipeline(
         bridge_result=bridge_result,
         run_health=result.get("run_health"),
         data_quality=result.get("data_quality"),
+        candidate_chain=candidate_chain,
+        active_candidates=result["active_candidates_all"],
     )
     md_file = out_path / "unified_report.md"
     with open(md_file, "w", encoding="utf-8") as f:
@@ -2153,8 +2253,12 @@ def run_pipeline(
     print(f"  {icon} 健康门禁: {health.get('status', 'N/A').upper()}")
     for reason in health.get("reasons", []):
         print(f"    - {reason}")
-    print(f"  趋势 Top10: {len(trend_stocks)} 只")
-    print(f"  短线 Top10: {len(burst_stocks)} 只")
+    if legacy_sector_paths_enabled:
+        print(f"  趋势 Top10: {len(trend_stocks)} 只")
+        print(f"  短线 Top10: {len(burst_stocks)} 只")
+    else:
+        print("  趋势/短线路径: 已关闭")
+        print(f"  方向分主路径候选: {len(result['active_candidates_all'])} 只")
     print(f"  报告目录: {out_path}")
 
     return result

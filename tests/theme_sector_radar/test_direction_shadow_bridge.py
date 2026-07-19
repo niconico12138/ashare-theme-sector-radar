@@ -188,3 +188,24 @@ def test_run_bridge_isolates_shadow_market_requests_and_binds_consumed_payload(
     assert result["linkage_research"]["effective_policy"][
         "matches_frozen_baseline"
     ] is False
+
+    quote_calls.clear()
+    flow_calls.clear()
+    direction_only = bridge.run_bridge(
+        as_of_date="2026-07-17",
+        trend_top_n=1,
+        burst_top_n=1,
+        min_relevance=0.0,
+        include_legacy_sector_paths=False,
+        _validated_score_report=("2026-07-17", source_path, payload),
+    )
+
+    assert direction_only["legacy_sector_paths_enabled"] is False
+    assert direction_only["active_sector_path"] == "direction_shadow_only"
+    assert direction_only["trend_sectors"] == []
+    assert direction_only["burst_sectors"] == []
+    assert quote_calls == [["600002"]]
+    assert flow_calls == [["600002"]]
+    assert direction_only["linkage_research"][
+        "direction_constituent_source_summary"
+    ]["test"] == 1

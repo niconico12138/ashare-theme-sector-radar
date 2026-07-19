@@ -150,6 +150,8 @@ def main() -> int:
         "dataset_file_sha256": dataset_file_sha,
         "split": {
             "type": walk_forward["split_type"],
+            "min_train_dates": walk_forward["min_train_dates"],
+            "test_dates": walk_forward["test_dates"],
             "purge_dates": walk_forward["purge_dates"],
             "max_label_horizon": walk_forward["max_label_horizon"],
             "folds": walk_forward["folds"],

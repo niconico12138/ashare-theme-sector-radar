@@ -387,6 +387,8 @@ def walk_forward_ranker_predictions(
         "mode": MODE,
         "status": "ok",
         "split_type": "expanding_date_grouped_walk_forward",
+        "min_train_dates": min_train_dates,
+        "test_dates": test_dates,
         "purge_dates": purge_dates,
         "max_label_horizon": max_label_horizon,
         "continuous_label_retained_for_evaluation": True,

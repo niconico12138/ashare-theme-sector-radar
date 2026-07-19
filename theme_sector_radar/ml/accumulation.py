@@ -151,6 +151,7 @@ def extract_candidate_snapshot(report: Mapping[str, Any]) -> dict[str, Any]:
                 "as_of_date": as_of_date,
                 "stock_code": code,
                 "sector_name": sector_name,
+                "sector_type": str(raw.get("sector_type") or "industry"),
                 "quant_baseline_score_shadow": quant,
                 "linkage_v2_baseline_score_shadow": (
                     linkage_score * 100.0 if linkage_score is not None else None
@@ -177,7 +178,13 @@ def _source_identity(source: Mapping[str, Any], *, context: str) -> dict[str, An
     if not path or not _SHA256.fullmatch(sha256):
         raise ValueError(f"{context} path and lowercase SHA-256 are required")
     result = {"path": path, "sha256": sha256}
-    for field in ("generated_at", "as_of_date", "sector_name", "source"):
+    for field in (
+        "generated_at",
+        "as_of_date",
+        "sector_name",
+        "sector_type",
+        "source",
+    ):
         if field in source:
             result[field] = source[field]
     return result
@@ -244,11 +251,14 @@ def _verify_daily_source_contents(
     ) != dict(extracted):
         raise ValueError("candidate source contents do not match the archived selection")
 
-    expected_by_sector: dict[str, set[str]] = {}
+    expected_by_sector: dict[tuple[str, str], set[str]] = {}
     for row in extracted.get("feature_candidates") or []:
+        sector_type = str(row.get("sector_type") or "industry")
         sector_name = str(row.get("sector_name") or "")
-        expected_by_sector.setdefault(sector_name, set()).add(str(row["code"]))
-    seen_sectors: set[str] = set()
+        expected_by_sector.setdefault((sector_type, sector_name), set()).add(
+            str(row["code"])
+        )
+    seen_sectors: set[tuple[str, str]] = set()
     for source in constituent_sources:
         path = _verify_source_file_if_addressable(
             source, context="constituent"
@@ -262,11 +272,18 @@ def _verify_daily_source_contents(
             or payload.get("sector_name") != sector_name
         ):
             raise ValueError("dated constituent source identity mismatch")
-        if not expected_by_sector.get(sector_name, set()).issubset(
+        sector_type = str(
+            source.get("sector_type")
+            or payload.get("sector_type")
+            or "industry"
+        )
+        if payload.get("sector_type") not in {None, sector_type}:
+            raise ValueError("dated constituent source type identity mismatch")
+        if not expected_by_sector.get((sector_type, sector_name), set()).issubset(
             _constituent_stock_codes(payload)
         ):
             raise ValueError("selected stock is absent from its dated constituent source")
-        seen_sectors.add(sector_name)
+        seen_sectors.add((sector_type, sector_name))
     if seen_sectors != set(expected_by_sector):
         raise ValueError("dated constituent source sectors do not match the selection")
 
@@ -414,12 +431,79 @@ def _bars_source_manifest(
                 supplied.get("requested_source") or requested_source
             ),
             "actual_source": actual_source,
+            "source_path": str(
+                supplied.get("path") or supplied.get("source_path") or ""
+            ),
+            "source_sha256": str(
+                supplied.get("sha256") or supplied.get("source_sha256") or ""
+            ).lower(),
             "adjustment": "qfq",
             "frequency": "1d",
             "query_end": as_of_date,
             "bars_sha256": canonical_sha256(list(bars_by_code[code])),
         }
     return result
+
+
+def _bars_source_blocking_reasons(
+    bars_source_by_code: Mapping[str, Mapping[str, Any]],
+    *,
+    strict_required: bool,
+) -> list[str]:
+    reasons: list[str] = []
+    for source in bars_source_by_code.values():
+        path = str(source.get("source_path") or "")
+        sha256 = str(source.get("source_sha256") or "").lower()
+        if not path and not sha256 and not strict_required:
+            continue
+        if (
+            not path
+            or not _SHA256.fullmatch(sha256)
+            or _source_blocking_reason(
+                {"path": path, "sha256": sha256},
+                reason="daily_bars_source_not_content_addressable",
+                context="daily bars",
+            )
+        ):
+            reasons.append("daily_bars_source_not_content_addressable")
+    return sorted(set(reasons))
+
+
+def _verify_bars_source_contents(
+    *,
+    bars_by_code: Mapping[str, Sequence[Mapping[str, Any]]],
+    bars_source_by_code: Mapping[str, Mapping[str, Any]],
+) -> None:
+    for code, source in bars_source_by_code.items():
+        path = _verify_source_file_if_addressable(
+            {"path": source.get("source_path"), "sha256": source.get("source_sha256")},
+            context=f"daily bars {code}",
+        )
+        payload, source_sha = load_strict_json_with_sha256(path)
+        if source_sha != source.get("source_sha256"):
+            raise ValueError(f"daily bars source SHA changed: {code}")
+        raw_bars = payload.get("bars") if isinstance(payload, Mapping) else payload
+        if not isinstance(raw_bars, list):
+            raise ValueError(f"daily bars source payload is invalid: {code}")
+        if isinstance(payload, Mapping):
+            payload_code = str(
+                payload.get("code") or payload.get("stock_code") or ""
+            ).zfill(6)
+            if payload_code != str(code).zfill(6):
+                raise ValueError(f"daily bars source code identity mismatch: {code}")
+            payload_as_of = str(
+                payload.get("as_of")
+                or payload.get("query_end")
+                or source.get("query_end")
+                or ""
+            )
+            if payload_as_of != str(source.get("query_end") or ""):
+                raise ValueError(f"daily bars source as-of identity mismatch: {code}")
+            payload_source = str(payload.get("source") or "")
+            if payload_source and payload_source != str(source.get("actual_source") or ""):
+                raise ValueError(f"daily bars source provider identity mismatch: {code}")
+        if canonical_sha256(raw_bars) != source.get("bars_sha256"):
+            raise ValueError(f"daily bars source contents do not match archive: {code}")
 
 
 def _feature_replay_signature(rows: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
@@ -555,7 +639,11 @@ def archive_daily_snapshot(
         calendar=calendar_identity,
     )
     blocking_reasons.extend(source_blocking_reasons)
-    if source_blocking_reasons:
+    bars_source_blocking_reasons = _bars_source_blocking_reasons(
+        bars_source_by_code, strict_required=prospective
+    )
+    blocking_reasons.extend(bars_source_blocking_reasons)
+    if source_blocking_reasons or bars_source_blocking_reasons:
         prospective = False
     else:
         _verify_daily_source_contents(
@@ -564,6 +652,10 @@ def archive_daily_snapshot(
             candidate_source=candidate_identity,
             constituent_sources=constituent_identities,
             calendar=calendar_identity,
+        )
+        _verify_bars_source_contents(
+            bars_by_code=normalized_bars,
+            bars_source_by_code=bars_source_by_code,
         )
     if prospective_calendar_block is not None:
         prospective = False
@@ -726,7 +818,10 @@ def _label_price_rows(
         raise ValueError("label stock bars must exactly match the feature candidate universe")
     stock_rows: list[dict[str, Any]] = []
     sector_by_code = {
-        str(row.get("stock_code") or "").zfill(6): str(row.get("sector_name") or "")
+        str(row.get("stock_code") or "").zfill(6): (
+            str(row.get("sector_type") or "industry"),
+            str(row.get("sector_name") or ""),
+        )
         for row in baseline_rows
     }
     for code in sorted(expected_codes):
@@ -741,12 +836,13 @@ def _label_price_rows(
             stock_rows.append(
                 {
                     "stock_code": code,
-                    "sector_name": sector_by_code[code],
+                    "sector_type": sector_by_code[code][0],
+                    "sector_name": sector_by_code[code][1],
                     "date": day,
                     "close": raw.get("close"),
                 }
             )
-    expected_sectors = set(sector_by_code.values())
+    expected_sectors = {value[1] for value in sector_by_code.values()}
     if set(sector_bars_by_name) != expected_sectors:
         raise ValueError("label sector bars must exactly match candidate sector identities")
     sector_rows: list[dict[str, Any]] = []
@@ -761,6 +857,11 @@ def _label_price_rows(
                 continue
             sector_rows.append(
                 {
+                    "sector_type": next(
+                        value[0]
+                        for value in sector_by_code.values()
+                        if value[1] == sector_name
+                    ),
                     "sector_name": sector_name,
                     "date": day,
                     "close": raw.get("close"),
@@ -825,14 +926,23 @@ def _label_source_details(
     for sector_name in sorted(rows_by_sector):
         supplied = sector_sources.get(sector_name)
         supplied = supplied if isinstance(supplied, Mapping) else {}
+        sector_types = {
+            str(row.get("sector_type") or "")
+            for row in rows_by_sector[sector_name]
+        }
+        sector_type = next(iter(sector_types), "")
         source_identity = {
             "sector_name": sector_name,
+            "sector_type": sector_type,
             "path": str(supplied.get("path") or ""),
             "sha256": str(supplied.get("sha256") or "").lower(),
             "price_rows_sha256": canonical_sha256(rows_by_sector[sector_name]),
         }
         if (
-            not source_identity["path"]
+            len(sector_types) != 1
+            or not sector_type
+            or str(supplied.get("sector_type") or "") != sector_type
+            or not source_identity["path"]
             or not _SHA256.fullmatch(source_identity["sha256"])
             or _source_blocking_reason(
                 source_identity,
@@ -860,6 +970,82 @@ def _persist_label_input_evidence(
         write_strict_json_atomic(path, dict(payload))
         _existing, sha256 = load_strict_json_with_sha256(path)
     return {"path": str(path.resolve()), "sha256": sha256}
+
+
+def _verify_label_source_contents(
+    *,
+    signal_date: str,
+    label_as_of_date: str,
+    baseline_rows: Sequence[Mapping[str, Any]],
+    label_source: Mapping[str, Any],
+    stock_rows: Sequence[Mapping[str, Any]],
+    sector_rows: Sequence[Mapping[str, Any]],
+) -> None:
+    raw_stock_bars: dict[str, list[Mapping[str, Any]]] = {}
+    stock_sources = label_source.get("stock_bars_by_code") or {}
+    for code in sorted(
+        {str(row.get("stock_code") or "") for row in baseline_rows}
+    ):
+        source = stock_sources.get(code)
+        if not isinstance(source, Mapping):
+            raise ValueError(f"label stock source identity is missing: {code}")
+        path = _verify_source_file_if_addressable(
+            {"path": source.get("path"), "sha256": source.get("sha256")},
+            context=f"label stock {code}",
+        )
+        payload, source_sha = load_strict_json_with_sha256(path)
+        if source_sha != source.get("sha256") or not isinstance(payload, Mapping):
+            raise ValueError(f"label stock source identity mismatch: {code}")
+        payload_code = str(
+            payload.get("stock_code") or payload.get("code") or ""
+        ).zfill(6)
+        if payload_code != code or not isinstance(payload.get("bars"), list):
+            raise ValueError(f"label stock source payload identity mismatch: {code}")
+        raw_stock_bars[code] = list(payload["bars"])
+
+    raw_sector_bars: dict[str, list[dict[str, Any]]] = {}
+    sector_sources = label_source.get("sector_bars_by_name") or {}
+    for sector_name in sorted(
+        {str(row.get("sector_name") or "") for row in baseline_rows}
+    ):
+        source = sector_sources.get(sector_name)
+        if not isinstance(source, Mapping):
+            raise ValueError(
+                f"label sector source identity is missing: {sector_name}"
+            )
+        path = _verify_source_file_if_addressable(
+            {"path": source.get("path"), "sha256": source.get("sha256")},
+            context=f"label sector {sector_name}",
+        )
+        payload, source_sha = load_strict_json_with_sha256(path)
+        if source_sha != source.get("sha256") or not isinstance(payload, Mapping):
+            raise ValueError(f"label sector source identity mismatch: {sector_name}")
+        if payload.get("sector_name") not in {None, sector_name}:
+            raise ValueError(f"label sector source name mismatch: {sector_name}")
+        raw_records = payload.get("records")
+        if not isinstance(raw_records, list):
+            raise ValueError(f"label sector source records are missing: {sector_name}")
+        normalized: list[dict[str, Any]] = []
+        for raw in raw_records:
+            if not isinstance(raw, Mapping):
+                raise ValueError(f"label sector source row is invalid: {sector_name}")
+            day = raw.get("date") or raw.get("日期")
+            close = raw.get("close") if "close" in raw else raw.get("收盘价")
+            if day is not None:
+                normalized.append({"date": str(day), "close": close})
+        raw_sector_bars[sector_name] = normalized
+
+    rebuilt_stock_rows, rebuilt_sector_rows = _label_price_rows(
+        signal_date=signal_date,
+        label_as_of_date=label_as_of_date,
+        baseline_rows=baseline_rows,
+        stock_bars_by_code=raw_stock_bars,
+        sector_bars_by_name=raw_sector_bars,
+    )
+    if canonical_sha256(rebuilt_stock_rows) != canonical_sha256(list(stock_rows)):
+        raise ValueError("label stock source contents do not match archive")
+    if canonical_sha256(rebuilt_sector_rows) != canonical_sha256(list(sector_rows)):
+        raise ValueError("label sector source contents do not match archive")
 
 
 def archive_mature_label_snapshot(
@@ -989,6 +1175,15 @@ def archive_mature_label_snapshot(
     label_strict = bool(snapshot.get("strict_pit_eligible", False)) and not bool(
         label_blocking_reasons
     )
+    if not label_blocking_reasons:
+        _verify_label_source_contents(
+            signal_date=signal_date,
+            label_as_of_date=label_as_of_date,
+            baseline_rows=baseline_rows,
+            label_source=label_source_identity,
+            stock_rows=stock_rows,
+            sector_rows=sector_rows,
+        )
 
     input_identity = {
         "signal_date": signal_date,
@@ -1196,7 +1391,11 @@ def _verify_replayable_snapshot(snapshot: Mapping[str, Any]) -> bool | None:
         calendar=calendar,
     )
     reasons.extend(source_blocking_reasons)
-    if source_blocking_reasons:
+    bars_source_blocking_reasons = _bars_source_blocking_reasons(
+        bars_source_by_code, strict_required=bool(snapshot.get("strict_pit_eligible"))
+    )
+    reasons.extend(bars_source_blocking_reasons)
+    if source_blocking_reasons or bars_source_blocking_reasons:
         prospective = False
     else:
         _verify_daily_source_contents(
@@ -1211,6 +1410,10 @@ def _verify_replayable_snapshot(snapshot: Mapping[str, Any]) -> bool | None:
             candidate_source=candidate_source,
             constituent_sources=constituent_sources,
             calendar=calendar,
+        )
+        _verify_bars_source_contents(
+            bars_by_code=normalized_bars,
+            bars_source_by_code=bars_source_by_code,
         )
     if sum(value > as_of_date for value in canonical_calendar["dates"]) < 5:
         prospective = False
@@ -1466,6 +1669,15 @@ def verify_accumulation_archive(archive_root: Path | str) -> dict[str, Any]:
         }
         if source_sha != label_source.get("sha256") or source_payload != expected_source_payload:
             raise ValueError("ML mature label source evidence cannot be reproduced")
+        if not label_blocking_reasons:
+            _verify_label_source_contents(
+                signal_date=day,
+                label_as_of_date=str(label_snapshot.get("label_as_of_date") or ""),
+                baseline_rows=feature_snapshot["baseline_rows"],
+                label_source=label_source,
+                stock_rows=stock_rows,
+                sector_rows=sector_rows,
+            )
         rebuilt = build_forward_label_rows(
             stock_rows,
             sector_rows,

@@ -20,7 +20,7 @@ from theme_sector_radar.ml.dataset import build_training_dataset, validate_train
 from theme_sector_radar.ml.evaluation import evaluate_rule_vs_ml_shadow
 from theme_sector_radar.ml.ranker import train_lambdarank, walk_forward_ranker_predictions
 from theme_sector_radar.ml.registry import save_model_bundle
-from theme_sector_radar.ml.contract import optional_ml_dependency_readiness
+from theme_sector_radar.ml.contract import canonical_sha256, optional_ml_dependency_readiness
 from theme_sector_radar.ml.schema import DISCLAIMER, MODE
 from theme_sector_radar.reporting.paper_only_contract import validate_no_executable_instructions
 from theme_sector_radar.reporting.strict_json import (
@@ -153,6 +153,17 @@ def main() -> int:
                 readiness,
                 reason=str(walk_forward.get("reason") or "walk_forward_blocked"),
             )
+        prediction_rows = list(walk_forward["predictions"])
+        prediction_identities = {
+            (str(row["as_of_date"]), str(row["stock_code"]))
+            for row in prediction_rows
+        }
+        prediction_universe_rows = [
+            row
+            for row in dataset_loaded["feature_universe_records"]
+            if (str(row["as_of_date"]), str(row["stock_code"]))
+            in prediction_identities
+        ]
         walk_forward_document = {
             "schema_version": "ml-stock-walk-forward-predictions-v1",
             "mode": MODE,
@@ -160,13 +171,21 @@ def main() -> int:
             "fixture_only": False,
             "strict_pit_eligible": True,
             "eligible_for_oos_claim": False,
+            "dataset_sha256": dataset_loaded["dataset_sha256"],
+            "dataset_file_sha256": dataset_file_sha,
             "split": {
                 "type": walk_forward["split_type"],
+                "min_train_dates": walk_forward["min_train_dates"],
+                "test_dates": walk_forward["test_dates"],
                 "purge_dates": walk_forward["purge_dates"],
                 "max_label_horizon": walk_forward["max_label_horizon"],
                 "folds": walk_forward["folds"],
             },
-            "predictions": walk_forward["predictions"],
+            "prediction_rows_sha256": canonical_sha256(prediction_rows),
+            "prediction_universe_sha256": canonical_sha256(
+                prediction_universe_rows
+            ),
+            "predictions": prediction_rows,
             "promotion_allowed": False,
             "generated_at": datetime.now().astimezone().isoformat(),
             "disclaimer": DISCLAIMER,
@@ -179,25 +198,7 @@ def main() -> int:
         _walk_forward_loaded, walk_forward_sha = load_strict_json_with_sha256(
             walk_forward_path
         )
-        trained = train_lambdarank(records, n_estimators=args.n_estimators)
-        bundle = save_model_bundle(
-            trained,
-            args.model_dir,
-            model_version=args.model_version,
-            dataset_sha256=dataset_loaded["dataset_sha256"],
-            strict_pit_eligible=True,
-            dataset_classification="observed_research",
-            model_available_from=max(
-                str(row["training_label_end_date"]) for row in records
-            ),
-            pit_evidence=evidence,
-        )
-        prediction_report = {
-            "status": "ok",
-            "fixture_only": False,
-            "strict_pit_eligible": True,
-            "predictions": walk_forward_document["predictions"],
-        }
+        prediction_report = walk_forward_document
         evaluation = evaluate_rule_vs_ml_shadow(
             prediction_report,
             dataset_loaded,
@@ -211,6 +212,19 @@ def main() -> int:
         )
         evaluation_path = args.output_root / "evaluation.json"
         write_strict_json_atomic(evaluation_path, evaluation)
+        trained = train_lambdarank(records, n_estimators=args.n_estimators)
+        bundle = save_model_bundle(
+            trained,
+            args.model_dir,
+            model_version=args.model_version,
+            dataset_sha256=dataset_loaded["dataset_sha256"],
+            strict_pit_eligible=True,
+            dataset_classification="observed_research",
+            model_available_from=max(
+                str(row["training_label_end_date"]) for row in records
+            ),
+            pit_evidence=evidence,
+        )
         training_report = {
             "schema_version": "ml-stock-training-report-v1",
             "mode": MODE,

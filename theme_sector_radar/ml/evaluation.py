@@ -344,7 +344,73 @@ def evaluate_rule_vs_ml_shadow(
             raise ValueError("strict prediction report is not bound to the dataset")
         if not isinstance(folds, list) or not folds:
             raise ValueError("strict prediction split audit is missing")
+        if not isinstance(split, Mapping):
+            raise ValueError("strict prediction split contract is missing")
+        try:
+            min_train_dates = int(split["min_train_dates"])
+            test_dates = int(split["test_dates"])
+            purge_dates = int(split["purge_dates"])
+            max_label_horizon = int(split["max_label_horizon"])
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ValueError("strict prediction split parameters are missing") from exc
         feature_universe = list(dataset.get("feature_universe_records") or [])
+        from .split import expanding_walk_forward_splits
+
+        canonical_folds = expanding_walk_forward_splits(
+            feature_universe,
+            min_train_dates=min_train_dates,
+            test_dates=test_dates,
+            purge_dates=purge_dates,
+            max_label_horizon=max_label_horizon,
+        )
+        expected_folds: list[dict[str, Any]] = []
+        for fold in canonical_folds:
+            test_start = fold["test_dates"][0]
+            train_dates = set(fold["train_dates"])
+            train_rows = [
+                row
+                for row in dataset.get("records") or []
+                if str(row.get("as_of_date") or "") in train_dates
+                and str(row.get("training_label_end_date") or "") < test_start
+            ]
+            mature_train_dates = sorted(
+                {str(row.get("as_of_date") or "") for row in train_rows}
+            )
+            if not mature_train_dates:
+                raise ValueError("strict canonical fold has no mature training rows")
+            expected_folds.append(
+                {
+                    "fold": fold["fold"],
+                    "train_start": mature_train_dates[0],
+                    "train_end": mature_train_dates[-1],
+                    "train_date_count": len(mature_train_dates),
+                    "train_labeled_date_count": len(mature_train_dates),
+                    "train_universe_start": fold["train_dates"][0],
+                    "train_universe_end": fold["train_dates"][-1],
+                    "train_universe_date_count": len(fold["train_dates"]),
+                    "purged_dates": list(fold["purged_dates"]),
+                    "test_start": fold["test_dates"][0],
+                    "test_end": fold["test_dates"][-1],
+                    "test_date_count": len(fold["test_dates"]),
+                    "train_row_count": len(train_rows),
+                    "test_row_count": len(fold["test_indices"]),
+                    "latest_training_label_maturity": max(
+                        str(row["training_label_end_date"]) for row in train_rows
+                    ),
+                }
+            )
+        if folds != expected_folds:
+            raise ValueError("strict prediction folds do not match canonical split")
+        expected_fold_by_id = {
+            _identity(feature_universe[index]): fold["fold"]
+            for fold in canonical_folds
+            for index in fold["test_indices"]
+        }
+        if any(
+            int(row.get("fold") or 0) != expected_fold_by_id.get(identity)
+            for identity, row in predictions.items()
+        ):
+            raise ValueError("strict prediction fold identity does not match canonical split")
         feature_dates = sorted(
             {str(row.get("as_of_date") or "") for row in feature_universe}
         )
