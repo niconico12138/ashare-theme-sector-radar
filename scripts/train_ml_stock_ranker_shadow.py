@@ -11,7 +11,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from theme_sector_radar.ml.contract import optional_ml_dependency_readiness
+from theme_sector_radar.ml.contract import canonical_sha256, optional_ml_dependency_readiness
 from theme_sector_radar.ml.dataset import validate_training_dataset
 from theme_sector_radar.ml.ranker import (
     train_lambdarank,
@@ -119,6 +119,26 @@ def main() -> int:
         return _write_unavailable(
             args, dataset_file_sha, readiness, reason="insufficient_walk_forward_dates"
         )
+    prediction_rows = [
+        {
+            key: row[key]
+            for key in (
+                "fold", "as_of_date", "stock_code", "sector_name",
+                "prediction", "ml_quant_score_shadow", "rank"
+            )
+        }
+        for row in walk_forward["predictions"]
+    ]
+    prediction_identities = {
+        (str(row["as_of_date"]), str(row["stock_code"]))
+        for row in prediction_rows
+    }
+    prediction_universe_rows = [
+        row
+        for row in dataset["feature_universe_records"]
+        if (str(row["as_of_date"]), str(row["stock_code"]))
+        in prediction_identities
+    ]
     walk_forward_document = {
         "schema_version": "ml-stock-walk-forward-predictions-v1",
         "mode": MODE,
@@ -126,22 +146,19 @@ def main() -> int:
         "fixture_only": bool(dataset.get("fixture_only", False)),
         "strict_pit_eligible": bool(dataset.get("strict_pit_eligible", False)),
         "eligible_for_oos_claim": False,
+        "dataset_sha256": dataset["dataset_sha256"],
+        "dataset_file_sha256": dataset_file_sha,
         "split": {
             "type": walk_forward["split_type"],
             "purge_dates": walk_forward["purge_dates"],
             "max_label_horizon": walk_forward["max_label_horizon"],
             "folds": walk_forward["folds"],
         },
-        "predictions": [
-            {
-                key: row[key]
-                for key in (
-                    "fold", "as_of_date", "stock_code", "sector_name",
-                    "prediction", "ml_quant_score_shadow", "rank"
-                )
-            }
-            for row in walk_forward["predictions"]
-        ],
+        "prediction_rows_sha256": canonical_sha256(prediction_rows),
+        "prediction_universe_sha256": canonical_sha256(
+            prediction_universe_rows
+        ),
+        "predictions": prediction_rows,
         "promotion_allowed": False,
         "generated_at": datetime.now().astimezone().isoformat(),
         "disclaimer": DISCLAIMER,
