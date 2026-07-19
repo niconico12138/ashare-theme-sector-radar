@@ -24,39 +24,39 @@ This project is for research, education, and workflow automation only. It is **n
 
 ```mermaid
 flowchart TB
-    subgraph Sources["1. Data sources"]
-        S1["AkShare / public market data"]
-        S2["Local StockDB (optional)"]
-        S3["Local market-data service (optional)"]
-        S4["Offline fixtures / sanitized examples"]
+    subgraph Sources["1. 数据来源"]
+        S1["AkShare / 公开市场数据"]
+        S2["本地 StockDB（可选）"]
+        S3["本地行情数据服务（可选）"]
+        S4["离线测试夹具 / 脱敏示例"]
     end
 
-    subgraph Data["2. Data and provenance layer"]
-        D1["Provider routing & retry"]
-        D2["Snapshots, bars, benchmark & constituents"]
-        D3["Normalization & lineage checks"]
-        D4["Local cache (ignored by Git)"]
+    subgraph Data["2. 数据与溯源层"]
+        D1["数据源路由与重试"]
+        D2["快照、K线、基准与板块成分股"]
+        D3["标准化与数据血缘校验"]
+        D4["本地缓存（不纳入 Git）"]
     end
 
-    subgraph Research["3. Research and scoring layer"]
-        R1["Board scoring\ntrend · momentum · cross-section"]
-        R2["Risk & data-quality diagnostics"]
-        R3["Board rotation / direction candidates"]
-        R4["Stock factors & board-stock linkage"]
-        R5["Candidate selection\nranking · quotas · concentration controls"]
+    subgraph Research["3. 研究与评分层"]
+        R1["板块评分\n趋势 · 动量 · 截面强度"]
+        R2["风险与数据质量诊断"]
+        R3["板块轮动 / 方向候选"]
+        R4["个股因子与板块-个股关联度"]
+        R5["候选筛选\n排序 · 配额 · 集中度控制"]
     end
 
-    subgraph Validation["4. Validation and Shadow layer"]
-        V1["Forward-return labels"]
-        V2["Historical selection validation"]
-        V3["Calibration, attribution & stability diagnostics"]
-        V4["Shadow scores\nresearch only"]
+    subgraph Validation["4. 验证与 Shadow 层"]
+        V1["前瞻收益标签"]
+        V2["历史选股验证"]
+        V3["校准、归因与稳定性诊断"]
+        V4["影子评分\n仅限研究"]
     end
 
-    subgraph Outputs["5. Outputs"]
-        O1["Daily JSON / Markdown reports"]
-        O2["Top-N research candidates"]
-        O3["Run logs, degradation flags & audit artifacts"]
+    subgraph Outputs["5. 输出层"]
+        O1["每日 JSON / Markdown 报告"]
+        O2["Top-N 研究候选"]
+        O3["运行日志、降级标记与审计产物"]
     end
 
     S1 --> D1
@@ -81,16 +81,16 @@ flowchart TB
 
 ```mermaid
 flowchart LR
-    A["As-of date"] --> B["Load market & board inputs"]
-    B --> C["Validate freshness, identity and coverage"]
-    C -->|"usable"| D["Score boards"]
-    C -->|"degraded"| X["Record flags / use permitted fallback"]
-    D --> E["Select eligible research directions"]
-    E --> F["Fetch board constituents and stock factors"]
-    F --> G["Score stocks and board-stock linkage"]
-    G --> H["Apply deduplication and concentration limits"]
-    H --> I["Publish research candidates and reports"]
-    I --> J["Later: historical labels & validation"]
+    A["研究日期"] --> B["加载行情与板块输入"]
+    B --> C["校验时效性、身份与覆盖率"]
+    C -->|"可用"| D["计算板块评分"]
+    C -->|"降级"| X["记录标记 / 使用允许的后备数据"]
+    D --> E["筛选合格研究方向"]
+    E --> F["获取板块成分股与个股因子"]
+    F --> G["计算个股分与板块-个股关联度"]
+    G --> H["应用去重与集中度约束"]
+    H --> I["输出研究候选和报告"]
+    I --> J["后续：构建历史标签与验证"]
 ```
 
 The pipeline is intentionally fail-aware: unavailable, stale, incomplete, or fallback data is recorded in outputs rather than silently treated as fully reliable.
