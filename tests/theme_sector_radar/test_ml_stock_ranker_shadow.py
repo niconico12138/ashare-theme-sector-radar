@@ -911,6 +911,92 @@ def test_stage_one_evaluation_can_never_promote_without_complete_hard_gates():
     assert report["promotion_gates"]["complete_performance_hard_gates"] is False
 
 
+def test_multi_baseline_evaluation_uses_one_common_candidate_pool():
+    from theme_sector_radar.ml.evaluation import evaluate_rule_vs_ml_shadow
+
+    day = "2026-07-16"
+    predictions = {
+        "status": "ok",
+        "fixture_only": False,
+        "predictions": [
+            {
+                "as_of_date": day,
+                "stock_code": code,
+                "sector_name": "sector-a",
+                "ml_quant_score_shadow": ml_score,
+            }
+            for code, ml_score in (
+                ("000001", 90.0),
+                ("000002", 60.0),
+                ("000003", 30.0),
+            )
+        ],
+    }
+    dataset = {
+        "fixture_only": False,
+        "strict_pit_eligible": False,
+        "evaluation_label_records": [
+            {
+                "as_of_date": day,
+                "stock_code": code,
+                "sector_name": "sector-a",
+                "labels": {
+                    "future_return_1d": outcome,
+                    "future_excess_return_1d": outcome,
+                },
+            }
+            for code, outcome in (
+                ("000001", 0.01),
+                ("000002", 0.00),
+                ("000003", -0.01),
+            )
+        ],
+    }
+    rules = [
+        {
+            "as_of_date": day,
+            "stock_code": "000001",
+            "sector_name": "sector-a",
+            "quant_baseline_score_shadow": 90.0,
+            "linkage_v2_baseline_score_shadow": 80.0,
+            "linkage_v2_status": "ok",
+            "rule_eligible": True,
+        },
+        {
+            "as_of_date": day,
+            "stock_code": "000002",
+            "sector_name": "sector-a",
+            "quant_baseline_score_shadow": 60.0,
+            "linkage_v2_baseline_score_shadow": 50.0,
+            "linkage_v2_status": "partial",
+            "rule_eligible": True,
+        },
+        {
+            "as_of_date": day,
+            "stock_code": "000003",
+            "sector_name": "sector-a",
+            "quant_baseline_score_shadow": 30.0,
+            "linkage_v2_baseline_score_shadow": None,
+            "linkage_v2_status": "unavailable",
+            "rule_eligible": True,
+        },
+    ]
+
+    report = evaluate_rule_vs_ml_shadow(
+        predictions,
+        dataset,
+        rules,
+        top_ks=(3,),
+        horizons=(1,),
+    )
+
+    assert {row["selected_row_count"] for row in report["results"]} == {3}
+    assert {row["selection_fill_ratio"] for row in report["results"]} == {1.0}
+    assert set(
+        report["ranking_audit"][0]["selections"]["B_linkage_v2"]
+    ) == {"000001", "000002", "000003"}
+
+
 def test_walk_forward_ranker_trains_only_before_purge_and_keeps_continuous_labels():
     from theme_sector_radar.ml.ranker import walk_forward_ranker_predictions
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 from datetime import datetime
+import hashlib
 from pathlib import Path
 import sys
 from typing import Any
@@ -102,12 +103,18 @@ def _fetch_stock_bars(
         source_by_code[code] = {
             "requested_source": source,
             "actual_source": str(result.get("source") or ""),
+            "path": str((cache_dir / f"{code}.json").resolve()),
+            "sha256": hashlib.sha256(
+                (cache_dir / f"{code}.json").read_bytes()
+            ).hexdigest(),
         }
     return bars, source_by_code
 
 
-def _sector_bars(path: Path, *, label_as_of_date: str) -> list[dict[str, Any]]:
-    payload, _sha256 = load_strict_json_with_sha256(path)
+def _sector_bars(
+    path: Path, *, label_as_of_date: str
+) -> tuple[list[dict[str, Any]], dict[str, str]]:
+    payload, sha256 = load_strict_json_with_sha256(path)
     rows = payload.get("records")
     if not isinstance(rows, list):
         raise ValueError(f"sector history records are missing: {path}")
@@ -117,7 +124,7 @@ def _sector_bars(path: Path, *, label_as_of_date: str) -> list[dict[str, Any]]:
         close = row.get("\u6536\u76d8\u4ef7")
         if day is not None and str(day) <= label_as_of_date:
             output.append({"date": str(day), "close": close})
-    return output
+    return output, {"path": str(path.resolve()), "sha256": sha256}
 
 
 def _mature_labels(
@@ -183,19 +190,25 @@ def _mature_labels(
         if not target_codes or not target_sectors:
             continue
         try:
-            stock_bars, _stock_bars_source_by_code = _fetch_stock_bars(
+            stock_bars, stock_bars_source_by_code = _fetch_stock_bars(
                 target_codes,
                 as_of_date=run_as_of,
                 source=bars_source,
                 cache_dir=stock_bars_cache,
                 lookback=max(lookback, 80),
             )
-            sector_bars = {
+            sector_results = {
                 sector: _sector_bars(
                     sector_history_root / f"{sector}.json",
                     label_as_of_date=run_as_of,
                 )
                 for sector in target_sectors
+            }
+            sector_bars = {
+                sector: result[0] for sector, result in sector_results.items()
+            }
+            sector_bars_source_by_name = {
+                sector: result[1] for sector, result in sector_results.items()
             }
             results.append(
                 archive_mature_label_snapshot(
@@ -209,6 +222,8 @@ def _mature_labels(
                         "adjustment": "qfq",
                         "frequency": "1d",
                         "query_end": run_as_of,
+                        "stock_bars_by_code": stock_bars_source_by_code,
+                        "sector_bars_by_name": sector_bars_source_by_name,
                     },
                 )
             )
@@ -245,7 +260,7 @@ def main() -> int:
         candidate_snapshot = extract_candidate_snapshot(report)
         as_of_date = candidate_snapshot["as_of_date"]
         calendar = load_trading_calendar(
-            args.trading_calendar_path,
+            args.trading_calendar_path.resolve(),
             as_of=as_of_date,
             include_future=True,
         )
