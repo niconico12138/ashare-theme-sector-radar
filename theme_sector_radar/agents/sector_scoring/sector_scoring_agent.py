@@ -60,6 +60,7 @@ def calculate_sector_scores(
     benchmark_data: Optional[Any] = None,
     trend_weight_profile: str = "baseline",
     trend_window: int = 10,
+    history_source: str = "sector_history_cache",
 ) -> AgentOutput:
     """
     计算板块综合评分
@@ -82,69 +83,49 @@ def calculate_sector_scores(
     results = []
 
     # 计算基准收益率
-    benchmark_returns = {"1d": 0.0, "3d": 0.0, "5d": 0.0}
+    benchmark_returns = {}
     if benchmark_data and hasattr(benchmark_data, 'records') and benchmark_data.records:
         from ...data.benchmark_provider import BenchmarkProvider
         bp = BenchmarkProvider()
         benchmark_returns = bp.calculate_benchmark_returns(benchmark_data)
 
-    # 提取所有板块的收益率 (用于计算中位数)
-    all_sector_returns = []
-    for sector in radar_sectors:
-        sector_history = history_data.get(sector.name, {})
-        sector_return = sector_history.get("total_return", 0.0)
-        all_sector_returns.append(sector_return)
+    benchmark_key = f"{trend_window}d" if trend_window in [5, 10, 20] else "5d"
+    benchmark_available = benchmark_key in benchmark_returns
+    if benchmark_data and not benchmark_available:
+        warnings_list.append(
+            f"trend_window={trend_window} 对应的 {benchmark_key} benchmark 数据不可用，"
+            "回退到同窗口板块中位数"
+        )
+
+    # 所有横截面收益必须使用同一趋势窗口。
+    window_metrics = {
+        sector.name: _calculate_window_metrics(
+            history_data.get(sector.name, {}),
+            trend_window,
+        )
+        for sector in radar_sectors
+    }
+    all_sector_returns = [
+        metrics["total_return"]
+        for metrics in window_metrics.values()
+        if metrics["actual_history_days"] > 0
+    ]
 
     # 计算每个板块的评分
-    for sector in radar_sectors:
+    for position, sector in enumerate(radar_sectors, start=1):
         try:
-            # 获取历史数据
-            sector_history = history_data.get(sector.name, {})
-            recent_returns = sector_history.get("recent_returns", [])
-            total_return = sector_history.get("total_return", 0.0)
-            positive_days = sector_history.get("positive_days", 0)
-            total_days = sector_history.get("total_days", 0)
-            max_drawdown = sector_history.get("max_drawdown", 0.0)
-            volatility = sector_history.get("volatility", 0.0)
-            history_days = sector_history.get("history_days", 0)
-
-            # 应用趋势窗口截取
-            if recent_returns and len(recent_returns) > trend_window:
-                truncated_returns = recent_returns[-trend_window:]
-                actual_history_days = len(truncated_returns)
-                history_coverage_ratio = actual_history_days / trend_window if trend_window > 0 else 0.0
-
-                # 重新计算指标
-                total_return = sum(truncated_returns)
-                positive_days = sum(1 for r in truncated_returns if r > 0)
-                total_days = len(truncated_returns)
-
-                # 重新计算最大回撤
-                cumulative = 0.0
-                peak = 0.0
-                max_drawdown = 0.0
-                for r in truncated_returns:
-                    cumulative += r
-                    if cumulative > peak:
-                        peak = cumulative
-                    drawdown = cumulative - peak
-                    if drawdown < max_drawdown:
-                        max_drawdown = drawdown
-
-                # 重新计算波动率
-                if total_days > 1:
-                    mean = sum(truncated_returns) / total_days
-                    variance = sum((r - mean) ** 2 for r in truncated_returns) / total_days
-                    volatility = variance ** 0.5
-                else:
-                    volatility = 0.0
-
-                recent_returns = truncated_returns
-                trend_window_status = "ok" if actual_history_days >= trend_window * 0.5 else "insufficient_history"
-            else:
-                actual_history_days = len(recent_returns)
-                history_coverage_ratio = actual_history_days / trend_window if trend_window > 0 else 0.0
-                trend_window_status = "ok" if actual_history_days >= trend_window * 0.5 else "insufficient_history"
+            current_rank = sector.current_rank or position
+            metrics = window_metrics[sector.name]
+            recent_returns = metrics["recent_returns"]
+            total_return = metrics["total_return"]
+            positive_days = metrics["positive_days"]
+            total_days = metrics["total_days"]
+            max_drawdown = metrics["max_drawdown"]
+            volatility = metrics["volatility"]
+            history_days = metrics["history_days"]
+            actual_history_days = metrics["actual_history_days"]
+            history_coverage_ratio = metrics["history_coverage_ratio"]
+            trend_window_status = metrics["trend_window_status"]
 
             # 获取日报雷达分
             radar_score = sector.score
@@ -158,12 +139,14 @@ def calculate_sector_scores(
                 )
 
             # 计算趋势持续评分
-            # 确定基准收益率 - 根据 trend_window 选择对应窗口
-            benchmark_key = f"{trend_window}d" if trend_window in [5, 10, 20] else "5d"
-            actual_benchmark_return = benchmark_returns.get(benchmark_key, benchmark_returns.get("5d", 0.0))
-            # 如果有 benchmark_data 但对应窗口不可用，记录警告
-            if benchmark_data and benchmark_key not in benchmark_returns:
-                warnings_list.append(f"trend_window={trend_window} 对应的 benchmark 数据不可用，使用 5d 回退")
+            # 市场基准必须与趋势窗口同期限；不可用时交给横截面中位数回退。
+            actual_benchmark_return = benchmark_returns.get(benchmark_key, 0.0)
+            actual_benchmark_id = (
+                benchmark_data.benchmark_id if benchmark_available else None
+            )
+            actual_benchmark_name = (
+                benchmark_data.benchmark_name if benchmark_available else None
+            )
 
             composite_result = calculate_sector_composite_score(
                 radar_score=radar_score,
@@ -178,25 +161,31 @@ def calculate_sector_scores(
                 data_quality_score=data_quality_score,
                 history_days=history_days,
                 price_change_available=price_change_available,
-                benchmark_id=benchmark_data.benchmark_id if benchmark_data else None,
-                benchmark_name=benchmark_data.benchmark_name if benchmark_data else None,
+                benchmark_id=actual_benchmark_id,
+                benchmark_name=actual_benchmark_name,
                 trend_weight_profile=trend_weight_profile,
             )
+            composite_result["score_breakdown"][
+                "price_change_available"
+            ] = price_change_available
 
             # 计算短线爆发评分
             burst_result = calculate_short_term_burst_score(
                 radar_score=radar_score,
                 one_day_change=recent_returns[-1] if recent_returns else None,
                 recent_returns=recent_returns,
-                turnover=sector.turnover if hasattr(sector, 'turnover') else None,
-                main_net_inflow=sector.main_net_inflow if hasattr(sector, 'main_net_inflow') else None,
-                current_rank=None,  # 需要从外部传入
-                previous_rank=None,
+                turnover=sector.turnover,
+                main_net_inflow=sector.main_net_inflow,
+                current_rank=current_rank,
+                previous_rank=sector.previous_rank,
                 data_quality_score=data_quality_score,
                 price_change_available=price_change_available,
                 history_days=history_days,
-                history_source="sector_history_cache",
+                history_source=history_source,
             )
+            burst_result["burst_breakdown"][
+                "price_change_available"
+            ] = price_change_available
 
             # M1: 应用短线 insufficient_history 上限
             burst_capped, burst_cap_applied, burst_cap_reason = apply_burst_insufficient_history_cap(
@@ -266,6 +255,7 @@ def calculate_sector_scores(
             selection_level = composite_result["selection_level"]
             burst_level = burst_result["burst_level"]
             result = {
+                "sector_id": sector.sector_id,
                 "sector_name": sector.name,
                 "sector_type": sector_type.value,
                 # 保持旧字段兼容
@@ -302,6 +292,9 @@ def calculate_sector_scores(
                 "watch_points": watch_points,
                 "data_warnings": data_warnings + burst_result.get("warnings", []),
                 "radar_score": radar_score,
+                "radar_rank": current_rank,
+                "radar_rank_tied": sector.rank_tied,
+                "radar_rank_tie_count": sector.rank_tie_count,
                 "history_days": history_days,
             }
 
@@ -310,8 +303,15 @@ def calculate_sector_scores(
         except Exception as e:
             warnings_list.append(f"计算板块 {sector.name} 综合评分失败: {str(e)}")
 
-    # 按趋势持续评分排序
-    results.sort(key=lambda x: x["sector_selection_score"], reverse=True)
+    _assign_result_ranks(results, "sector_selection_score", "trend")
+    _assign_result_ranks(results, "short_term_burst_score", "burst")
+    results.sort(
+        key=lambda item: (
+            -item["sector_selection_score"],
+            item["sector_id"],
+            item["sector_name"],
+        )
+    )
 
     return AgentOutput(
         agent_id="sector_scoring",
@@ -325,6 +325,83 @@ def calculate_sector_scores(
         },
         warnings=warnings_list,
     )
+
+
+def _assign_result_ranks(
+    results: List[Dict[str, Any]],
+    score_key: str,
+    prefix: str,
+) -> None:
+    ordered = sorted(
+        results,
+        key=lambda item: (
+            -item[score_key],
+            item["sector_id"],
+            item["sector_name"],
+        ),
+    )
+    score_keys = [round(float(item[score_key]), 8) for item in ordered]
+    tie_counts = {key: score_keys.count(key) for key in set(score_keys)}
+    current_rank = 0
+    previous_key = None
+
+    for position, (item, value) in enumerate(zip(ordered, score_keys), start=1):
+        if value != previous_key:
+            current_rank = position
+            previous_key = value
+        tie_count = tie_counts[value]
+        item[f"{prefix}_rank"] = current_rank
+        item[f"{prefix}_rank_tied"] = tie_count > 1
+        item[f"{prefix}_rank_tie_count"] = tie_count
+
+
+def _calculate_window_metrics(
+    sector_history: Dict[str, Any],
+    trend_window: int,
+) -> Dict[str, Any]:
+    if trend_window <= 0:
+        raise ValueError("trend_window must be positive")
+
+    source_returns = list(sector_history.get("recent_returns", []))
+    recent_returns = source_returns[-trend_window:]
+    actual_history_days = len(recent_returns)
+    coverage = actual_history_days / trend_window
+
+    wealth = 1.0
+    peak = 1.0
+    max_drawdown = 0.0
+    for daily_return in recent_returns:
+        wealth *= 1.0 + daily_return / 100.0
+        peak = max(peak, wealth)
+        max_drawdown = min(max_drawdown, (wealth / peak - 1.0) * 100.0)
+
+    if actual_history_days > 1:
+        mean = sum(recent_returns) / actual_history_days
+        variance = sum(
+            (daily_return - mean) ** 2 for daily_return in recent_returns
+        ) / actual_history_days
+        volatility = variance ** 0.5
+    else:
+        volatility = 0.0
+
+    return {
+        "recent_returns": recent_returns,
+        "total_return": (wealth - 1.0) * 100.0,
+        "positive_days": sum(1 for daily_return in recent_returns if daily_return > 0),
+        "total_days": actual_history_days,
+        "max_drawdown": max_drawdown,
+        "volatility": volatility,
+        "history_days": sector_history.get("history_days", len(source_returns)),
+        "actual_history_days": actual_history_days,
+        "history_coverage_ratio": coverage,
+        "trend_window_status": (
+            "ok"
+            if coverage >= 1.0
+            else "partial_history"
+            if coverage >= 0.5
+            else "insufficient_history"
+        ),
+    }
 
 
 def _determine_rotation_phase(

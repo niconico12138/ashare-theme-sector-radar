@@ -11,7 +11,7 @@ import tempfile
 
 import pytest
 
-from theme_sector_radar.cli import main
+from theme_sector_radar.cli import _calculate_history_metrics, main
 
 
 class TestCLISectorScoringRange:
@@ -142,3 +142,56 @@ class TestCLISectorScoringRange:
             # 验证单日评分输出
             score_path = os.path.join(output_dir, "2026-06-29", "sector_scores.json")
             assert os.path.exists(score_path)
+
+
+class TestHistoryMetricNormalization:
+    def test_close_history_is_sorted_and_uses_n_plus_one_prices(self):
+        ordered = [
+            {"date": "2026-01-05", "close": 100.0},
+            {"date": "2026-01-06", "close": 110.0},
+            {"date": "2026-01-07", "close": 121.0},
+        ]
+        unordered = [ordered[2], ordered[0], ordered[1]]
+
+        expected = _calculate_history_metrics(ordered)
+        actual = _calculate_history_metrics(unordered)
+
+        assert actual == expected
+        assert actual["recent_returns"] == pytest.approx([10.0, 10.0])
+        assert actual["recent_dates"] == ["2026-01-06", "2026-01-07"]
+        assert actual["recent_periods"] == [
+            ["2026-01-05", "2026-01-06"],
+            ["2026-01-06", "2026-01-07"],
+        ]
+        assert actual["history_days"] == 2
+        assert actual["total_return"] == pytest.approx(21.0)
+
+    @pytest.mark.parametrize(
+        ("history", "message"),
+        [
+            (
+                [
+                    {"date": "2026-01-05", "close": 100.0},
+                    {"date": "2026-01-05", "close": 101.0},
+                ],
+                "duplicate history date",
+            ),
+            ([{"date": "2026-02-30", "close": 100.0}], "invalid history date"),
+            (
+                [
+                    {"date": "2026-01-05", "daily_return": float("nan")},
+                ],
+                "finite return or close",
+            ),
+            (
+                [
+                    {"date": "2026-01-05", "close": 100.0},
+                    {"date": "2026-01-06", "close": float("inf")},
+                ],
+                "non-finite close",
+            ),
+        ],
+    )
+    def test_invalid_history_is_rejected(self, history, message):
+        with pytest.raises(ValueError, match=message):
+            _calculate_history_metrics(history)

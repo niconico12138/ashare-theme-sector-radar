@@ -11,7 +11,6 @@ Daily Decision Summary 测试
 - 不包含 forbidden trade words
 """
 
-import json
 import sys
 from pathlib import Path
 
@@ -21,18 +20,13 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from theme_sector_radar.reporting.daily_decision_summary import build_daily_decision_summary
-
-
-# ============================================================
-# Forbidden Words
-# ============================================================
-
-FORBIDDEN_WORDS = [
-    "buy", "sell", "hold",
-    "买入", "卖出", "持有", "推荐",
-    "建仓", "加仓", "减仓",
-    "止盈", "止损", "目标价",
-]
+from theme_sector_radar.reporting.paper_only_contract import (
+    validate_no_executable_instructions,
+)
+from tests.theme_sector_radar.paper_only_contract import (
+    FORBIDDEN_WORDS,
+    extract_executable_instructions,
+)
 
 
 # ============================================================
@@ -41,6 +35,150 @@ FORBIDDEN_WORDS = [
 
 class TestDailyDecisionSummary:
     """测试 daily decision summary。"""
+
+    def test_executable_instruction_extractor_ignores_research_text(self):
+        payload = {
+            "research_note": "buy and hold research only",
+            "shadow_status": "paper_hold_observation",
+            "Orders": [{"side": "sell"}],
+            "command": {"side": "buy"},
+            "position_size": 0.5,
+            "submit_order": True,
+        }
+
+        instruction_keys, instruction_texts = extract_executable_instructions(payload)
+
+        assert instruction_keys == {
+            "orders",
+            "side",
+            "command",
+            "position_size",
+            "submit_order",
+        }
+        assert instruction_texts == ["sell", "buy", "0.5", "True"]
+
+    def test_executable_instruction_extractor_rejects_common_order_fields(self):
+        payload = {
+            "side": "buy",
+            "action": "sell",
+            "quantity": 100,
+            "qty": 25,
+            "limit_price": 12.5,
+        }
+
+        instruction_keys, instruction_texts = extract_executable_instructions(payload)
+
+        assert instruction_keys == {
+            "side",
+            "action",
+            "quantity",
+            "qty",
+            "limit_price",
+        }
+        assert instruction_texts == ["buy", "sell", "100", "25", "12.5"]
+
+    def test_executable_instruction_extractor_rejects_broker_and_live_orders(self):
+        payload = {
+            "broker_order": {
+                "ticker": "600001",
+                "shares": 100,
+                "direction": "buy",
+            },
+            "live_order": {
+                "ticker": "600002",
+                "shares": 200,
+                "direction": "sell",
+            },
+        }
+
+        instruction_keys, instruction_texts = extract_executable_instructions(payload)
+
+        assert instruction_keys == {"broker_order", "live_order", "shares"}
+        assert instruction_texts == ["600001", "100", "buy", "600002", "200", "sell"]
+
+    @pytest.mark.parametrize(
+        "payload",
+        [
+            {"position": "FULL"},
+            {"trade": {"direction": "BUY", "size": 100, "price": 10.5}},
+            {"tradeDirection": "SELL", "allocationPct": 100},
+            {
+                "execution": {
+                    "ticker": "600001",
+                    "direction": "BUY",
+                    "allocation": 0.5,
+                    "units": 100,
+                    "price": 10.5,
+                    "timeInForce": "DAY",
+                }
+            },
+            *(
+                {
+                    container: {
+                    "ticker": "600001",
+                    "direction": "BUY",
+                    "allocation": 0.5,
+                    "units": 100,
+                    "price": 10.5,
+                    "timeInForce": "DAY",
+                    }
+                }
+                for container in (
+                    "executionData",
+                    "execution_data",
+                    "executiondata",
+                    "execution_assumptions",
+                    "executionDetails",
+                    "tradeDetails",
+                    "transaction",
+                    "positionDetails",
+                )
+            ),
+        ],
+    )
+    def test_paper_only_contract_rejects_common_executable_aliases(self, payload):
+        instruction_keys, _ = extract_executable_instructions(payload)
+
+        assert instruction_keys
+        with pytest.raises(ValueError, match="executable instruction fields"):
+            validate_no_executable_instructions(payload, context="test payload")
+
+    def test_paper_only_contract_rejects_flattened_complete_execution_payload(self):
+        payload = {
+            "ticker": "600001",
+            "direction": "BUY",
+            "allocation": 0.5,
+            "units": 100,
+            "price": 10.5,
+            "timeInForce": "DAY",
+        }
+
+        with pytest.raises(ValueError, match="executable instruction fields"):
+            validate_no_executable_instructions(payload, context="test payload")
+
+    def test_paper_only_contract_rejects_cross_level_complete_execution_payload(self):
+        payload = {
+            "execution_assumptions": {
+                "direction": "BUY",
+                "size": 100,
+                "asset": {"ticker": "600001"},
+            }
+        }
+
+        with pytest.raises(ValueError, match="executable instruction fields"):
+            validate_no_executable_instructions(payload, context="test payload")
+
+    def test_paper_only_contract_allows_non_executable_research_assumptions(self):
+        validate_no_executable_instructions(
+            {"execution_assumptions": {"slippage_bps": 10, "latency_model": "paper"}},
+            context="test payload",
+        )
+
+    def test_paper_only_contract_allows_order_book_research_factor(self):
+        validate_no_executable_instructions(
+            {"research": {"order_book_imbalance": 0.23}},
+            context="test payload",
+        )
 
     def test_normal_input(self):
         """正常输入应生成完整 summary。"""
@@ -146,11 +284,12 @@ class TestDailyDecisionSummary:
 
         result = build_daily_decision_summary("2026-07-10", unified_report, [], [])
 
-        # 转换为 JSON 字符串检查
-        result_str = json.dumps(result, ensure_ascii=False)
+        instruction_keys, instruction_texts = extract_executable_instructions(result)
+        assert not instruction_keys, f"Found executable instruction keys: {sorted(instruction_keys)}"
+        executable_text = "\n".join(instruction_texts).casefold()
 
         for word in FORBIDDEN_WORDS:
-            assert word not in result_str, f"Found forbidden word: {word}"
+            assert word.casefold() not in executable_text, f"Found forbidden word: {word}"
 
     def test_trend_top_final_score_not_lost(self):
         """trend_top_stocks 中 final_score 不应丢失。"""
@@ -230,6 +369,7 @@ class TestDailyDecisionSummary:
         assert div_review[0]["final_score"] == 60.2
         assert div_review[0]["v2_score"] == 26.66
         assert div_review[0]["signal_type"] == "high_final_low_v2"
+        assert div_review[0]["action_state"] == "watch_only"
 
         # v2_potential 应包含 low_final_high_v2
         v2_pot = result["stock_pools"]["v2_potential"]
@@ -238,7 +378,11 @@ class TestDailyDecisionSummary:
         assert v2_pot[0]["final_score"] == 30.0
         assert v2_pot[0]["v2_score"] == 80.0
         assert v2_pot[0]["signal_type"] == "low_final_high_v2"
-        result_str = json.dumps(result, ensure_ascii=False)
+        assert v2_pot[0]["action_state"] == "watch_only"
+
+        instruction_keys, instruction_texts = extract_executable_instructions(result)
+        assert not instruction_keys, f"Found executable instruction keys: {sorted(instruction_keys)}"
+        executable_text = "\n".join(instruction_texts).casefold()
 
         for word in FORBIDDEN_WORDS:
-            assert word not in result_str, f"Found forbidden word: {word}"
+            assert word.casefold() not in executable_text, f"Found forbidden word: {word}"

@@ -1,4 +1,7 @@
 import json
+import hashlib
+
+from theme_sector_radar.data.trading_calendar import build_trading_calendar_report
 
 from scripts.run_scoring_calibration_batch import (
     discover_candidate_dates,
@@ -10,6 +13,29 @@ from scripts.run_scoring_calibration_batch import (
 def _write_json(path, payload):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload), encoding="utf-8")
+
+
+def _calendar():
+    return {
+        "dates": ["2026-07-01", "2026-07-02", "2026-07-03"],
+        "source": "unit_test_calendar",
+        "path": "unit_test_calendar.json",
+        "sha256": "a" * 64,
+        "requested_start": "2026-07-01",
+        "requested_end": "2026-07-03",
+    }
+
+
+def _write_calendar(tmp_path):
+    path = tmp_path / "calendar.json"
+    report = build_trading_calendar_report(
+        ["2026-07-01", "2026-07-02", "2026-07-03"],
+        source="unit_test_calendar",
+        requested_start="2026-07-01",
+        requested_end="2026-07-03",
+    )
+    _write_json(path, report)
+    return path, hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 class FakeClient:
@@ -48,6 +74,7 @@ def test_batch_generates_missing_forward_returns_and_aggregate(tmp_path):
         output_dir=output_dir,
         horizons=(1,),
         client=FakeClient(),
+        trading_calendar=_calendar(),
     )
 
     assert result["summary"]["generated_forward_returns"] == 2
@@ -70,6 +97,7 @@ def test_batch_skips_existing_forward_returns_unless_force(tmp_path):
         output_dir=output_dir,
         horizons=(1,),
         client=FakeClient(),
+        trading_calendar=_calendar(),
     )
     forced = run_scoring_calibration_batch(
         ["2026-07-01"],
@@ -79,6 +107,7 @@ def test_batch_skips_existing_forward_returns_unless_force(tmp_path):
         horizons=(1,),
         client=FakeClient(),
         force=True,
+        trading_calendar=_calendar(),
     )
 
     assert skipped["summary"]["skipped_existing_forward_returns"] == 1
@@ -106,6 +135,7 @@ def test_batch_summarizes_bars_data_sources_for_existing_and_generated_returns(t
         output_dir=output_dir,
         horizons=(1,),
         client=FakeSdkSelectedClient(),
+        trading_calendar=_calendar(),
     )
 
     assert result["bars_data_source_summary"]["by_source"] == {"http": 1, "stockdb-sdk": 1}
@@ -128,6 +158,7 @@ def test_cli_batch_writes_summary(tmp_path):
     returns_root = tmp_path / "forward_returns"
     output_dir = tmp_path / "scoring_calibration"
     _write_json(candidate_root / "2026-07-01" / "top30_candidates.json", {"candidates": [{"code": "600001", "final_score": 80}]})
+    calendar_path, calendar_sha = _write_calendar(tmp_path)
 
     exit_code = main(
         [
@@ -143,6 +174,10 @@ def test_cli_batch_writes_summary(tmp_path):
             "1",
             "--source",
             "http",
+            "--trading-calendar-path",
+            str(calendar_path),
+            "--expected-calendar-sha256",
+            calendar_sha,
         ],
         client=FakeClient(),
     )
@@ -156,6 +191,7 @@ def test_cli_batch_accepts_stockdb_sdk_source_with_injected_client(tmp_path):
     returns_root = tmp_path / "forward_returns"
     output_dir = tmp_path / "scoring_calibration"
     _write_json(candidate_root / "2026-07-01" / "top30_candidates.json", {"candidates": [{"code": "600001", "final_score": 80}]})
+    calendar_path, calendar_sha = _write_calendar(tmp_path)
 
     exit_code = main(
         [
@@ -171,6 +207,10 @@ def test_cli_batch_accepts_stockdb_sdk_source_with_injected_client(tmp_path):
             "1",
             "--source",
             "stockdb-sdk",
+            "--trading-calendar-path",
+            str(calendar_path),
+            "--expected-calendar-sha256",
+            calendar_sha,
         ],
         client=FakeClient(),
     )
@@ -183,6 +223,7 @@ def test_cli_batch_accepts_auto_source_with_injected_client(tmp_path):
     returns_root = tmp_path / "forward_returns"
     output_dir = tmp_path / "scoring_calibration"
     _write_json(candidate_root / "2026-07-01" / "top30_candidates.json", {"candidates": [{"code": "600001", "final_score": 80}]})
+    calendar_path, calendar_sha = _write_calendar(tmp_path)
 
     exit_code = main(
         [
@@ -198,6 +239,10 @@ def test_cli_batch_accepts_auto_source_with_injected_client(tmp_path):
             "1",
             "--source",
             "auto",
+            "--trading-calendar-path",
+            str(calendar_path),
+            "--expected-calendar-sha256",
+            calendar_sha,
         ],
         client=FakeClient(),
     )
@@ -210,6 +255,7 @@ def test_cli_batch_prints_bars_data_source_summary(tmp_path, capsys):
     returns_root = tmp_path / "forward_returns"
     output_dir = tmp_path / "scoring_calibration"
     _write_json(candidate_root / "2026-07-01" / "top30_candidates.json", {"candidates": [{"code": "600001", "final_score": 80}]})
+    calendar_path, calendar_sha = _write_calendar(tmp_path)
 
     exit_code = main(
         [
@@ -225,6 +271,10 @@ def test_cli_batch_prints_bars_data_source_summary(tmp_path, capsys):
             "1",
             "--source",
             "auto",
+            "--trading-calendar-path",
+            str(calendar_path),
+            "--expected-calendar-sha256",
+            calendar_sha,
         ],
         client=FakeSdkSelectedClient(),
     )

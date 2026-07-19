@@ -132,6 +132,27 @@ def _extract_intraday_price(point: dict) -> float:
     return 0.0
 
 
+PRICE_MOMENTUM_EXPANSION_IDS = (
+    "return_5m_strength_score",
+    "return_15m_strength_score",
+    "return_60m_strength_score",
+    "positive_bar_ratio_score",
+    "rolling_price_slope_score",
+    "intraday_breakout_strength_score",
+    "breakout_hold_score",
+    "pullback_reclaim_momentum_score",
+)
+
+
+def _intraday_return_strength(prices: list[float], bars: int) -> float:
+    if len(prices) <= bars:
+        return 50.0
+    anchor = prices[-bars - 1]
+    if anchor <= 0:
+        return 50.0
+    return _clamp_score(50.0 + (prices[-1] / anchor - 1.0) * 1200.0)
+
+
 def calculate_intraday_factors(candidate: dict) -> dict[str, float | None]:
     """Calculate shadow-only intraday factors when intraday bars are available."""
     empty = {
@@ -153,10 +174,24 @@ def calculate_intraday_factors(candidate: dict) -> dict[str, float | None]:
         "late_price_above_vwap_ratio": None,
         "vwap_slope_score": None,
         "vwap_reclaim_score": None,
+        "open_vwap_reclaim_score": None,
+        "midday_vwap_support_score": None,
+        "vwap_distance_stability_score": None,
+        "vwap_pullback_support_score": None,
+        "vwap_breakout_confirm_score": None,
+        "vwap_above_ratio_score": None,
         "volume_without_price_progress_risk": None,
         "late_volume_efficiency_score": None,
         "amount_acceleration_score": None,
         "volume_spike_exhaustion_score": None,
+        "early_amount_surge_score": None,
+        "midday_amount_sustain_score": None,
+        "late_amount_surge_score": None,
+        "amount_trend_persistence_score": None,
+        "volume_price_alignment_score": None,
+        "breakout_volume_confirm_score": None,
+        "pullback_volume_dryup_score": None,
+        "late_money_flow_concentration_score": None,
         "opening_drive_score": None,
         "morning_strength_persist_score": None,
         "morning_pullback_repair_score": None,
@@ -165,6 +200,87 @@ def calculate_intraday_factors(candidate: dict) -> dict[str, float | None]:
         "sector_late_breadth_score": None,
         "leader_follower_sync_score": None,
         "stock_vs_sector_intraday_alpha": None,
+        "sector_peer_rank_score": None,
+        "market_regime_score": None,
+        "sector_leader_score": None,
+        "open_to_high_progress_score": None,
+        "close_above_midrange_score": None,
+        "low_reclaim_position_score": None,
+        "late_range_expansion_score": None,
+        "high_area_acceptance_score": None,
+        "close_location_stability_score": None,
+        "sector_breadth_persistence_score": None,
+        "sector_late_acceleration_score": None,
+        "leader_sync_persistence_score": None,
+        "sector_alpha_confirmation_score": None,
+        "sector_breadth_quality_score": None,
+        "theme_confirmation_composite_score": None,
+        "stock_intraday_rank_proxy_score": None,
+        "stock_vs_market_intraday_alpha_score": None,
+        "relative_late_strength_score": None,
+        "relative_vwap_strength_score": None,
+        "relative_breakout_leadership_score": None,
+        "relative_resilience_score": None,
+        "open_high_reversal_risk": None,
+        "late_breakdown_risk": None,
+        "failed_breakout_risk": None,
+        "lower_low_sequence_risk": None,
+        "volatility_expansion_reversal_risk": None,
+        "weak_close_after_volume_risk": None,
+        "first_hour_follow_through_score": None,
+        "midday_hold_score": None,
+        "afternoon_recovery_score": None,
+        "late_session_acceleration_score": None,
+        "session_consistency_score": None,
+        "close_auction_strength_proxy_score": None,
+        "return_5m_strength_score": None,
+        "return_15m_strength_score": None,
+        "return_60m_strength_score": None,
+        "positive_bar_ratio_score": None,
+        "rolling_price_slope_score": None,
+        "intraday_breakout_strength_score": None,
+        "breakout_hold_score": None,
+        "pullback_reclaim_momentum_score": None,
+        "execution_liquidity_amount_score": None,
+        "execution_amount_continuity_score": None,
+        "execution_price_impact_risk": None,
+        "execution_vwap_slippage_risk": None,
+        "execution_spread_proxy_score": None,
+        "execution_turnover_depth_score": None,
+        "execution_tradeability_score": None,
+        "execution_gap_to_limit_up_score": None,
+        "execution_gap_to_limit_down_risk": None,
+        "execution_microstructure_quality_score": None,
+        "cashout_late_surge_risk": None,
+        "cashout_late_fade_risk": None,
+        "cashout_high_volume_stall_risk": None,
+        "cashout_close_giveback_risk": None,
+        "cashout_tail_amount_concentration_risk": None,
+        "cashout_overheat_without_breadth_risk": None,
+        "cashout_vwap_extension_risk": None,
+        "cashout_failed_late_breakout_risk": None,
+        "cashout_auction_weakness_risk": None,
+        "cashout_next_day_pressure_proxy": None,
+        "sector_continuation_breadth_score": None,
+        "sector_continuation_late_breadth_score": None,
+        "sector_continuation_leader_sync_score": None,
+        "sector_continuation_alpha_support_score": None,
+        "sector_continuation_peer_rank_score": None,
+        "sector_continuation_theme_quality_score": None,
+        "sector_continuation_market_alignment_score": None,
+        "sector_continuation_breadth_acceleration_score": None,
+        "sector_continuation_concentration_balance_score": None,
+        "sector_continuation_composite_score": None,
+        "market_environment_index_trend_score": None,
+        "market_environment_vwap_support_score": None,
+        "market_environment_breadth_score": None,
+        "market_environment_limit_up_breadth_score": None,
+        "market_environment_limit_down_risk": None,
+        "market_environment_failure_risk": None,
+        "market_environment_leader_continuation_score": None,
+        "market_environment_crowding_risk": None,
+        "market_environment_risk_appetite_score": None,
+        "market_environment_composite_score": None,
     }
     intraday_bars = candidate.get("intraday_bars") or candidate.get("minute_bars") or candidate.get("ticks")
     if not isinstance(intraday_bars, list) or len(intraday_bars) < 3:
@@ -233,6 +349,9 @@ def calculate_intraday_factors(candidate: dict) -> dict[str, float | None]:
         sector_late_breadth = _clamp_score(_safe_float(candidate.get("sector_late_breadth_score"), sector_breadth_score))
         leader_follower_sync = _clamp_score(_safe_float(candidate.get("leader_follower_sync_score"), 50.0))
         stock_sector_alpha = _clamp_score(50.0 + _safe_float(candidate.get("stock_vs_sector_intraday_alpha"), 0.0) * 5.0)
+        sector_peer_rank = _clamp_score(_safe_float(candidate.get("sector_peer_rank_score"), 50.0))
+        market_regime = _clamp_score(_safe_float(candidate.get("market_regime_score"), 50.0))
+        sector_leader = _clamp_score(_safe_float(candidate.get("sector_leader_score"), 50.0))
 
         late_amount = sum(late_amounts) if late_amounts else 0.0
         late_volume_share = late_amount / total_amount if total_amount > 0 else 0.0
@@ -275,6 +394,26 @@ def calculate_intraday_factors(candidate: dict) -> dict[str, float | None]:
         vwap_slope_score = _clamp_score(50.0 + ((second_vwap - first_vwap) / first_vwap * 100.0 * 12.0 if first_vwap > 0 else 0.0))
         was_below_vwap = any(price < vwap for price in prices[:midday_idx])
         vwap_reclaim_score = _clamp_score(close_vs_vwap_score + (18.0 if was_below_vwap and current >= vwap else 0.0))
+        prices_above_vwap_ratio = sum(1 for price in prices if price >= vwap) / len(prices) * 100.0 if prices else 50.0
+        first_third_above_vwap = sum(1 for price in prices[:morning_end] if price >= vwap) / len(morning_prices) * 100.0
+        midday_prices = prices[morning_end:midday_idx + 1] if midday_idx + 1 > morning_end else prices[:midday_idx + 1]
+        midday_above_vwap_ratio = (
+            sum(1 for price in midday_prices if price >= vwap) / len(midday_prices) * 100.0
+            if midday_prices else 50.0
+        )
+        avg_vwap_distance = (
+            sum(abs(price - vwap) / vwap * 100.0 for price in prices) / len(prices)
+            if vwap > 0 else 0.0
+        )
+        late_vwap_reclaim = any(price < vwap for price in prices[:morning_end]) and current >= vwap
+        below_vwap_pullback = min(prices[morning_end:]) if len(prices) > morning_end else low
+        pullback_vs_vwap = (below_vwap_pullback - vwap) / vwap * 100.0 if vwap > 0 else 0.0
+        open_vwap_reclaim_score = _clamp_score(50.0 + close_vs_vwap * 12.0 + (18.0 if late_vwap_reclaim else 0.0) - max(0.0, 45.0 - first_third_above_vwap) * 0.25)
+        midday_vwap_support_score = _clamp_score(midday_above_vwap_ratio * 0.55 + close_vs_vwap_score * 0.45)
+        vwap_distance_stability_score = _clamp_score(82.0 - avg_vwap_distance * 10.0 + max(0.0, close_vs_vwap) * 6.0 - max_gain_giveback_ratio * 0.25)
+        vwap_pullback_support_score = _clamp_score(50.0 + max(-2.0, pullback_vs_vwap) * 7.0 + close_vs_vwap * 10.0 + late_above_vwap_ratio * 0.25)
+        vwap_breakout_confirm_score = _clamp_score(50.0 + close_vs_vwap * 12.0 + max(0.0, (current - max(prices[:-1])) / max(prices[:-1]) * 100.0 if max(prices[:-1]) > 0 else 0.0) * 24.0)
+        vwap_above_ratio_score = _clamp_score(prices_above_vwap_ratio)
 
         price_progress = max(0.0, day_return)
         amount_acceleration = second_half_amount / first_half_amount if first_half_amount > 0 else 1.0
@@ -285,6 +424,74 @@ def calculate_intraday_factors(candidate: dict) -> dict[str, float | None]:
         avg_amount = total_amount / len(amounts) if amounts else 0.0
         spike_ratio = max_amount / avg_amount if avg_amount > 0 else 1.0
         volume_spike_exhaustion_score = _clamp_score(max(0.0, spike_ratio - 1.8) * 25.0 + max_gain_giveback_ratio * 0.45)
+        early_amount_surge_score = 50.0
+        midday_amount_sustain_score = 50.0
+        late_amount_surge_score = 50.0
+        amount_trend_persistence_score = 50.0
+        volume_price_alignment_score = 50.0
+        breakout_volume_confirm_score = 50.0
+        pullback_volume_dryup_score = 50.0
+        late_money_flow_concentration_score = 50.0
+        if amounts and len(amounts) == len(prices) and avg_amount > 0:
+            early_window = max(2, min(4, len(amounts) // 3 or 2))
+            early_avg_amount = sum(amounts[:early_window]) / early_window
+            late_avg_amount = sum(late_amounts) / len(late_amounts) if late_amounts else avg_amount
+            first_half_avg_amount = first_half_amount / len(first_half_amounts) if first_half_amounts else avg_amount
+            second_half_avg_amount = second_half_amount / len(second_half_amounts) if second_half_amounts else avg_amount
+            prior_late_amount = sum(amounts[:-late_window]) / len(amounts[:-late_window]) if len(amounts) > late_window else avg_amount
+            early_return_for_flow = (prices[early_window - 1] / open_price - 1.0) * 100.0 if open_price > 0 else 0.0
+            late_amount_ratio = late_avg_amount / prior_late_amount if prior_late_amount > 0 else 1.0
+            early_amount_ratio = early_avg_amount / amounts[0] if amounts[0] > 0 else 1.0
+            sustain_ratio = second_half_avg_amount / first_half_avg_amount if first_half_avg_amount > 0 else 1.0
+
+            amount_up_count = sum(1 for previous, current_amount in zip(amounts, amounts[1:]) if current_amount >= previous)
+            price_up_count = sum(1 for previous, current_price in zip(prices, prices[1:]) if current_price >= previous)
+            aligned_count = sum(
+                1
+                for previous_price, current_price, previous_amount, current_amount
+                in zip(prices, prices[1:], amounts, amounts[1:])
+                if (current_price >= previous_price and current_amount >= previous_amount)
+                or (current_price < previous_price and current_amount <= previous_amount)
+            )
+            down_amounts = [
+                current_amount
+                for previous_price, current_price, current_amount in zip(prices, prices[1:], amounts[1:])
+                if current_price < previous_price
+            ]
+            down_avg_amount = sum(down_amounts) / len(down_amounts) if down_amounts else 0.0
+            down_amount_ratio = down_avg_amount / avg_amount if avg_amount > 0 else 0.0
+            prior_high_for_volume = max(prices[:-1])
+            breakout_pct_for_volume = (current / prior_high_for_volume - 1.0) * 100.0 if prior_high_for_volume > 0 else 0.0
+
+            early_amount_surge_score = _clamp_score(
+                50.0 + (early_amount_ratio - 1.0) * 16.0 + early_return_for_flow * 8.0 - max_gain_giveback_ratio * 0.6
+            )
+            midday_amount_sustain_score = _clamp_score(
+                50.0 + (sustain_ratio - 1.0) * 28.0 + max(0.0, day_return) * 4.0 - max_gain_giveback_ratio * 0.45
+            )
+            late_amount_surge_score = _clamp_score(
+                50.0 + (late_amount_ratio - 1.0) * 24.0 + late_return * 10.0 - max_gain_giveback_ratio * 0.55
+            )
+            amount_trend_persistence_score = _clamp_score(
+                (amount_up_count / max(1, len(amounts) - 1) * 45.0)
+                + (price_up_count / max(1, len(prices) - 1) * 35.0)
+                + max(0.0, day_return) * 3.0
+                - max_gain_giveback_ratio * 0.25
+            )
+            volume_price_alignment_score = _clamp_score(
+                aligned_count / max(1, len(prices) - 1) * 100.0
+                + max(0.0, day_return) * 2.0
+                - max_gain_giveback_ratio * 0.35
+            )
+            breakout_volume_confirm_score = _clamp_score(
+                50.0 + breakout_pct_for_volume * 22.0 + (late_amount_ratio - 1.0) * 22.0 - max_gain_giveback_ratio * 0.5
+            )
+            pullback_volume_dryup_score = _clamp_score(
+                78.0 - down_amount_ratio * 28.0 + max(0.0, day_return) * 2.0 - max_gain_giveback_ratio * 0.45
+            )
+            late_money_flow_concentration_score = _clamp_score(
+                late_volume_share_score * 0.45 + late_amount_surge_score * 0.35 + late_volume_efficiency_score * 0.20
+            )
 
         opening_drive = (prices[min(1, len(prices) - 1)] - prev_close) / prev_close * 100.0 if prev_close > 0 else 0.0
         opening_drive_score = _clamp_score(50.0 + opening_drive * 12.0)
@@ -295,6 +502,227 @@ def calculate_intraday_factors(candidate: dict) -> dict[str, float | None]:
         midday_price = prices[midday_idx]
         open_to_midday_return = (midday_price - open_price) / open_price * 100.0 if open_price > 0 else 0.0
         open_to_midday_resilience_score = _clamp_score(50.0 + open_to_midday_return * 12.0 - max(0.0, (open_price - morning_low) / open_price * 100.0 if open_price > 0 else 0.0) * 8.0)
+
+        positive_bar_ratio_score = _clamp_score(
+            sum(1 for previous, current_price in zip(prices, prices[1:]) if current_price > previous)
+            / max(1, len(prices) - 1)
+            * 100.0
+        )
+        slope_window = prices[-min(6, len(prices)):]
+        slope_anchor = slope_window[0]
+        rolling_price_slope_score = _clamp_score(
+            50.0 + ((slope_window[-1] / slope_anchor - 1.0) * 1200.0 if slope_anchor > 0 else 0.0)
+        )
+        prior_high = max(prices[:-1])
+        breakout_pct = (current - prior_high) / prior_high * 100.0 if prior_high > 0 else 0.0
+        intraday_breakout_strength_score = _clamp_score(50.0 + breakout_pct * 12.0)
+        breakout_hold_score = _clamp_score(50.0 + breakout_pct * 18.0)
+        reclaim_low = min(prices[-min(4, len(prices)):])
+        reclaim_pct = (current - reclaim_low) / reclaim_low * 100.0 if reclaim_low > 0 else 0.0
+        pullback_reclaim_momentum_score = _clamp_score(50.0 + reclaim_pct * 18.0)
+
+        close_above_midrange_score = _clamp_score(50.0 + (close_position - 50.0) * 1.1 + day_return * 2.0)
+        low_reclaim_position_score = _clamp_score(50.0 + ((current - low) / low * 100.0 * 7.0 if low > 0 else 0.0) - max_gain_giveback_ratio * 0.35)
+        open_to_high_progress_score = _clamp_score(50.0 + max(0.0, day_return) * 5.0 + close_position * 0.35 - max_gain_giveback_ratio * 0.45)
+        late_range = max(late_prices) - min(late_prices) if late_prices else 0.0
+        full_range = intraday_range if intraday_range > 0 else 1.0
+        late_range_expansion_score = _clamp_score(50.0 + late_return * 8.0 + late_range / full_range * 35.0 - max_gain_giveback_ratio * 0.35)
+        high_area_acceptance_score = _clamp_score(late_high_near_close_score * 0.65 + close_position * 0.35)
+        close_location_stability_score = _clamp_score(close_position * 0.55 + positive_bar_ratio_score * 0.25 + (100.0 - max_gain_giveback_ratio) * 0.20)
+
+        sector_breadth_persistence_score = _clamp_score(sector_breadth_score * 0.45 + sector_breadth_change * 0.25 + sector_late_breadth * 0.30)
+        sector_late_acceleration_score = _clamp_score(sector_late_breadth * 0.55 + sector_breadth_change * 0.25 + late_strength * 0.20)
+        leader_sync_persistence_score = _clamp_score(leader_follower_sync * 0.65 + sector_leader * 0.20 + sector_breadth_score * 0.15)
+        sector_alpha_confirmation_score = _clamp_score(stock_sector_alpha * 0.45 + sector_breadth_score * 0.25 + sector_late_breadth * 0.30)
+        sector_breadth_quality_score = _clamp_score(sector_breadth_score * 0.35 + sector_late_breadth * 0.35 + market_regime * 0.15 + leader_follower_sync * 0.15)
+        theme_confirmation_composite_score = _clamp_score(
+            sector_breadth_persistence_score * 0.28
+            + sector_late_acceleration_score * 0.22
+            + leader_sync_persistence_score * 0.20
+            + sector_alpha_confirmation_score * 0.18
+            + sector_breadth_quality_score * 0.12
+        )
+
+        market_intraday_return = _safe_float(candidate.get("market_intraday_return_pct"), 0.0)
+        sector_intraday_return = _safe_float(candidate.get("sector_intraday_return_pct"), 0.0)
+        stock_vs_market_alpha = day_return - market_intraday_return
+        stock_vs_sector_alpha_pct = day_return - sector_intraday_return
+        stock_intraday_rank_proxy_score = _clamp_score(sector_peer_rank * 0.45 + stock_sector_alpha * 0.35 + close_position * 0.20)
+        stock_vs_market_intraday_alpha_score = _clamp_score(50.0 + stock_vs_market_alpha * 7.0)
+        relative_late_strength_score = _clamp_score(50.0 + (late_return - sector_intraday_return * 0.35) * 9.0 + stock_sector_alpha * 0.15)
+        relative_vwap_strength_score = _clamp_score(close_vs_vwap_score * 0.55 + stock_sector_alpha * 0.25 + sector_peer_rank * 0.20)
+        relative_breakout_leadership_score = _clamp_score(intraday_breakout_strength_score * 0.35 + stock_sector_alpha * 0.30 + sector_leader * 0.20 + sector_peer_rank * 0.15)
+        relative_resilience_score = _clamp_score(close_position * 0.35 + stock_vs_market_intraday_alpha_score * 0.30 + stock_sector_alpha * 0.20 + (100.0 - max_gain_giveback_ratio) * 0.15)
+
+        lower_low_count = sum(1 for previous, current_price in zip(prices, prices[1:]) if current_price < previous)
+        late_breakdown_pct = (late_anchor - current) / late_anchor * 100.0 if late_anchor > 0 and current < late_anchor else 0.0
+        open_high_reversal_risk = _clamp_score(max_gain_giveback_ratio * 0.55 + max(0.0, morning_giveback) * 8.0 + max(0.0, -day_return) * 10.0)
+        late_breakdown_risk = _clamp_score(late_breakdown_pct * 18.0 + max(0.0, 50.0 - close_position) * 0.65 + max(0.0, -close_vs_vwap) * 8.0)
+        failed_breakout_risk = _clamp_score(max_gain_giveback_ratio * 0.70 + max(0.0, -breakout_pct) * 10.0 + max(0.0, 55.0 - close_position) * 0.25)
+        lower_low_sequence_risk = _clamp_score(lower_low_count / max(1, len(prices) - 1) * 75.0 + max(0.0, -day_return) * 8.0)
+        volatility_expansion_reversal_risk = _clamp_score((intraday_range / open_price * 100.0 if open_price > 0 else 0.0) * 7.0 + max_gain_giveback_ratio * 0.55)
+        weak_close_after_volume_risk = _clamp_score(max(0.0, spike_ratio - 1.0) * 18.0 + max(0.0, 50.0 - close_position) * 0.8 + max(0.0, -day_return) * 7.0)
+
+        first_hour_follow_through_score = _clamp_score(
+            50.0 + early_return * 8.0 + morning_strength_persist_score * 0.25 - max_gain_giveback_ratio * 0.70
+        )
+        midday_hold_score = _clamp_score(open_to_midday_resilience_score * 0.55 + close_position * 0.25 + vwap_slope_score * 0.20)
+        afternoon_low = min(afternoon_prices) if afternoon_prices else low
+        afternoon_recovery_pct = (current - afternoon_low) / afternoon_low * 100.0 if afternoon_low > 0 else 0.0
+        afternoon_recovery_score = _clamp_score(50.0 + afternoon_recovery_pct * 12.0 + late_return * 5.0 - max_gain_giveback_ratio * 0.25)
+        late_session_acceleration_score = _clamp_score(late_return_score * 0.45 + rolling_price_slope_score * 0.35 + late_strength * 0.20)
+        session_consistency_score = _clamp_score(positive_bar_ratio_score * 0.45 + (100.0 - max_gain_giveback_ratio) * 0.30 + close_position * 0.25)
+        close_auction_strength_proxy_score = _clamp_score(late_high_near_close_score * 0.45 + late_strength * 0.35 + close_position * 0.20)
+
+        spread_bps = _safe_float(candidate.get("bid_ask_spread_bps"), None)
+        turnover_rate_pct = _safe_float(candidate.get("turnover_rate_pct"), None)
+        limit_up_price = _safe_float(candidate.get("limit_up_price"), None)
+        limit_down_price = _safe_float(candidate.get("limit_down_price"), None)
+        amount_continuity = amount_trend_persistence_score
+        execution_liquidity_amount_score = _clamp_score(math.log10(max(total_amount, 1.0)) * 20.0 - 90.0)
+        execution_amount_continuity_score = _clamp_score(amount_continuity * 0.65 + volume_price_alignment_score * 0.35)
+        execution_price_impact_risk = _clamp_score(max(0.0, spike_ratio - 1.4) * 24.0 + max(0.0, avg_vwap_distance - 1.2) * 12.0 + max(0.0, 60.0 - execution_liquidity_amount_score) * 0.45)
+        execution_vwap_slippage_risk = _clamp_score(
+            avg_vwap_distance * 10.0
+            + max(0.0, 65.0 - vwap_distance_stability_score) * 0.35
+            + max(0.0, 60.0 - volume_price_alignment_score) * 0.25
+            + max(0.0, 50.0 - close_position) * 0.20
+        )
+        execution_spread_proxy_score = (
+            _clamp_score(100.0 - spread_bps * 1.8)
+            if spread_bps is not None
+            else _clamp_score(70.0 - execution_price_impact_risk * 0.35)
+        )
+        execution_turnover_depth_score = (
+            _clamp_score(turnover_rate_pct * 18.0)
+            if turnover_rate_pct is not None
+            else _clamp_score(execution_liquidity_amount_score * 0.70 + amount_continuity * 0.30)
+        )
+        execution_gap_to_limit_up_score = (
+            _clamp_score((limit_up_price - current) / current * 600.0 if current > 0 and limit_up_price and limit_up_price > current else 20.0)
+            if limit_up_price is not None
+            else _clamp_score(100.0 - max(0.0, day_return - 7.0) * 12.0)
+        )
+        execution_gap_to_limit_down_risk = (
+            _clamp_score((current - limit_down_price) / current * -350.0 + 80.0 if current > 0 and limit_down_price and limit_down_price < current else 70.0)
+            if limit_down_price is not None
+            else _clamp_score(max(0.0, -day_return) * 12.0 + late_breakdown_risk * 0.4)
+        )
+        execution_tradeability_score = _clamp_score(
+            execution_liquidity_amount_score * 0.26
+            + execution_amount_continuity_score * 0.20
+            + execution_spread_proxy_score * 0.18
+            + execution_turnover_depth_score * 0.16
+            + execution_gap_to_limit_up_score * 0.10
+            + (100.0 - execution_price_impact_risk) * 0.10
+        )
+        execution_microstructure_quality_score = _clamp_score(
+            execution_tradeability_score * 0.45
+            + (100.0 - execution_vwap_slippage_risk) * 0.20
+            + (100.0 - execution_gap_to_limit_down_risk) * 0.15
+            + volume_price_alignment_score * 0.20
+        )
+
+        cashout_late_surge_risk = _clamp_score(max(0.0, late_amount_surge_score - 55.0) * 1.1 + max(0.0, late_volume_share_score - 70.0) * 0.75)
+        cashout_late_fade_risk = _clamp_score(late_breakdown_risk * 0.60 + max(0.0, 50.0 - late_return_score) * 0.55)
+        cashout_high_volume_stall_risk = _clamp_score(max(0.0, late_amount_surge_score - 55.0) * 0.65 + max(0.0, 55.0 - late_return_score) * 0.85 + volume_without_price_progress_risk * 0.35)
+        cashout_close_giveback_risk = _clamp_score(high_to_close_drawdown_score * 0.75 + max_gain_giveback_ratio * 0.35)
+        cashout_tail_amount_concentration_risk = _clamp_score(max(0.0, late_volume_share_score - 55.0) * 0.95 + max(0.0, spike_ratio - 1.8) * 18.0)
+        cashout_overheat_without_breadth_risk = _clamp_score(max(0.0, day_return - 4.0) * 10.0 + max(0.0, 55.0 - sector_breadth_quality_score) * 0.75)
+        cashout_vwap_extension_risk = _clamp_score(
+            avg_vwap_distance * 8.0
+            + max(0.0, 65.0 - late_vwap_support_score) * 0.45
+            + max(0.0, 60.0 - sector_breadth_quality_score) * 0.25
+        )
+        cashout_failed_late_breakout_risk = _clamp_score(failed_breakout_risk * 0.65 + max(0.0, 60.0 - breakout_hold_score) * 0.55)
+        cashout_auction_weakness_risk = _clamp_score(max(0.0, 60.0 - close_auction_strength_proxy_score) * 1.1 + max(0.0, -late_return) * 12.0)
+        cashout_next_day_pressure_proxy = _clamp_score(
+            cashout_late_surge_risk * 0.16
+            + cashout_late_fade_risk * 0.14
+            + cashout_high_volume_stall_risk * 0.12
+            + cashout_close_giveback_risk * 0.12
+            + cashout_tail_amount_concentration_risk * 0.10
+            + cashout_overheat_without_breadth_risk * 0.12
+            + cashout_vwap_extension_risk * 0.10
+            + cashout_failed_late_breakout_risk * 0.08
+            + cashout_auction_weakness_risk * 0.06
+        )
+
+        hot_sector_concentration = _safe_float(candidate.get("market_hot_sector_concentration"), None)
+        concentration_balance = (
+            _clamp_score(100.0 - abs(hot_sector_concentration - 0.45) * 140.0)
+            if hot_sector_concentration is not None
+            else _clamp_score(100.0 - max(0.0, sector_late_breadth - sector_breadth_score) * 0.15)
+        )
+        sector_continuation_breadth_score = sector_breadth_persistence_score
+        sector_continuation_late_breadth_score = sector_late_acceleration_score
+        sector_continuation_leader_sync_score = leader_sync_persistence_score
+        sector_continuation_alpha_support_score = sector_alpha_confirmation_score
+        sector_continuation_peer_rank_score = _clamp_score(sector_peer_rank * 0.70 + stock_sector_alpha * 0.30)
+        sector_continuation_theme_quality_score = theme_confirmation_composite_score
+        sector_continuation_market_alignment_score = _clamp_score(sector_breadth_quality_score * 0.65 + market_regime * 0.35)
+        sector_continuation_breadth_acceleration_score = _clamp_score(sector_breadth_change * 0.55 + sector_late_breadth * 0.45)
+        sector_continuation_concentration_balance_score = concentration_balance
+        sector_continuation_composite_score = _clamp_score(
+            sector_continuation_breadth_score * 0.14
+            + sector_continuation_late_breadth_score * 0.13
+            + sector_continuation_leader_sync_score * 0.12
+            + sector_continuation_alpha_support_score * 0.12
+            + sector_continuation_peer_rank_score * 0.10
+            + sector_continuation_theme_quality_score * 0.13
+            + sector_continuation_market_alignment_score * 0.10
+            + sector_continuation_breadth_acceleration_score * 0.09
+            + sector_continuation_concentration_balance_score * 0.07
+        )
+
+        market_vwap_position_score = _clamp_score(_safe_float(candidate.get("market_vwap_position_score"), 50.0))
+        market_breadth_score = _clamp_score(_safe_float(candidate.get("market_breadth_score"), market_regime))
+        market_limit_up_count = _safe_float(candidate.get("market_limit_up_count"), None)
+        market_limit_down_count = _safe_float(candidate.get("market_limit_down_count"), None)
+        market_limit_failure_rate = _safe_float(candidate.get("market_limit_up_failure_rate"), None)
+        leader_continuation_rate = _safe_float(candidate.get("leader_continuation_rate"), None)
+        market_environment_index_trend_score = _clamp_score(50.0 + market_intraday_return * 12.0 + market_regime * 0.35)
+        market_environment_vwap_support_score = market_vwap_position_score
+        market_environment_breadth_score = market_breadth_score
+        market_environment_limit_up_breadth_score = (
+            _clamp_score(market_limit_up_count / 80.0 * 100.0)
+            if market_limit_up_count is not None
+            else _clamp_score(market_regime * 0.6 + sector_breadth_score * 0.4)
+        )
+        market_environment_limit_down_risk = (
+            _clamp_score(market_limit_down_count / 30.0 * 100.0)
+            if market_limit_down_count is not None
+            else _clamp_score(max(0.0, -market_intraday_return) * 18.0)
+        )
+        market_environment_failure_risk = (
+            _clamp_score(market_limit_failure_rate * 100.0)
+            if market_limit_failure_rate is not None
+            else _clamp_score(max(0.0, 55.0 - market_breadth_score) * 0.8)
+        )
+        market_environment_leader_continuation_score = (
+            _clamp_score(leader_continuation_rate * 100.0)
+            if leader_continuation_rate is not None
+            else _clamp_score(leader_follower_sync * 0.60 + sector_leader * 0.40)
+        )
+        market_environment_crowding_risk = (
+            _clamp_score(hot_sector_concentration * 100.0)
+            if hot_sector_concentration is not None
+            else _clamp_score(max(0.0, market_environment_limit_up_breadth_score - 80.0) * 0.8)
+        )
+        market_environment_risk_appetite_score = _clamp_score(
+            market_environment_index_trend_score * 0.28
+            + market_environment_breadth_score * 0.24
+            + market_environment_limit_up_breadth_score * 0.18
+            + market_environment_leader_continuation_score * 0.18
+            + (100.0 - market_environment_limit_down_risk) * 0.12
+        )
+        market_environment_composite_score = _clamp_score(
+            market_environment_risk_appetite_score * 0.45
+            + market_environment_vwap_support_score * 0.18
+            + (100.0 - market_environment_failure_risk) * 0.16
+            + (100.0 - market_environment_crowding_risk) * 0.10
+            + market_environment_leader_continuation_score * 0.11
+        )
 
         close_position_score = _clamp_score(close_position)
         pullback_risk_score = _clamp_score(pullback_risk)
@@ -327,10 +755,24 @@ def calculate_intraday_factors(candidate: dict) -> dict[str, float | None]:
             "late_price_above_vwap_ratio": _clamp_score(late_above_vwap_ratio),
             "vwap_slope_score": vwap_slope_score,
             "vwap_reclaim_score": vwap_reclaim_score,
+            "open_vwap_reclaim_score": open_vwap_reclaim_score,
+            "midday_vwap_support_score": midday_vwap_support_score,
+            "vwap_distance_stability_score": vwap_distance_stability_score,
+            "vwap_pullback_support_score": vwap_pullback_support_score,
+            "vwap_breakout_confirm_score": vwap_breakout_confirm_score,
+            "vwap_above_ratio_score": vwap_above_ratio_score,
             "volume_without_price_progress_risk": volume_without_price_progress_risk,
             "late_volume_efficiency_score": late_volume_efficiency_score,
             "amount_acceleration_score": amount_acceleration_score,
             "volume_spike_exhaustion_score": volume_spike_exhaustion_score,
+            "early_amount_surge_score": early_amount_surge_score,
+            "midday_amount_sustain_score": midday_amount_sustain_score,
+            "late_amount_surge_score": late_amount_surge_score,
+            "amount_trend_persistence_score": amount_trend_persistence_score,
+            "volume_price_alignment_score": volume_price_alignment_score,
+            "breakout_volume_confirm_score": breakout_volume_confirm_score,
+            "pullback_volume_dryup_score": pullback_volume_dryup_score,
+            "late_money_flow_concentration_score": late_money_flow_concentration_score,
             "opening_drive_score": opening_drive_score,
             "morning_strength_persist_score": morning_strength_persist_score,
             "morning_pullback_repair_score": morning_pullback_repair_score,
@@ -339,6 +781,87 @@ def calculate_intraday_factors(candidate: dict) -> dict[str, float | None]:
             "sector_late_breadth_score": sector_late_breadth,
             "leader_follower_sync_score": leader_follower_sync,
             "stock_vs_sector_intraday_alpha": stock_sector_alpha,
+            "sector_peer_rank_score": sector_peer_rank,
+            "market_regime_score": market_regime,
+            "sector_leader_score": sector_leader,
+            "open_to_high_progress_score": open_to_high_progress_score,
+            "close_above_midrange_score": close_above_midrange_score,
+            "low_reclaim_position_score": low_reclaim_position_score,
+            "late_range_expansion_score": late_range_expansion_score,
+            "high_area_acceptance_score": high_area_acceptance_score,
+            "close_location_stability_score": close_location_stability_score,
+            "sector_breadth_persistence_score": sector_breadth_persistence_score,
+            "sector_late_acceleration_score": sector_late_acceleration_score,
+            "leader_sync_persistence_score": leader_sync_persistence_score,
+            "sector_alpha_confirmation_score": sector_alpha_confirmation_score,
+            "sector_breadth_quality_score": sector_breadth_quality_score,
+            "theme_confirmation_composite_score": theme_confirmation_composite_score,
+            "stock_intraday_rank_proxy_score": stock_intraday_rank_proxy_score,
+            "stock_vs_market_intraday_alpha_score": stock_vs_market_intraday_alpha_score,
+            "relative_late_strength_score": relative_late_strength_score,
+            "relative_vwap_strength_score": relative_vwap_strength_score,
+            "relative_breakout_leadership_score": relative_breakout_leadership_score,
+            "relative_resilience_score": relative_resilience_score,
+            "open_high_reversal_risk": open_high_reversal_risk,
+            "late_breakdown_risk": late_breakdown_risk,
+            "failed_breakout_risk": failed_breakout_risk,
+            "lower_low_sequence_risk": lower_low_sequence_risk,
+            "volatility_expansion_reversal_risk": volatility_expansion_reversal_risk,
+            "weak_close_after_volume_risk": weak_close_after_volume_risk,
+            "first_hour_follow_through_score": first_hour_follow_through_score,
+            "midday_hold_score": midday_hold_score,
+            "afternoon_recovery_score": afternoon_recovery_score,
+            "late_session_acceleration_score": late_session_acceleration_score,
+            "session_consistency_score": session_consistency_score,
+            "close_auction_strength_proxy_score": close_auction_strength_proxy_score,
+            "return_5m_strength_score": _intraday_return_strength(prices, 1),
+            "return_15m_strength_score": _intraday_return_strength(prices, 3),
+            "return_60m_strength_score": _intraday_return_strength(prices, 12),
+            "positive_bar_ratio_score": positive_bar_ratio_score,
+            "rolling_price_slope_score": rolling_price_slope_score,
+            "intraday_breakout_strength_score": intraday_breakout_strength_score,
+            "breakout_hold_score": breakout_hold_score,
+            "pullback_reclaim_momentum_score": pullback_reclaim_momentum_score,
+            "execution_liquidity_amount_score": execution_liquidity_amount_score,
+            "execution_amount_continuity_score": execution_amount_continuity_score,
+            "execution_price_impact_risk": execution_price_impact_risk,
+            "execution_vwap_slippage_risk": execution_vwap_slippage_risk,
+            "execution_spread_proxy_score": execution_spread_proxy_score,
+            "execution_turnover_depth_score": execution_turnover_depth_score,
+            "execution_tradeability_score": execution_tradeability_score,
+            "execution_gap_to_limit_up_score": execution_gap_to_limit_up_score,
+            "execution_gap_to_limit_down_risk": execution_gap_to_limit_down_risk,
+            "execution_microstructure_quality_score": execution_microstructure_quality_score,
+            "cashout_late_surge_risk": cashout_late_surge_risk,
+            "cashout_late_fade_risk": cashout_late_fade_risk,
+            "cashout_high_volume_stall_risk": cashout_high_volume_stall_risk,
+            "cashout_close_giveback_risk": cashout_close_giveback_risk,
+            "cashout_tail_amount_concentration_risk": cashout_tail_amount_concentration_risk,
+            "cashout_overheat_without_breadth_risk": cashout_overheat_without_breadth_risk,
+            "cashout_vwap_extension_risk": cashout_vwap_extension_risk,
+            "cashout_failed_late_breakout_risk": cashout_failed_late_breakout_risk,
+            "cashout_auction_weakness_risk": cashout_auction_weakness_risk,
+            "cashout_next_day_pressure_proxy": cashout_next_day_pressure_proxy,
+            "sector_continuation_breadth_score": sector_continuation_breadth_score,
+            "sector_continuation_late_breadth_score": sector_continuation_late_breadth_score,
+            "sector_continuation_leader_sync_score": sector_continuation_leader_sync_score,
+            "sector_continuation_alpha_support_score": sector_continuation_alpha_support_score,
+            "sector_continuation_peer_rank_score": sector_continuation_peer_rank_score,
+            "sector_continuation_theme_quality_score": sector_continuation_theme_quality_score,
+            "sector_continuation_market_alignment_score": sector_continuation_market_alignment_score,
+            "sector_continuation_breadth_acceleration_score": sector_continuation_breadth_acceleration_score,
+            "sector_continuation_concentration_balance_score": sector_continuation_concentration_balance_score,
+            "sector_continuation_composite_score": sector_continuation_composite_score,
+            "market_environment_index_trend_score": market_environment_index_trend_score,
+            "market_environment_vwap_support_score": market_environment_vwap_support_score,
+            "market_environment_breadth_score": market_environment_breadth_score,
+            "market_environment_limit_up_breadth_score": market_environment_limit_up_breadth_score,
+            "market_environment_limit_down_risk": market_environment_limit_down_risk,
+            "market_environment_failure_risk": market_environment_failure_risk,
+            "market_environment_leader_continuation_score": market_environment_leader_continuation_score,
+            "market_environment_crowding_risk": market_environment_crowding_risk,
+            "market_environment_risk_appetite_score": market_environment_risk_appetite_score,
+            "market_environment_composite_score": market_environment_composite_score,
         }
     except Exception:
         return empty

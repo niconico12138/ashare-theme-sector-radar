@@ -112,7 +112,12 @@ class SectorScore(BaseModel):
     data_sources: List[str] = Field(default_factory=list)
     updated_at: str = ""
     data_quality_score: float = 0.0
+    turnover: Optional[float] = None
+    main_net_inflow: Optional[float] = None
     score_breakdown: Dict[str, Any] = Field(default_factory=dict)
+    current_rank: Optional[int] = None
+    rank_tied: bool = False
+    rank_tie_count: int = 1
     previous_rank: Optional[int] = None
     rank_change: Optional[int] = None
 
@@ -206,6 +211,7 @@ class RadarReport(BaseModel):
     warnings: List[str] = Field(default_factory=list)
     rotation_summary: Dict[str, Any] = Field(default_factory=dict)
     comparison: Dict[str, Any] = Field(default_factory=dict)
+    industry_three_layer_shadow_summary: Dict[str, Any] = Field(default_factory=dict)
     # 数据来源追踪字段
     run_mode: str = "normal"  # daily / replay / normal
     provider: str = "fixture"  # fixture / akshare

@@ -46,7 +46,11 @@ class VetoRuleAgent:
         history_coverage = score_data.get("history_coverage_ratio", 1.0)
         trend_window_status = score_data.get("trend_window_status", "ok")
         actual_history_days = score_data.get("actual_history_days", 20)
-        if history_coverage < 0.3 or actual_history_days < 5 or trend_window_status != "ok":
+        if (
+            history_coverage < 0.3
+            or actual_history_days < 5
+            or trend_window_status not in {"ok", "partial_history"}
+        ):
             veto_triggered = True
             veto_reasons.append("数据不足，无法确认趋势")
             ranking_penalty += 0.3

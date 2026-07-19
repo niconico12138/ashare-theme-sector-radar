@@ -436,7 +436,11 @@ class MultiWindowConsensusAgent:
             coverage = window_data.get("history_coverage_ratio", 0.0)
             actual_days = window_data.get("actual_history_days", 0)
 
-            if status != "ok":
+            if status == "partial_history":
+                warnings.append(
+                    f"{window_key}日窗口部分覆盖 ({coverage:.0%}, 实际{actual_days}天)"
+                )
+            elif status != "ok":
                 warnings.append(f"{window_key}日窗口历史数据不足 (status={status})")
             elif coverage < 1.0:
                 warnings.append(f"{window_key}日窗口覆盖率不足 ({coverage:.0%}, 实际{actual_days}天)")

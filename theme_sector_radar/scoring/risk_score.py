@@ -32,7 +32,10 @@ def detect_overheat(
     reasons = []
 
     # 短期涨幅过大
-    if snapshot.price_change_pct >= thresholds.get("overheat_short_term_gain", 15.0):
+    if (
+        snapshot.price_change_available
+        and snapshot.price_change_pct >= thresholds.get("overheat_short_term_gain", 15.0)
+    ):
         is_overheat = True
         penalty += abs(penalty_config.get("overheat_max", -20)) * 0.6
         reasons.append(f"短期涨幅过大 ({snapshot.price_change_pct:.1f}%)")
@@ -79,7 +82,11 @@ def detect_divergence(
         advance_ratio = advancing / total if total > 0 else 0
 
         # 上涨家数不足但板块指数上涨
-        if snapshot.price_change_pct > 0 and advance_ratio < thresholds.get("divergence_advance_ratio", 0.4):
+        if (
+            snapshot.price_change_available
+            and snapshot.price_change_pct > 0
+            and advance_ratio < thresholds.get("divergence_advance_ratio", 0.4)
+        ):
             is_divergent = True
             penalty += abs(penalty_config.get("divergence_max", -15)) * 0.5
             reasons.append(f"上涨家数不足 ({advance_ratio:.0%})")
@@ -93,7 +100,11 @@ def detect_divergence(
             reasons.append("少数核心股硬拉")
 
     # 资金流与价格背离
-    if snapshot.price_change_pct > 0 and snapshot.main_net_inflow < 0:
+    if (
+        snapshot.price_change_available
+        and snapshot.price_change_pct > 0
+        and snapshot.main_net_inflow < 0
+    ):
         is_divergent = True
         penalty += abs(penalty_config.get("divergence_max", -15)) * 0.4
         reasons.append("资金流与价格背离")

@@ -61,6 +61,38 @@ class TestRotationTracker:
         b_detail = next(d for d in result.industry_details if d["name"] == "B")
         assert b_detail["rank_change"] == -1  # 1 - 2 = -1
 
+    def test_rotation_uses_explicit_competition_ranks(self):
+        current = [
+            self._create_sector_score("B", 90.0, current_rank=1, rank_tied=True),
+            self._create_sector_score("A", 90.0, current_rank=1, rank_tied=True),
+        ]
+        previous_data = {
+            "industry_top": [
+                {
+                    "name": "A",
+                    "score": 95.0,
+                    "current_rank": 1,
+                    "risk_penalty": 5.0,
+                    "risk_level": "low",
+                },
+                {
+                    "name": "B",
+                    "score": 80.0,
+                    "current_rank": 5,
+                    "risk_penalty": 5.0,
+                    "risk_level": "low",
+                },
+            ]
+        }
+
+        result = calculate_rotation(current, [], previous_data)
+        by_name = {row["name"]: row for row in result.industry_details}
+
+        assert by_name["B"]["current_rank"] == 1
+        assert by_name["B"]["previous_rank"] == 5
+        assert by_name["B"]["rank_change"] == 4
+        assert by_name["B"]["rank_tied"] is True
+
     def test_score_change_calculation(self):
         """测试 score_change = current_score - previous_score"""
         current = [

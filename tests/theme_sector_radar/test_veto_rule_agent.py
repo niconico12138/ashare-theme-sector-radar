@@ -138,3 +138,26 @@ class TestVetoRuleAgent:
         )
 
         assert result.veto is False
+
+    def test_partial_history_does_not_trigger_hard_veto(self):
+        agent = VetoRuleAgent()
+        opinions = [
+            AgentOpinion(
+                agent_id="technical_trend",
+                layer=LAYER_SPECIALIZED,
+                label="trend_confirmed",
+            ),
+        ]
+
+        result = agent.apply_veto(
+            opinions,
+            score_data={
+                "history_coverage_ratio": 0.5,
+                "actual_history_days": 10,
+                "trend_window_status": "partial_history",
+                "risk_level": "risk_low",
+                "data_quality_label": "data_limited",
+            },
+        )
+
+        assert result.veto is False

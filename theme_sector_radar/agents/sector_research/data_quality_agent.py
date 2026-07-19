@@ -7,6 +7,9 @@
 from typing import Any, Dict, List
 
 
+USABLE_WINDOW_STATUSES = {"ok", "partial_history"}
+
+
 class DataQualityAgent:
     """
     数据质量智能体
@@ -83,7 +86,7 @@ class DataQualityAgent:
         trend_window_status: str,
     ) -> str:
         """确定数据质量标签"""
-        if trend_window_status != "ok":
+        if trend_window_status not in USABLE_WINDOW_STATUSES:
             return "data_unreliable"
 
         if history_coverage_ratio >= 1.0:
@@ -99,7 +102,7 @@ class DataQualityAgent:
         trend_window_status: str,
     ) -> float:
         """计算数据质量分数 (0-1)"""
-        if trend_window_status != "ok":
+        if trend_window_status not in USABLE_WINDOW_STATUSES:
             return 0.2
 
         base_score = history_coverage_ratio
@@ -114,7 +117,9 @@ class DataQualityAgent:
         """生成数据警告"""
         warnings = []
 
-        if trend_window_status != "ok":
+        if trend_window_status == "partial_history":
+            warnings.append("趋势窗口部分覆盖: partial_history")
+        elif trend_window_status != "ok":
             warnings.append(f"趋势窗口状态异常: {trend_window_status}")
 
         if history_coverage_ratio < 0.8:
@@ -165,7 +170,7 @@ class DataQualityAgent:
             return "negative"
 
         # 2. 趋势窗口异常 → negative
-        if trend_window_status != "ok":
+        if trend_window_status not in USABLE_WINDOW_STATUSES:
             return "negative"
 
         # 3. 覆盖率极低 → negative

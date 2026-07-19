@@ -6,16 +6,27 @@ Theme Sector Radar CLI。
 """
 
 import argparse
+import hashlib
 import json
+import math
 import os
 import sys
 import time
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from . import __version__
+from .data.return_validation import trusted_daily_returns
 from .models import SectorType
 from .pipeline import run_pipeline
+from .reporting.strict_json import (
+    load_confined_strict_json_with_sha256,
+    load_strict_json,
+    loads_strict_json,
+    write_strict_json_atomic,
+    write_text_atomic,
+)
 
 
 def get_latest_trading_date() -> str:
@@ -595,6 +606,7 @@ def _run_single(args, provider_name: str):
             top_n=args.top_n,
             output_dir=output_dir,
             offline_fixture=args.offline_fixture,
+            history_root=getattr(args, "history_root", None),
             use_cache=args.use_cache,
             refresh=args.refresh,
             provider_name=provider_name,
@@ -653,13 +665,11 @@ def _run_single(args, provider_name: str):
                     # Post-process saved JSON file
                     json_path = os.path.join(output_dir, "theme_sector_radar.json")
                     if os.path.exists(json_path):
-                        with open(json_path, "r", encoding="utf-8") as f:
-                            saved = json.load(f)
+                        saved = load_strict_json(json_path)
                         saved["unified_observation_pool"] = obs_pool
                         saved["unified_data_source"] = ds
                         saved["unified_run_health"] = rh
-                        with open(json_path, "w", encoding="utf-8") as f:
-                            json.dump(saved, f, ensure_ascii=False, indent=2)
+                        write_strict_json_atomic(json_path, saved)
                         print(f"  ✅ JSON 报告已更新 (含联合观察池)")
 
                     # Post-process Markdown file
@@ -670,8 +680,10 @@ def _run_single(args, provider_name: str):
                         )
                         with open(md_path, "r", encoding="utf-8") as f:
                             md_content = f.read()
-                        with open(md_path, "w", encoding="utf-8") as f:
-                            f.write(md_content.rstrip() + "\n\n" + md_section + "\n")
+                        write_text_atomic(
+                            md_path,
+                            md_content.rstrip() + "\n\n" + md_section + "\n",
+                        )
                         print(f"  ✅ Markdown 报告已更新 (含联合观察池)")
 
                     health_status = rh.get("status", "?") if rh else "?"
@@ -732,8 +744,7 @@ def _run_single(args, provider_name: str):
             }
             run_log_path = os.path.join(output_dir, "run_log.json")
             os.makedirs(output_dir, exist_ok=True)
-            with open(run_log_path, "w", encoding="utf-8") as f:
-                json.dump(run_log, f, ensure_ascii=False, indent=2)
+            write_strict_json_atomic(run_log_path, run_log)
             print(f"run_log 已保存: {run_log_path}")
 
     except Exception as e:
@@ -756,8 +767,7 @@ def _run_single(args, provider_name: str):
             }
             run_log_path = os.path.join(output_dir, "run_log.json")
             os.makedirs(output_dir, exist_ok=True)
-            with open(run_log_path, "w", encoding="utf-8") as f:
-                json.dump(run_log, f, ensure_ascii=False, indent=2)
+            write_strict_json_atomic(run_log_path, run_log)
             print(f"run_log 已保存: {run_log_path}")
 
         print(f"错误: {e}", file=sys.stderr)
@@ -821,6 +831,7 @@ def _run_replay_cache(args, provider_name: str):
                 top_n=args.top_n,
                 output_dir=output_dir,
                 offline_fixture=False,
+                history_root=getattr(args, "history_root", None),
                 use_cache=True,
                 refresh=False,
                 provider_name="fixture",  # replay 模式使用 fixture
@@ -861,8 +872,7 @@ def _run_replay_cache(args, provider_name: str):
                 "input_snapshot_source": "cache",
             }
             run_log_path = os.path.join(output_dir, "run_log.json")
-            with open(run_log_path, "w", encoding="utf-8") as f:
-                json.dump(run_log, f, ensure_ascii=False, indent=2)
+            write_strict_json_atomic(run_log_path, run_log)
 
             print(f"  完成: {report.status}")
             success_count += 1
@@ -916,8 +926,7 @@ def _save_replay_run_log(
     output_dir = os.path.join(report_root, date_str)
     os.makedirs(output_dir, exist_ok=True)
     run_log_path = os.path.join(output_dir, "run_log.json")
-    with open(run_log_path, "w", encoding="utf-8") as f:
-        json.dump(run_log, f, ensure_ascii=False, indent=2)
+    write_strict_json_atomic(run_log_path, run_log)
 
 
 def _run_download(args):
@@ -1067,7 +1076,7 @@ def _run_score_sectors(args):
     report = RadarReport(**report_data)
 
     # 读取历史数据
-    history_data, history_source, history_warnings = _load_history_data(
+    history_data, history_source, history_warnings, history_provenance = _load_history_data(
         args.history_root,
         history_start_date,
         history_end_date,
@@ -1099,6 +1108,7 @@ def _run_score_sectors(args):
             benchmark_data=benchmark_data,
             trend_weight_profile=args.trend_weight_profile,
             trend_window=args.trend_window,
+            history_source=history_source,
         )
 
         # 诊断每个板块
@@ -1150,6 +1160,7 @@ def _run_score_sectors(args):
             "history_end_date": history_end_date,
             "top_n": args.top_n,
             "history_source": history_source,
+            "history_provenance": history_provenance,
             "history_warnings": history_warnings,
             "score_mode": args.score_mode,
             "benchmark_id": benchmark_id,
@@ -1170,15 +1181,13 @@ def _run_score_sectors(args):
     }
 
     json_path = os.path.join(output_dir, "sector_scores.json")
-    with open(json_path, "w", encoding="utf-8") as f:
-        json.dump(json_report, f, ensure_ascii=False, indent=2)
+    write_strict_json_atomic(json_path, json_report)
     print(f"JSON report saved: {json_path}")
 
     # 生成 Markdown 报告
     md_report = generate_sector_score_report(json_report)
     md_path = os.path.join(output_dir, "sector_scores.md")
-    with open(md_path, "w", encoding="utf-8") as f:
-        f.write(md_report)
+    write_text_atomic(md_path, md_report)
     print(f"Markdown report saved: {md_path}")
 
     print("-" * 60)
@@ -1587,8 +1596,7 @@ def _run_research_agents(args):
     os.makedirs(output_dir, exist_ok=True)
 
     json_path = os.path.join(output_dir, "sector_research.json")
-    with open(json_path, "w", encoding="utf-8") as f:
-        json.dump(report_data, f, ensure_ascii=False, indent=2)
+    write_strict_json_atomic(json_path, report_data)
 
     print(f"\nJSON report saved: {json_path}")
 
@@ -1653,8 +1661,16 @@ def _run_backtest_research_agents(args):
     os.makedirs(output_dir, exist_ok=True)
 
     json_path = os.path.join(output_dir, "research_backtest.json")
-    with open(json_path, "w", encoding="utf-8") as f:
-        json.dump(backtest_result, f, ensure_ascii=False, indent=2, default=str)
+    serialized_backtest = json.dumps(
+        backtest_result,
+        ensure_ascii=False,
+        default=str,
+        allow_nan=False,
+    )
+    write_strict_json_atomic(
+        json_path,
+        loads_strict_json(serialized_backtest, context="research backtest report"),
+    )
     print(f"\nJSON report saved: {json_path}")
 
     # 生成 Markdown 报告
@@ -2178,7 +2194,13 @@ def _run_download_catalyst_events(args):
             with open(fixture_path, "r", encoding="utf-8") as f:
                 fixture_data = json.load(f)
 
-    collector = HistoricalCatalystCollector()
+    cache_root = getattr(args, "cache_root", "data_cache")
+    history_root = getattr(args, "history_root", "data_cache/sector_history")
+    catalyst_root = os.path.join(cache_root, "catalyst_events")
+    collector = HistoricalCatalystCollector(
+        history_root=history_root,
+        catalyst_root=catalyst_root,
+    )
     result = collector.collect(
         start_date=start_date,
         end_date=end_date,
@@ -2202,7 +2224,7 @@ def _run_download_catalyst_events(args):
     from .data.catalyst_events.mapping_quality import MappingQualityAnalyzer, save_mapping_quality_report
     from .data.catalyst_events.cache import CatalystEventCache
 
-    cache = CatalystEventCache()
+    cache = CatalystEventCache(catalyst_root)
     all_events = []
     for date_str in result.get("generated_dates", []):
         events = cache.load_events(date_str)
@@ -2332,7 +2354,7 @@ def _load_history_data(
     end_date: str,
     sector_types: List[SectorType],
     cache_root: str = "data_cache",
-) -> Tuple[Dict[str, Any], str, List[str]]:
+) -> Tuple[Dict[str, Any], str, List[str], Dict[str, Any]]:
     """
     加载历史数据
 
@@ -2349,6 +2371,7 @@ def _load_history_data(
     history_data = {}
     warnings = []
     history_source = "none"
+    history_provenance: Dict[str, Any] = {"source": "none"}
 
     # A. 首选: 尝试从 sector_history 加载
     sector_history_data = {}
@@ -2395,12 +2418,18 @@ def _load_history_data(
     if has_sector_history:
         history_data = sector_history_data
         history_source = "sector_history_cache"
+        history_provenance = {"source": history_source}
         print(f"Loaded history from sector_history_cache")
     else:
         # B. fallback: 从 raw_snapshot 加载
         print("No sector_history data found, falling back to raw_snapshots...")
+        raw_provenance: Dict[str, Any] = {}
         raw_snapshot_data, raw_warnings = _load_history_from_raw_snapshots(
-            cache_root, start_date, end_date, sector_types
+            cache_root,
+            start_date,
+            end_date,
+            sector_types,
+            provenance_out=raw_provenance,
         )
         history_data = raw_snapshot_data
         warnings.extend(raw_warnings)
@@ -2413,12 +2442,13 @@ def _load_history_data(
 
         if has_raw_snapshot_data:
             history_source = "raw_snapshot_fallback"
+            history_provenance = raw_provenance
             print(f"Loaded history from raw_snapshot_fallback")
         else:
             history_source = "none"
             warnings.append("No history data available from any source")
 
-    return history_data, history_source, warnings
+    return history_data, history_source, warnings, history_provenance
 
 
 def _load_history_from_raw_snapshots(
@@ -2426,6 +2456,8 @@ def _load_history_from_raw_snapshots(
     start_date: str,
     end_date: str,
     sector_types: List[SectorType],
+    *,
+    provenance_out: Optional[Dict[str, Any]] = None,
 ) -> Tuple[Dict[str, Any], List[str]]:
     """
     从 raw_snapshot 文件加载历史数据
@@ -2444,7 +2476,17 @@ def _load_history_from_raw_snapshots(
 
     # 扫描 date 目录
     if not os.path.exists(cache_root):
+        if provenance_out is not None:
+            provenance_out.clear()
+            provenance_out.update(
+                {
+                    "source": "raw_snapshot_fallback",
+                    "document_count": 0,
+                    "documents": [],
+                }
+            )
         return history_data, [f"Cache root not found: {cache_root}"]
+    confined_root = Path(cache_root).resolve(strict=True)
 
     date_dirs = []
     for dirname in os.listdir(cache_root):
@@ -2472,41 +2514,65 @@ def _load_history_from_raw_snapshots(
     # 收集每个板块的时间序列数据
     sector_timeseries = {}  # {(sector_type, sector_name): [(date, data), ...]}
 
+    source_documents = []
     for date_dir in date_dirs:
-        raw_snapshot_path = os.path.join(cache_root, date_dir, "raw_snapshot.json")
-        if not os.path.exists(raw_snapshot_path):
+        raw_snapshot_path = confined_root / date_dir / "raw_snapshot.json"
+        if not raw_snapshot_path.exists():
             continue
 
         try:
-            with open(raw_snapshot_path, "r", encoding="utf-8") as f:
-                snapshot = json.load(f)
+            snapshot, snapshot_sha256 = load_confined_strict_json_with_sha256(
+                raw_snapshot_path,
+                root=confined_root,
+            )
+            if not isinstance(snapshot, dict):
+                raise ValueError("raw snapshot must be a JSON object")
 
             # 提取日期
             metadata = snapshot.get("metadata", {})
-            snapshot_date = metadata.get("as_of_date", date_dir)
+            if not isinstance(metadata, dict):
+                raise ValueError("raw snapshot metadata must be an object")
+            snapshot_date = str(metadata.get("as_of_date") or "")
+            if snapshot_date != date_dir:
+                raise ValueError("raw snapshot date does not match directory date")
 
             # 提取数据
             data = snapshot.get("data", {})
+            if not isinstance(data, dict):
+                raise ValueError("raw snapshot data must be an object")
+            source_documents.append(
+                {
+                    "date": date_dir,
+                    "relative_path": raw_snapshot_path.relative_to(confined_root).as_posix(),
+                    "sha256": snapshot_sha256,
+                }
+            )
 
             # 处理行业板块
+            seen_snapshot_sectors: set[tuple[str, str]] = set()
             if SectorType.INDUSTRY in sector_types:
                 industry_sectors = data.get("industry_sectors", [])
                 for sector in industry_sectors:
-                    sector_name = sector.get("name", "")
+                    sector_name = str(sector.get("name", "")).strip()
                     if not sector_name:
                         continue
 
                     key = (SectorType.INDUSTRY.value, sector_name)
+                    if key in seen_snapshot_sectors:
+                        raise ValueError(
+                            f"duplicate raw snapshot sector identity: {key}"
+                        )
+                    seen_snapshot_sectors.add(key)
                     if key not in sector_timeseries:
                         sector_timeseries[key] = []
 
                     sector_timeseries[key].append({
                         "date": snapshot_date,
-                        "change_pct": sector.get("price_change_pct", 0.0),
+                        "change_pct": sector.get("price_change_pct"),
                         "turnover": sector.get("turnover", 0.0),
                         "main_net_inflow": sector.get("main_net_inflow", 0.0),
                         "data_quality_score": sector.get("data_quality_score", 0.0),
-                        "price_change_available": sector.get("price_change_available", True),
+                        "price_change_available": sector.get("price_change_available", False),
                         "source": ", ".join(sector.get("data_sources", [])),
                     })
 
@@ -2514,26 +2580,52 @@ def _load_history_from_raw_snapshots(
             if SectorType.CONCEPT in sector_types:
                 concept_sectors = data.get("concept_sectors", [])
                 for sector in concept_sectors:
-                    sector_name = sector.get("name", "")
+                    sector_name = str(sector.get("name", "")).strip()
                     if not sector_name:
                         continue
 
                     key = (SectorType.CONCEPT.value, sector_name)
+                    if key in seen_snapshot_sectors:
+                        raise ValueError(
+                            f"duplicate raw snapshot sector identity: {key}"
+                        )
+                    seen_snapshot_sectors.add(key)
                     if key not in sector_timeseries:
                         sector_timeseries[key] = []
 
                     sector_timeseries[key].append({
                         "date": snapshot_date,
-                        "change_pct": sector.get("price_change_pct", 0.0),
+                        "change_pct": sector.get("price_change_pct"),
                         "turnover": sector.get("turnover", 0.0),
                         "main_net_inflow": sector.get("main_net_inflow", 0.0),
                         "data_quality_score": sector.get("data_quality_score", 0.0),
-                        "price_change_available": sector.get("price_change_available", True),
+                        "price_change_available": sector.get("price_change_available", False),
                         "source": ", ".join(sector.get("data_sources", [])),
                     })
 
         except Exception as e:
-            warnings.append(f"Failed to load raw_snapshot {raw_snapshot_path}: {str(e)[:100]}")
+            raise ValueError(f"Failed to load raw_snapshot {raw_snapshot_path}: {e}") from e
+
+    if provenance_out is not None:
+        manifest_payload = json.dumps(
+            source_documents,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        )
+        provenance_out.clear()
+        provenance_out.update(
+            {
+                "source": "raw_snapshot_fallback",
+                "root": str(confined_root),
+                "document_count": len(source_documents),
+                "documents": source_documents,
+                "manifest_sha256": hashlib.sha256(
+                    manifest_payload.encode("utf-8")
+                ).hexdigest(),
+            }
+        )
 
     # 转换为指标
     for (sector_type, sector_name), timeseries in sector_timeseries.items():
@@ -2574,6 +2666,8 @@ def _calculate_history_metrics(history: List[Dict[str, Any]]) -> Dict[str, Any]:
     if not history:
         return {
             "recent_returns": [],
+            "recent_dates": [],
+            "recent_periods": [],
             "total_return": 0.0,
             "positive_days": 0,
             "total_days": 0,
@@ -2582,66 +2676,62 @@ def _calculate_history_metrics(history: List[Dict[str, Any]]) -> Dict[str, Any]:
             "history_days": 0,
         }
 
-    # 提取每日收益率
-    recent_returns = []
+    history = _normalize_history_order(history)
 
-    # 首先尝试直接使用 change_pct 或 涨跌幅 字段
-    has_change_pct = any(
-        item.get("change_pct") is not None or item.get("涨跌幅") is not None
+    normalized_dates = [item.get("date", item.get("日期")) for item in history]
+    close_values = [
+        item.get("close") if item.get("close") is not None else item.get("收盘价")
         for item in history
-    )
-
-    if has_change_pct:
-        for item in history:
-            change_pct = item.get("change_pct", item.get("涨跌幅", 0.0))
-            try:
-                change_pct = float(change_pct)
-            except (ValueError, TypeError):
-                change_pct = 0.0
-            recent_returns.append(change_pct)
+    ]
+    if all(value is not None for value in close_values):
+        close_prices = [_finite_float(value, "close") for value in close_values]
+        if any(value <= 0 for value in close_prices):
+            raise ValueError("history close values must be positive")
+        recent_returns = [
+            (current - previous) / previous * 100.0
+            for previous, current in zip(close_prices, close_prices[1:])
+        ]
+        recent_dates = normalized_dates[1:]
+        recent_periods = [
+            [previous_date, current_date]
+            for previous_date, current_date in zip(
+                normalized_dates,
+                normalized_dates[1:],
+            )
+        ]
     else:
-        # 如果没有涨跌幅字段，从收盘价计算
-        # 支持中文 "收盘价" 和英文 "close" 字段名
-        close_prices = []
-        for item in history:
-            close = item.get("close", item.get("收盘价"))
-            if close is not None:
-                try:
-                    close_prices.append(float(close))
-                except (ValueError, TypeError):
-                    close_prices.append(0.0)
-            else:
-                close_prices.append(0.0)
+        change_values = [
+            item.get("change_pct")
+            if item.get("change_pct") is not None
+            else item.get("涨跌幅")
+            for item in history
+        ]
+        if not all(value is not None for value in change_values):
+            raise ValueError("history must provide a finite return or close for every record")
+        recent_returns = [_finite_float(value, "change_pct") for value in change_values]
+        recent_dates = normalized_dates
+        recent_periods = []
 
-        # 计算日收益率
-        for i in range(len(close_prices)):
-            if i == 0:
-                recent_returns.append(0.0)
-            else:
-                prev = close_prices[i - 1]
-                curr = close_prices[i]
-                if prev > 0:
-                    change_pct = (curr - prev) / prev * 100
-                    recent_returns.append(change_pct)
-                else:
-                    recent_returns.append(0.0)
+    recent_returns = trusted_daily_returns(recent_returns)
 
-    # 计算累计收益率
-    total_return = sum(recent_returns)
+    wealth = 1.0
+    for daily_return in recent_returns:
+        wealth *= 1.0 + daily_return / 100.0
+    total_return = (wealth - 1.0) * 100.0
 
     # 计算上涨天数
     positive_days = sum(1 for r in recent_returns if r > 0)
     total_days = len(recent_returns)
 
     # 计算最大回撤
-    cumulative = 0.0
-    peak = 0.0
+    wealth = 1.0
+    peak = 1.0
     max_drawdown = 0.0
     for r in recent_returns:
-        cumulative += r
-        if cumulative > peak:
-            peak = cumulative
-        drawdown = cumulative - peak
+        wealth *= 1.0 + r / 100.0
+        if wealth > peak:
+            peak = wealth
+        drawdown = (wealth / peak - 1.0) * 100.0
         if drawdown < max_drawdown:
             max_drawdown = drawdown
 
@@ -2655,6 +2745,8 @@ def _calculate_history_metrics(history: List[Dict[str, Any]]) -> Dict[str, Any]:
 
     return {
         "recent_returns": recent_returns,
+        "recent_dates": recent_dates,
+        "recent_periods": recent_periods,
         "total_return": total_return,
         "positive_days": positive_days,
         "total_days": total_days,
@@ -2662,6 +2754,39 @@ def _calculate_history_metrics(history: List[Dict[str, Any]]) -> Dict[str, Any]:
         "volatility": volatility,
         "history_days": total_days,
     }
+
+
+def _normalize_history_order(
+    history: List[Dict[str, Any]],
+) -> List[Dict[str, Any]]:
+    date_values = [item.get("date", item.get("日期")) for item in history]
+    if not any(value is not None for value in date_values):
+        return list(history)
+    if not all(isinstance(value, str) and value for value in date_values):
+        raise ValueError("history dates must be present on every record")
+
+    parsed = []
+    seen = set()
+    for value, item in zip(date_values, history):
+        try:
+            normalized = datetime.strptime(value, "%Y-%m-%d").date().isoformat()
+        except ValueError as exc:
+            raise ValueError(f"invalid history date: {value}") from exc
+        if normalized in seen:
+            raise ValueError(f"duplicate history date: {normalized}")
+        seen.add(normalized)
+        parsed.append((normalized, item))
+    return [item for _, item in sorted(parsed, key=lambda pair: pair[0])]
+
+
+def _finite_float(value: Any, field: str) -> float:
+    try:
+        result = float(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"invalid {field}: {value}") from exc
+    if not math.isfinite(result):
+        raise ValueError(f"non-finite {field}: {value}")
+    return result
 
 
 def _resolve_history_date_range(
@@ -2737,7 +2862,7 @@ def _apply_trend_window(
     if actual_days >= trend_window:
         status = "ok"
     elif actual_days >= trend_window * 0.5:
-        status = "ok"
+        status = "partial_history"
     else:
         status = "insufficient_history"
 
@@ -2774,30 +2899,36 @@ def _calculate_history_metrics_from_snapshots(
             "history_days": 0,
         }
 
-    # 提取每日收益率
+    # 只使用明确可用的有限日收益；缺失价格日不能伪装成 0% 或异常涨跌。
     recent_returns = []
     for item in timeseries:
-        change_pct = item.get("change_pct", 0.0)
-        recent_returns.append(change_pct)
+        if item.get("price_change_available") is not True:
+            continue
+        change_pct = item.get("change_pct")
+        if (
+            isinstance(change_pct, bool)
+            or not isinstance(change_pct, (int, float))
+            or not math.isfinite(float(change_pct))
+        ):
+            continue
+        recent_returns.append(float(change_pct))
 
-    # 计算累计收益率
-    total_return = sum(recent_returns)
+    recent_returns = trusted_daily_returns(recent_returns)
+
+    # 复合累计收益和财富曲线回撤使用同一口径。
+    wealth = 1.0
+    peak = 1.0
+    max_drawdown = 0.0
+    for daily_return in recent_returns:
+        wealth *= 1.0 + daily_return / 100.0
+        peak = max(peak, wealth)
+        drawdown = (wealth / peak - 1.0) * 100.0 if peak > 0 else 0.0
+        max_drawdown = min(max_drawdown, drawdown)
+    total_return = (wealth - 1.0) * 100.0
 
     # 计算上涨天数
     positive_days = sum(1 for r in recent_returns if r > 0)
     total_days = len(recent_returns)
-
-    # 计算最大回撤
-    cumulative = 0.0
-    peak = 0.0
-    max_drawdown = 0.0
-    for r in recent_returns:
-        cumulative += r
-        if cumulative > peak:
-            peak = cumulative
-        drawdown = cumulative - peak
-        if drawdown < max_drawdown:
-            max_drawdown = drawdown
 
     # 计算波动率
     if total_days > 1:
@@ -2874,24 +3005,13 @@ def _generate_index(report_root: str, dates: List[str], include_experiments: boo
     # 生成 index.json
     index_json = generate_index_json(report_root, reports)
     json_path = os.path.join(report_root, "index.json")
-    with open(json_path, "w", encoding="utf-8") as f:
-        json.dump(index_json, f, ensure_ascii=False, indent=2)
+    write_strict_json_atomic(json_path, index_json)
 
     # 生成 index.md
     index_md = generate_index_md(report_root, reports)
     md_path = os.path.join(report_root, "index.md")
-    with open(md_path, "w", encoding="utf-8") as f:
-        f.write(index_md)
+    write_text_atomic(md_path, index_md)
 
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-
-
-

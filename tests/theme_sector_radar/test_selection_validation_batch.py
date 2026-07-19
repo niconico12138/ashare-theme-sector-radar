@@ -6,9 +6,16 @@ from pathlib import Path
 
 import pytest
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+from tests.theme_sector_radar.report_fixture_factory import (
+    build_sector_score_tree,
+    write_json,
+)
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+if str(PROJECT_ROOT / "scripts") not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+
+import run_selection_validation_batch as selection_batch
 from run_selection_validation_batch import (
     _compute_market_regime,
     _avg_return,
@@ -17,6 +24,34 @@ from run_selection_validation_batch import (
     _scan_available_dates,
     run_sample_batch,
 )
+
+
+@pytest.fixture
+def selection_report_tree(tmp_path, monkeypatch):
+    roots = build_sector_score_tree(tmp_path, ["2026-07-07", "2026-07-08"])
+    for date in ["2026-07-07", "2026-07-08"]:
+        write_json(
+            roots["unified"] / date / "unified_report.json",
+            {"trend_candidates_all": [{"code": "600000"}], "burst_candidates_all": []},
+        )
+    write_json(
+        roots["agent_bridge"] / "2026-07-07" / "top30_candidates.json",
+        {
+            "as_of": "2026-07-07",
+            "candidates": [
+                {
+                    "code": "600000",
+                    "name": "Fixture Stock",
+                    "decision_score": 60.0,
+                    "risk_penalty_score": 5.0,
+                    "hard_risk_penalty": 2.0,
+                }
+            ],
+        },
+    )
+    monkeypatch.setattr(selection_batch, "PROJECT_ROOT", tmp_path)
+    monkeypatch.setattr(selection_batch, "OUTPUT_DIR", roots["selection_validation"])
+    return roots
 
 
 def _make_report(per_stock_returns: list[tuple[str, float | None]], ranking_groups=None, score_buckets=None, categorical_groups=None):
@@ -201,7 +236,7 @@ class TestBuildAggregate:
 
 
 class TestScanAvailableDates:
-    def test_scan_finds_dates(self):
+    def test_scan_finds_dates(self, selection_report_tree):
         dates = _scan_available_dates()
         assert len(dates) > 0
         assert "2026-07-07" in dates
@@ -210,17 +245,14 @@ class TestScanAvailableDates:
 class TestTop30ShadowRiskFields:
     """Test that top30_candidates.json includes shadow risk fields."""
 
-    def test_top30_has_existing_shadow_fields(self):
+    def test_top30_has_existing_shadow_fields(self, selection_report_tree):
         """Check that recent top30_candidates contain existing shadow fields.
         After re-export, new fields (trade_risk_penalty, risk_quality_tags) will also be present."""
-        base = Path("reports/agent_bridge")
-        if not base.exists():
-            pytest.skip("agent_bridge directory not found")
+        base = selection_report_tree["agent_bridge"]
 
         # Find a recent date directory
         date_dirs = sorted([d for d in base.iterdir() if d.is_dir() and d.name.startswith("2026-")], reverse=True)
-        if not date_dirs:
-            pytest.skip("No date directories found")
+        assert date_dirs
 
         for date_dir in date_dirs[:3]:
             t30_path = date_dir / "top30_candidates.json"
@@ -234,23 +266,19 @@ class TestTop30ShadowRiskFields:
             # Check first candidate has existing shadow fields (pre-Phase2)
             c = candidates[0]
             # These should exist in current reports
-            assert "hard_risk_penalty" in c or "decision_score" in c, f"No scoring fields found in {t30_path}"
-            # Verify production fields exist
+            assert "hard_risk_penalty" in c, f"Missing hard_risk_penalty in {t30_path}"
             assert "decision_score" in c, f"Missing decision_score in {t30_path}"
             assert "risk_penalty_score" in c, f"Missing risk_penalty_score in {t30_path}"
             # After re-export, these will also be present:
             # trade_risk_penalty, risk_quality_tags, drawdown_risk_score
             break
 
-    def test_production_decision_score_not_modified(self):
-        """Verify decision_score formula is unchanged in top30."""
-        base = Path("reports/agent_bridge")
-        if not base.exists():
-            pytest.skip("agent_bridge directory not found")
+    def test_report_fixture_preserves_decision_score(self, selection_report_tree):
+        """The synthetic top30 report preserves its decision_score value."""
+        base = selection_report_tree["agent_bridge"]
 
         date_dirs = sorted([d for d in base.iterdir() if d.is_dir() and d.name.startswith("2026-")], reverse=True)
-        if not date_dirs:
-            pytest.skip("No date directories found")
+        assert date_dirs
 
         for date_dir in date_dirs[:1]:
             t30_path = date_dir / "top30_candidates.json"
@@ -261,11 +289,8 @@ class TestTop30ShadowRiskFields:
             if not candidates:
                 continue
 
-            # Verify decision_score exists and is a number
             for c in candidates[:3]:
-                ds = c.get("decision_score")
-                assert ds is not None, f"decision_score is None for {c.get('code')}"
-                assert isinstance(ds, (int, float)), f"decision_score is not numeric: {ds}"
+                assert c["decision_score"] == 60.0
             break
 
     def test_shadow_risk_decomposition_output(self):
@@ -295,6 +320,4 @@ class TestTop30ShadowRiskFields:
         assert isinstance(result["volatility_elasticity_score"], (int, float))
         assert isinstance(result["drawdown_risk_score"], (int, float))
         assert isinstance(result["risk_quality_tags"], list)
-
-
 

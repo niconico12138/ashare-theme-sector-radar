@@ -34,6 +34,7 @@ from .data.cache import DataCache
 from .data.fixture_provider import FixtureProvider
 from .data.providers import DataProvider
 from .models import (
+    AgentStatus,
     FocusLevel,
     MarketTemperature,
     RadarContext,
@@ -42,6 +43,7 @@ from .models import (
     SectorScore,
     SectorType,
 )
+from .history.sector_trend_history import load_sector_trend_history
 from .reports.json_report import generate_json_report, save_json_report
 from .reports.markdown_report import generate_markdown_report, save_markdown_report
 
@@ -60,6 +62,7 @@ def run_pipeline(
     lookback_days: int = 5,
     run_mode: str = "normal",
     report_root: str = None,
+    history_root: str = None,
 ) -> RadarReport:
     """
     运行完整的板块雷达分析流程
@@ -175,9 +178,96 @@ def run_pipeline(
 
     # Phase 8: 排名和关注等级
     print("Phase 8: 生成排名...")
-    ranking_output = generate_sector_ranking(
-        industry_sectors, concept_sectors, market_temperature.score, top_n
+    resolved_history_root = history_root or os.path.join(
+        cache.cache_dir,
+        "sector_history",
     )
+    industry_history, trend_history_warnings = load_sector_trend_history(
+        resolved_history_root,
+        sector_type=SectorType.INDUSTRY,
+        as_of_date=as_of_date,
+    )
+    matched_history_count = sum(
+        sector.name in industry_history for sector in industry_sectors
+    )
+    maturity_counts = {
+        window: sum(
+            len(industry_history.get(sector.name, {}).get("recent_returns", []))
+            >= window
+            for sector in industry_sectors
+        )
+        for window in (5, 10, 20)
+    }
+    if matched_history_count < len(industry_sectors):
+        trend_history_warnings.append(
+            "正式行业趋势历史覆盖不足: "
+            f"{matched_history_count}/{len(industry_sectors)}"
+        )
+    if maturity_counts[5] < len(industry_sectors):
+        trend_history_warnings.append(
+            "正式行业趋势五日成熟覆盖不足: "
+            f"{maturity_counts[5]}/{len(industry_sectors)}"
+        )
+    context.warnings.extend(trend_history_warnings)
+    context.agent_outputs["base_industry_trend_history"] = {
+        "root": str(resolved_history_root),
+        "available_history_count": len(industry_history),
+        "matched_sector_count": matched_history_count,
+        "five_day_mature_count": maturity_counts[5],
+        "ten_day_mature_count": maturity_counts[10],
+        "twenty_day_mature_count": maturity_counts[20],
+        "candidate_sector_count": len(industry_sectors),
+        "status": (
+            "ok" if maturity_counts[5] == len(industry_sectors) else "degraded"
+        ),
+        "warnings": trend_history_warnings,
+    }
+    ranking_output = generate_sector_ranking(
+        industry_sectors,
+        concept_sectors,
+        market_temperature.score,
+        top_n,
+        industry_history=industry_history,
+    )
+    ranking_history = ranking_output.data.get("industry_trend_history", {})
+    three_layer_shadow_summary = {
+        key: ranking_history.get(key, default)
+        for key, default in (
+            ("three_layer_shadow_available_count", 0),
+            ("three_layer_shadow_error_count", 0),
+            ("three_layer_shadow_state_counts", {}),
+        )
+    }
+    successful_industry_count = int(
+        ranking_history.get("successful_score_count", len(industry_sectors))
+    )
+    failed_industry_count = int(ranking_history.get("failed_score_count", 0))
+    ranking_degraded = ranking_output.status != AgentStatus.OK
+    if ranking_output.warnings:
+        context.warnings.extend(ranking_output.warnings)
+    effective_counts = {
+        window: int(ranking_history.get(f"effective_{window}d_count", 0))
+        for window in (5, 10, 20)
+    }
+    context.agent_outputs["base_industry_trend_history"].update(
+        {
+            "effective_five_day_count": effective_counts[5],
+            "effective_ten_day_count": effective_counts[10],
+            "effective_twenty_day_count": effective_counts[20],
+            "successful_score_count": successful_industry_count,
+            "failed_score_count": failed_industry_count,
+        }
+    )
+    if effective_counts[5] < len(industry_sectors):
+        effective_warning = (
+            "正式行业五日相对强度有效覆盖不足: "
+            f"{effective_counts[5]}/{len(industry_sectors)}"
+        )
+        context.warnings.append(effective_warning)
+        context.agent_outputs["base_industry_trend_history"]["warnings"].append(
+            effective_warning
+        )
+        context.agent_outputs["base_industry_trend_history"]["status"] = "degraded"
     context.agent_outputs["ranking"] = ranking_output.data
 
     # 解析排名结果
@@ -228,10 +318,16 @@ def run_pipeline(
     # 确定数据来源和状态
     data_sources = _get_data_sources(provider_name, offline_fixture, industry_sectors, concept_sectors)
     report_status = _determine_report_status(
-        industry_count=len(industry_sectors),
+        industry_count=successful_industry_count,
         concept_count=len(concept_sectors),
         config=config,
     )
+    if (
+        maturity_counts[5] < len(industry_sectors)
+        or effective_counts[5] < len(industry_sectors)
+        or ranking_degraded
+    ) and report_status != "failed":
+        report_status = "degraded"
 
     # Phase 12: 轮动追踪
     print("Phase 12: 轮动追踪...")
@@ -253,6 +349,8 @@ def run_pipeline(
         current_concept=concept_scores,
         previous_data=previous_snapshot,
     )
+    _apply_rotation_ranks(industry_scores, rotation_result.industry_details)
+    _apply_rotation_ranks(concept_scores, rotation_result.concept_details)
 
     # 构建 comparison 信息
     comparison_info = {
@@ -276,7 +374,7 @@ def run_pipeline(
         cache_info=cache_info,
         fund_flow_coverage=fund_flow_coverage,
         constituent_coverage=constituent_coverage,
-        industry_count=len(industry_sectors),
+        industry_count=successful_industry_count,
         concept_count=len(concept_sectors),
         rotation_result=rotation_result,
         comparison_info=comparison_info,
@@ -287,6 +385,8 @@ def run_pipeline(
         report_dir=output_dir,
         command_args="",  # 由 CLI 传递
         provider_status=provider_status,
+        warnings=context.warnings,
+        industry_three_layer_shadow_summary=three_layer_shadow_summary,
     )
 
     # 保存报告
@@ -318,7 +418,7 @@ def run_pipeline(
             cache_info=cache_info,
             fund_flow_coverage=fund_flow_coverage,
             constituent_coverage=constituent_coverage,
-            industry_count=len(industry_sectors),
+            industry_count=successful_industry_count,
             concept_count=len(concept_sectors),
             rotation_summary={
                 "industry": rotation_result.industry_rotation,
@@ -331,6 +431,8 @@ def run_pipeline(
             fixture_profile=fixture_profile,
             data_source_mode=data_source_mode,
             provider_status=provider_status,
+            warnings=context.warnings,
+            industry_three_layer_shadow_summary=three_layer_shadow_summary,
         )
 
     return report
@@ -907,6 +1009,8 @@ def _save_reports(
     data_source_mode: str = "fixture",
     command_args: str = "",
     provider_status=None,
+    warnings: List[str] = None,
+    industry_three_layer_shadow_summary: dict = None,
 ):
     """保存报告文件"""
     os.makedirs(output_dir, exist_ok=True)
@@ -937,6 +1041,8 @@ def _save_reports(
         report_dir=output_dir,
         generated_by_command=command_args,
         provider_status=provider_status,
+        warnings=warnings,
+        industry_three_layer_shadow_summary=industry_three_layer_shadow_summary,
     )
     save_json_report(json_report, json_path)
     print(f"JSON 报告已保存: {json_path}")
@@ -959,6 +1065,7 @@ def _save_reports(
         rotation_summary=rotation_summary,
         comparison=comparison_info,
         provider_status=provider_status,
+        warnings=warnings,
     )
     save_markdown_report(md_report, md_path)
     print(f"Markdown 报告已保存: {md_path}")
@@ -978,8 +1085,11 @@ def _save_reports(
         # 处理其他不可序列化的对象
         return str(obj)
 
-    with open(snapshot_path, "w", encoding="utf-8") as f:
-        json.dump(context.model_dump(), f, ensure_ascii=False, indent=2, default=_default_serializer)
+    save_json_report(
+        context.model_dump(),
+        snapshot_path,
+        default=_default_serializer,
+    )
     print(f"原始快照已保存: {snapshot_path}")
 
 
@@ -1006,6 +1116,8 @@ def _build_report(
     report_dir: str = None,
     command_args: str = "",
     provider_status=None,
+    warnings: List[str] = None,
+    industry_three_layer_shadow_summary: dict = None,
 ) -> RadarReport:
     """构建最终报告"""
     from .models import DataCompleteness, ProviderStatus
@@ -1079,6 +1191,10 @@ def _build_report(
         data_source_mode=data_source_mode,
         report_dir=report_dir or "",
         generated_by_command=command_args,
+        warnings=warnings or [],
+        industry_three_layer_shadow_summary=(
+            industry_three_layer_shadow_summary or {}
+        ),
     )
 
 
@@ -1094,3 +1210,20 @@ def _get_comparison_source(
         return f"lookback:{lookback_days}days"
     else:
         return "none"
+
+
+def _apply_rotation_ranks(
+    scores: List[SectorScore],
+    details: List[Dict[str, Any]],
+) -> None:
+    """Preserve already-computed rotation ranks on report sector rows."""
+    details_by_id = {item.get("sector_id"): item for item in details}
+    for score in scores:
+        detail = details_by_id.get(score.sector_id)
+        if detail is None:
+            continue
+        score.current_rank = detail.get("current_rank")
+        score.rank_tied = bool(detail.get("rank_tied", False))
+        score.rank_tie_count = int(detail.get("rank_tie_count", 1))
+        score.previous_rank = detail.get("previous_rank")
+        score.rank_change = detail.get("rank_change")

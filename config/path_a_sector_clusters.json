@@ -1,0 +1,21 @@
+{
+  "schema_version": "path_a_sector_cluster_map.v1",
+  "mode": "paper_shadow_research_only",
+  "clusters": {
+    "医疗服务": [
+      "医疗服务"
+    ],
+    "医药制造": [
+      "中药",
+      "化学制药",
+      "生物制品"
+    ],
+    "医药流通": [
+      "医药商业"
+    ],
+    "农林牧渔": [
+      "养殖业"
+    ]
+  },
+  "disclaimer": "No broker connection and no live order instruction."
+}

@@ -76,6 +76,49 @@ def test_load_unified_candidates_preserves_sector_scores(tmp_path):
     assert candidates[1]["burst_score"] == 121.2
 
 
+def test_load_unified_candidates_prefers_formal_replacement_pool(tmp_path):
+    unified_dir = tmp_path / "reports" / "unified" / "2026-07-02"
+    unified_dir.mkdir(parents=True)
+    active = {
+        "code": "600009",
+        "name": "Active",
+        "sector_name": "Active Sector",
+        "sector_type": "industry",
+        "sector_trend_score": 66.0,
+        "sector_burst_score": 55.0,
+        "sector_direction_score": 78.0,
+        "linkage_selection_score": 82.0,
+    }
+    (unified_dir / "unified_report.json").write_text(
+        json.dumps(
+            {
+                "candidate_chain": "direction_linkage_v2",
+                "formal_candidate_selection": {
+                    "status": "active_for_paper_research",
+                    "selected": [active],
+                },
+                "trend_candidates_all": [
+                    {"code": "600001", "name": "Legacy", "sector_name": "Legacy"}
+                ],
+                "burst_candidates_all": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    orig_unified_dir = export_candidates.UNIFIED_DIR
+    export_candidates.UNIFIED_DIR = tmp_path / "reports" / "unified"
+    try:
+        candidates, _funnel = export_candidates.load_unified_candidates("2026-07-02")
+    finally:
+        export_candidates.UNIFIED_DIR = orig_unified_dir
+
+    assert [candidate["code"] for candidate in candidates] == ["600009"]
+    assert candidates[0]["source_pool"] == "both"
+    assert candidates[0]["linkage_selection_score"] == 82.0
+    assert candidates[0]["sector_direction_score"] == 78.0
+
+
 def test_build_candidate_entry_uses_sector_score_aliases():
     entry = export_candidates.build_candidate_entry(
         {
@@ -188,6 +231,10 @@ def test_build_candidate_entry_preserves_stock_score_fields():
             "relevance_score": 0.833,
             "quant_score": 61.2,
             "final_score": 70.1,
+            "candidate_chain": "direction_linkage_v2",
+            "linkage_selection_score": 82.0,
+            "sector_direction_score": 78.0,
+            "active_selection_score": 82.0,
         },
         {"industries": [], "concepts": [{"name": "光刻胶", "agent_label": "trend_confirmed"}]},
         1,
@@ -198,6 +245,10 @@ def test_build_candidate_entry_preserves_stock_score_fields():
     assert entry["relevance_score"] == 0.833
     assert entry["quant_score"] == 61.2
     assert entry["final_score"] == 70.1
+    assert entry["candidate_chain"] == "direction_linkage_v2"
+    assert entry["linkage_selection_score"] == 82.0
+    assert entry["sector_direction_score"] == 78.0
+    assert entry["active_selection_score"] == 82.0
 
 
 def test_generate_aihf_request_limits_agent_stock_count(tmp_path, monkeypatch):
@@ -258,6 +309,30 @@ def test_generate_aihf_request_limits_agent_stock_count(tmp_path, monkeypatch):
     skipped = [c for c in top30["candidates"] if c["agent_analysis_status"] == "skipped_by_agent_stock_limit"]
     assert len(analyzed) == 10
     assert len(skipped) == 20
+
+
+def test_agent_subset_uses_active_replacement_score_without_overwriting_final_score():
+    candidates = [
+        {
+            "code": "600001",
+            "source_pool": "both",
+            "candidate_chain": "direction_linkage_v2",
+            "active_selection_score": 90.0,
+            "final_score": 10.0,
+        },
+        {
+            "code": "600002",
+            "source_pool": "both",
+            "candidate_chain": "direction_linkage_v2",
+            "active_selection_score": 80.0,
+            "final_score": 99.0,
+        },
+    ]
+
+    selected = export_candidates._select_agent_candidates(candidates, 1)
+
+    assert [row["code"] for row in selected] == ["600001"]
+    assert candidates[0]["final_score"] == 10.0
 
 
 # ======================================================================
@@ -439,4 +514,3 @@ def test_agent_stock_limit_10_in_request(tmp_path, monkeypatch):
     )
     request = json.loads(request_path.read_text(encoding="utf-8"))
     assert len(request["stocks"]) == 10
-

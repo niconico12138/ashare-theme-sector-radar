@@ -1,3 +1,7 @@
+from pathlib import Path
+
+import pytest
+
 from theme_sector_radar.data.stockdb_sdk_client import StockDBSdkClient
 
 
@@ -83,3 +87,37 @@ def test_probe_freshness_reports_stale_status():
     assert result["latest_daily_date"] == "20260707"
     assert result["expected_date"] == "20260708"
     assert result["source"] == "stockdb-sdk"
+
+
+def test_client_auto_discovers_complete_desktop_pybao_sdk(tmp_path, monkeypatch):
+    sdk_dir = tmp_path / "Desktop" / "stockdb" / "pybao"
+    sdk_dir.mkdir(parents=True)
+    (sdk_dir / "stock_sdk.py").write_text(
+        "class StockDBClient:\n"
+        "    def __init__(self, host, port):\n"
+        "        self.endpoint = (host, port)\n",
+        encoding="utf-8",
+    )
+    (sdk_dir / "stockdb.pyd").write_bytes(b"test-placeholder")
+    monkeypatch.delenv("STOCKDB_SDK_PATH", raising=False)
+    monkeypatch.setattr(Path, "home", classmethod(lambda cls: tmp_path))
+
+    client = StockDBSdkClient()
+
+    assert client._client.endpoint == ("127.0.0.1", 7899)
+
+
+def test_client_rejects_incomplete_sdk_without_importing_same_named_package(
+    tmp_path, monkeypatch
+):
+    sdk_dir = tmp_path / "incomplete"
+    sdk_dir.mkdir()
+    (sdk_dir / "stock_sdk.py").write_text(
+        "raise AssertionError('must not import incomplete SDK')\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("STOCKDB_SDK_PATH", str(sdk_dir))
+    monkeypatch.setattr(Path, "home", classmethod(lambda cls: tmp_path / "missing"))
+
+    with pytest.raises(ImportError, match="stock_sdk.py and stockdb.pyd"):
+        StockDBSdkClient()

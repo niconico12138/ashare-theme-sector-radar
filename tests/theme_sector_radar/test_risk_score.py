@@ -132,3 +132,15 @@ class TestRiskScore:
 
         assert "data_quality_low" in flags
 
+    def test_unavailable_price_does_not_trigger_price_risk_flags(self):
+        sector = self._create_sector(
+            price_change_pct=18.0,
+            price_change_available=False,
+            turnover=1_000_000_000,
+            main_net_inflow=-1_000_000_000,
+        )
+
+        _, _, flags, _ = calculate_risk_penalty(sector)
+
+        assert "overheat" not in flags
+        assert "divergence" not in flags

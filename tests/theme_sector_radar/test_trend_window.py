@@ -138,6 +138,19 @@ class TestTrendWindowTruncation:
         assert window_info["history_coverage_ratio"] == 0.2
         assert window_info["trend_window_status"] == "insufficient_history"
 
+    def test_half_window_is_explicitly_partial(self):
+        from theme_sector_radar.cli import _apply_trend_window
+
+        history = [
+            {"date": f"2026-06-{day:02d}", "close": 100.0 + day}
+            for day in range(1, 6)
+        ]
+
+        _, window_info = _apply_trend_window(history, trend_window=10)
+
+        assert window_info["history_coverage_ratio"] == 0.5
+        assert window_info["trend_window_status"] == "partial_history"
+
     def test_truncate_empty_history(self):
         """测试空历史数据"""
         from theme_sector_radar.cli import _apply_trend_window
@@ -309,5 +322,4 @@ class TestShortTermBurstScoreIndependent:
         assert 0 <= result["short_term_burst_score"] <= 100
         # 短线爆发分不应该有 trend_window
         assert "trend_window" not in result
-
 

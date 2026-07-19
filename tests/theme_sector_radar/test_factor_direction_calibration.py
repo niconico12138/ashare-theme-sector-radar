@@ -10,14 +10,18 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
 
 from calibrate_factor_direction import (
+    CALIBRATION_FACTORS,
     compute_factor_stats,
     classify_direction,
     interpret_risk_penalty,
     build_recommendations,
+    propose_next_experiment,
+    generate_markdown,
     _split_by_percentile,
     _get_current_usage,
     _resolve_aggregate_path,
 )
+from tests.theme_sector_radar.report_fixture_factory import write_json
 
 
 # ======================================================================
@@ -190,32 +194,130 @@ class TestAggregatePathResolution:
 # Test: Integration
 # ======================================================================
 
+@pytest.fixture
+def calibration_output_paths(tmp_path):
+    date_regimes = [
+        ("2026-07-01", "broad_up"),
+        ("2026-07-02", "broad_down"),
+        ("2026-07-03", "mixed"),
+    ]
+    records = []
+    for date, regime in date_regimes:
+        for rank in range(10):
+            record = {
+                "date": date,
+                "code": f"{date[-2:]}-{rank}",
+                "market_regime": regime,
+                "data_available": True,
+                "next_return_pct": float(rank - 4.5),
+            }
+            record.update({factor: float(rank) for factor in CALIBRATION_FACTORS})
+            record["risk_penalty_score"] = float(9 - rank)
+            records.append(record)
+
+    factor_results = {}
+    for factor in CALIBRATION_FACTORS:
+        all_stats = compute_factor_stats(records, factor)
+        up_stats = compute_factor_stats(records, factor, regime="broad_up")
+        down_stats = compute_factor_stats(records, factor, regime="broad_down")
+        mixed_stats = compute_factor_stats(records, factor, regime="mixed")
+        direction, confidence = classify_direction(all_stats, up_stats, down_stats)
+        factor_results[factor] = {
+            "all": all_stats,
+            "broad_up": up_stats,
+            "broad_down": down_stats,
+            "mixed": mixed_stats,
+            "direction": direction,
+            "confidence": confidence,
+        }
+
+    risk_interp = interpret_risk_penalty(
+        factor_results["risk_penalty_score"]["all"],
+        factor_results["risk_penalty_score"]["broad_up"],
+        factor_results["risk_penalty_score"]["broad_down"],
+    )
+    recommendations = build_recommendations(factor_results)
+    next_experiment = propose_next_experiment(factor_results, risk_interp)
+    coverage = {
+        "valid_date_count": len(date_regimes),
+        "total_records": len(records),
+        "records_with_data": len(records),
+    }
+    output = {
+        "as_of": "synthetic-test-window",
+        "coverage": coverage,
+        "factor_results": factor_results,
+        "risk_penalty_interpretation": risk_interp,
+        "calibration_recommendations": recommendations,
+        "next_experiment_proposal": next_experiment,
+    }
+
+    output_dir = tmp_path / "calibration"
+    json_path = write_json(output_dir / "factor_direction_calibration.json", output)
+    markdown_path = output_dir / "factor_direction_calibration.md"
+    markdown_path.write_text(
+        generate_markdown(
+            factor_results,
+            risk_interp,
+            recommendations,
+            next_experiment,
+            coverage,
+        ),
+        encoding="utf-8",
+    )
+    return {"json": json_path, "markdown": markdown_path}
+
 class TestIntegration:
-    def test_output_exists(self):
-        path = Path("reports/selection_validation/calibration/2026-06-01_to_2026-07-07/factor_direction_calibration.json")
+    def test_output_exists(self, calibration_output_paths):
+        path = calibration_output_paths["json"]
         assert path.exists()
         data = json.loads(path.read_text(encoding="utf-8"))
         assert "factor_results" in data
         assert "risk_penalty_interpretation" in data
         assert "calibration_recommendations" in data
 
-    def test_all_factors_present(self):
-        path = Path("reports/selection_validation/calibration/2026-06-01_to_2026-07-07/factor_direction_calibration.json")
+    def test_all_factors_present(self, calibration_output_paths):
+        path = calibration_output_paths["json"]
         data = json.loads(path.read_text(encoding="utf-8"))
         expected = ["decision_score", "stock_short_score", "risk_penalty_score",
                     "stock_trend_score", "sector_leader_score", "agent_score"]
         for f in expected:
             assert f in data["factor_results"]
+        expected_result_keys = {
+            "all",
+            "broad_up",
+            "broad_down",
+            "mixed",
+            "direction",
+            "confidence",
+        }
+        assert all(
+            set(result) == expected_result_keys
+            for result in data["factor_results"].values()
+        )
+        decision_result = data["factor_results"]["decision_score"]
+        assert decision_result["all"]["sample_count"] == 30
 
-    def test_no_production_changes(self):
-        path = Path("reports/selection_validation/calibration/2026-06-01_to_2026-07-07/factor_direction_calibration.json")
+    def test_no_production_changes(self, calibration_output_paths):
+        path = calibration_output_paths["json"]
         data = json.loads(path.read_text(encoding="utf-8"))
         assert all(not r["production_change_allowed"] for r in data["calibration_recommendations"])
 
-    def test_markdown_exists(self):
-        path = Path("reports/selection_validation/calibration/2026-06-01_to_2026-07-07/factor_direction_calibration.md")
+    def test_markdown_exists(self, calibration_output_paths):
+        path = calibration_output_paths["markdown"]
         assert path.exists()
         content = path.read_text(encoding="utf-8")
+        data = json.loads(
+            calibration_output_paths["json"].read_text(encoding="utf-8")
+        )
         assert "Factor Direction Calibration" in content
         assert "Do Not Change Production Weights Yet" in content
         assert "Risk Penalty Interpretation" in content
+        assert data["factor_results"]["decision_score"]["direction"] in content
+        assert "Records with forward data: 30" in content
+        decision_line = next(
+            line for line in content.splitlines()
+            if line.startswith("| decision_score ")
+        )
+        factor, sample_count, date_count, *_ = decision_line.strip("|").split()
+        assert (factor, sample_count, date_count) == ("decision_score", "30", "3")

@@ -4,6 +4,7 @@
 提供市场基准（如沪深300、中证500）的历史数据获取能力。
 """
 
+import math
 import time
 import warnings
 from dataclasses import dataclass, field
@@ -228,46 +229,23 @@ class BenchmarkProvider:
             benchmark_data: 基准数据
 
         Returns:
-            包含 1d/3d/5d 收益率的字典
+            仅包含拥有 N+1 个有效收盘价的期限收益率字典
         """
-        records = benchmark_data.records
+        records = sorted(benchmark_data.records, key=lambda record: record.date)
         if not records:
-            return {"1d": 0.0, "3d": 0.0, "5d": 0.0}
+            return {}
 
-        # 计算累计收益率
-        returns = [r.pct_change for r in records]
+        closes = [float(record.close) for record in records]
+        if any(not math.isfinite(close) or close <= 0 for close in closes):
+            raise ValueError("benchmark close values must be finite and positive")
 
-        # 1日收益率
-        return_1d = returns[-1] if len(returns) >= 1 else 0.0
-
-        # 3日收益率
-        if len(returns) >= 3:
-            return_3d = sum(returns[-3:])
-        else:
-            return_3d = sum(returns)
-
-        # 5日收益率
-        if len(returns) >= 5:
-            return_5d = sum(returns[-5:])
-        else:
-            return_5d = sum(returns)
-
-        # 10日收益率
-        if len(returns) >= 10:
-            return_10d = sum(returns[-10:])
-        else:
-            return_10d = sum(returns)
-
-        # 20日收益率
-        if len(returns) >= 20:
-            return_20d = sum(returns[-20:])
-        else:
-            return_20d = sum(returns)
-
-        return {
-            "1d": round(return_1d, 4),
-            "3d": round(return_3d, 4),
-            "5d": round(return_5d, 4),
-            "10d": round(return_10d, 4),
-            "20d": round(return_20d, 4),
-        }
+        returns = {}
+        for horizon in (1, 3, 5, 10, 20):
+            if len(closes) < horizon + 1:
+                continue
+            start_close = closes[-(horizon + 1)]
+            returns[f"{horizon}d"] = round(
+                (closes[-1] / start_close - 1.0) * 100.0,
+                4,
+            )
+        return returns

@@ -5,6 +5,8 @@ JSON 报告生成
 """
 
 import json
+import os
+import tempfile
 from datetime import datetime
 from typing import Any, Dict, List
 
@@ -40,6 +42,8 @@ def generate_json_report(
     report_dir: str = "",
     generated_by_command: str = "",
     provider_status=None,
+    warnings: List[str] = None,
+    industry_three_layer_shadow_summary: dict = None,
 ) -> Dict[str, Any]:
     """
     生成 JSON 报告
@@ -131,6 +135,10 @@ def generate_json_report(
         "constituent_coverage": constituent_coverage or {},
         "rotation_summary": rotation_summary or {},
         "comparison": comparison or {},
+        "warnings": warnings or [],
+        "industry_three_layer_shadow_summary": (
+            industry_three_layer_shadow_summary or {}
+        ),
         # 数据来源追踪字段
         "run_mode": run_mode,
         "provider": provider,
@@ -216,7 +224,12 @@ def _format_sector_score(score: SectorScore) -> Dict[str, Any]:
         "data_sources": score.data_sources,
         "updated_at": score.updated_at,
         "data_quality_score": score.data_quality_score,
+        "turnover": score.turnover,
+        "main_net_inflow": score.main_net_inflow,
         "score_breakdown": score.score_breakdown,
+        "current_rank": score.current_rank,
+        "rank_tied": score.rank_tied,
+        "rank_tie_count": score.rank_tie_count,
         "previous_rank": score.previous_rank,
         "rank_change": score.rank_change,
     }
@@ -245,7 +258,37 @@ def _format_resonance(resonance: ResonanceResult) -> Dict[str, Any]:
     }
 
 
-def save_json_report(report: Dict[str, Any], filepath: str):
+def save_json_report(
+    report: Dict[str, Any],
+    filepath: str,
+    *,
+    default=None,
+):
     """保存 JSON 报告"""
-    with open(filepath, "w", encoding="utf-8") as f:
-        json.dump(report, f, ensure_ascii=False, indent=2)
+    serialized = json.dumps(
+        report,
+        ensure_ascii=False,
+        indent=2,
+        allow_nan=False,
+        default=default,
+    )
+    target = os.path.abspath(filepath)
+    temp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=os.path.dirname(target),
+            prefix=f".{os.path.basename(target)}.",
+            suffix=".tmp",
+            delete=False,
+        ) as temp_file:
+            temp_path = temp_file.name
+            temp_file.write(serialized)
+            temp_file.flush()
+            os.fsync(temp_file.fileno())
+        os.replace(temp_path, target)
+        temp_path = None
+    finally:
+        if temp_path and os.path.exists(temp_path):
+            os.unlink(temp_path)

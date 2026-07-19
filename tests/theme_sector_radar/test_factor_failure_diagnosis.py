@@ -23,6 +23,7 @@ from diagnose_factor_failure import (
     _safe_float,
     _avg,
 )
+from tests.theme_sector_radar.report_fixture_factory import write_json
 
 
 # ======================================================================
@@ -245,17 +246,96 @@ class TestMarkdown:
 # Test: Integration
 # ======================================================================
 
+@pytest.fixture
+def diagnosis_output_paths(tmp_path):
+    records = []
+    for i in range(20):
+        analyzed = i < 10
+        date_index = i // 5
+        records.append({
+            "date": f"2026-07-{date_index + 1:02d}",
+            "code": f"S{i}",
+            "market_regime": "broad_up" if date_index % 2 == 0 else "broad_down",
+            "data_available": True,
+            "next_return_pct": float(-3 - i / 10) if analyzed else float(2 + i / 10),
+            "next_low_return_pct": float(-12 - i / 10) if analyzed else float(-2 - i / 100),
+            "max_intraday_drawdown_pct": float(-8 - i / 10) if analyzed else float(-1 - i / 100),
+            "decision_score": float(100 - i) if analyzed else float(60 - (i - 10)),
+            "stock_short_score": float(70 - i),
+            "stock_trend_score": float(60 - i),
+            "sector_leader_score": float(50 - i),
+            "risk_penalty_score": float(20 - i),
+            "trade_eligibility": "focus" if analyzed else "watch",
+            "source_pool": "burst" if analyzed else "trend",
+            "agent_analysis_status": "analyzed" if analyzed else "skipped_by_agent_stock_limit",
+            "agent_score": float(40 + i),
+        })
+    regime_breakdown = compute_regime_breakdown(records)
+    rank_corrs = compute_rank_correlations(records)
+    risk_exposure = compute_risk_exposure(records)
+    agent_diag = compute_agent_diagnostic(records)
+    fwd_quality = compute_forward_return_quality(records)
+    aggregate = {
+        "coverage_summary": {"valid_date_count": 4},
+        "factor_performance_summary": {},
+    }
+    summary = generate_diagnosis_summary(
+        regime_breakdown,
+        rank_corrs,
+        risk_exposure,
+        agent_diag,
+        fwd_quality,
+        aggregate,
+    )
+    coverage = {
+        "valid_date_count": 4,
+        "total_records": len(records),
+        "records_with_data": len(records),
+    }
+    diagnosis = {
+        "as_of": "synthetic-test-window",
+        "coverage": coverage,
+        "regime_breakdown": regime_breakdown,
+        "rank_correlations": rank_corrs,
+        "risk_exposure": risk_exposure,
+        "agent_diagnostic": agent_diag,
+        "forward_return_quality": fwd_quality,
+        "summary": summary,
+    }
+
+    output_dir = tmp_path / "diagnostics"
+    json_path = write_json(output_dir / "factor_failure_diagnosis.json", diagnosis)
+    markdown_path = output_dir / "factor_failure_diagnosis.md"
+    markdown_path.write_text(
+        generate_markdown(
+            diagnosis,
+            regime_breakdown,
+            rank_corrs,
+            risk_exposure,
+            agent_diag,
+            fwd_quality,
+            summary,
+        ),
+        encoding="utf-8",
+    )
+    return {"json": json_path, "markdown": markdown_path}
+
 class TestIntegration:
-    def test_diagnosis_output_exists(self):
-        path = Path("reports/selection_validation/diagnostics/2026-06-01_to_2026-07-07/factor_failure_diagnosis.json")
+    def test_diagnosis_output_exists(self, diagnosis_output_paths):
+        path = diagnosis_output_paths["json"]
         assert path.exists()
         data = json.loads(path.read_text(encoding="utf-8"))
         assert "summary" in data
         assert "rank_correlations" in data
         assert "regime_breakdown" in data
+        assert "error" not in data["risk_exposure"]
+        assert "high_score_higher_drawdown" in data["risk_exposure"]["flags"]
+        assert "agent_selection_high_beta_risk" in data["agent_diagnostic"]["flags"]
 
-    def test_markdown_output_exists(self):
-        path = Path("reports/selection_validation/diagnostics/2026-06-01_to_2026-07-07/factor_failure_diagnosis.md")
+    def test_markdown_output_exists(self, diagnosis_output_paths):
+        path = diagnosis_output_paths["markdown"]
         assert path.exists()
         content = path.read_text(encoding="utf-8")
         assert "Factor Failure Diagnosis" in content
+        assert "high_score_higher_drawdown" in content
+        assert "agent_selection_high_beta_risk" in content

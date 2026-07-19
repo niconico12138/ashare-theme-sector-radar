@@ -1,14 +1,22 @@
 """Tests for historical data availability audit."""
 
-import json
 import sys
 from pathlib import Path
 
 import pytest
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+from theme_sector_radar.reporting.strict_json import load_strict_json
+from tests.theme_sector_radar.report_fixture_factory import (
+    build_sector_score_tree,
+    write_json,
+    write_selection_validation,
+)
 
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+if str(PROJECT_ROOT / "scripts") not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+
+import audit_historical_data_availability as availability_audit
 from audit_historical_data_availability import (
     audit_availability,
     generate_markdown,
@@ -16,6 +24,15 @@ from audit_historical_data_availability import (
     _is_trading_day,
     _next_trading_date,
 )
+
+
+@pytest.fixture
+def availability_report_tree(tmp_path, monkeypatch):
+    dates = [f"2026-06-{day:02d}" for day in range(1, 10)]
+    roots = build_sector_score_tree(tmp_path, dates)
+    write_selection_validation(roots["selection_validation"], "2026-06-01")
+    monkeypatch.setattr(availability_audit, "PROJECT_ROOT", tmp_path)
+    return roots
 
 
 class TestDateUtils:
@@ -56,14 +73,14 @@ class TestScanDirDates:
 
 
 class TestAuditAvailability:
-    def test_basic_audit(self):
+    def test_basic_audit(self, availability_report_tree):
         report = audit_availability("2026-06-01", "2026-06-05")
         assert "scan_range" in report
         assert "total_calendar_days" in report
         assert "classification" in report
         assert report["total_calendar_days"] == 5
 
-    def test_classification_structure(self):
+    def test_classification_structure(self, availability_report_tree):
         report = audit_availability("2026-06-01", "2026-06-05")
         cls = report["classification"]
         assert "direct_verify" in cls
@@ -73,12 +90,12 @@ class TestAuditAvailability:
         assert "missing_sector_scores" in cls
         assert "non_trading" in cls
 
-    def test_known_dates_have_data(self):
+    def test_known_dates_have_data(self, availability_report_tree):
         report = audit_availability("2026-06-01", "2026-06-05")
         # 2026-06-01 to 2026-06-05 should have sector_scores
         assert report["data_source_counts"]["sector_scores"] >= 5
 
-    def test_non_trading_days_identified(self):
+    def test_non_trading_days_identified(self, availability_report_tree):
         report = audit_availability("2026-06-05", "2026-06-08")
         # 2026-06-07 is Sunday
         non_trading = report["classification"]["non_trading"]["dates"]
@@ -86,7 +103,7 @@ class TestAuditAvailability:
 
 
 class TestMarkdown:
-    def test_contains_key_sections(self):
+    def test_contains_key_sections(self, availability_report_tree):
         report = audit_availability("2026-06-01", "2026-06-05")
         md = generate_markdown(report)
         assert "Summary" in md
@@ -96,9 +113,15 @@ class TestMarkdown:
 
 
 class TestOutputExists:
-    def test_output_files_exist(self):
-        path = Path("reports/selection_validation/data_availability/historical_data_availability.json")
+    def test_output_files_exist(self, availability_report_tree):
+        report = audit_availability("2026-06-01", "2026-06-05")
+        path = write_json(
+            availability_report_tree["selection_validation"]
+            / "data_availability"
+            / "historical_data_availability.json",
+            report,
+        )
         assert path.exists()
-        data = json.loads(path.read_text(encoding="utf-8"))
+        data = load_strict_json(path)
         assert "classification" in data
         assert "projected_validatable" in data

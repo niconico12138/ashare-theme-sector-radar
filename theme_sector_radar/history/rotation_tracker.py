@@ -98,11 +98,14 @@ def _mark_all_as_new(sectors: List[SectorScore]) -> List[Dict[str, Any]]:
     """标记所有板块为新条目"""
     details = []
     for i, sector in enumerate(sectors):
+        current_rank = _explicit_rank(sector.current_rank, i + 1)
         details.append({
             "sector_id": sector.sector_id,
             "name": sector.name,
             "type": sector.type.value,
-            "current_rank": i + 1,
+            "current_rank": current_rank,
+            "rank_tied": sector.rank_tied,
+            "rank_tie_count": sector.rank_tie_count,
             "previous_rank": None,
             "rank_change": None,
             "previous_score": None,
@@ -145,11 +148,10 @@ def _calculate_sector_rotation(
     prev_risk_map = {}
     prev_names = set()
 
-    for item in previous:
+    for position, item in enumerate(previous, start=1):
         name = item.get("name", "")
         prev_names.add(name)
-        # 历史排名基于列表位置
-        rank = previous.index(item) + 1
+        rank = _explicit_rank(item.get("current_rank"), position)
         prev_rank_map[name] = rank
         prev_score_map[name] = item.get("score", 0.0)
         prev_risk_map[name] = item.get("risk_penalty", 0.0)
@@ -162,7 +164,7 @@ def _calculate_sector_rotation(
     rotation_summary = _empty_rotation()
 
     for i, sector in enumerate(current):
-        current_rank = i + 1
+        current_rank = _explicit_rank(sector.current_rank, i + 1)
         name = sector.name
 
         # 查找历史数据
@@ -215,6 +217,8 @@ def _calculate_sector_rotation(
             "name": name,
             "type": sector.type.value,
             "current_rank": current_rank,
+            "rank_tied": sector.rank_tied,
+            "rank_tie_count": sector.rank_tie_count,
             "previous_rank": previous_rank,
             "rank_change": rank_change,
             "previous_score": previous_score,
@@ -229,9 +233,15 @@ def _calculate_sector_rotation(
 
     # 识别掉出的板块
     dropped_out = prev_names - current_names
-    rotation_summary["dropped_out"] = list(dropped_out)
+    rotation_summary["dropped_out"] = sorted(dropped_out)
 
     return details, rotation_summary
+
+
+def _explicit_rank(value: Any, fallback: int) -> int:
+    if isinstance(value, int) and not isinstance(value, bool) and value > 0:
+        return value
+    return fallback
 
 
 def _get_previous_risk_level(

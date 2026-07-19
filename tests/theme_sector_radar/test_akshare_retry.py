@@ -38,10 +38,9 @@ class TestAkShareRetry:
         assert provider.retries == 3
         assert provider.retry_delay == 1.0
 
-    @pytest.mark.network
     def test_safe_call_returns_result(self):
         """测试 safe_call 返回 CallResult"""
-        provider = AkShareProvider()
+        provider = AkShareProvider(retry_delay=0)
 
         # 测试一个简单的函数
         def test_func():
@@ -52,10 +51,9 @@ class TestAkShareRetry:
         assert result.status == "ok"
         assert result.data == [1, 2, 3]
 
-    @pytest.mark.network
     def test_safe_call_handles_exception(self):
         """测试 safe_call 处理异常"""
-        provider = AkShareProvider(retries=1)
+        provider = AkShareProvider(retries=1, retry_delay=0)
 
         def failing_func():
             raise ValueError("Test error")
@@ -65,10 +63,9 @@ class TestAkShareRetry:
         assert len(result.warnings) > 0
         assert "ValueError" in result.warnings[0]
 
-    @pytest.mark.network
     def test_safe_call_handles_none_return(self):
         """测试 safe_call 处理 None 返回"""
-        provider = AkShareProvider(retries=1)
+        provider = AkShareProvider(retries=1, retry_delay=0)
 
         def none_func():
             return None
@@ -77,11 +74,10 @@ class TestAkShareRetry:
         # None 不是有效数据，应该重试后失败
         assert result.status == "failed"
 
-    @pytest.mark.network
     def test_safe_call_handles_empty_dataframe(self):
         """测试 safe_call 处理空 DataFrame"""
         import pandas as pd
-        provider = AkShareProvider(retries=1)
+        provider = AkShareProvider(retries=1, retry_delay=0)
 
         def empty_df_func():
             return pd.DataFrame()

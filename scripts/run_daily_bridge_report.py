@@ -394,10 +394,17 @@ def compute_agent_execution_quality(date: str) -> dict:
     return result
 
 
-def run_forward_returns_builder(date: str) -> Path | None:
+def run_forward_returns_builder(
+    date: str,
+    trading_calendar_path: Path | None = None,
+    expected_calendar_sha256: str | None = None,
+) -> Path | None:
     script_path = PROJECT_ROOT / "scripts" / "build_forward_returns.py"
     candidate_path = OUTPUT_DIR / date / "top30_candidates.json"
     if not script_path.exists() or not candidate_path.exists():
+        return None
+    if trading_calendar_path is None or not expected_calendar_sha256:
+        print("  [WARN] forward returns skipped: versioned trading calendar is required")
         return None
     proc = subprocess.run(
         [
@@ -407,6 +414,10 @@ def run_forward_returns_builder(date: str) -> Path | None:
             date,
             "--candidate-path",
             str(candidate_path),
+            "--trading-calendar-path",
+            str(trading_calendar_path),
+            "--expected-calendar-sha256",
+            expected_calendar_sha256,
         ],
         capture_output=True,
         text=True,
@@ -460,6 +471,8 @@ def run_phase24_scripts(
     force_aihf: bool = False,
     stock_limit: int = DEFAULT_STOCK_LIMIT,
     agent_stock_limit: int = DEFAULT_AGENT_STOCK_LIMIT,
+    trading_calendar_path: Path | None = None,
+    expected_calendar_sha256: str | None = None,
 ) -> dict:
     """Run the Phase 24 scripts and return results."""
     out_dir = OUTPUT_DIR / date
@@ -525,7 +538,14 @@ def run_phase24_scripts(
 
     print(proc1.stdout)
     quality_path = run_candidate_pool_quality_analysis(date)
-    forward_returns_path = run_forward_returns_builder(date)
+    if trading_calendar_path is not None and expected_calendar_sha256:
+        forward_returns_path = run_forward_returns_builder(
+            date,
+            trading_calendar_path=trading_calendar_path,
+            expected_calendar_sha256=expected_calendar_sha256,
+        )
+    else:
+        forward_returns_path = run_forward_returns_builder(date)
     # NOTE: scoring calibration is deferred to Step 2.6 (after merge)
 
     # Step 2: Run ai-hedge-fund bridge
@@ -1113,6 +1133,8 @@ def main():
     parser.add_argument("--agent-stock-limit", type=int, default=DEFAULT_AGENT_STOCK_LIMIT, help="Max stocks sent to AIHF agents")
     parser.add_argument("--llm-enabled", action="store_true", help="Enable LLM enhancement")
     parser.add_argument("--llm-model", default="", help="LLM model name (e.g., mimo-v2.5-pro)")
+    parser.add_argument("--trading-calendar-path", type=Path, default=None)
+    parser.add_argument("--expected-calendar-sha256", default=None)
     args = parser.parse_args()
 
     date = args.as_of
@@ -1147,6 +1169,8 @@ def main():
             force_aihf=args.force_aihf,
             stock_limit=args.stock_limit,
             agent_stock_limit=args.agent_stock_limit,
+            trading_calendar_path=args.trading_calendar_path,
+            expected_calendar_sha256=args.expected_calendar_sha256,
         )
         ranking = bridge_output.get("ranking")
         if not ranking and bridge_output.get("status") == "ok":

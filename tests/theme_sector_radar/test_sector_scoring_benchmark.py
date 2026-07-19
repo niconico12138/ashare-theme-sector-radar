@@ -32,6 +32,20 @@ class TestBenchmarkIntegration:
         assert benchmark_name == "沪深300"
         assert score > 0  # 超额收益为正
 
+    def test_zero_return_market_benchmark_is_not_treated_as_missing(self):
+        score, mode, benchmark_id, benchmark_name = calculate_relative_strength_component(
+            sector_return=1.0,
+            benchmark_return=0.0,
+            all_sector_returns=[10.0, 12.0, 14.0],
+            benchmark_id="hs300",
+            benchmark_name="沪深300",
+        )
+
+        assert mode == "market_benchmark"
+        assert benchmark_id == "hs300"
+        assert benchmark_name == "沪深300"
+        assert score == 10.5
+
     def test_benchmark_mode_sector_median_fallback(self):
         """测试无基准时使用 sector_median fallback"""
         score, mode, benchmark_id, benchmark_name = calculate_relative_strength_component(

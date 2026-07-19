@@ -11,10 +11,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping, Sequence
 
 if sys.stdout.encoding and sys.stdout.encoding.lower() in {"gbk", "cp936", "cp1252"}:
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -24,6 +25,31 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from theme_sector_radar.data.today_realtime_client import TodayRealtimeClient
+from theme_sector_radar.reporting.artifact_archive import write_text_preserving_previous
+from theme_sector_radar.timing.paper_trading import build_timing_paper_trading_records
+
+
+TIMING_PAPER_FIELD_ALLOWLIST = {
+    "boards",
+    "source_boards",
+    "open_to_midday_resilience_score",
+    "midday_hold_score",
+    "vwap_above_ratio_score",
+    "late_high_near_close_score",
+    "high_to_close_drawdown_score",
+    "lower_low_sequence_risk",
+    "stock_vs_market_intraday_alpha_score",
+    "relative_resilience_score",
+    "optimized_watch_score",
+    "late_amount_surge_score",
+    "failed_breakout_risk",
+    "execution_tradeability_score",
+    "execution_turnover_depth_score",
+    "late_breakdown_risk",
+    "weak_close_after_volume_risk",
+    "sector_breadth_quality_score",
+    "market_regime_score",
+}
 
 
 def normalize_as_of(value: str | None = None, now: datetime | None = None) -> str:
@@ -43,9 +69,10 @@ def _coerce_float(value: Any) -> float | None:
     if value is None or value == "":
         return None
     try:
-        return float(value)
+        number = float(value)
     except (TypeError, ValueError):
         return None
+    return number if math.isfinite(number) else None
 
 
 def _clean_code(value: Any) -> str:
@@ -111,6 +138,7 @@ def build_candidates(spot_result: dict[str, Any], top_n: int = 30) -> tuple[list
                 "amount": amount,
                 "source": source,
                 "data_semantics": "intraday_snapshot",
+                **{key: row.get(key) for key in TIMING_PAPER_FIELD_ALLOWLIST if key in row},
             }
         )
 
@@ -147,8 +175,37 @@ def build_report(
     spot_result: dict[str, Any],
     top_n: int = 30,
     generated_at: str | None = None,
+    minute_bars_by_code: Mapping[str, Sequence[Mapping[str, Any]]] | None = None,
 ) -> dict[str, Any]:
     candidates, warnings = build_candidates(spot_result, top_n=top_n)
+    normalized_as_of = normalize_as_of(as_of)
+    signal_session_closed = _signal_session_closed(
+        snapshot_label,
+        source_generated_at=spot_result.get("generated_at"),
+        as_of=normalized_as_of,
+    )
+    timing_paper_trading = build_timing_paper_trading_records(
+        candidates if signal_session_closed else [],
+        as_of=normalized_as_of,
+        snapshot_label=snapshot_label,
+    )
+    timing_paper_trading.update(
+        {
+            "realtime_observation_only": True,
+            "observation_mode": (
+                "signal_day_close_confirmed"
+                if signal_session_closed
+                else "intraday_candidate_observation_only"
+            ),
+            "signal_visibility": (
+                "available_after_signal_session_close"
+                if signal_session_closed
+                else "withheld_until_after_signal_session_close"
+            ),
+            "signal_session_closed": signal_session_closed,
+            "causal_entry_status": "pending_next_trading_session",
+        }
+    )
     source_status = {
         "status": "available" if spot_result.get("rows") else "empty",
         "source": spot_result.get("source"),
@@ -156,11 +213,12 @@ def build_report(
         "row_count": spot_result.get("row_count", len(spot_result.get("rows") or [])),
         "fallback_used": spot_result.get("fallback_used", False),
         "fallback_reason": spot_result.get("fallback_reason"),
+        "source_generated_at": spot_result.get("generated_at"),
     }
 
     return {
         "schema_version": "1.0",
-        "as_of": normalize_as_of(as_of),
+        "as_of": normalized_as_of,
         "snapshot_label": snapshot_label,
         "generated_at": generated_at or datetime.now().isoformat(timespec="seconds"),
         "report_mode": "realtime_preview",
@@ -178,8 +236,37 @@ def build_report(
         "source_status": source_status,
         "candidate_count": len(candidates),
         "candidates": candidates,
+        "timing_paper_trading": timing_paper_trading,
         "warnings": warnings,
     }
+
+
+def _signal_session_closed(
+    snapshot_label: str,
+    *,
+    source_generated_at: Any,
+    as_of: str,
+) -> bool:
+    digits = "".join(character for character in str(snapshot_label or "") if character.isdigit())
+    if len(digits) not in (4, 6):
+        return False
+    hour = int(digits[:2])
+    minute = int(digits[2:4])
+    second = int(digits[4:6]) if len(digits) == 6 else 0
+    if hour > 23 or minute > 59 or second > 59:
+        return False
+    if (hour, minute, second) <= (15, 0, 0):
+        return False
+    try:
+        source_time = datetime.fromisoformat(str(source_generated_at or "").replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    if source_time.tzinfo is not None:
+        source_time = source_time.astimezone(timezone(timedelta(hours=8)))
+    return (
+        source_time.date().isoformat() == as_of
+        and (source_time.hour, source_time.minute, source_time.second) > (15, 0, 0)
+    )
 
 
 def generate_markdown(report: dict[str, Any]) -> str:
@@ -243,6 +330,19 @@ def generate_markdown(report: dict[str, Any]) -> str:
         lines.extend(f"- {warning}" for warning in warnings)
         lines.append("")
 
+    timing = report.get("timing_paper_trading") or {}
+    timing_summary = timing.get("summary") or {}
+    lines.extend(
+        [
+            "## Timing Paper Trading",
+            "",
+            f"- Paper-only: `{timing.get('paper_trading_only', True)}`",
+            f"- Record count: `{timing_summary.get('record_count', 0)}`",
+            f"- Risk tags: `{timing_summary.get('risk_tag_counts') or {}}`",
+            "",
+        ]
+    )
+
     lines.extend(
         [
             "---",
@@ -266,6 +366,7 @@ def generate_realtime_aihf_request(report: dict[str, Any]) -> dict[str, Any]:
         "not_for_forward_returns": True,
         "not_for_weight_changes": True,
         "candidates": report.get("candidates") or [],
+        "timing_paper_trading": report.get("timing_paper_trading") or {},
     }
 
 
@@ -317,15 +418,18 @@ def run_realtime_preview(
 
     json_path = out_dir / "realtime_preview.json"
     md_path = out_dir / "realtime_preview.md"
-    json_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
-    md_path.write_text(generate_markdown(report), encoding="utf-8")
+    write_text_preserving_previous(
+        json_path,
+        json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False),
+    )
+    write_text_preserving_previous(md_path, generate_markdown(report))
 
     aihf_path = None
     if run_aihf:
         aihf_path = out_dir / "realtime_aihf_request.json"
-        aihf_path.write_text(
-            json.dumps(generate_realtime_aihf_request(report), ensure_ascii=False, indent=2),
-            encoding="utf-8",
+        write_text_preserving_previous(
+            aihf_path,
+            json.dumps(generate_realtime_aihf_request(report), ensure_ascii=False, indent=2, allow_nan=False),
         )
 
     return {

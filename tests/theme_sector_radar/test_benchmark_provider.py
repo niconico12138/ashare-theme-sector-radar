@@ -62,9 +62,35 @@ class TestBenchmarkProvider:
 
         assert "1d" in returns
         assert "3d" in returns
-        assert "5d" in returns
-        assert returns["1d"] == 1.94  # 最后一天的收益率
-        assert abs(returns["5d"] - 4.94) < 0.1  # 5天累计收益率
+        assert "5d" not in returns
+        assert returns["1d"] == pytest.approx(105.0 / 103.0 * 100.0 - 100.0, abs=1e-4)
+        assert returns["3d"] == pytest.approx(105.0 / 102.0 * 100.0 - 100.0, abs=1e-4)
+
+    def test_benchmark_horizons_require_n_plus_one_closes_and_compound(self):
+        provider = BenchmarkProvider()
+        closes = [100.0 * (1.01 ** day) for day in range(21)]
+        benchmark_data = BenchmarkData(
+            benchmark_id="hs300",
+            benchmark_name="沪深300",
+            source="test",
+            start_date="2026-01-01",
+            end_date="2026-01-21",
+            fetched_at="2026-01-21T00:00:00",
+            status="ok",
+            records=[
+                BenchmarkRecord(
+                    date=f"2026-01-{day + 1:02d}",
+                    close=close,
+                    pct_change=0.0 if day == 0 else 1.0,
+                )
+                for day, close in enumerate(closes)
+            ],
+        )
+
+        returns = provider.calculate_benchmark_returns(benchmark_data)
+
+        assert returns["10d"] == pytest.approx((1.01 ** 10 - 1.0) * 100.0, abs=1e-4)
+        assert returns["20d"] == pytest.approx((1.01 ** 20 - 1.0) * 100.0, abs=1e-4)
 
 
 class TestBenchmarkData:

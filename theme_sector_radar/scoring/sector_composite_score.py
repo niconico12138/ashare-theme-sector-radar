@@ -188,7 +188,7 @@ def calculate_relative_strength_component(
         (score, actual_benchmark_mode, actual_benchmark_id, actual_benchmark_name)
     """
     # 确定基准模式
-    if benchmark_id and benchmark_return != 0.0:
+    if benchmark_id:
         # 使用真实市场基准
         benchmark_mode = "market_benchmark"
     elif benchmark_return == 0.0 and all_sector_returns and len(all_sector_returns) > 0:

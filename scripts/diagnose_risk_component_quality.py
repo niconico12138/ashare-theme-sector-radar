@@ -577,7 +577,23 @@ def generate_markdown(output: dict) -> str:
     # 5
     L.append("## 5. Risk Tag Return Diagnostics")
     L.append("")
-    tag_diag = output.get("tag_diagnostics", {})
+    raw_tag_diag = output.get("tag_diagnostics", {})
+    if "tags" in raw_tag_diag:
+        tag_diag = raw_tag_diag
+    else:
+        risk_tag_diag = raw_tag_diag.get("risk_tags", {})
+        merged_tags = {}
+        for tag_group in (
+            "risk_tags",
+            "risk_decomposition_tags",
+            "risk_quality_tags",
+        ):
+            merged_tags.update(raw_tag_diag.get(tag_group, {}).get("tags", {}))
+        tag_diag = {
+            "tags": merged_tags,
+            "no_tag_avg_return": risk_tag_diag.get("no_tag_avg_return"),
+            "no_tag_count": risk_tag_diag.get("no_tag_count", 0),
+        }
     L.append(f"Baseline avg return (no tag): {tag_diag.get('no_tag_avg_return', 'N/A')}")
     L.append(f"Baseline count: {tag_diag.get('no_tag_count', 0)}")
     L.append("")

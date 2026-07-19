@@ -108,6 +108,27 @@ class TestSectorScoreReport:
         assert "综合评分" in report
         assert "测试板块1" in report
 
+    def test_report_tables_use_explicit_trend_and_burst_competition_ranks(self):
+        report_data = self._create_mock_report_data()
+        first = report_data["scores"][0]
+        first.update(
+            {
+                "trend_continuation_score": 80.0,
+                "short_term_burst_score": 70.0,
+                "trend_rank": 1,
+                "burst_rank": 1,
+            }
+        )
+        second = dict(first)
+        second["sector_name"] = "并列板块"
+        report_data["scores"].append(second)
+
+        report = generate_sector_score_report(report_data)
+
+        assert report.count("| 1 | 测试板块1 |") == 2
+        assert report.count("| 1 | 并列板块 |") == 2
+        assert "| 2 | 并列板块 |" not in report
+
     def test_report_contains_score_details(self):
         """测试报告包含评分明细"""
         report_data = self._create_mock_report_data()

@@ -38,6 +38,13 @@ dev = [
   "pytest>=7.0.0",
   "pytest-asyncio>=0.21.0",
 ]
+ml = [
+  "lightgbm>=4.0,<5.0",
+  "numpy>=2.0",
+  "pandas>=2.0",
+  "scikit-learn>=1.5",
+  "joblib>=1.4",
+]
 
 [project.scripts]
 theme-sector-radar = "theme_sector_radar.cli:main"

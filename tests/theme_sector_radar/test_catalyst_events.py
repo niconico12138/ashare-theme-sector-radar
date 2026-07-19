@@ -219,6 +219,8 @@ class TestCLI:
                 "--offline-fixture",
                 "--symbols", "600519,300750",
                 "--output", output_dir,
+                "--cache-root", os.path.join(tmpdir, "cache"),
+                "--history-root", os.path.join(tmpdir, "history"),
                 "--refresh",
             ]
 
@@ -227,3 +229,6 @@ class TestCLI:
 
             assert os.path.exists(os.path.join(output_dir, "catalyst_historical_collection_summary.json"))
             assert os.path.exists(os.path.join(output_dir, "catalyst_historical_collection_summary.md"))
+            assert os.path.exists(
+                os.path.join(tmpdir, "cache", "catalyst_events", "2026-06-29", "events.json")
+            )

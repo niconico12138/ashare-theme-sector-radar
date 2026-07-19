@@ -1,0 +1,384 @@
+"""Paper-only research helpers for intraday timing factor categories."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from statistics import mean, median
+from typing import Any, Mapping
+
+from theme_sector_radar.timing.factor_catalog import TIMING_FACTOR_CATEGORIES
+
+
+@dataclass(frozen=True)
+class IntradayFactorResearchSpec:
+    factor_id: str
+    category: str
+    direction: str = "higher_is_better"
+    description: str = ""
+
+
+INTRADAY_FACTOR_RESEARCH_SPECS = [
+    IntradayFactorResearchSpec("opening_drive_score", "price_momentum", description="Opening launch strength."),
+    IntradayFactorResearchSpec("morning_strength_persist_score", "price_momentum", description="Morning momentum persistence."),
+    IntradayFactorResearchSpec("late_return_30m_score", "price_momentum", description="Late 30-minute return strength."),
+    IntradayFactorResearchSpec("return_5m_strength_score", "price_momentum", description="Latest five-minute return strength."),
+    IntradayFactorResearchSpec("return_15m_strength_score", "price_momentum", description="Latest fifteen-minute return strength."),
+    IntradayFactorResearchSpec("return_60m_strength_score", "price_momentum", description="Latest sixty-minute return strength."),
+    IntradayFactorResearchSpec("positive_bar_ratio_score", "price_momentum", description="Share of rising intraday bars."),
+    IntradayFactorResearchSpec("rolling_price_slope_score", "price_momentum", description="Trailing intraday price slope."),
+    IntradayFactorResearchSpec("intraday_breakout_strength_score", "price_momentum", description="Strength of a new intraday high breakout."),
+    IntradayFactorResearchSpec("breakout_hold_score", "price_momentum", description="Ability to hold above the prior intraday high."),
+    IntradayFactorResearchSpec("pullback_reclaim_momentum_score", "price_momentum", description="Momentum of the latest pullback reclaim."),
+    IntradayFactorResearchSpec("amount_acceleration_score", "volume_money_flow", description="Intraday amount acceleration."),
+    IntradayFactorResearchSpec("late_volume_efficiency_score", "volume_money_flow", description="Late volume efficiency."),
+    IntradayFactorResearchSpec("volume_spike_exhaustion_score", "volume_money_flow", "lower_is_better", "Volume spike exhaustion risk."),
+    IntradayFactorResearchSpec("early_amount_surge_score", "volume_money_flow", description="Early amount surge with price retention."),
+    IntradayFactorResearchSpec("midday_amount_sustain_score", "volume_money_flow", description="Midday amount persistence."),
+    IntradayFactorResearchSpec("late_amount_surge_score", "volume_money_flow", description="Late-session amount surge."),
+    IntradayFactorResearchSpec("amount_trend_persistence_score", "volume_money_flow", description="Persistent intraday amount trend."),
+    IntradayFactorResearchSpec("volume_price_alignment_score", "volume_money_flow", description="Alignment between volume and price movement."),
+    IntradayFactorResearchSpec("breakout_volume_confirm_score", "volume_money_flow", description="Volume confirmation around intraday breakout."),
+    IntradayFactorResearchSpec("pullback_volume_dryup_score", "volume_money_flow", description="Volume dry-up during pullbacks."),
+    IntradayFactorResearchSpec("late_money_flow_concentration_score", "volume_money_flow", description="Late money-flow concentration quality."),
+    IntradayFactorResearchSpec("close_vs_vwap_score", "vwap_mean_price", description="Close price versus VWAP."),
+    IntradayFactorResearchSpec("late_price_above_vwap_ratio", "vwap_mean_price", description="Late time-above-VWAP ratio."),
+    IntradayFactorResearchSpec("vwap_slope_score", "vwap_mean_price", description="VWAP slope strength."),
+    IntradayFactorResearchSpec("vwap_reclaim_score", "vwap_mean_price", description="VWAP reclaim behavior."),
+    IntradayFactorResearchSpec("open_vwap_reclaim_score", "vwap_mean_price", description="Open-session VWAP reclaim."),
+    IntradayFactorResearchSpec("midday_vwap_support_score", "vwap_mean_price", description="Midday VWAP support."),
+    IntradayFactorResearchSpec("vwap_distance_stability_score", "vwap_mean_price", description="Stable distance from VWAP."),
+    IntradayFactorResearchSpec("vwap_pullback_support_score", "vwap_mean_price", description="Pullback support around VWAP."),
+    IntradayFactorResearchSpec("vwap_breakout_confirm_score", "vwap_mean_price", description="VWAP-confirmed breakout."),
+    IntradayFactorResearchSpec("vwap_above_ratio_score", "vwap_mean_price", description="Full-session time above VWAP."),
+    IntradayFactorResearchSpec("late_high_near_close_score", "intraday_position", description="Close location near intraday high."),
+    IntradayFactorResearchSpec("intraday_close_position_score", "intraday_position", description="Close position inside day range."),
+    IntradayFactorResearchSpec("intraday_high_pullback_risk_score", "intraday_position", "lower_is_better", "Pullback from intraday high."),
+    IntradayFactorResearchSpec("max_gain_giveback_ratio", "intraday_position", "lower_is_better", "Maximum gain giveback ratio."),
+    IntradayFactorResearchSpec("open_to_high_progress_score", "intraday_position", description="Progress from open toward high area."),
+    IntradayFactorResearchSpec("close_above_midrange_score", "intraday_position", description="Close above intraday midrange."),
+    IntradayFactorResearchSpec("low_reclaim_position_score", "intraday_position", description="Reclaim strength from intraday low."),
+    IntradayFactorResearchSpec("late_range_expansion_score", "intraday_position", description="Late range expansion with strong close."),
+    IntradayFactorResearchSpec("high_area_acceptance_score", "intraday_position", description="Acceptance near intraday high."),
+    IntradayFactorResearchSpec("close_location_stability_score", "intraday_position", description="Stable high-quality close location."),
+    IntradayFactorResearchSpec("sector_late_breadth_score", "sector_confirmation", description="Late sector breadth."),
+    IntradayFactorResearchSpec("sector_intraday_breadth_change", "sector_confirmation", description="Sector breadth improvement."),
+    IntradayFactorResearchSpec("leader_follower_sync_score", "sector_confirmation", description="Leader/follower synchronization."),
+    IntradayFactorResearchSpec("intraday_sector_breadth_score", "sector_confirmation", description="Intraday sector breadth."),
+    IntradayFactorResearchSpec("sector_breadth_persistence_score", "sector_confirmation", description="Persistent sector breadth."),
+    IntradayFactorResearchSpec("sector_late_acceleration_score", "sector_confirmation", description="Late sector acceleration."),
+    IntradayFactorResearchSpec("leader_sync_persistence_score", "sector_confirmation", description="Persistent leader synchronization."),
+    IntradayFactorResearchSpec("sector_alpha_confirmation_score", "sector_confirmation", description="Stock alpha confirmed by sector breadth."),
+    IntradayFactorResearchSpec("sector_breadth_quality_score", "sector_confirmation", description="Quality of sector breadth support."),
+    IntradayFactorResearchSpec("theme_confirmation_composite_score", "sector_confirmation", description="Composite theme confirmation."),
+    IntradayFactorResearchSpec("stock_vs_sector_intraday_alpha", "relative_strength", description="Stock alpha versus sector intraday."),
+    IntradayFactorResearchSpec("sector_peer_rank_score", "relative_strength", description="Candidate peer rank inside sector."),
+    IntradayFactorResearchSpec("market_regime_score", "relative_strength", description="Market regime support."),
+    IntradayFactorResearchSpec("sector_leader_score", "relative_strength", description="Sector leadership score."),
+    IntradayFactorResearchSpec("stock_intraday_rank_proxy_score", "relative_strength", description="Intraday rank proxy inside peer set."),
+    IntradayFactorResearchSpec("stock_vs_market_intraday_alpha_score", "relative_strength", description="Stock alpha versus market intraday."),
+    IntradayFactorResearchSpec("relative_late_strength_score", "relative_strength", description="Late strength versus sector context."),
+    IntradayFactorResearchSpec("relative_vwap_strength_score", "relative_strength", description="VWAP structure relative to peers."),
+    IntradayFactorResearchSpec("relative_breakout_leadership_score", "relative_strength", description="Breakout leadership versus peers."),
+    IntradayFactorResearchSpec("relative_resilience_score", "relative_strength", description="Relative resilience during intraday swings."),
+    IntradayFactorResearchSpec("high_to_close_drawdown_score", "risk_reversal", "lower_is_better", "High-to-close drawdown risk."),
+    IntradayFactorResearchSpec("morning_spike_fade_score", "risk_reversal", "lower_is_better", "Morning spike fade risk."),
+    IntradayFactorResearchSpec("afternoon_fade_score", "risk_reversal", "lower_is_better", "Afternoon fade risk."),
+    IntradayFactorResearchSpec("volume_without_price_progress_risk", "risk_reversal", "lower_is_better", "Volume without price progress risk."),
+    IntradayFactorResearchSpec("open_high_reversal_risk", "risk_reversal", "lower_is_better", "Open-high reversal risk."),
+    IntradayFactorResearchSpec("late_breakdown_risk", "risk_reversal", "lower_is_better", "Late breakdown risk."),
+    IntradayFactorResearchSpec("failed_breakout_risk", "risk_reversal", "lower_is_better", "Failed breakout risk."),
+    IntradayFactorResearchSpec("lower_low_sequence_risk", "risk_reversal", "lower_is_better", "Lower-low sequence risk."),
+    IntradayFactorResearchSpec("volatility_expansion_reversal_risk", "risk_reversal", "lower_is_better", "Volatility expansion reversal risk."),
+    IntradayFactorResearchSpec("weak_close_after_volume_risk", "risk_reversal", "lower_is_better", "Weak close after volume risk."),
+    IntradayFactorResearchSpec("intraday_late_strength_score", "time_structure", description="Late-session strength."),
+    IntradayFactorResearchSpec("morning_pullback_repair_score", "time_structure", description="Morning pullback repair."),
+    IntradayFactorResearchSpec("open_to_midday_resilience_score", "time_structure", description="Open-to-midday resilience."),
+    IntradayFactorResearchSpec("short_burst_intraday_emotion_score_shadow", "time_structure", description="Short-burst intraday emotion overlay."),
+    IntradayFactorResearchSpec("first_hour_follow_through_score", "time_structure", description="First-hour follow-through."),
+    IntradayFactorResearchSpec("midday_hold_score", "time_structure", description="Midday hold quality."),
+    IntradayFactorResearchSpec("afternoon_recovery_score", "time_structure", description="Afternoon recovery quality."),
+    IntradayFactorResearchSpec("late_session_acceleration_score", "time_structure", description="Late-session acceleration."),
+    IntradayFactorResearchSpec("session_consistency_score", "time_structure", description="Full-session consistency."),
+    IntradayFactorResearchSpec("close_auction_strength_proxy_score", "time_structure", description="Close auction strength proxy."),
+    IntradayFactorResearchSpec("execution_liquidity_amount_score", "execution_liquidity", description="Intraday traded amount liquidity."),
+    IntradayFactorResearchSpec("execution_amount_continuity_score", "execution_liquidity", description="Continuity of intraday amount flow."),
+    IntradayFactorResearchSpec("execution_price_impact_risk", "execution_liquidity", "lower_is_better", "Estimated price impact risk."),
+    IntradayFactorResearchSpec("execution_vwap_slippage_risk", "execution_liquidity", "lower_is_better", "VWAP extension slippage risk."),
+    IntradayFactorResearchSpec("execution_spread_proxy_score", "execution_liquidity", description="Bid-ask spread proxy quality."),
+    IntradayFactorResearchSpec("execution_turnover_depth_score", "execution_liquidity", description="Turnover depth quality."),
+    IntradayFactorResearchSpec("execution_tradeability_score", "execution_liquidity", description="Composite intraday tradeability."),
+    IntradayFactorResearchSpec("execution_gap_to_limit_up_score", "execution_liquidity", description="Remaining room before limit-up constraint."),
+    IntradayFactorResearchSpec("execution_gap_to_limit_down_risk", "execution_liquidity", "lower_is_better", "Distance-to-limit-down risk."),
+    IntradayFactorResearchSpec("execution_microstructure_quality_score", "execution_liquidity", description="Composite microstructure quality."),
+    IntradayFactorResearchSpec("cashout_late_surge_risk", "cashout_risk", "lower_is_better", "Late amount surge cashout risk."),
+    IntradayFactorResearchSpec("cashout_late_fade_risk", "cashout_risk", "lower_is_better", "Late-session fade cashout risk."),
+    IntradayFactorResearchSpec("cashout_high_volume_stall_risk", "cashout_risk", "lower_is_better", "High-volume price stall risk."),
+    IntradayFactorResearchSpec("cashout_close_giveback_risk", "cashout_risk", "lower_is_better", "Close giveback cashout risk."),
+    IntradayFactorResearchSpec("cashout_tail_amount_concentration_risk", "cashout_risk", "lower_is_better", "Tail amount concentration risk."),
+    IntradayFactorResearchSpec("cashout_overheat_without_breadth_risk", "cashout_risk", "lower_is_better", "Single-name overheat without breadth."),
+    IntradayFactorResearchSpec("cashout_vwap_extension_risk", "cashout_risk", "lower_is_better", "VWAP extension cashout risk."),
+    IntradayFactorResearchSpec("cashout_failed_late_breakout_risk", "cashout_risk", "lower_is_better", "Failed late breakout risk."),
+    IntradayFactorResearchSpec("cashout_auction_weakness_risk", "cashout_risk", "lower_is_better", "Close-auction weakness proxy."),
+    IntradayFactorResearchSpec("cashout_next_day_pressure_proxy", "cashout_risk", "lower_is_better", "Composite next-day cashout pressure proxy."),
+    IntradayFactorResearchSpec("sector_continuation_breadth_score", "sector_continuation", description="Sector continuation breadth."),
+    IntradayFactorResearchSpec("sector_continuation_late_breadth_score", "sector_continuation", description="Late sector breadth continuation."),
+    IntradayFactorResearchSpec("sector_continuation_leader_sync_score", "sector_continuation", description="Leader synchronization continuation."),
+    IntradayFactorResearchSpec("sector_continuation_alpha_support_score", "sector_continuation", description="Stock alpha supported by sector."),
+    IntradayFactorResearchSpec("sector_continuation_peer_rank_score", "sector_continuation", description="Peer rank support."),
+    IntradayFactorResearchSpec("sector_continuation_theme_quality_score", "sector_continuation", description="Theme quality continuation."),
+    IntradayFactorResearchSpec("sector_continuation_market_alignment_score", "sector_continuation", description="Sector alignment with market."),
+    IntradayFactorResearchSpec("sector_continuation_breadth_acceleration_score", "sector_continuation", description="Sector breadth acceleration."),
+    IntradayFactorResearchSpec("sector_continuation_concentration_balance_score", "sector_continuation", description="Balanced heat concentration."),
+    IntradayFactorResearchSpec("sector_continuation_composite_score", "sector_continuation", description="Composite sector continuation."),
+    IntradayFactorResearchSpec("market_environment_index_trend_score", "market_environment", description="Market intraday index trend."),
+    IntradayFactorResearchSpec("market_environment_vwap_support_score", "market_environment", description="Market VWAP support."),
+    IntradayFactorResearchSpec("market_environment_breadth_score", "market_environment", description="Market breadth support."),
+    IntradayFactorResearchSpec("market_environment_limit_up_breadth_score", "market_environment", description="Limit-up breadth."),
+    IntradayFactorResearchSpec("market_environment_limit_down_risk", "market_environment", "lower_is_better", "Limit-down pressure risk."),
+    IntradayFactorResearchSpec("market_environment_failure_risk", "market_environment", "lower_is_better", "Limit-up failure risk."),
+    IntradayFactorResearchSpec("market_environment_leader_continuation_score", "market_environment", description="Leader continuation environment."),
+    IntradayFactorResearchSpec("market_environment_crowding_risk", "market_environment", "lower_is_better", "Crowding risk."),
+    IntradayFactorResearchSpec("market_environment_risk_appetite_score", "market_environment", description="Market risk appetite."),
+    IntradayFactorResearchSpec("market_environment_composite_score", "market_environment", description="Composite market environment."),
+]
+
+
+def evaluate_intraday_factor_research(
+    samples: list[Mapping[str, Any]],
+    *,
+    return_field: str = "forward_return_pct",
+    min_labeled_samples: int = 20,
+    win_return_pct: float = 0.0,
+    thresholds: list[float] | None = None,
+) -> dict[str, Any]:
+    thresholds = thresholds or [40.0, 50.0, 60.0, 70.0, 80.0]
+    factor_reports = {
+        spec.factor_id: _evaluate_factor(samples, spec, return_field, min_labeled_samples, win_return_pct, thresholds)
+        for spec in INTRADAY_FACTOR_RESEARCH_SPECS
+    }
+    category_reports = {
+        category: _category_report(category, factor_reports)
+        for category in TIMING_FACTOR_CATEGORIES
+    }
+    valuable = [
+        report for report in factor_reports.values()
+        if report["rating"] in {"valuable", "watchlist"}
+    ]
+    valuable.sort(key=lambda item: (item.get("value_score") or -999.0), reverse=True)
+    pending = [
+        report for report in factor_reports.values()
+        if report["rating"] == "insufficient_labeled_samples"
+    ]
+    return {
+        "schema_version": "intraday_factor_research.v1",
+        "summary": {
+            "sample_count": len(samples),
+            "labeled_sample_count": sum(1 for row in samples if _float(row.get(return_field)) is not None),
+            "category_count": len(category_reports),
+            "factor_count": len(factor_reports),
+            "valuable_factor_count": len([item for item in valuable if item["rating"] == "valuable"]),
+            "watchlist_factor_count": len([item for item in valuable if item["rating"] == "watchlist"]),
+            "pending_validation_factor_count": len(pending),
+            "return_field": return_field,
+            "min_labeled_samples": min_labeled_samples,
+        },
+        "categories": category_reports,
+        "factors": factor_reports,
+        "valuable_factors": valuable,
+        "shadow_only": True,
+        "paper_trading_only": True,
+        "does_not_modify_official_scores": True,
+        "no_execution_signals": True,
+    }
+
+
+def compare_frequency_factor_reports(
+    report_5m: Mapping[str, Any],
+    report_1m: Mapping[str, Any],
+    *,
+    category: str = "price_momentum",
+) -> dict[str, Any]:
+    """Compare 1m validation only for 5m-promoted factors in one category."""
+    factors_5m = report_5m.get("factors") or {}
+    factors_1m = report_1m.get("factors") or {}
+    eligible_factor_ids = sorted(
+        factor_id
+        for factor_id, result in factors_5m.items()
+        if result.get("category") == category
+        and result.get("rating") in {"valuable", "watchlist"}
+    )
+    compared = {}
+    for factor_id in eligible_factor_ids:
+        result_5m = factors_5m[factor_id]
+        result_1m = factors_1m.get(factor_id)
+        if not result_1m or result_1m.get("labeled_sample_count", 0) == 0:
+            status = "insufficient_1m_coverage"
+        elif result_1m.get("direction") != result_5m.get("direction"):
+            status = "direction_mismatch"
+        elif (
+            result_1m.get("rating") in {"valuable", "watchlist"}
+            and (result_1m.get("adjusted_spread_pct") or 0.0) > 0.0
+        ):
+            status = "1m_confirmed"
+        else:
+            status = "1m_not_confirmed"
+        compared[factor_id] = {
+            "factor_id": factor_id,
+            "direction": result_5m.get("direction"),
+            "rating_5m": result_5m.get("rating"),
+            "rating_1m": result_1m.get("rating") if result_1m else None,
+            "coverage_5m": result_5m.get("labeled_sample_count"),
+            "coverage_1m": result_1m.get("labeled_sample_count") if result_1m else 0,
+            "adjusted_spread_pct_5m": result_5m.get("adjusted_spread_pct"),
+            "adjusted_spread_pct_1m": result_1m.get("adjusted_spread_pct") if result_1m else None,
+            "confirmation_status": status,
+        }
+    return {
+        "category": category,
+        "eligible_factor_ids": eligible_factor_ids,
+        "factors": compared,
+        "paper_trading_only": True,
+        "no_execution_signals": True,
+    }
+
+
+def _evaluate_factor(
+    samples: list[Mapping[str, Any]],
+    spec: IntradayFactorResearchSpec,
+    return_field: str,
+    min_labeled_samples: int,
+    win_return_pct: float,
+    thresholds: list[float],
+) -> dict[str, Any]:
+    rows = []
+    for sample in samples:
+        value = _float(sample.get(spec.factor_id))
+        ret = _float(sample.get(return_field))
+        if value is None:
+            continue
+        rows.append({"value": value, "return": ret})
+    labeled = [row for row in rows if row["return"] is not None]
+    base = {
+        "factor_id": spec.factor_id,
+        "category": spec.category,
+        "direction": spec.direction,
+        "description": spec.description,
+        "coverage_count": len(rows),
+        "labeled_sample_count": len(labeled),
+        "rating": "insufficient_labeled_samples",
+        "value_score": None,
+        "threshold": None,
+        "high_avg_return_pct": None,
+        "low_avg_return_pct": None,
+        "adjusted_spread_pct": None,
+        "high_win_rate": None,
+        "low_win_rate": None,
+        "threshold_results": {},
+    }
+    if len(labeled) < min_labeled_samples:
+        return base
+
+    threshold = median(row["value"] for row in labeled)
+    high = [row for row in labeled if row["value"] >= threshold]
+    low = [row for row in labeled if row["value"] < threshold]
+    if not high or not low:
+        return {**base, "threshold": _round(threshold), "rating": "not_enough_split"}
+
+    high_avg = mean(float(row["return"]) for row in high)
+    low_avg = mean(float(row["return"]) for row in low)
+    raw_spread = high_avg - low_avg
+    adjusted_spread = -raw_spread if spec.direction == "lower_is_better" else raw_spread
+    high_win_rate = _win_rate(high, win_return_pct)
+    low_win_rate = _win_rate(low, win_return_pct)
+    win_rate_spread = high_win_rate - low_win_rate
+    if spec.direction == "lower_is_better":
+        win_rate_spread = -win_rate_spread
+    value_score = adjusted_spread + win_rate_spread * 2.0
+    rating = _rating(adjusted_spread, value_score)
+    return {
+        **base,
+        "rating": rating,
+        "value_score": _round(value_score),
+        "threshold": _round(threshold),
+        "high_avg_return_pct": _round(high_avg),
+        "low_avg_return_pct": _round(low_avg),
+        "adjusted_spread_pct": _round(adjusted_spread),
+        "high_win_rate": _round(high_win_rate),
+        "low_win_rate": _round(low_win_rate),
+        "threshold_results": _threshold_results(labeled, spec.direction, thresholds, win_return_pct),
+    }
+
+
+def _threshold_results(
+    labeled: list[Mapping[str, Any]],
+    direction: str,
+    thresholds: list[float],
+    win_return_pct: float,
+) -> dict[float, dict[str, Any]]:
+    results = {}
+    for threshold in thresholds:
+        if direction == "lower_is_better":
+            selected = [row for row in labeled if float(row["value"]) <= threshold]
+            rejected = [row for row in labeled if float(row["value"]) > threshold]
+            rule = "value <= threshold"
+        else:
+            selected = [row for row in labeled if float(row["value"]) >= threshold]
+            rejected = [row for row in labeled if float(row["value"]) < threshold]
+            rule = "value >= threshold"
+        selected_returns = [float(row["return"]) for row in selected]
+        rejected_returns = [float(row["return"]) for row in rejected]
+        selected_avg = mean(selected_returns) if selected_returns else None
+        rejected_avg = mean(rejected_returns) if rejected_returns else None
+        results[threshold] = {
+            "threshold": threshold,
+            "selection_rule": rule,
+            "selected_count": len(selected_returns),
+            "rejected_count": len(rejected_returns),
+            "selected_avg_return_pct": _round(selected_avg),
+            "rejected_avg_return_pct": _round(rejected_avg),
+            "spread_vs_rejected_pct": _round(selected_avg - rejected_avg) if selected_avg is not None and rejected_avg is not None else None,
+            "selected_win_rate": _round(sum(1 for value in selected_returns if value > win_return_pct) / len(selected_returns)) if selected_returns else None,
+        }
+    return results
+
+
+def _category_report(category: str, factors: Mapping[str, Mapping[str, Any]]) -> dict[str, Any]:
+    rows = [dict(item) for item in factors.values() if item.get("category") == category]
+    ranked = sorted(rows, key=lambda item: (item.get("value_score") is not None, item.get("value_score") or -999.0), reverse=True)
+    return {
+        "category": category,
+        "factor_count": len(rows),
+        "valuable_factor_count": sum(1 for item in rows if item.get("rating") == "valuable"),
+        "watchlist_factor_count": sum(1 for item in rows if item.get("rating") == "watchlist"),
+        "pending_validation_factor_count": sum(1 for item in rows if item.get("rating") == "insufficient_labeled_samples"),
+        "top_factors": ranked[:5],
+    }
+
+
+def _rating(adjusted_spread: float, value_score: float) -> str:
+    if adjusted_spread >= 0.5 and value_score >= 0.75:
+        return "valuable"
+    if adjusted_spread >= 0.15 and value_score >= 0.25:
+        return "watchlist"
+    if adjusted_spread <= -0.15:
+        return "negative"
+    return "weak"
+
+
+def _win_rate(rows: list[Mapping[str, Any]], win_return_pct: float) -> float:
+    if not rows:
+        return 0.0
+    return sum(1 for row in rows if float(row["return"]) > win_return_pct) / len(rows)
+
+
+def _float(value: Any) -> float | None:
+    if value is None or value == "":
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _round(value: float | None) -> float | None:
+    return round(value, 4) if value is not None else None

@@ -20,7 +20,9 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import socket
+import stat
 import subprocess
 import sys
 from datetime import datetime
@@ -39,9 +41,19 @@ STOCKDB_HOST = "127.0.0.1"
 STOCKDB_PORT = 7899
 
 DEFAULT_API_URL = "http://127.0.0.1:8000"
+REPORT_ROOT_ENV = "THEME_SECTOR_RADAR_REPORT_ROOT"
+SCORE_PAYLOAD_STDIN_ENV = "THEME_SECTOR_RADAR_SCORE_PAYLOAD_STDIN"
+SCORE_PAYLOAD_AS_OF_ENV = "THEME_SECTOR_RADAR_SCORE_PAYLOAD_AS_OF"
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 UNIFIED_PIPELINE = PROJECT_ROOT / "unified_pipeline.py"
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from theme_sector_radar.reporting.sector_score_contract import (  # noqa: E402
+    validate_sector_score_payload,
+)
+from theme_sector_radar.reporting.strict_json import loads_strict_json  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -76,6 +88,12 @@ def _run_unified_pipeline(
     as_of: str,
     mode: str,
     output_dir: Optional[str] = None,
+    report_root: Optional[str] = None,
+    score_payload: Optional[Dict[str, Any]] = None,
+    score_payload_as_of: Optional[str] = None,
+    sector_history_root: Optional[str] = None,
+    sector_cluster_map: Optional[str] = None,
+    candidate_chain: str = "direction_linkage_v2",
 ) -> subprocess.CompletedProcess:
     """Run unified_pipeline.py as a subprocess."""
     cmd = [
@@ -83,21 +101,194 @@ def _run_unified_pipeline(
         str(UNIFIED_PIPELINE),
         "--as-of", as_of,
         "--mode", mode,
+        "--candidate-chain", candidate_chain,
     ]
     if output_dir:
         cmd.extend(["--output", output_dir])
+    if sector_history_root:
+        cmd.extend(["--sector-history-root", sector_history_root])
+    if sector_cluster_map:
+        cmd.extend(["--sector-cluster-map", sector_cluster_map])
 
-    return subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8",
-                          cwd=str(PROJECT_ROOT))
+    run_kwargs: Dict[str, Any] = {}
+    if report_root is not None or score_payload is not None:
+        child_env = os.environ.copy()
+        if report_root is not None:
+            child_env[REPORT_ROOT_ENV] = str(Path(report_root).expanduser().resolve())
+        else:
+            child_env.pop(REPORT_ROOT_ENV, None)
+        child_env.pop(SCORE_PAYLOAD_STDIN_ENV, None)
+        child_env.pop(SCORE_PAYLOAD_AS_OF_ENV, None)
+        if score_payload is not None:
+            bound_score_date = score_payload_as_of or as_of
+            valid_date, normalized_date = _validate_as_of(bound_score_date)
+            if not valid_date or normalized_date > as_of:
+                raise ValueError("score payload date must be a valid date on or before as_of")
+            validate_sector_score_payload(score_payload, expected_as_of=normalized_date)
+            child_env[SCORE_PAYLOAD_STDIN_ENV] = "1"
+            child_env[SCORE_PAYLOAD_AS_OF_ENV] = normalized_date
+            run_kwargs["input"] = json.dumps(
+                score_payload,
+                ensure_ascii=True,
+                allow_nan=False,
+                separators=(",", ":"),
+            )
+        run_kwargs["env"] = child_env
+
+    return subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        cwd=str(PROJECT_ROOT),
+        **run_kwargs,
+    )
 
 
-def _find_latest_report(as_of: str) -> Optional[Path]:
+def _find_latest_report(as_of: str, output_dir: Optional[str] = None) -> Optional[Path]:
     """Locate the unified_report.json written by the pipeline."""
-    report_dir = PROJECT_ROOT / "reports" / "unified" / as_of
+    report_dir = (
+        Path(output_dir)
+        if output_dir is not None
+        else PROJECT_ROOT / "reports" / "unified" / as_of
+    )
     report_path = report_dir / "unified_report.json"
     if report_path.exists():
         return report_path
     return None
+
+
+def _normalize_output_dir(output_dir: str) -> Tuple[bool, str]:
+    """Resolve an explicit output directory from the wrapper caller's cwd."""
+    if not output_dir.strip():
+        return False, "显式输出目录不能为空"
+
+    try:
+        resolved = Path(output_dir).expanduser().resolve()
+    except (OSError, RuntimeError) as exc:
+        return False, f"显式输出目录无效: {exc}"
+
+    if resolved.exists() and not resolved.is_dir():
+        return False, f"显式输出路径不是目录: {resolved}"
+
+    return True, str(resolved)
+
+
+def _validate_as_of(as_of: str) -> Tuple[bool, str]:
+    """Require a real, zero-padded YYYY-MM-DD date."""
+    message = f"分析日期必须是有效的 YYYY-MM-DD: {as_of}"
+    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", as_of) is None:
+        return False, message
+
+    try:
+        parsed = datetime.strptime(as_of, "%Y-%m-%d")
+    except ValueError:
+        return False, message
+
+    if parsed.strftime("%Y-%m-%d") != as_of:
+        return False, message
+    return True, as_of
+
+
+def _load_validated_report_root(
+    report_root: str, as_of: str
+) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
+    """Open and validate the exact score report without trusting a stale path."""
+    if not report_root.strip():
+        return False, "显式报告根不能为空", None
+
+    as_of_ok, as_of_detail = _validate_as_of(as_of)
+    if not as_of_ok:
+        return False, as_of_detail, None
+
+    try:
+        root = Path(report_root).expanduser().resolve(strict=True)
+    except (OSError, RuntimeError) as exc:
+        return False, f"显式报告根无效: {exc}", None
+    if not root.is_dir():
+        return False, f"显式报告根不存在: {root}", None
+
+    fd: Optional[int] = None
+    try:
+        expected_score_root = root / "sector_scores"
+        score_root = expected_score_root.resolve(strict=True)
+        if score_root != expected_score_root:
+            raise OSError("显式报告根的 sector_scores 不是精确子目录")
+        score_path = (score_root / as_of / "sector_scores.json").resolve(strict=True)
+        score_path.relative_to(score_root)
+        fd = os.open(score_path, os.O_RDONLY | getattr(os, "O_BINARY", 0))
+        opened_stat = os.fstat(fd)
+        if not stat.S_ISREG(opened_stat.st_mode):
+            raise OSError(f"指定日期报告不是普通文件: {score_path}")
+
+        current_root = Path(report_root).expanduser().resolve(strict=True)
+        current_expected_score_root = current_root / "sector_scores"
+        current_score_root = current_expected_score_root.resolve(strict=True)
+        if current_score_root != current_expected_score_root:
+            raise OSError("显式报告根的 sector_scores 在读取期间发生重定向")
+        current_score_path = (
+            current_score_root / as_of / "sector_scores.json"
+        ).resolve(strict=True)
+        current_score_path.relative_to(current_score_root)
+        if current_root != root or current_score_root != score_root:
+            raise OSError("显式报告根在读取期间发生变化")
+        if not os.path.samestat(opened_stat, os.stat(current_score_path)):
+            raise OSError("指定日期报告在读取期间发生变化")
+
+        with os.fdopen(fd, "rb", closefd=False) as handle:
+            score_text = handle.read().decode("utf-8-sig")
+        score_payload = loads_strict_json(score_text, context=str(score_path))
+        validate_sector_score_payload(score_payload, expected_as_of=as_of)
+    except (OSError, UnicodeError, ValueError, json.JSONDecodeError) as exc:
+        return False, f"显式报告根的 sector_scores JSON 无效: {exc}", None
+    finally:
+        if fd is not None:
+            os.close(fd)
+
+    return True, str(root), dict(score_payload)
+
+
+def _validate_report_root(report_root: str, as_of: str) -> Tuple[bool, str]:
+    """Require an explicit root to contain the exact requested score report."""
+    ok, detail, _payload = _load_validated_report_root(report_root, as_of)
+    return ok, detail
+
+
+def _load_validated_default_report_root(
+    report_root: str,
+    as_of: str,
+) -> Tuple[bool, str, Optional[Dict[str, Any]], Optional[str]]:
+    """Validate the exact default score or its latest prior dated fallback."""
+    exact_path = Path(report_root) / "sector_scores" / as_of / "sector_scores.json"
+    if exact_path.exists():
+        ok, detail, payload = _load_validated_report_root(report_root, as_of)
+        return ok, detail, payload, as_of if ok else None
+
+    try:
+        score_root = (Path(report_root).expanduser().resolve(strict=True) / "sector_scores")
+        resolved_score_root = score_root.resolve(strict=True)
+        if resolved_score_root != score_root or not resolved_score_root.is_dir():
+            raise OSError("默认报告根的 sector_scores 不是精确子目录")
+    except (OSError, RuntimeError) as exc:
+        return False, f"默认报告根的 sector_scores 无效: {exc}", None, None
+
+    candidate_dates = []
+    for date_dir in resolved_score_root.iterdir():
+        if not date_dir.is_dir():
+            continue
+        valid, normalized = _validate_as_of(date_dir.name)
+        if valid and normalized <= as_of and (date_dir / "sector_scores.json").is_file():
+            candidate_dates.append(normalized)
+    if not candidate_dates:
+        return False, f"默认报告根缺少 {as_of} 或更早的 sector_scores JSON", None, None
+
+    last_detail = f"默认报告根缺少 {as_of} 或更早的合法 sector_scores JSON"
+    for fallback_date in sorted(candidate_dates, reverse=True):
+        ok, detail, payload = _load_validated_report_root(report_root, fallback_date)
+        if ok:
+            return True, detail, payload, fallback_date
+        last_detail = detail
+    return False, last_detail, None, None
 
 
 def _load_report(report_path: Path) -> Dict[str, Any]:
@@ -485,7 +676,25 @@ def main():
         "--output-dir", type=str, default=None,
         help="覆盖默认报告输出目录",
     )
+    parser.add_argument(
+        "--report-root", type=str, default=None,
+        help="显式板块报告根目录；必须包含 sector_scores/<日期>/sector_scores.json",
+    )
     # Phase 8: 运行索引
+    parser.add_argument(
+        "--sector-history-root", type=str, default=None,
+        help="Sector history root for Path A linkage V2 shadow research",
+    )
+    parser.add_argument(
+        "--sector-cluster-map", type=str, default=None,
+        help="Strict paper/shadow sector cluster map JSON",
+    )
+    parser.add_argument(
+        "--candidate-chain",
+        choices=["legacy", "direction_linkage_v2"],
+        default="direction_linkage_v2",
+        help="Active paper-research candidate chain",
+    )
     parser.add_argument(
         "--no-append-index", action="store_true",
         help="不追加运行记录到索引文件",
@@ -511,6 +720,44 @@ def main():
         print()
         _show_history(index_path, args.show_history)
         return 0
+
+    as_of_ok, as_of_detail = _validate_as_of(args.as_of)
+    if not as_of_ok:
+        print(f"❌ {as_of_detail}")
+        return 1
+
+    if args.output_dir is not None:
+        output_dir_ok, output_dir_detail = _normalize_output_dir(args.output_dir)
+        if not output_dir_ok:
+            print(f"❌ {output_dir_detail}")
+            return 1
+        args.output_dir = output_dir_detail
+
+    effective_report_root = args.report_root
+    using_default_report_root = False
+    validated_score_payload: Optional[Dict[str, Any]] = None
+    if effective_report_root is None and REPORT_ROOT_ENV in os.environ:
+        effective_report_root = os.environ[REPORT_ROOT_ENV]
+    if effective_report_root is None:
+        effective_report_root = str(PROJECT_ROOT / "reports")
+        using_default_report_root = True
+    fallback_score_date: Optional[str] = None
+    if using_default_report_root:
+        (
+            report_root_ok,
+            report_root_detail,
+            validated_score_payload,
+            fallback_score_date,
+        ) = _load_validated_default_report_root(effective_report_root, args.as_of)
+    else:
+        report_root_ok, report_root_detail, validated_score_payload = (
+            _load_validated_report_root(effective_report_root, args.as_of)
+        )
+    if not report_root_ok:
+        print(f"❌ {report_root_detail}")
+        return 1
+    args.report_root = None if using_default_report_root else report_root_detail
+    bound_score_date = fallback_score_date or args.as_of
 
     _print_status_header()
 
@@ -559,6 +806,12 @@ def main():
         as_of=args.as_of,
         mode=args.mode,
         output_dir=args.output_dir,
+        report_root=args.report_root,
+        score_payload=validated_score_payload,
+        score_payload_as_of=bound_score_date,
+        sector_history_root=args.sector_history_root,
+        sector_cluster_map=args.sector_cluster_map,
+        candidate_chain=args.candidate_chain,
     )
 
     # Print subprocess output (already captured)
@@ -575,10 +828,15 @@ def main():
     # Read and summarise report
     # ------------------------------------------------------------------
 
-    report_path = _find_latest_report(args.as_of)
+    report_path = _find_latest_report(args.as_of, output_dir=args.output_dir)
     if not report_path:
-        print(f"⚠️  未找到报告文件 (reports/unified/{args.as_of}/unified_report.json)")
-        return 0
+        expected_dir = (
+            Path(args.output_dir)
+            if args.output_dir is not None
+            else PROJECT_ROOT / "reports" / "unified" / args.as_of
+        )
+        print(f"❌ unified_pipeline.py 未生成预期报告: {expected_dir / 'unified_report.json'}")
+        return 1
 
     print(f"📁 报告路径: {report_path}")
 
@@ -622,4 +880,3 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
-

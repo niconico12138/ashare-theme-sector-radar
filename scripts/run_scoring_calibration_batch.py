@@ -16,6 +16,7 @@ import re
 import sys
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Mapping
 
 if sys.stdout.encoding and sys.stdout.encoding.lower() in ("gbk", "cp936", "cp1252"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -39,6 +40,7 @@ from scripts.build_forward_returns import (  # noqa: E402
     load_candidate_codes,
     make_bars_client,
 )
+from theme_sector_radar.data.trading_calendar import load_trading_calendar  # noqa: E402
 
 
 def discover_candidate_dates(candidate_root: Path = DEFAULT_CANDIDATE_ROOT) -> list[str]:
@@ -99,6 +101,7 @@ def run_scoring_calibration_batch(
     force: bool = False,
     source: str = "http",
     client=None,
+    trading_calendar: Mapping[str, Any] | None = None,
 ) -> dict:
     dates = sorted(dates or discover_candidate_dates(candidate_root))
     date_results: dict[str, dict] = {}
@@ -134,6 +137,7 @@ def run_scoring_calibration_batch(
             client=bars_client,
             horizons=horizons,
             lookahead_days=lookahead_days,
+            trading_calendar=trading_calendar,
         )
         returns_path.parent.mkdir(parents=True, exist_ok=True)
         returns_path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -192,12 +196,29 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--lookahead-days", type=int, default=14, help="Natural-day buffer used when fetching bars")
     parser.add_argument("--source", choices=["http", "stockdb-sdk", "auto"], default="http", help="Bar data source")
     parser.add_argument("--force", action="store_true", help="Regenerate existing forward_returns.json files")
+    parser.add_argument("--trading-calendar-path", required=True, type=Path)
+    parser.add_argument("--expected-calendar-sha256", required=True)
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None, client=None) -> int:
     args = parse_args(argv)
     dates = [date.strip() for date in args.dates.split(",") if date.strip()] if args.dates else None
+    effective_dates = dates or discover_candidate_dates(Path(args.candidate_root))
+    trading_calendar = (
+        load_trading_calendar(
+            args.trading_calendar_path,
+            as_of=max(effective_dates),
+            include_future=True,
+        )
+        if effective_dates
+        else None
+    )
+    if (
+        trading_calendar is not None
+        and trading_calendar["sha256"] != args.expected_calendar_sha256.lower()
+    ):
+        raise ValueError("trading calendar SHA mismatch")
     result = run_scoring_calibration_batch(
         dates,
         candidate_root=Path(args.candidate_root),
@@ -208,6 +229,7 @@ def main(argv: list[str] | None = None, client=None) -> int:
         force=args.force,
         source=args.source,
         client=client,
+        trading_calendar=trading_calendar,
     )
 
     output_name = _date_output_name(result["dates"])

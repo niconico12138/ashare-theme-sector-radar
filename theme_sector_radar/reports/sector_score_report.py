@@ -220,10 +220,13 @@ def generate_sector_score_report(report_data: Dict[str, Any]) -> str:
     lines.append("|------|------|--------|----------|--------|----------|---------|")
 
     for i, score in enumerate(scores, 1):
+        rank = score.get("trend_rank")
+        if rank is None:
+            rank = i
         interpretation = score.get("score_interpretation", {})
         profile = interpretation.get("profile", "N/A")
         lines.append(
-            f"| {i} | {score.get('sector_name', '')} | "
+            f"| {rank} | {score.get('sector_name', '')} | "
             f"{score.get('trend_continuation_score', 0):.1f} | "
             f"{_trend_level_cn(score)} | "
             f"{score.get('short_term_burst_score', 0):.1f} | "
@@ -241,10 +244,13 @@ def generate_sector_score_report(report_data: Dict[str, Any]) -> str:
     lines.append("|------|------|--------|----------|--------|----------|---------|")
 
     for i, score in enumerate(burst_sorted, 1):
+        rank = score.get("burst_rank")
+        if rank is None:
+            rank = i
         interpretation = score.get("score_interpretation", {})
         profile = interpretation.get("profile", "N/A")
         lines.append(
-            f"| {i} | {score.get('sector_name', '')} | "
+            f"| {rank} | {score.get('sector_name', '')} | "
             f"{score.get('short_term_burst_score', 0):.1f} | "
             f"{_burst_level_cn(score)} | "
             f"{score.get('trend_continuation_score', 0):.1f} | "

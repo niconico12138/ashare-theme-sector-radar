@@ -17,10 +17,13 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from scripts.backfill_stock_analysis_fields import backfill_stock_analysis_fields  # noqa: E402
 from theme_sector_radar.data.market_data_http_client import MarketDataHttpClient  # noqa: E402
+from theme_sector_radar.factors.calculators import calculate_intraday_factors  # noqa: E402
+from theme_sector_radar.reporting.artifact_archive import write_text_preserving_previous  # noqa: E402
+from theme_sector_radar.reporting.strict_json import load_strict_json  # noqa: E402
 
 
 DEFAULT_CANDIDATE_ROOT = PROJECT_ROOT / "reports" / "agent_bridge"
-DEFAULT_OUTPUT_ROOT = PROJECT_ROOT / "reports" / "agent_bridge"
+DEFAULT_OUTPUT_ROOT = PROJECT_ROOT / "reports" / "agent_bridge_intraday_backfilled"
 DEFAULT_REPORT_ROOT = PROJECT_ROOT / "reports" / "intraday_factor_backfill"
 
 
@@ -33,12 +36,15 @@ def _candidate_rows(data: Any) -> list[dict[str, Any]]:
 
 
 def _read_json(path: Path) -> Any:
-    return json.loads(path.read_text(encoding="utf-8-sig"))
+    return load_strict_json(path)
 
 
-def _write_json(path: Path, data: Any) -> None:
+def _write_json(path: Path, data: Any) -> Path | None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    return write_text_preserving_previous(
+        path,
+        json.dumps(data, ensure_ascii=False, indent=2, allow_nan=False),
+    )
 
 
 def _load_candidate_file(candidate_root: Path, date: str) -> tuple[Path | None, Any | None]:
@@ -158,6 +164,7 @@ def backfill_intraday_candidates(
 
     enriched = backfill_stock_analysis_fields(result_data)
     for candidate in _candidate_rows(enriched):
+        candidate.update(calculate_intraday_factors(candidate))
         if not store_bars:
             candidate.pop("intraday_bars", None)
 
@@ -187,6 +194,8 @@ def backfill_date(
     store_bars: bool = False,
     write: bool = True,
 ) -> dict[str, Any]:
+    if candidate_root.resolve() == output_root.resolve():
+        raise ValueError("candidate and output roots must differ to prevent in-place source mutation")
     path, data = _load_candidate_file(candidate_root, date)
     if data is None:
         return {"date": date, "status": "missing_candidate_file", "candidate_count": 0}
@@ -201,13 +210,17 @@ def backfill_date(
     )
     candidates = _candidate_rows(result["data"])
     output_path = output_root / date / "top30_candidates.intraday_backfilled.json"
+    if path is not None and path.resolve() == output_path.resolve():
+        raise ValueError(f"candidate source and output file must differ: {path}")
+    archived_previous_path = None
     if write:
-        _write_json(output_path, result["data"])
+        archived_previous_path = _write_json(output_path, result["data"])
     return {
         "date": date,
         "status": "processed",
         "source_path": str(path),
         "output_path": str(output_path),
+        "archived_previous_path": str(archived_previous_path) if archived_previous_path else None,
         "candidate_count": len(candidates),
         **result["summary"],
     }

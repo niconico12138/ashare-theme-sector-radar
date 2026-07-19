@@ -73,8 +73,8 @@ def scan_available_dates(start_date: str, end_date: str) -> list[dict]:
         has_top30 = (bridge_dir / date / "top30_candidates.json").exists()
         has_validation = (validation_dir / date / "next_day_selection_validation.json").exists()
         # Export requires sector_research + concept_unified_rank
-        has_sector_research = (sector_research_dir / date).exists()
-        has_concept_rank = (concept_rank_dir / date).exists()
+        has_sector_research = (sector_research_dir / date / "sector_research.json").exists()
+        has_concept_rank = (concept_rank_dir / date / "concept_unified_rank.csv").exists()
         can_export = has_sector_research and has_concept_rank
 
         # Check if unified report has actual data

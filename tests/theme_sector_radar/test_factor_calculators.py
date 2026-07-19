@@ -634,6 +634,403 @@ class TestNewFactors:
         assert result["close_vs_vwap_score"] is None
         assert result["volume_spike_exhaustion_score"] is None
 
+    def test_intraday_price_momentum_expansion_rewards_sustained_strength(self):
+        factor_ids = (
+            "return_5m_strength_score",
+            "return_15m_strength_score",
+            "return_60m_strength_score",
+            "positive_bar_ratio_score",
+            "rolling_price_slope_score",
+            "intraday_breakout_strength_score",
+            "breakout_hold_score",
+            "pullback_reclaim_momentum_score",
+        )
+        strong = calculate_intraday_factors(
+            {
+                "prev_close": 100.0,
+                "intraday_bars": _make_intraday_bars(
+                    [100.0, 100.4, 100.8, 101.3, 101.8, 102.5, 103.1, 103.8, 104.4, 105.0, 105.6, 106.2, 106.8, 107.5],
+                ),
+            }
+        )
+        weak = calculate_intraday_factors(
+            {
+                "prev_close": 100.0,
+                "intraday_bars": _make_intraday_bars(
+                    [100.0, 103.2, 102.4, 101.8, 101.1, 100.6, 100.0, 99.6, 99.3, 99.0, 98.7, 98.4, 98.1, 97.8],
+                ),
+            }
+        )
+
+        for factor_id in factor_ids:
+            assert strong[factor_id] > weak[factor_id]
+
+    def test_intraday_price_momentum_expansion_is_missing_without_bars(self):
+        factor_ids = (
+            "return_5m_strength_score",
+            "return_15m_strength_score",
+            "return_60m_strength_score",
+            "positive_bar_ratio_score",
+            "rolling_price_slope_score",
+            "intraday_breakout_strength_score",
+            "breakout_hold_score",
+            "pullback_reclaim_momentum_score",
+        )
+        result = calculate_intraday_factors({})
+
+        assert all(result[factor_id] is None for factor_id in factor_ids)
+
+    def test_intraday_volume_money_flow_expansion_rewards_supported_flow(self):
+        factor_ids = (
+            "early_amount_surge_score",
+            "midday_amount_sustain_score",
+            "late_amount_surge_score",
+            "amount_trend_persistence_score",
+            "volume_price_alignment_score",
+            "breakout_volume_confirm_score",
+            "pullback_volume_dryup_score",
+            "late_money_flow_concentration_score",
+        )
+        supported = calculate_intraday_factors(
+            {
+                "prev_close": 100.0,
+                "intraday_bars": _make_intraday_bars(
+                    [100.0, 100.8, 101.5, 102.0, 102.4, 103.1, 103.8, 104.5, 105.4],
+                    amounts=[8_000_000.0, 12_000_000.0, 14_000_000.0, 16_000_000.0, 18_000_000.0, 20_000_000.0, 24_000_000.0, 28_000_000.0, 32_000_000.0],
+                ),
+            }
+        )
+        exhausted = calculate_intraday_factors(
+            {
+                "prev_close": 100.0,
+                "intraday_bars": _make_intraday_bars(
+                    [100.0, 104.0, 104.8, 103.2, 102.0, 101.4, 100.8, 100.4, 100.1],
+                    amounts=[8_000_000.0, 30_000_000.0, 34_000_000.0, 24_000_000.0, 16_000_000.0, 12_000_000.0, 9_000_000.0, 8_500_000.0, 8_000_000.0],
+                ),
+            }
+        )
+
+        for factor_id in factor_ids:
+            assert supported[factor_id] > exhausted[factor_id]
+
+    def test_intraday_volume_money_flow_expansion_is_missing_without_bars(self):
+        factor_ids = (
+            "early_amount_surge_score",
+            "midday_amount_sustain_score",
+            "late_amount_surge_score",
+            "amount_trend_persistence_score",
+            "volume_price_alignment_score",
+            "breakout_volume_confirm_score",
+            "pullback_volume_dryup_score",
+            "late_money_flow_concentration_score",
+        )
+        result = calculate_intraday_factors({})
+
+        assert all(result[factor_id] is None for factor_id in factor_ids)
+
+    def test_remaining_intraday_category_expansions_reward_supported_setup(self):
+        higher_is_better = (
+            "open_vwap_reclaim_score",
+            "midday_vwap_support_score",
+            "vwap_distance_stability_score",
+            "vwap_pullback_support_score",
+            "vwap_breakout_confirm_score",
+            "vwap_above_ratio_score",
+            "open_to_high_progress_score",
+            "close_above_midrange_score",
+            "low_reclaim_position_score",
+            "late_range_expansion_score",
+            "high_area_acceptance_score",
+            "close_location_stability_score",
+            "sector_breadth_persistence_score",
+            "sector_late_acceleration_score",
+            "leader_sync_persistence_score",
+            "sector_alpha_confirmation_score",
+            "sector_breadth_quality_score",
+            "theme_confirmation_composite_score",
+            "stock_intraday_rank_proxy_score",
+            "stock_vs_market_intraday_alpha_score",
+            "relative_late_strength_score",
+            "relative_vwap_strength_score",
+            "relative_breakout_leadership_score",
+            "relative_resilience_score",
+            "first_hour_follow_through_score",
+            "midday_hold_score",
+            "afternoon_recovery_score",
+            "late_session_acceleration_score",
+            "session_consistency_score",
+            "close_auction_strength_proxy_score",
+        )
+        supported = calculate_intraday_factors(
+            {
+                "prev_close": 100.0,
+                "sector_intraday_breadth_score": 76.0,
+                "sector_intraday_breadth_change": 72.0,
+                "sector_late_breadth_score": 78.0,
+                "leader_follower_sync_score": 74.0,
+                "stock_vs_sector_intraday_alpha": 8.0,
+                "sector_peer_rank_score": 82.0,
+                "market_regime_score": 70.0,
+                "sector_leader_score": 76.0,
+                "market_intraday_return_pct": 0.3,
+                "sector_intraday_return_pct": 1.2,
+                "intraday_bars": _make_intraday_bars(
+                    [100.0, 99.8, 100.4, 101.2, 101.8, 102.6, 103.4, 104.2, 105.1, 106.0],
+                    amounts=[10_000_000.0, 9_000_000.0, 11_000_000.0, 13_000_000.0, 15_000_000.0, 17_000_000.0, 20_000_000.0, 24_000_000.0, 28_000_000.0, 32_000_000.0],
+                ),
+            }
+        )
+        weak = calculate_intraday_factors(
+            {
+                "prev_close": 100.0,
+                "sector_intraday_breadth_score": 36.0,
+                "sector_intraday_breadth_change": 34.0,
+                "sector_late_breadth_score": 32.0,
+                "leader_follower_sync_score": 30.0,
+                "stock_vs_sector_intraday_alpha": -7.0,
+                "sector_peer_rank_score": 28.0,
+                "market_regime_score": 35.0,
+                "sector_leader_score": 30.0,
+                "market_intraday_return_pct": 0.6,
+                "sector_intraday_return_pct": -0.8,
+                "intraday_bars": _make_intraday_bars(
+                    [100.0, 104.5, 105.2, 103.5, 101.8, 100.6, 99.8, 99.1, 98.6, 98.2],
+                    amounts=[10_000_000.0, 30_000_000.0, 34_000_000.0, 26_000_000.0, 20_000_000.0, 16_000_000.0, 12_000_000.0, 10_000_000.0, 9_000_000.0, 8_000_000.0],
+                ),
+            }
+        )
+
+        for factor_id in higher_is_better:
+            assert supported[factor_id] > weak[factor_id], factor_id
+
+    def test_remaining_intraday_risk_expansions_penalize_weak_setup(self):
+        risk_factor_ids = (
+            "open_high_reversal_risk",
+            "late_breakdown_risk",
+            "failed_breakout_risk",
+            "lower_low_sequence_risk",
+            "volatility_expansion_reversal_risk",
+            "weak_close_after_volume_risk",
+        )
+        supported = calculate_intraday_factors(
+            {
+                "prev_close": 100.0,
+                "intraday_bars": _make_intraday_bars(
+                    [100.0, 99.8, 100.4, 101.2, 101.8, 102.6, 103.4, 104.2, 105.1, 106.0],
+                    amounts=[10_000_000.0, 9_000_000.0, 11_000_000.0, 13_000_000.0, 15_000_000.0, 17_000_000.0, 20_000_000.0, 24_000_000.0, 28_000_000.0, 32_000_000.0],
+                ),
+            }
+        )
+        weak = calculate_intraday_factors(
+            {
+                "prev_close": 100.0,
+                "intraday_bars": _make_intraday_bars(
+                    [100.0, 104.5, 105.2, 103.5, 101.8, 100.6, 99.8, 99.1, 98.6, 98.2],
+                    amounts=[10_000_000.0, 30_000_000.0, 34_000_000.0, 26_000_000.0, 20_000_000.0, 16_000_000.0, 12_000_000.0, 10_000_000.0, 9_000_000.0, 8_000_000.0],
+                ),
+            }
+        )
+
+        for factor_id in risk_factor_ids:
+            assert supported[factor_id] < weak[factor_id], factor_id
+
+    def test_remaining_intraday_category_expansions_are_missing_without_bars(self):
+        factor_ids = (
+            "open_vwap_reclaim_score",
+            "midday_vwap_support_score",
+            "vwap_distance_stability_score",
+            "vwap_pullback_support_score",
+            "vwap_breakout_confirm_score",
+            "vwap_above_ratio_score",
+            "open_to_high_progress_score",
+            "close_above_midrange_score",
+            "low_reclaim_position_score",
+            "late_range_expansion_score",
+            "high_area_acceptance_score",
+            "close_location_stability_score",
+            "sector_breadth_persistence_score",
+            "sector_late_acceleration_score",
+            "leader_sync_persistence_score",
+            "sector_alpha_confirmation_score",
+            "sector_breadth_quality_score",
+            "theme_confirmation_composite_score",
+            "stock_intraday_rank_proxy_score",
+            "stock_vs_market_intraday_alpha_score",
+            "relative_late_strength_score",
+            "relative_vwap_strength_score",
+            "relative_breakout_leadership_score",
+            "relative_resilience_score",
+            "open_high_reversal_risk",
+            "late_breakdown_risk",
+            "failed_breakout_risk",
+            "lower_low_sequence_risk",
+            "volatility_expansion_reversal_risk",
+            "weak_close_after_volume_risk",
+            "first_hour_follow_through_score",
+            "midday_hold_score",
+            "afternoon_recovery_score",
+            "late_session_acceleration_score",
+            "session_consistency_score",
+            "close_auction_strength_proxy_score",
+        )
+        result = calculate_intraday_factors({})
+
+        assert all(result[factor_id] is None for factor_id in factor_ids)
+
+    def test_operational_intraday_factor_expansions_reward_executable_setup(self):
+        higher_is_better = (
+            "execution_liquidity_amount_score",
+            "execution_amount_continuity_score",
+            "execution_spread_proxy_score",
+            "execution_turnover_depth_score",
+            "execution_tradeability_score",
+            "execution_gap_to_limit_up_score",
+            "execution_microstructure_quality_score",
+            "sector_continuation_breadth_score",
+            "sector_continuation_late_breadth_score",
+            "sector_continuation_leader_sync_score",
+            "sector_continuation_alpha_support_score",
+            "sector_continuation_peer_rank_score",
+            "sector_continuation_theme_quality_score",
+            "sector_continuation_market_alignment_score",
+            "sector_continuation_breadth_acceleration_score",
+            "sector_continuation_concentration_balance_score",
+            "sector_continuation_composite_score",
+            "market_environment_index_trend_score",
+            "market_environment_vwap_support_score",
+            "market_environment_breadth_score",
+            "market_environment_limit_up_breadth_score",
+            "market_environment_leader_continuation_score",
+            "market_environment_risk_appetite_score",
+            "market_environment_composite_score",
+        )
+        lower_is_better = (
+            "execution_price_impact_risk",
+            "execution_vwap_slippage_risk",
+            "execution_gap_to_limit_down_risk",
+            "cashout_late_surge_risk",
+            "cashout_late_fade_risk",
+            "cashout_high_volume_stall_risk",
+            "cashout_close_giveback_risk",
+            "cashout_tail_amount_concentration_risk",
+            "cashout_overheat_without_breadth_risk",
+            "cashout_vwap_extension_risk",
+            "cashout_failed_late_breakout_risk",
+            "cashout_auction_weakness_risk",
+            "cashout_next_day_pressure_proxy",
+            "market_environment_limit_down_risk",
+            "market_environment_failure_risk",
+            "market_environment_crowding_risk",
+        )
+        executable = calculate_intraday_factors(
+            {
+                "prev_close": 100.0,
+                "bid_ask_spread_bps": 8,
+                "turnover_rate_pct": 3.5,
+                "limit_up_price": 112.0,
+                "limit_down_price": 90.0,
+                "sector_intraday_breadth_score": 78.0,
+                "sector_intraday_breadth_change": 74.0,
+                "sector_late_breadth_score": 80.0,
+                "leader_follower_sync_score": 76.0,
+                "sector_peer_rank_score": 82.0,
+                "sector_leader_score": 78.0,
+                "market_regime_score": 72.0,
+                "market_intraday_return_pct": 0.8,
+                "market_vwap_position_score": 74.0,
+                "market_breadth_score": 76.0,
+                "market_limit_up_count": 75,
+                "market_limit_down_count": 2,
+                "market_limit_up_failure_rate": 0.08,
+                "leader_continuation_rate": 0.72,
+                "market_hot_sector_concentration": 0.35,
+                "intraday_bars": _make_intraday_bars(
+                    [100.0, 100.4, 100.9, 101.3, 101.7, 102.0, 102.4, 102.8, 103.0, 103.3],
+                    amounts=[50_000_000.0, 55_000_000.0, 60_000_000.0, 65_000_000.0, 70_000_000.0, 75_000_000.0, 80_000_000.0, 85_000_000.0, 90_000_000.0, 95_000_000.0],
+                ),
+            }
+        )
+        stressed = calculate_intraday_factors(
+            {
+                "prev_close": 100.0,
+                "bid_ask_spread_bps": 45,
+                "turnover_rate_pct": 0.4,
+                "limit_up_price": 104.5,
+                "limit_down_price": 95.0,
+                "sector_intraday_breadth_score": 35.0,
+                "sector_intraday_breadth_change": 28.0,
+                "sector_late_breadth_score": 25.0,
+                "leader_follower_sync_score": 30.0,
+                "sector_peer_rank_score": 26.0,
+                "sector_leader_score": 28.0,
+                "market_regime_score": 32.0,
+                "market_intraday_return_pct": -1.2,
+                "market_vwap_position_score": 30.0,
+                "market_breadth_score": 28.0,
+                "market_limit_up_count": 18,
+                "market_limit_down_count": 25,
+                "market_limit_up_failure_rate": 0.42,
+                "leader_continuation_rate": 0.22,
+                "market_hot_sector_concentration": 0.86,
+                "intraday_bars": _make_intraday_bars(
+                    [100.0, 103.5, 104.2, 103.7, 102.5, 101.5, 100.8, 100.2, 99.7, 99.3],
+                    amounts=[10_000_000.0, 12_000_000.0, 15_000_000.0, 18_000_000.0, 20_000_000.0, 24_000_000.0, 30_000_000.0, 42_000_000.0, 60_000_000.0, 82_000_000.0],
+                ),
+            }
+        )
+
+        for factor_id in higher_is_better:
+            assert executable[factor_id] > stressed[factor_id], factor_id
+        for factor_id in lower_is_better:
+            assert executable[factor_id] < stressed[factor_id], factor_id
+
+    def test_operational_intraday_factor_expansions_are_missing_without_bars(self):
+        factor_ids = (
+            "execution_liquidity_amount_score",
+            "execution_amount_continuity_score",
+            "execution_price_impact_risk",
+            "execution_vwap_slippage_risk",
+            "execution_spread_proxy_score",
+            "execution_turnover_depth_score",
+            "execution_tradeability_score",
+            "execution_gap_to_limit_up_score",
+            "execution_gap_to_limit_down_risk",
+            "execution_microstructure_quality_score",
+            "cashout_late_surge_risk",
+            "cashout_late_fade_risk",
+            "cashout_high_volume_stall_risk",
+            "cashout_close_giveback_risk",
+            "cashout_tail_amount_concentration_risk",
+            "cashout_overheat_without_breadth_risk",
+            "cashout_vwap_extension_risk",
+            "cashout_failed_late_breakout_risk",
+            "cashout_auction_weakness_risk",
+            "cashout_next_day_pressure_proxy",
+            "sector_continuation_breadth_score",
+            "sector_continuation_late_breadth_score",
+            "sector_continuation_leader_sync_score",
+            "sector_continuation_alpha_support_score",
+            "sector_continuation_peer_rank_score",
+            "sector_continuation_theme_quality_score",
+            "sector_continuation_market_alignment_score",
+            "sector_continuation_breadth_acceleration_score",
+            "sector_continuation_concentration_balance_score",
+            "sector_continuation_composite_score",
+            "market_environment_index_trend_score",
+            "market_environment_vwap_support_score",
+            "market_environment_breadth_score",
+            "market_environment_limit_up_breadth_score",
+            "market_environment_limit_down_risk",
+            "market_environment_failure_risk",
+            "market_environment_leader_continuation_score",
+            "market_environment_crowding_risk",
+            "market_environment_risk_appetite_score",
+            "market_environment_composite_score",
+        )
+        result = calculate_intraday_factors({})
+
+        assert all(result[factor_id] is None for factor_id in factor_ids)
+
     def test_intraday_atomic_factors_cover_six_factor_families(self):
         """intraday atomic factors should separate support, VWAP, fade, volume, open, and sector context."""
         supported = calculate_intraday_factors(

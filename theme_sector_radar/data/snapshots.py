@@ -58,26 +58,23 @@ def normalize_sector_data(
 
     # 提取涨跌幅
     price_change_pct = _safe_float(
-        raw_data.get("price_change_pct") or
-        raw_data.get("change_pct") or
-        raw_data.get("涨跌幅") or
-        0.0
+        _first_present(raw_data, "price_change_pct", "change_pct", "涨跌幅", default=0.0)
     )
 
     # 提取成交额
     turnover = _safe_float(
-        raw_data.get("turnover") or
-        raw_data.get("amount") or
-        raw_data.get("成交额") or
-        0.0
+        _first_present(raw_data, "turnover", "amount", "成交额", default=0.0)
     )
 
     # 提取主力净流入
     main_net_inflow = _safe_float(
-        raw_data.get("main_net_inflow") or
-        raw_data.get("net_inflow") or
-        raw_data.get("主力净流入-净额") or
-        0.0
+        _first_present(
+            raw_data,
+            "main_net_inflow",
+            "net_inflow",
+            "主力净流入-净额",
+            default=0.0,
+        )
     )
 
     # 提取数据来源
@@ -100,6 +97,10 @@ def normalize_sector_data(
         data_sources=data_sources,
         updated_at=updated_at,
         data_quality_score=data_quality_score,
+        price_change_available=_safe_bool(
+            _first_present(raw_data, "price_change_available", default=True),
+            default=True,
+        ),
     )
 
 
@@ -124,28 +125,51 @@ def normalize_constituent_data(raw_data: Dict[str, Any]) -> ConstituentSnapshot:
     )
 
     change_pct = _safe_float(
-        raw_data.get("change_pct") or
-        raw_data.get("pct_change") or
-        raw_data.get("涨跌幅") or
-        0.0
+        _first_present(raw_data, "change_pct", "pct_change", "涨跌幅", default=0.0)
     )
 
     turnover = _safe_float(
-        raw_data.get("turnover") or
-        raw_data.get("amount") or
-        raw_data.get("成交额") or
-        0.0
+        _first_present(raw_data, "turnover", "amount", "成交额", default=0.0)
     )
 
-    is_core = raw_data.get("is_core", False)
+    is_core = _safe_bool(raw_data.get("is_core", False), default=False)
 
     return ConstituentSnapshot(
         code=str(code),
         name=str(name),
         change_pct=change_pct,
         turnover=turnover,
-        is_core=bool(is_core),
+        is_core=is_core,
     )
+
+
+def _first_present(
+    raw_data: Dict[str, Any],
+    *keys: str,
+    default: Any = None,
+) -> Any:
+    """Return the first explicit non-None value without discarding zeroes."""
+    for key in keys:
+        if key in raw_data and raw_data[key] is not None:
+            return raw_data[key]
+    return default
+
+
+def _safe_bool(value: Any, *, default: bool = False) -> bool:
+    """Parse common serialized booleans without treating non-empty false strings as true."""
+    if value is None:
+        return default
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return value != 0
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        if normalized in {"true", "1", "yes", "y", "on"}:
+            return True
+        if normalized in {"false", "0", "no", "n", "off", ""}:
+            return False
+    return default
 
 
 def _safe_float(value: Any) -> float:
