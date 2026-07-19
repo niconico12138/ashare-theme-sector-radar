@@ -38,7 +38,7 @@ def _file_sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def _validate_pit_evidence(pit_evidence: Any) -> None:
+def _validate_pit_evidence(pit_evidence: Any) -> dict[str, Any]:
     if not isinstance(pit_evidence, dict):
         raise ValueError("strict PIT model bundle requires verifier evidence")
     core = {key: value for key, value in pit_evidence.items() if key != "evidence_sha256"}
@@ -57,11 +57,30 @@ def _validate_pit_evidence(pit_evidence: Any) -> None:
     archive_root = pit_evidence.get("archive_root")
     if not isinstance(archive_root, str) or not archive_root:
         raise ValueError("strict PIT model bundle archive root is missing")
-    from .accumulation import verify_accumulation_archive
+    from .accumulation import load_verified_training_inputs
 
-    verified = verify_accumulation_archive(archive_root)
-    if verified.get("evidence_sha256") != pit_evidence.get("evidence_sha256"):
+    loaded = load_verified_training_inputs(archive_root)
+    if loaded["evidence"].get("evidence_sha256") != pit_evidence.get(
+        "evidence_sha256"
+    ):
         raise ValueError("model bundle PIT evidence is not bound to the archive verifier")
+    return loaded
+
+
+def _strict_training_identity(pit_evidence: Any) -> dict[str, str]:
+    loaded = _validate_pit_evidence(pit_evidence)
+    from .dataset import build_training_dataset
+
+    dataset = build_training_dataset(
+        loaded["feature_rows"],
+        loaded["label_rows"],
+        strict_pit_eligible=False,
+        pit_evidence=loaded["evidence"],
+    )
+    return {
+        "dataset_sha256": str(dataset["dataset_sha256"]),
+        "training_records_sha256": canonical_sha256(dataset["records"]),
+    }
 
 
 def save_model_bundle(
@@ -82,7 +101,13 @@ def save_model_bundle(
     if tuple(model.feature_names) != V1_FEATURE_NAMES:
         raise ValueError("trained model feature order/schema mismatch")
     if strict_pit_eligible:
-        _validate_pit_evidence(pit_evidence)
+        strict_identity = _strict_training_identity(pit_evidence)
+        if dataset_sha256 != strict_identity["dataset_sha256"]:
+            raise ValueError("strict model dataset does not match the verified archive")
+        if model.metadata.get("training_records_sha256") != strict_identity[
+            "training_records_sha256"
+        ]:
+            raise ValueError("strict model training records do not match the dataset")
     if dataset_classification not in {"observed_research", "synthetic_fixture"}:
         raise ValueError("unsupported model dataset classification")
     try:
@@ -199,7 +224,13 @@ def load_model_bundle(
     if not _SHA256.fullmatch(training_records_sha256) or set(training_records_sha256) == {"0"}:
         raise ValueError("model registry training records identity is invalid")
     if strict_pit_eligible:
-        _validate_pit_evidence(registry.get("pit_evidence"))
+        strict_identity = _strict_training_identity(registry.get("pit_evidence"))
+        if registry.get("dataset_sha256") != strict_identity["dataset_sha256"]:
+            raise ValueError("model registry dataset does not match the verified archive")
+        if registry.get("training_records_sha256") != strict_identity[
+            "training_records_sha256"
+        ]:
+            raise ValueError("model registry training records do not match the dataset")
     if tuple(registry.get("feature_names") or ()) != V1_FEATURE_NAMES:
         raise ValueError("model registry feature order/schema mismatch")
     if registry.get("feature_schema_sha256") != feature_schema_sha256():
