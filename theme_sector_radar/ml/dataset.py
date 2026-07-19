@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import date, datetime
+from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 from .contract import canonical_sha256, require_finite
@@ -16,6 +17,7 @@ from .schema import (
     V1_FEATURE_NAMES,
     feature_schema_sha256,
 )
+from theme_sector_radar.reporting.strict_json import load_strict_json_with_sha256
 
 
 def _identity(row: Mapping[str, Any], *, context: str) -> tuple[str, str]:
@@ -354,6 +356,32 @@ def validate_training_dataset(dataset: Mapping[str, Any]) -> list[dict[str, Any]
             feature_rows=list(dataset.get("feature_universe_records") or []),
             label_rows=list(dataset.get("evaluation_label_records") or []),
         )
+        source_manifest = dataset.get("source_manifest")
+        if not isinstance(source_manifest, Mapping):
+            raise ValueError("strict training dataset source manifest is missing")
+        source_archive = str(source_manifest.get("archive_root") or "")
+        evidence_archive = str(pit_evidence.get("archive_root") or "")
+        if (
+            not source_archive
+            or not evidence_archive
+            or str(Path(source_archive).resolve()).casefold()
+            != str(Path(evidence_archive).resolve()).casefold()
+        ):
+            raise ValueError("strict dataset source and PIT archives do not match")
+        baseline_source = source_manifest.get("baseline_source")
+        if not isinstance(baseline_source, Mapping):
+            raise ValueError("strict dataset baseline source manifest is missing")
+        baseline_path = Path(str(baseline_source.get("path") or ""))
+        baseline_doc, baseline_sha = load_strict_json_with_sha256(baseline_path)
+        if baseline_sha != str(baseline_source.get("sha256") or "").lower():
+            raise ValueError("strict dataset baseline source SHA mismatch")
+        if (
+            not isinstance(baseline_doc, Mapping)
+            or baseline_doc.get("pit_evidence_sha256")
+            != pit_evidence.get("evidence_sha256")
+            or baseline_doc.get("records") != loaded["baseline_rows"]
+        ):
+            raise ValueError("strict dataset baseline source does not match archive")
         expected = build_training_dataset(
             loaded["feature_rows"],
             loaded["label_rows"],

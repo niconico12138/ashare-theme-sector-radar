@@ -2028,11 +2028,13 @@ class TestSourceTransparency:
             result = up.run_pipeline(
                 as_of_date="2026-07-01",
                 output_dir=str(tmp_path / "out"),
+                candidate_chain="legacy",
             )
             bridge_result["trend_sectors"] = []
             second_result = up.run_pipeline(
                 as_of_date="2026-07-01",
                 output_dir=str(tmp_path / "out-second"),
+                candidate_chain="legacy",
             )
 
         assert result["data_source"]["fund_flow_source"] == "legacy_source"
@@ -2164,6 +2166,7 @@ class TestSourceTransparency:
                 as_of_date="2026-07-21",
                 sector_history_root=str(tmp_path / "history"),
                 output_dir=str(tmp_path / "out"),
+                candidate_chain="legacy",
             )
 
         assert len(auto_calls) == 1
@@ -2534,6 +2537,7 @@ class TestSourceTransparency:
                     as_of_date="2026-07-07",
                     mode="quick",
                     output_dir=str(tmp_path),
+                    candidate_chain="legacy",
                 )
 
         assert result["trend_candidates_all"][0]["sector_burst_score"] == 63.1
@@ -3754,7 +3758,10 @@ print(json.dumps(validated[2]))
 
         report_path = expected_output / "unified_report.json"
         report = json.loads(report_path.read_text(encoding="utf-8"))
-        assert report["trend_candidates_all"]
+        assert report["candidate_chain"] == "direction_linkage_v2"
+        assert report["legacy_sector_paths_enabled"] is False
+        assert report["trend_candidates_all"] == []
+        assert report["burst_candidates_all"] == []
         index_entry = json.loads(
             offline_daily_runner["index_path"].read_text(encoding="utf-8").strip()
         )
@@ -3798,13 +3805,10 @@ print(json.dumps(validated[2]))
         report_path = offline_daily_runner["output_dir"] / "unified_report.json"
         report = json.loads(report_path.read_text(encoding="utf-8"))
         assert report["as_of_date"] == offline_daily_runner["as_of"]
-        sector_names = {
-            item["name"]
-            for group in ("trend_sectors", "burst_sectors")
-            for item in report["bridge_summary"][group]
-        }
-        assert "Exact Bound" in sector_names
-        assert "Fallback Only" not in sector_names
+        assert report["score_as_of_date"] == offline_daily_runner["as_of"]
+        assert report["legacy_sector_paths_enabled"] is False
+        assert report["bridge_summary"]["trend_sectors"] == []
+        assert report["bridge_summary"]["burst_sectors"] == []
 
     def test_missing_explicit_report_root_fails_closed(self, tmp_path, monkeypatch):
         """An explicit missing root must fail before API or child-process work."""
@@ -4209,7 +4213,8 @@ class TestRunArchive:
                 offline_daily_runner["output_dir"] / "unified_report.json"
             ).read_text(encoding="utf-8")
         )
-        assert report["trend_candidates_all"]
+        assert report["candidate_chain"] == "direction_linkage_v2"
+        assert report["legacy_sector_paths_enabled"] is False
         assert not idx.exists()
 
     def test_show_history_cli(self, tmp_path):

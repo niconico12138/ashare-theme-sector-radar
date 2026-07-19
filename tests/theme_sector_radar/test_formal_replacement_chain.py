@@ -182,7 +182,20 @@ def test_unified_pipeline_publishes_direction_linkage_v2_as_active_pool(
     bridge_result = {
         "status": "ok",
         "as_of_date": "2026-07-17",
-        "trend_sectors": [],
+        "trend_sectors": [
+            {
+                "sector_name": "Legacy Trend",
+                "trend_score": 90.0,
+                "burst_score": 80.0,
+                "stocks": [
+                    {
+                        "code": "600099",
+                        "name": "Legacy Stock",
+                        "relevance_score": 0.9,
+                    }
+                ],
+            }
+        ],
         "burst_sectors": [],
         "direction_shadow_sectors": sectors,
         "direction_confirmation_sectors": [],
@@ -229,7 +242,13 @@ def test_unified_pipeline_publishes_direction_linkage_v2_as_active_pool(
         "validate_explicit_score_report",
         lambda _date: (True, validated, None),
     )
-    monkeypatch.setattr(pipeline, "run_bridge", lambda **_kwargs: bridge_result)
+    bridge_calls = []
+
+    def fake_bridge(**kwargs):
+        bridge_calls.append(kwargs)
+        return bridge_result
+
+    monkeypatch.setattr(pipeline, "run_bridge", fake_bridge)
     monkeypatch.setattr(pipeline, "_get_http_client", lambda: None)
     monkeypatch.setattr(pipeline, "compute_quant_scores", fake_quant)
     monkeypatch.setattr(
@@ -249,11 +268,15 @@ def test_unified_pipeline_publishes_direction_linkage_v2_as_active_pool(
     result = pipeline.run_pipeline(
         as_of_date="2026-07-17",
         output_dir=str(tmp_path / "out"),
-        candidate_chain="direction_linkage_v2",
     )
 
     assert result["status"] == "ok"
     assert result["candidate_chain"] == "direction_linkage_v2"
+    assert result["legacy_sector_paths_enabled"] is False
+    assert result["active_sector_path"] == "direction_score"
+    assert result["trend_top_stocks"] == []
+    assert result["burst_top_stocks"] == []
+    assert bridge_calls[0]["include_legacy_sector_paths"] is False
     assert result["formal_candidate_selection"]["status"] == (
         "active_for_paper_research"
     )

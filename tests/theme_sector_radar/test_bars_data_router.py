@@ -1,4 +1,5 @@
 import logging
+import json
 
 import theme_sector_radar.data.bars_data_router as bars_router
 from theme_sector_radar.data.bars_data_router import AutoBarsClient, extract_latest_daily_date
@@ -136,3 +137,67 @@ def test_auto_bars_client_uses_fresh_http_when_sdk_initialization_fails(
     assert client.selection["reason"] == "sdk_unavailable_http_fallback"
     assert client.selection["sdk_error"] == "desktop SDK missing"
     assert client.get_stock_bars("600001", "20260701", "20260716")[0]["source"] == "http"
+
+
+def test_auto_bars_client_falls_back_to_date_complete_local_cache(tmp_path):
+    cache_dir = tmp_path / "stock_bars"
+    cache_dir.mkdir()
+    bars = []
+    for day in range(-1, 11):
+        if day == -1:
+            bar_date = "2026-06-30"
+        else:
+            bar_date = f"2026-07-{day:02d}"
+        bars.append(
+            {
+                "date": bar_date,
+                "open": 10.0,
+                "high": 11.0,
+                "low": 9.0,
+                "close": 10.0 + day / 100,
+                "volume": 1000,
+                "amount": 10000,
+            }
+        )
+    (cache_dir / "600001.json").write_text(
+        json.dumps({"code": "600001", "source": "stockdb-sdk", "bars": bars}),
+        encoding="utf-8",
+    )
+
+    client = AutoBarsClient(
+        http_client=FakeHttp(error="http down"),
+        sdk_client=FakeSdk(error="sdk down"),
+        expected_min_date="2026-07-10",
+        cache_dir=cache_dir,
+    )
+
+    result = client.get_stock_bars("600001", "20260701", "20260710")
+
+    assert len(result) == 10
+    assert result[-1]["date"] == "2026-07-10"
+    assert client.selection["source"] == "local-cache"
+    assert client.selection["reason"] == "local_cache_fallback"
+
+
+def test_auto_bars_client_does_not_use_stale_local_cache(tmp_path):
+    cache_dir = tmp_path / "stock_bars"
+    cache_dir.mkdir()
+    (cache_dir / "600001.json").write_text(
+        json.dumps(
+            {
+                "code": "600001",
+                "bars": [{"date": "2026-07-09", "close": 10.0}],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    client = AutoBarsClient(
+        http_client=FakeHttp(error="http down"),
+        sdk_client=FakeSdk(error="sdk down"),
+        expected_min_date="2026-07-10",
+        cache_dir=cache_dir,
+    )
+
+    assert client.get_stock_bars("600001", "20260701", "20260710") == []
+    assert client.selection["source"] == "unavailable"

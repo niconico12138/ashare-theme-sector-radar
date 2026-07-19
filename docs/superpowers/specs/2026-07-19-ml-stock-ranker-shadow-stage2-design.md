@@ -11,6 +11,10 @@ fields, or protected score fields.
 The active selected relation set is archived once per trading day. The archive records
 candidate report SHA, selected-pool identity, dated constituent SHAs, qfq 1d bars,
 calendar identity, derived feature rows, and separate Quant/Linkage V2 baseline rows.
+Strict prospective status additionally requires absolute, existing, SHA-matching
+candidate/constituent/calendar files whose contents reproduce the archived selection,
+sector membership, and calendar. Logical or relative source identifiers remain
+historical/untrusted and cannot become strict merely by self-attesting a flag.
 An append-only hash chain rejects both silent rewrite and historical insertion.
 
 `captured_at` is timezone-aware and is the prospective witness. Existing unified reports
@@ -20,7 +24,10 @@ is bound to source SHA and source `as_of_date`. A source date mismatch or captur
 the signal date remains blocking.
 
 Mature label snapshots retain raw stock and sector price rows and are replayed by the
-verifier. Labels are not written before the exact target trading date exists.
+verifier. Each mature label also carries an immutable input-evidence file, actual
+per-stock source identities, sector-history path/SHA identities, and the exact source
+rows used to build labels. Labels are not written before the exact target trading date
+exists.
 
 ## Dataset Handoff
 
@@ -35,7 +42,9 @@ successful blocked artifact and no trainable strict dataset.
 When independent baseline rows are present, evaluation compares Quant, full Linkage V2,
 percentile Hybrid, and ML on the same day and candidate identities. Hybrid weights are
 configurable. Partial Linkage receives an effective 0.20 weight; unavailable Linkage is
-excluded from its own baseline and is Quant-only/low-confidence in Hybrid. All outputs
-are shadow reports.
+assigned a fail-closed lowest rank inside the same common eligible pool and remains
+Quant-only/low-confidence in Hybrid. Strict evaluation also binds baseline rows and the
+walk-forward prediction universe back to the verified archive and dataset SHA. All
+outputs are shadow reports.
 
 Raw prediction distributions, not daily percentile means, drive prediction drift.

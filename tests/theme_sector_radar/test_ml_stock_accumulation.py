@@ -65,6 +65,7 @@ def test_extract_candidate_snapshot_uses_active_direction_linkage_selection_only
             "as_of_date": "2026-07-16",
             "stock_code": "000001",
             "sector_name": "医疗服务",
+            "sector_type": "industry",
             "quant_baseline_score_shadow": 80.0,
             "linkage_v2_baseline_score_shadow": 70.0,
             "linkage_v2_status": "ok",
@@ -74,6 +75,7 @@ def test_extract_candidate_snapshot_uses_active_direction_linkage_selection_only
             "as_of_date": "2026-07-16",
             "stock_code": "000002",
             "sector_name": "医疗服务",
+            "sector_type": "industry",
             "quant_baseline_score_shadow": 60.0,
             "linkage_v2_baseline_score_shadow": 40.0,
             "linkage_v2_status": "partial",
@@ -176,12 +178,14 @@ def _physical_daily_sources(
 
     selected = report["direction_linkage_v2_selection_shadow"]["selected"]
     sector_name = str(selected[0]["sector_name"])
+    sector_type = str(selected[0].get("sector_type") or "industry")
     constituent_path = source_root / "constituents" / f"{as_of}.json"
     write_strict_json_atomic(
         constituent_path,
         {
             "as_of_date": as_of,
             "sector_name": sector_name,
+            "sector_type": sector_type,
             "stocks": [{"code": str(row["code"])} for row in selected],
         },
     )
@@ -216,6 +220,7 @@ def _physical_daily_sources(
                 "sha256": constituent_sha,
                 "as_of_date": as_of,
                 "sector_name": sector_name,
+                "sector_type": sector_type,
             }
         ],
         "trading_calendar": calendar,
@@ -251,9 +256,13 @@ def _physical_label_source(
     for sector_name, rows in sector_prices.items():
         filename = hashlib.sha256(sector_name.encode("utf-8")).hexdigest()
         path = source_root / "sectors" / f"{filename}.json"
-        write_strict_json_atomic(path, {"sector_name": sector_name, "records": rows})
+        write_strict_json_atomic(
+            path,
+            {"sector_name": sector_name, "sector_type": "industry", "records": rows},
+        )
         _payload, sha256 = load_strict_json_with_sha256(path)
         sector_sources[sector_name] = {
+            "sector_type": "industry",
             "path": str(path.resolve()),
             "sha256": sha256,
         }
@@ -264,6 +273,46 @@ def _physical_label_source(
         "query_end": label_as_of_date,
         "stock_bars_by_code": stock_sources,
         "sector_bars_by_name": sector_sources,
+    }
+
+
+def _physical_daily_bars_source(
+    root: Path,
+    *,
+    as_of: str,
+    bars_by_code: dict,
+    provider: str = "prospective-unit-test",
+):
+    from theme_sector_radar.reporting.strict_json import (
+        load_strict_json_with_sha256,
+        write_strict_json_atomic,
+    )
+
+    by_code = {}
+    for code, rows in bars_by_code.items():
+        path = root / "physical_sources" / "daily_bars" / as_of / f"{code}.json"
+        write_strict_json_atomic(
+            path,
+            {
+                "code": code,
+                "as_of": as_of,
+                "source": provider,
+                "bars": rows,
+            },
+        )
+        _payload, sha256 = load_strict_json_with_sha256(path)
+        by_code[code] = {
+            "requested_source": provider,
+            "actual_source": provider,
+            "path": str(path.resolve()),
+            "sha256": sha256,
+        }
+    return {
+        "provider": provider,
+        "adjustment": "qfq",
+        "frequency": "1d",
+        "query_end": as_of,
+        "by_code": by_code,
     }
 
 
@@ -287,18 +336,17 @@ def test_daily_snapshot_archive_is_prospective_content_bound_and_immutable(tmp_p
         calendar_dates=calendar_dates,
         generated_at="2026-07-16T16:30:00+08:00",
     )
+    bars_by_code = {"000001": _bars(as_of), "000002": _bars(as_of)}
+    bars_source = _physical_daily_bars_source(
+        tmp_path, as_of=as_of, bars_by_code=bars_by_code
+    )
     kwargs = {
         "archive_root": tmp_path,
         "candidate_report": report,
         "candidate_source": physical["candidate_source"],
         "constituent_sources": physical["constituent_sources"],
-        "bars_by_code": {"000001": _bars(as_of), "000002": _bars(as_of)},
-        "bars_source": {
-            "provider": "stockdb-sdk",
-            "adjustment": "qfq",
-            "frequency": "1d",
-            "query_end": as_of,
-        },
+        "bars_by_code": bars_by_code,
+        "bars_source": bars_source,
         "trading_calendar": physical["trading_calendar"],
         "captured_at": datetime(2026, 7, 16, 18, 0, tzinfo=timezone.utc),
     }
@@ -319,7 +367,7 @@ def test_daily_snapshot_archive_is_prospective_content_bound_and_immutable(tmp_p
         "000002",
     }
     assert all(
-        row["actual_source"] == "stockdb-sdk"
+        row["actual_source"] == "prospective-unit-test"
         and row["query_end"] == as_of
         and len(row["bars_sha256"]) == 64
         for row in created["snapshot"]["bars_source_by_code"].values()
@@ -333,7 +381,9 @@ def test_daily_snapshot_archive_is_prospective_content_bound_and_immutable(tmp_p
         **changed["bars_by_code"]["000001"][-1],
         "close": 99.0,
     }
-    with pytest.raises(ValueError, match="immutable daily snapshot input changed"):
+    with pytest.raises(
+        ValueError, match="immutable daily snapshot input changed|daily bars source"
+    ):
         archive_daily_snapshot(**changed)
 
 
@@ -426,6 +476,10 @@ def test_physical_candidate_source_must_reproduce_the_passed_selection(tmp_path)
     write_strict_json_atomic(candidate_path, source_report)
     _source_doc, source_sha = load_strict_json_with_sha256(candidate_path)
     physical["candidate_source"]["sha256"] = source_sha
+    bars_by_code = {"000001": _bars(as_of), "000002": _bars(as_of)}
+    bars_source = _physical_daily_bars_source(
+        tmp_path, as_of=as_of, bars_by_code=bars_by_code
+    )
 
     with pytest.raises(ValueError, match="candidate source contents"):
         archive_daily_snapshot(
@@ -433,13 +487,8 @@ def test_physical_candidate_source_must_reproduce_the_passed_selection(tmp_path)
             candidate_report=report,
             candidate_source=physical["candidate_source"],
             constituent_sources=physical["constituent_sources"],
-            bars_by_code={"000001": _bars(as_of), "000002": _bars(as_of)},
-            bars_source={
-                "provider": "stockdb-sdk",
-                "adjustment": "qfq",
-                "frequency": "1d",
-                "query_end": as_of,
-            },
+            bars_by_code=bars_by_code,
+            bars_source=bars_source,
             trading_calendar=physical["trading_calendar"],
             captured_at=datetime(2026, 7, 16, 18, 0, tzinfo=timezone.utc),
         )
@@ -586,16 +635,15 @@ def test_same_day_naive_source_time_uses_timezone_aware_archive_witness(tmp_path
         calendar_dates=calendar_dates,
         generated_at="2026-07-16T16:30:00",
     )
+    bars_by_code = {"000001": _bars(as_of), "000002": _bars(as_of)}
+    bars_source = _physical_daily_bars_source(
+        tmp_path, as_of=as_of, bars_by_code=bars_by_code
+    )
     result = archive_daily_snapshot(
         archive_root=tmp_path,
         candidate_report=report,
-        bars_by_code={"000001": _bars(as_of), "000002": _bars(as_of)},
-        bars_source={
-            "provider": "stockdb-sdk",
-            "adjustment": "qfq",
-            "frequency": "1d",
-            "query_end": as_of,
-        },
+        bars_by_code=bars_by_code,
+        bars_source=bars_source,
         candidate_source=physical["candidate_source"],
         constituent_sources=physical["constituent_sources"],
         trading_calendar=physical["trading_calendar"],
@@ -634,19 +682,18 @@ def test_label_archive_waits_for_five_day_maturity_then_binds_snapshot(tmp_path)
         calendar_dates=calendar_dates,
         generated_at="2026-07-16T16:30:00+08:00",
     )
+    feature_bars = {"000001": _bars(as_of), "000002": _bars(as_of)}
+    feature_bars_source = _physical_daily_bars_source(
+        tmp_path, as_of=as_of, bars_by_code=feature_bars
+    )
     calendar = physical["trading_calendar"]
     archived = archive_daily_snapshot(
         archive_root=tmp_path,
         candidate_report=report,
         candidate_source=physical["candidate_source"],
         constituent_sources=physical["constituent_sources"],
-        bars_by_code={"000001": _bars(as_of), "000002": _bars(as_of)},
-        bars_source={
-            "provider": "stockdb-sdk",
-            "adjustment": "qfq",
-            "frequency": "1d",
-            "query_end": as_of,
-        },
+        bars_by_code=feature_bars,
+        bars_source=feature_bars_source,
         trading_calendar=calendar,
         captured_at=datetime(2026, 7, 16, 18, 0, tzinfo=timezone.utc),
     )
@@ -810,18 +857,17 @@ def test_sixty_day_archive_builds_strict_dataset_and_enters_train_evaluate(tmp_p
             calendar_dates=trading_dates,
             generated_at=f"{day}T16:30:00+00:00",
         )
+        feature_bars = {"000001": _bars(day), "000002": _bars(day)}
+        feature_bars_source = _physical_daily_bars_source(
+            tmp_path, as_of=day, bars_by_code=feature_bars
+        )
         archive_daily_snapshot(
             archive_root=archive_root,
             candidate_report=report,
             candidate_source=physical["candidate_source"],
             constituent_sources=physical["constituent_sources"],
-            bars_by_code={"000001": _bars(day), "000002": _bars(day)},
-            bars_source={
-                "provider": "prospective-unit-test",
-                "adjustment": "qfq",
-                "frequency": "1d",
-                "query_end": day,
-            },
+            bars_by_code=feature_bars,
+            bars_source=feature_bars_source,
             trading_calendar=physical["trading_calendar"],
             captured_at=datetime.combine(
                 date.fromisoformat(day), time(18, 0), tzinfo=timezone.utc
@@ -976,6 +1022,13 @@ def test_sixty_day_archive_builds_strict_dataset_and_enters_train_evaluate(tmp_p
         "A_quant", "B_linkage_v2", "C_hybrid", "D_ml"
     }
 
+    tampered_source_dataset = copy.deepcopy(dataset)
+    tampered_source_dataset["source_manifest"]["archive_root"] = str(
+        (archive_root.parent / "another-archive").resolve()
+    )
+    with pytest.raises(ValueError, match="source and PIT archives"):
+        validate_training_dataset(tampered_source_dataset)
+
     from theme_sector_radar.ml.evaluation import evaluate_rule_vs_ml_shadow
 
     walk_forward = load_strict_json(walk_forward_path)
@@ -1003,6 +1056,42 @@ def test_sixty_day_archive_builds_strict_dataset_and_enters_train_evaluate(tmp_p
             top_ks=(1,),
             baseline_strict_pit_eligible=True,
         )
+
+    tampered_folds = copy.deepcopy(walk_forward)
+    tampered_folds["split"]["folds"][0]["purged_dates"] = []
+    with pytest.raises(ValueError, match="canonical split"):
+        evaluate_rule_vs_ml_shadow(
+            tampered_folds,
+            dataset,
+            baseline["records"],
+            top_ks=(1,),
+            baseline_strict_pit_eligible=True,
+        )
+
+    cycle_root = tmp_path / "cycle"
+    cycle_model_dir = tmp_path / "cycle-model"
+    cycle = subprocess.run(
+        [
+            sys.executable,
+            str(project_root / "scripts" / "run_ml_stock_training_cycle.py"),
+            "--archive-root", str(archive_root),
+            "--output-root", str(cycle_root),
+            "--model-dir", str(cycle_model_dir),
+            "--model-version", "stock_ranker_lgbm_v1_cycle_test",
+            "--min-train-dates", "60",
+            "--test-dates", "1",
+            "--purge-dates", "5",
+            "--n-estimators", "2",
+        ],
+        cwd=project_root,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert cycle.returncode == 0, cycle.stderr
+    cycle_report = load_strict_json(cycle_root / "cycle_report.json")
+    assert cycle_report["status"] == "trained_shadow"
+    assert (cycle_model_dir / "registry.json").is_file()
 
     tampered_dataset = copy.deepcopy(dataset)
     tampered_dataset["feature_universe_records"][0]["features"]["momentum_1d"] += 0.01
