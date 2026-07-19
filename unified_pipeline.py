@@ -16,6 +16,8 @@ CLI:
   python unified_pipeline.py --as-of 2026-07-01 --trend-top-n 5 --burst-top-n 5
 """
 
+import copy
+import hashlib
 import json
 import logging
 import os
@@ -28,6 +30,8 @@ from pathlib import Path
 if sys.stdout.encoding and sys.stdout.encoding.lower() in ("gbk", "cp936", "cp1252"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 from typing import Any, Dict, List, Optional, Tuple
+
+from theme_sector_radar.data.bars_data_router import AutoBarsClient
 
 # ============================================================
 # 代理环境变量清理
@@ -91,6 +95,48 @@ def _get_sector_burst_score(sector: Dict[str, Any]) -> float:
         return 0.0
 
 
+def _build_direction_linkage_summary(
+    candidates: List[Dict[str, Any]],
+    selection: Dict[str, Any],
+    history: Dict[str, Any],
+    confirmation_sectors: List[Any],
+) -> Dict[str, Any]:
+    """Build a compact, read-only audit summary for the shadow branch."""
+    sector_groups = {"core": set(), "supplemental": set()}
+    status_counts: Dict[str, int] = {}
+    for candidate in candidates:
+        tier = str(candidate.get("candidate_tier") or "")
+        sector_name = str(candidate.get("sector_name") or "").strip()
+        if tier in sector_groups and sector_name:
+            sector_groups[tier].add(sector_name)
+        linkage = candidate.get("linkage_v2_shadow") or {}
+        status = str(linkage.get("status") or "missing")
+        status_counts[status] = status_counts.get(status, 0) + 1
+
+    confirmation_names = set()
+    for sector in confirmation_sectors:
+        if isinstance(sector, dict):
+            name = str(sector.get("sector_name") or sector.get("name") or "").strip()
+        else:
+            name = str(sector or "").strip()
+        if name:
+            confirmation_names.add(name)
+
+    groups = {
+        "core": sorted(sector_groups["core"]),
+        "supplemental": sorted(sector_groups["supplemental"]),
+        "confirmation_required": sorted(confirmation_names),
+    }
+    return {
+        "sector_groups": groups,
+        "sector_group_counts": {key: len(value) for key, value in groups.items()},
+        "candidate_count": len(candidates),
+        "linkage_v2_status_counts": dict(sorted(status_counts.items())),
+        "selected_count": int(selection.get("selected_count") or 0),
+        "history_sector_count": int(history.get("sector_count") or 0),
+    }
+
+
 # ============================================================
 # 项目路径
 # ============================================================
@@ -104,10 +150,109 @@ from sector_stock_bridge import (
     extract_top_sectors,
     find_cross_sectors,
     run_bridge,
+    validate_explicit_score_report,
     DEFAULT_MIN_RELEVANCE,
     DEFAULT_TREND_TOP_N,
     DEFAULT_BURST_TOP_N,
 )
+from theme_sector_radar.history.sector_trend_history import (
+    load_sector_trend_history,
+)
+from theme_sector_radar.models import SectorType
+from theme_sector_radar.reporting.strict_json import load_strict_json_with_sha256
+from theme_sector_radar.scoring.stock_sector_linkage import (
+    build_formal_candidate_selection,
+    calculate_stock_sector_linkage_v2_shadow,
+    relative_strength_score_from_returns,
+    returns_by_date_from_bars,
+    select_direction_linkage_v2_shadow_stocks,
+)
+
+DEFAULT_SECTOR_CLUSTER_MAP_PATH = PROJECT_ROOT / "config" / "path_a_sector_clusters.json"
+
+
+def _activate_formal_candidate_chain(
+    *,
+    candidate_chain: str,
+    direction_source: Dict[str, Any],
+    linkage_selection: Dict[str, Any],
+    legacy_candidates: Optional[List[Dict[str, Any]]] = None,
+) -> Dict[str, Any]:
+    """Resolve the active paper candidate chain without mutating score fields."""
+    if candidate_chain == "legacy":
+        selected = []
+        seen_codes = set()
+        for source in legacy_candidates or []:
+            code = str(source.get("code") or "").strip()
+            if not code or code in seen_codes:
+                continue
+            selected.append(copy.deepcopy(source))
+            seen_codes.add(code)
+        return {
+            "schema_version": "formal_candidate_selection.v1",
+            "mode": "paper_shadow_research_only",
+            "candidate_chain": "legacy",
+            "status": "legacy_active_for_paper_research",
+            "fallback_used": False,
+            "direction_source": {},
+            "linkage_source": {},
+            "selected_count": len(selected),
+            "selected": selected,
+            "error": None,
+            "disclaimer": "No broker connection and no live order instruction.",
+        }
+    if candidate_chain != "direction_linkage_v2":
+        raise ValueError(
+            "candidate_chain must be one of: legacy, direction_linkage_v2"
+        )
+    return build_formal_candidate_selection(
+        direction_source=direction_source,
+        linkage_selection=linkage_selection,
+    )
+
+
+def load_sector_cluster_map(path: str | Path) -> Tuple[Dict[str, str], Dict[str, Any]]:
+    """Load a strict, SHA-bound sector-to-cluster research contract."""
+    source_path = Path(path).expanduser().resolve()
+    document, source_sha256 = load_strict_json_with_sha256(source_path)
+    if document.get("schema_version") != "path_a_sector_cluster_map.v1":
+        raise ValueError("unsupported sector cluster map schema_version")
+    if document.get("mode") != "paper_shadow_research_only":
+        raise ValueError("sector cluster map must be paper_shadow_research_only")
+    clusters = document.get("clusters")
+    if not isinstance(clusters, dict) or not clusters:
+        raise ValueError("sector cluster map clusters must be a non-empty object")
+    mapping: Dict[str, str] = {}
+    for raw_cluster, raw_sectors in clusters.items():
+        cluster = str(raw_cluster or "").strip()
+        if not cluster or not isinstance(raw_sectors, list) or not raw_sectors:
+            raise ValueError("each sector cluster must have a name and sectors")
+        for raw_sector in raw_sectors:
+            sector = str(raw_sector or "").strip()
+            if not sector:
+                raise ValueError("sector cluster members must be non-empty")
+            if sector in mapping:
+                raise ValueError(f"sector appears in multiple clusters: {sector}")
+            mapping[sector] = cluster
+    canonical_mapping = json.dumps(
+        mapping,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    return mapping, {
+        "schema_version": document["schema_version"],
+        "mode": document["mode"],
+        "status": "ok",
+        "path": str(source_path),
+        "sha256": source_sha256,
+        "mapping_sha256": hashlib.sha256(canonical_mapping).hexdigest(),
+        "cluster_count": len(clusters),
+        "mapped_sector_count": len(mapping),
+        "mapping": dict(sorted(mapping.items())),
+        "disclaimer": "No broker connection and no live order instruction.",
+    }
 
 # ============================================================
 # 量化评分（增强方案 + 降级方案）
@@ -580,10 +725,36 @@ def _try_qlib_quant_score(codes: List[str]) -> Optional[Dict[str, float]]:
     return None
 
 
+def _bars_for_linkage_returns(
+    bars: List[Dict], *, bars_source: str
+) -> List[Dict]:
+    """Adapt compact StockDB dates without weakening strict linkage parsing."""
+    if bars_source != "stockdb-sdk":
+        return bars
+    normalized = []
+    for bar in bars:
+        if not isinstance(bar, dict):
+            normalized.append(bar)
+            continue
+        copied = dict(bar)
+        raw_date = str(copied.get("date") or "")
+        if len(raw_date) == 8 and raw_date.isdigit():
+            try:
+                copied["date"] = datetime.strptime(
+                    raw_date, "%Y%m%d"
+                ).date().isoformat()
+            except ValueError:
+                pass
+        normalized.append(copied)
+    return normalized
+
+
 def compute_quant_scores(
     stocks: List[Dict],
     as_of_date: Optional[str] = None,
     http_enabled: Optional[bool] = None,
+    sector_returns_by_name: Optional[Dict[str, Dict[str, float]]] = None,
+    bars_client_override: Any = None,
 ) -> List[Dict]:
     """为个股列表计算量化评分。
 
@@ -603,13 +774,17 @@ def compute_quant_scores(
     """
     codes = [s["code"] for s in stocks]
 
-    # ---- Attempt 1: HTTP API stock bars ----
+    # HTTP remains the only fund-flow source. A bars override is used by the
+    # direction-only shadow path when local StockDB is fresher or HTTP is down.
     http_client = _get_http_client() if http_enabled is not False else None
     if http_enabled is None and not _http_client_is_healthy(http_client):
         http_client = None
+    bars_client = (
+        bars_client_override if bars_client_override is not None else http_client
+    )
     bars_cache: Dict[str, List[Dict]] = {}
 
-    if http_client is not None and as_of_date:
+    if bars_client is not None and as_of_date:
         # Build date range: ~20 trading days before as_of_date
         end_date = as_of_date.replace("-", "")
         try:
@@ -620,10 +795,14 @@ def compute_quant_scores(
         except ValueError:
             start_date = end_date  # fallback: same-day
 
+        seen_bar_codes = set()
         for s in stocks:
             code = s["code"]
+            if code in seen_bar_codes:
+                continue
+            seen_bar_codes.add(code)
             try:
-                bars = http_client.get_stock_bars(
+                bars = bars_client.get_stock_bars(
                     code, start=start_date, end=end_date, frequency="1d"
                 )
                 if bars and len(bars) >= 5:
@@ -632,6 +811,37 @@ def compute_quant_scores(
                 pass
             except Exception:
                 pass
+
+    bars_selection = getattr(bars_client, "selection", {})
+    if not isinstance(bars_selection, dict):
+        bars_selection = {}
+    bars_source = bars_selection.get("source")
+    if not bars_source:
+        bars_source = "http" if bars_client is http_client and bars_client else "override"
+    latest_date_key = (
+        "sdk_latest_daily_date"
+        if bars_source == "stockdb-sdk"
+        else "http_latest_daily_date"
+    )
+    requested_codes = {stock["code"] for stock in stocks}
+    usable_relation_count = sum(
+        1 for stock in stocks if stock["code"] in bars_cache
+    )
+    compute_quant_scores._last_bars_audit = {
+        "source": bars_source if bars_client is not None else "unavailable",
+        "reason": bars_selection.get("reason", "direct_client"),
+        "latest_daily_date": bars_selection.get(latest_date_key),
+        "requested_stock_count": len(requested_codes),
+        "usable_stock_count": len(bars_cache),
+        "requested_relation_count": len(stocks),
+        "usable_relation_count": usable_relation_count,
+        "coverage_ratio": (
+            round(len(bars_cache) / len(requested_codes), 6)
+            if requested_codes
+            else 0.0
+        ),
+        "minimum_bars": 5,
+    }
 
     # ---- Fund flow: batch → single → neutral (Phase 16) ----
     fund_flow_source = "fund_flow_neutral"
@@ -677,13 +887,17 @@ def compute_quant_scores(
 
     if bars_cache:
         # At least some stocks have HTTP bar data → use enhanced scorer where possible
+        enhanced_quant_source = {
+            "http": "http_enhanced_v2",
+            "stockdb-sdk": "stockdb_sdk_enhanced_v2",
+        }.get(bars_source, "override_enhanced_v2")
         for s in stocks:
             code = s["code"]
             if code in bars_cache:
                 score, breakdown = _compute_enhanced_quant_score(s, bars_cache[code])
                 s["quant_score"] = score
                 s["quant_breakdown"] = breakdown
-                s["quant_source"] = "http_enhanced_v2"
+                s["quant_source"] = enhanced_quant_source
             else:
                 score, breakdown = _compute_fallback_quant_score(s)
                 s["quant_score"] = score
@@ -724,6 +938,77 @@ def compute_quant_scores(
         print_data_quality_summary(quality_reports)
     except ImportError:
         pass  # 数据核查模块不可用时跳过
+
+    # ---- Stock-to-sector linkage V2 (paper/shadow only) ----
+    sector_returns_by_name = sector_returns_by_name or {}
+    trusted_constituent_sources = {
+        "http_em",
+        "http_local_industry",
+        "http_local_concept_members",
+    }
+    for stock in stocks:
+        try:
+            stock_bars = bars_cache.get(stock["code"], [])
+            stock_returns = (
+                returns_by_date_from_bars(
+                    _bars_for_linkage_returns(
+                        stock_bars, bars_source=bars_source
+                    ),
+                    as_of_date=as_of_date,
+                )
+                if stock_bars and as_of_date
+                else None
+            )
+            sector_returns = sector_returns_by_name.get(
+                stock.get("sector_name", "")
+            )
+            relative_strength = relative_strength_score_from_returns(
+                stock_returns, sector_returns
+            )
+            weight_score = (
+                stock.get("weight_normalized")
+                if stock.get("weight_signal_available")
+                else None
+            )
+            flow_score = stock.get("linkage_flow_alignment_score")
+            quality_parts = [
+                1.0 if stock.get("quote_available") else 0.0,
+                1.0 if stock_bars else 0.0,
+                (
+                    1.0
+                    if stock.get("constituent_source")
+                    in trusted_constituent_sources
+                    else 0.5
+                ),
+            ]
+            quality_score = sum(quality_parts) / len(quality_parts)
+            stock["linkage_v2_shadow"] = (
+                calculate_stock_sector_linkage_v2_shadow(
+                    stock_returns=stock_returns,
+                    sector_returns=sector_returns,
+                    relative_strength_score=relative_strength,
+                    constituent_weight_score=weight_score,
+                    fund_flow_alignment_score=flow_score,
+                    data_quality_score=quality_score,
+                )
+            )
+        except ValueError as exc:
+            stock["linkage_v2_shadow"] = {
+                "schema_version": "stock_sector_linkage_v2_shadow.v1",
+                "mode": "paper_shadow_research_only",
+                "status": "unavailable",
+                "score": None,
+                "reason": str(exc),
+                "disclaimer": "No broker connection and no live order instruction.",
+            }
+        except (TypeError, OverflowError):
+            stock["linkage_v2_shadow"] = {
+                "schema_version": "stock_sector_linkage_v2_shadow.v1",
+                "mode": "paper_shadow_research_only",
+                "status": "calculation_failed",
+                "score": None,
+                "disclaimer": "No broker connection and no live order instruction.",
+            }
 
     # Track fund flow source (appended as suffix)
     if fund_flow_count > 0:
@@ -1131,10 +1416,12 @@ def generate_markdown_report(
     data_quality: Optional[Dict[str, Any]] = None,
 ) -> str:
     """生成 Markdown 报告"""
+    score_as_of_date = str(bridge_result.get("as_of_date") or as_of_date)
     lines = []
     lines.append(f"# 板块雷达 × 个股选股 联合报告")
     lines.append(f"")
     lines.append(f"**分析日期**: {as_of_date}")
+    lines.append(f"**板块评分日期**: {score_as_of_date}")
     lines.append(f"**生成时间**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     lines.append(f"")
 
@@ -1229,9 +1516,9 @@ def generate_markdown_report(
     # Phase 22: show sector input source
     sector_src = bridge_result.get("sector_input_source", "legacy_sector_scores")
     if sector_src.startswith("stable"):
-        lines.append(f"- **板块评分来源**: {sector_src} (reports/full90 + full_concept/{as_of_date}/)")
+        lines.append(f"- **板块评分来源**: {sector_src} (reports/full90 + full_concept/{score_as_of_date}/)")
     else:
-        lines.append(f"- **板块评分来源**: reports/sector_scores/{as_of_date}/")
+        lines.append(f"- **板块评分来源**: reports/sector_scores/{score_as_of_date}/")
     lines.append(f"- **板块关联度**: 成分股权重(0.2) + 涨幅排名(0.4) + 资金流对齐(0.4)")
     # Determine quant source description
     first_stock = trend_stocks[0] if trend_stocks else None
@@ -1332,6 +1619,9 @@ def run_pipeline(
     min_relevance: float = DEFAULT_MIN_RELEVANCE,
     output_dir: Optional[str] = None,
     mode: str = "quick",
+    sector_history_root: Optional[str] = None,
+    sector_cluster_map_path: Optional[str] = None,
+    candidate_chain: str = "legacy",
 ) -> Dict[str, Any]:
     """
     运行联合选股管线。
@@ -1350,9 +1640,18 @@ def run_pipeline(
     result = {
         "status": "ok",
         "as_of_date": None,
+        "score_as_of_date": None,
         "mode": mode,
         "trend_top_stocks": [],
         "burst_top_stocks": [],
+        "active_top_stocks": [],
+        "active_candidates_all": [],
+        "formal_candidate_selection": {},
+        "candidate_chain": candidate_chain,
+        "direction_shadow_candidates_all": [],
+        "direction_linkage_v2_selection_shadow": {},
+        "direction_shadow_runtime_audit": {},
+        "sector_cluster_map": {},
         "bridge_result": None,
         "warnings": [],
         "generated_at": datetime.now().isoformat(),
@@ -1365,6 +1664,14 @@ def run_pipeline(
     print(f"   时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"{'='*70}")
 
+    score_ok, validated_score_report, score_error = validate_explicit_score_report(
+        as_of_date
+    )
+    if not score_ok:
+        result["status"] = "failed"
+        result["warnings"].append(score_error or "显式报告根校验失败")
+        return result
+
     http_client = _get_http_client()
     market_data_service_reachable = _http_client_is_healthy(http_client)
     if not market_data_service_reachable:
@@ -1375,6 +1682,7 @@ def run_pipeline(
         trend_top_n=trend_top_n,
         burst_top_n=burst_top_n,
         min_relevance=min_relevance,
+        _validated_score_report=validated_score_report,
     )
 
     if bridge_result["status"] == "failed":
@@ -1383,8 +1691,9 @@ def run_pipeline(
         print(f"\n❌ 桥接失败: {bridge_result.get('warnings', [])}")
         return result
 
-    # Use the requested as_of_date, not the fallback date from bridge_result
+    # Keep the requested research date while preserving the actual score snapshot date.
     result["as_of_date"] = as_of_date or bridge_result["as_of_date"]
+    result["score_as_of_date"] = bridge_result["as_of_date"]
     result["bridge_result"] = bridge_result
 
     # Step 2: 收集所有高关联度个股
@@ -1465,6 +1774,28 @@ def run_pipeline(
             print(f"    [{label}] 过滤 {removed} 只 (ST={_stock_info_stats['filtered_st']}, invalid={_stock_info_stats['filtered_invalid']})")
         return filtered
 
+    sector_returns_by_name: Dict[str, Dict[str, float]] = {}
+    sector_history_warnings = []
+    if sector_history_root and result.get("score_as_of_date"):
+        for sector_type in (SectorType.INDUSTRY, SectorType.CONCEPT):
+            histories, warnings = load_sector_trend_history(
+                sector_history_root,
+                sector_type=sector_type,
+                as_of_date=result["score_as_of_date"],
+                max_returns=20,
+            )
+            sector_history_warnings.extend(warnings)
+            for name, history in histories.items():
+                sector_returns_by_name[name] = dict(
+                    zip(history["recent_dates"], history["recent_returns"])
+                )
+    result["linkage_v2_history"] = {
+        "mode": "paper_shadow_research_only",
+        "root": sector_history_root,
+        "sector_count": len(sector_returns_by_name),
+        "warnings": sector_history_warnings,
+    }
+
     def _collect_and_score(sector_list: List[Dict], label: str) -> List[Dict]:
         all_stocks = []
         seen_codes = set()
@@ -1494,6 +1825,7 @@ def run_pipeline(
             all_stocks,
             as_of_date=bridge_result.get("as_of_date"),
             http_enabled=market_data_service_reachable,
+            sector_returns_by_name=sector_returns_by_name,
         )
 
         # 综合排序
@@ -1510,11 +1842,172 @@ def run_pipeline(
 
         return all_stocks
 
+    compute_quant_scores._last_fund_flow_source = "not_evaluated"
     trend_stocks = _collect_and_score(bridge_result.get("trend_sectors", []), "趋势")
     burst_stocks = _collect_and_score(bridge_result.get("burst_sectors", []), "短线")
 
+    legacy_stock_info_stats = dict(_stock_info_stats)
+    legacy_fund_flow_source = getattr(
+        compute_quant_scores, "_last_fund_flow_source", "fund_flow_neutral"
+    )
+    _stock_info_stats = {
+        "ok": 0,
+        "filtered_st": 0,
+        "filtered_invalid": 0,
+        "unknown": 0,
+    }
+    compute_quant_scores._last_fund_flow_source = "not_evaluated"
+
+    cluster_map_path = sector_cluster_map_path or str(
+        DEFAULT_SECTOR_CLUSTER_MAP_PATH
+    )
+    try:
+        sector_cluster_map, sector_cluster_audit = load_sector_cluster_map(
+            cluster_map_path
+        )
+    except (OSError, ValueError, TypeError) as exc:
+        sector_cluster_map = {}
+        sector_cluster_audit = {
+            "schema_version": "path_a_sector_cluster_map.v1",
+            "mode": "paper_shadow_research_only",
+            "status": "unavailable",
+            "path": str(Path(cluster_map_path).expanduser().resolve()),
+            "sha256": None,
+            "cluster_count": 0,
+            "mapped_sector_count": 0,
+            "mapping": {},
+            "error": str(exc),
+            "disclaimer": "No broker connection and no live order instruction.",
+        }
+    result["sector_cluster_map"] = sector_cluster_audit
+
+    direction_shadow_stocks = []
+    for sector in bridge_result.get("direction_shadow_sectors", []):
+        for source in sector.get("shadow_prefilter_stocks", []):
+            stock = dict(source)
+            stock["sector_name"] = sector["sector_name"]
+            stock["sector_type"] = sector.get("sector_type", "industry")
+            stock["candidate_tier"] = sector.get("candidate_tier")
+            stock["sector_trend_score"] = sector.get("trend_score", 0)
+            stock["sector_burst_score"] = sector.get("burst_score", 0)
+            stock["sector_direction_score"] = sector.get(
+                "direction_score_shadow"
+            )
+            stock["direction_score_shadow"] = sector.get(
+                "direction_score_shadow"
+            )
+            stock["direction_state"] = sector.get("direction_state")
+            direction_shadow_stocks.append(stock)
+    direction_shadow_stocks = _validate_stocks(
+        direction_shadow_stocks, "direction_shadow"
+    )
+    direction_bars_client = None
+    direction_bars_init_error = None
+    if direction_shadow_stocks and sector_returns_by_name:
+        try:
+            direction_bars_client = AutoBarsClient(
+                http_client=http_client,
+                expected_min_date=bridge_result.get("as_of_date"),
+            )
+        except (ImportError, OSError, ConnectionError, RuntimeError, ValueError) as exc:
+            direction_bars_init_error = str(exc)
+    compute_quant_scores._last_bars_audit = {
+        "source": "not_evaluated",
+        "reason": "not_evaluated",
+        "latest_daily_date": None,
+        "requested_stock_count": len(
+            {stock["code"] for stock in direction_shadow_stocks}
+        ),
+        "usable_stock_count": 0,
+        "requested_relation_count": len(direction_shadow_stocks),
+        "usable_relation_count": 0,
+        "coverage_ratio": 0.0,
+        "minimum_bars": 5,
+    }
+    if direction_shadow_stocks:
+        direction_shadow_stocks = compute_quant_scores(
+            direction_shadow_stocks,
+            as_of_date=bridge_result.get("as_of_date"),
+            http_enabled=market_data_service_reachable,
+            sector_returns_by_name=sector_returns_by_name,
+            bars_client_override=direction_bars_client,
+        )
+    direction_bars_audit = dict(
+        getattr(compute_quant_scores, "_last_bars_audit", {})
+    )
+    if (
+        direction_bars_init_error
+        and not direction_bars_client
+        and direction_bars_audit.get("source") in {"unavailable", "not_evaluated"}
+    ):
+        direction_bars_audit.update(
+            {
+                "source": "unavailable",
+                "reason": "stockdb_sdk_unavailable",
+                "latest_daily_date": None,
+                "error": direction_bars_init_error,
+            }
+        )
+    direction_linkage_selection = select_direction_linkage_v2_shadow_stocks(
+        direction_shadow_stocks,
+        sector_cluster_map=sector_cluster_map,
+    )
+    result["direction_shadow_candidates_all"] = direction_shadow_stocks
+    result["direction_linkage_v2_selection_shadow"] = direction_linkage_selection
+    direction_source = (
+        bridge_result.get("linkage_research", {}).get("direction_shadow_input", {})
+    )
+    formal_candidate_selection = _activate_formal_candidate_chain(
+        candidate_chain=candidate_chain,
+        direction_source=direction_source,
+        linkage_selection=direction_linkage_selection,
+        legacy_candidates=trend_stocks + burst_stocks,
+    )
+    result["formal_candidate_selection"] = formal_candidate_selection
+    result["active_candidates_all"] = formal_candidate_selection["selected"]
+    result["active_top_stocks"] = formal_candidate_selection["selected"][:10]
+    if (
+        candidate_chain == "direction_linkage_v2"
+        and formal_candidate_selection["status"] != "active_for_paper_research"
+    ):
+        result["warnings"].append(
+            "formal_replacement_unavailable: "
+            + str(formal_candidate_selection.get("error") or "unknown")
+        )
+    result["direction_shadow_runtime_audit"] = {
+        "mode": "paper_shadow_research_only",
+        "stock_info_sources": dict(_stock_info_stats),
+        "fund_flow_source": getattr(
+            compute_quant_scores, "_last_fund_flow_source", "not_evaluated"
+        ),
+        "bars_source": direction_bars_audit.get("source", "unavailable"),
+        "bars_reason": direction_bars_audit.get("reason", "not_evaluated"),
+        "latest_daily_date": direction_bars_audit.get("latest_daily_date"),
+        "stock_bar_coverage": {
+            "requested_stock_count": direction_bars_audit.get(
+                "requested_stock_count", len(direction_shadow_stocks)
+            ),
+            "usable_stock_count": direction_bars_audit.get(
+                "usable_stock_count", 0
+            ),
+            "requested_relation_count": direction_bars_audit.get(
+                "requested_relation_count", len(direction_shadow_stocks)
+            ),
+            "usable_relation_count": direction_bars_audit.get(
+                "usable_relation_count", 0
+            ),
+            "coverage_ratio": direction_bars_audit.get("coverage_ratio", 0.0),
+            "minimum_bars": direction_bars_audit.get("minimum_bars", 5),
+        },
+        "disclaimer": "No broker connection and no live order instruction.",
+    }
+    if direction_bars_audit.get("error"):
+        result["direction_shadow_runtime_audit"]["bars_error"] = (
+            direction_bars_audit["error"]
+        )
+
     # Embed stock info stats into bridge result for reporting
-    bridge_result["stock_info_sources"] = dict(_stock_info_stats)
+    bridge_result["stock_info_sources"] = dict(legacy_stock_info_stats)
 
     # Save complete candidate lists for export_top30_candidates.py
     result["trend_top_stocks"] = trend_stocks[:10]  # Top10 for display
@@ -1532,11 +2025,13 @@ def run_pipeline(
     result["data_source"] = {
         "constituent_sources": dict(source_summary),
         "quant_score_sources": quant_sources,
-        "fund_flow_source": getattr(compute_quant_scores, "_last_fund_flow_source", "fund_flow_neutral"),
-        "stock_info_sources": dict(_stock_info_stats),
+        "fund_flow_source": legacy_fund_flow_source,
+        "stock_info_sources": dict(legacy_stock_info_stats),
         "market_data_service_reachable": market_data_service_reachable,
         "api_fast_path": "http_enabled" if market_data_service_reachable else "api_unavailable_fast_path",
         "sector_input_source": bridge_result.get("sector_input_source", "legacy_sector_scores"),
+        "candidate_chain": candidate_chain,
+        "formal_candidate_status": formal_candidate_selection["status"],
         "has_unavailable_sectors": source_summary.get("unavailable", 0) > 0,
         "has_emergency_fallback": source_summary.get("local_emergency_mapping", 0) > 0,
     }
@@ -1563,12 +2058,26 @@ def run_pipeline(
         "report_type": "unified_pipeline",
         "version": "0.1.0",
         "as_of_date": actual_date,
+        "score_as_of_date": result["score_as_of_date"],
         "generated_at": result["generated_at"],
         "mode": mode,
         "trend_top_stocks": result["trend_top_stocks"],
         "burst_top_stocks": result["burst_top_stocks"],
+        "active_top_stocks": result["active_top_stocks"],
+        "active_candidates_all": result["active_candidates_all"],
+        "formal_candidate_selection": result["formal_candidate_selection"],
+        "candidate_chain": result["candidate_chain"],
         "trend_candidates_all": result["trend_candidates_all"],
         "burst_candidates_all": result["burst_candidates_all"],
+        "direction_shadow_candidates_all": result[
+            "direction_shadow_candidates_all"
+        ],
+        "direction_linkage_v2_selection_shadow": result[
+            "direction_linkage_v2_selection_shadow"
+        ],
+        "direction_shadow_runtime_audit": result[
+            "direction_shadow_runtime_audit"
+        ],
         "bridge_summary": {
             "trend_sectors": [
                 {"name": s["sector_name"], "trend_score": s["trend_score"],
@@ -1581,8 +2090,21 @@ def run_pipeline(
                 for s in bridge_result.get("burst_sectors", [])
             ],
             "cross_sectors": bridge_result.get("cross_sectors", []),
+            "score_as_of_date": result["score_as_of_date"],
             "api_status": bridge_result.get("api_status", {}),
             "constituent_source_summary": bridge_result.get("constituent_source_summary", {}),
+        },
+        "linkage_research": {
+            "mode": "paper_shadow_research_only",
+            "bridge": bridge_result.get("linkage_research", {}),
+            "history": result.get("linkage_v2_history", {}),
+            "sector_cluster_map": result.get("sector_cluster_map", {}),
+            "direction_summary": _build_direction_linkage_summary(
+                result["direction_shadow_candidates_all"],
+                result["direction_linkage_v2_selection_shadow"],
+                result.get("linkage_v2_history", {}),
+                bridge_result.get("direction_confirmation_sectors", []),
+            ),
         },
         "data_source": result["data_source"],
         "run_health": result["run_health"],
@@ -1591,6 +2113,11 @@ def run_pipeline(
             "quant_source": trend_stocks[0].get("quant_source", "fallback") if trend_stocks else "fallback",
             "weights": {"quant": WEIGHT_QUANT, "relevance": WEIGHT_RELEVANCE},
             "min_relevance": min_relevance,
+            "active_candidate_ranking": (
+                "linkage_selection_score"
+                if candidate_chain == "direction_linkage_v2"
+                else "final_score"
+            ),
         },
         "warnings": result["warnings"],
         "disclaimer": "本报告仅用于板块研究和选股参考，不作为操作依据。",
@@ -1659,6 +2186,24 @@ def main():
     parser.add_argument("--min-relevance", type=float, default=DEFAULT_MIN_RELEVANCE, help="最小关联度")
     parser.add_argument("--output", type=str, default=None, help="输出目录")
     parser.add_argument("--mode", type=str, choices=["quick", "deep"], default="quick", help="运行模式")
+    parser.add_argument(
+        "--sector-history-root",
+        type=str,
+        default=None,
+        help="Explicit sector history root for linkage V2 shadow",
+    )
+    parser.add_argument(
+        "--sector-cluster-map",
+        type=str,
+        default=None,
+        help="Strict paper/shadow sector cluster map JSON",
+    )
+    parser.add_argument(
+        "--candidate-chain",
+        choices=["legacy", "direction_linkage_v2"],
+        default="direction_linkage_v2",
+        help="Active paper-research candidate chain",
+    )
     args = parser.parse_args()
 
     result = run_pipeline(
@@ -1668,6 +2213,9 @@ def main():
         min_relevance=args.min_relevance,
         output_dir=args.output,
         mode=args.mode,
+        sector_history_root=args.sector_history_root,
+        sector_cluster_map_path=args.sector_cluster_map,
+        candidate_chain=args.candidate_chain,
     )
 
     sys.exit(0 if result["status"] == "ok" else 1)
@@ -1677,4 +2225,3 @@ if __name__ == "__main__":
     from multiprocessing import freeze_support
     freeze_support()
     main()
-

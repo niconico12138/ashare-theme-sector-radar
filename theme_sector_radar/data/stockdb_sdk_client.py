@@ -9,12 +9,11 @@ stale or unavailable.
 from __future__ import annotations
 
 import importlib.util
-import sys
 import os
+import sys
 from pathlib import Path
 from typing import Any, Iterable, Optional
 
-DEFAULT_STOCKDB_SDK_PATH = Path(os.environ.get("STOCKDB_SDK_PATH", ""))
 DEFAULT_PROBE_CODES = ("600519", "600633", "000001")
 DEFAULT_BAR_FIELDS = (
     "date",
@@ -38,35 +37,24 @@ class StockDBSdkClient:
         self,
         host: str = "127.0.0.1",
         port: int = 7899,
-        sdk_path: Path | str = DEFAULT_STOCKDB_SDK_PATH,
+        sdk_path: Path | str | None = None,
         sdk_client: Any = None,
     ):
         if sdk_client is not None:
             self._client = sdk_client
             return
 
-        resolved_sdk_path = Path(sdk_path)
+        resolved_sdk_path = _resolve_stockdb_sdk_path(sdk_path)
         if str(resolved_sdk_path) not in sys.path:
             sys.path.insert(0, str(resolved_sdk_path))
 
         sdk_file = resolved_sdk_path / "stock_sdk.py"
-        if sdk_file.exists():
-            spec = importlib.util.spec_from_file_location("desktop_stockdb_stock_sdk", sdk_file)
-            if spec is None or spec.loader is None:
-                raise ImportError(f"Unable to load StockDB SDK from {sdk_file}")
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
-            stockdb_client_cls = module.StockDBClient
-        else:
-            try:
-                from stock_sdk import StockDBClient as stockdb_client_cls
-            except ImportError as e:
-                # 处理 typing import 错误
-                if "override" in str(e):
-                    raise ImportError(
-                        f"StockDB SDK requires Python 3.12+ or typing_extensions: {e}"
-                    )
-                raise
+        spec = importlib.util.spec_from_file_location("desktop_stockdb_stock_sdk", sdk_file)
+        if spec is None or spec.loader is None:
+            raise ImportError(f"Unable to load StockDB SDK from {sdk_file}")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        stockdb_client_cls = module.StockDBClient
 
         self._client = stockdb_client_cls(host=host, port=port)
 
@@ -181,8 +169,36 @@ def _field_list(fields: Iterable[str] | str) -> list[str]:
     return [str(field).strip() for field in fields if str(field).strip()]
 
 
+def _resolve_stockdb_sdk_path(sdk_path: Path | str | None) -> Path:
+    candidates: list[Path] = []
+    if sdk_path is not None and str(sdk_path).strip():
+        candidates.append(Path(sdk_path).expanduser())
+
+    env_path = os.environ.get("STOCKDB_SDK_PATH", "").strip()
+    if env_path:
+        candidates.append(Path(env_path).expanduser())
+
+    candidates.append(Path.home() / "Desktop" / "stockdb" / "pybao")
+
+    checked: list[str] = []
+    for candidate in candidates:
+        resolved = candidate.resolve()
+        if str(resolved) in checked:
+            continue
+        checked.append(str(resolved))
+        if (resolved / "stock_sdk.py").is_file() and (
+            resolved / "stockdb.pyd"
+        ).is_file():
+            return resolved
+
+    locations = ", ".join(checked) or "<none>"
+    raise ImportError(
+        "StockDB desktop SDK requires both stock_sdk.py and stockdb.pyd; "
+        f"checked: {locations}"
+    )
+
+
 def _normalize_date(value: Any) -> str | None:
     if value is None or value == "":
         return None
     return str(value).strip().replace("-", "")[:8]
-

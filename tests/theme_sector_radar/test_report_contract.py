@@ -7,6 +7,7 @@
 import json
 
 import pytest
+import theme_sector_radar.reports.json_report as json_report_module
 
 from theme_sector_radar.models import (
     FocusLevel,
@@ -15,7 +16,7 @@ from theme_sector_radar.models import (
     SectorScore,
     SectorType,
 )
-from theme_sector_radar.reports.json_report import generate_json_report
+from theme_sector_radar.reports.json_report import generate_json_report, save_json_report
 from theme_sector_radar.reports.markdown_report import generate_markdown_report
 
 
@@ -39,6 +40,8 @@ class TestJsonReport:
                 positive_score=90.0,
                 risk_penalty=-5.0,
                 focus_level=FocusLevel.FOCUS,
+                turnover=12_345_000_000,
+                main_net_inflow=678_000_000,
             ),
         ]
 
@@ -132,6 +135,91 @@ class TestJsonReport:
         assert "不作为个股操作依据" in report["disclaimer"]
         assert "自动交易指令" in report["disclaimer"]
 
+    def test_json_report_preserves_market_activity_for_sector_scoring(self):
+        market_temp, industry_top, concept_top, overlap = self._create_report_data()
+
+        report = generate_json_report(
+            as_of_date="2026-06-28",
+            market_temperature=market_temp,
+            industry_top=industry_top,
+            concept_top=concept_top,
+            overlap=overlap,
+        )
+
+        row = report["industry_top"][0]
+        assert row["turnover"] == 12_345_000_000
+        assert row["main_net_inflow"] == 678_000_000
+
+    def test_json_report_preserves_explicit_rank_semantics(self):
+        market_temp, industry_top, concept_top, overlap = self._create_report_data()
+        industry_top[0].current_rank = 1
+        industry_top[0].rank_tied = True
+        industry_top[0].rank_tie_count = 2
+
+        report = generate_json_report(
+            as_of_date="2026-06-28",
+            market_temperature=market_temp,
+            industry_top=industry_top,
+            concept_top=concept_top,
+            overlap=overlap,
+        )
+
+        row = report["industry_top"][0]
+        assert row["current_rank"] == 1
+        assert row["rank_tied"] is True
+        assert row["rank_tie_count"] == 2
+
+    def test_json_report_preserves_three_layer_shadow_breakdown(self):
+        market_temp, industry_top, concept_top, overlap = self._create_report_data()
+        shadow = {
+            "mode": "paper_shadow_research_only",
+            "time_series": {"score": 71.0, "status": "ok"},
+            "cross_section": {"score": 68.0, "status": "ok"},
+            "rank_momentum": {"score": 64.0, "status": "ok"},
+            "direction_score_shadow": 68.7,
+            "direction_state": "watch",
+        }
+        industry_top[0].score_breakdown = {"three_layer_shadow": shadow}
+
+        report = generate_json_report(
+            as_of_date="2026-06-28",
+            market_temperature=market_temp,
+            industry_top=industry_top,
+            concept_top=concept_top,
+            overlap=overlap,
+        )
+        serialized = json.loads(json.dumps(report, allow_nan=False))
+
+        assert serialized["industry_top"][0]["score_breakdown"][
+            "three_layer_shadow"
+        ] == shadow
+
+    def test_save_json_report_rejects_non_finite_values_without_partial_file(
+        self, tmp_path
+    ):
+        output_path = tmp_path / "report.json"
+
+        with pytest.raises(ValueError, match="Out of range float values"):
+            save_json_report({"nested": {"score": float("nan")}}, str(output_path))
+
+        assert not output_path.exists()
+
+    def test_save_json_report_preserves_existing_file_when_atomic_replace_fails(
+        self, tmp_path, monkeypatch
+    ):
+        output_path = tmp_path / "report.json"
+        output_path.write_text('{"status":"previous"}', encoding="utf-8")
+
+        def fail_replace(source, destination):
+            raise OSError("synthetic replace failure")
+
+        monkeypatch.setattr(json_report_module.os, "replace", fail_replace)
+        with pytest.raises(OSError, match="synthetic replace failure"):
+            save_json_report({"status": "new"}, str(output_path))
+
+        assert output_path.read_text(encoding="utf-8") == '{"status":"previous"}'
+        assert list(tmp_path.iterdir()) == [output_path]
+
 
 class TestMarkdownReport:
     """测试 Markdown 报告"""
@@ -203,6 +291,35 @@ class TestMarkdownReport:
 
         for section in required_sections:
             assert section in report, f"Missing section: {section}"
+
+    def test_markdown_uses_explicit_competition_ranks_and_concept_rows(self):
+        market_temp, industry_top, concept_top, overlap = self._create_report_data()
+        industry_top[0].current_rank = 1
+        industry_top.append(
+            SectorScore(
+                sector_id="BK9999",
+                name="并列行业",
+                type=SectorType.INDUSTRY,
+                score=85.0,
+                current_rank=1,
+                rank_tied=True,
+                rank_tie_count=2,
+            )
+        )
+        concept_top[0].current_rank = 1
+
+        report = generate_markdown_report(
+            as_of_date="2026-06-28",
+            market_temperature=market_temp,
+            industry_top=industry_top,
+            concept_top=concept_top,
+            overlap=overlap,
+        )
+
+        assert "| 1 | 半导体 |" in report
+        assert "| 1 | 并列行业 |" in report
+        assert "| 2 | 并列行业 |" not in report
+        assert "| 1 | ChatGPT概念 |" in report
 
     def test_markdown_report_disclaimer(self):
         """测试 Markdown 报告声明"""

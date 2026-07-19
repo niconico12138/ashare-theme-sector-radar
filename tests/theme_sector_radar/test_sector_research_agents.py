@@ -196,6 +196,22 @@ class TestRiskControlAgent:
         )
         assert "data_warning_present" in result["risk_flags"]
 
+    def test_partial_history_is_a_soft_risk_flag(self):
+        agent = RiskControlAgent()
+        result = agent.analyze(
+            sector_name="测试板块",
+            sector_type="industry",
+            score_data={
+                "risk_penalty": 2.0,
+                "trend_window_status": "partial_history",
+                "data_warnings": [],
+            },
+        )
+
+        assert "history_partial" in result["risk_flags"]
+        assert "history_unreliable" not in result["risk_flags"]
+        assert result["vote"] == "neutral"
+
 
 class TestDataQualityAgent:
     """测试数据质量智能体"""
@@ -241,6 +257,23 @@ class TestDataQualityAgent:
         )
         assert result["data_quality_label"] == "data_unreliable"
         assert result["data_quality_score"] == 0.2
+
+    def test_partial_history_is_limited_but_usable_for_research(self):
+        agent = DataQualityAgent()
+        result = agent.analyze(
+            sector_name="测试板块",
+            sector_type="industry",
+            score_data={
+                "history_coverage_ratio": 0.5,
+                "trend_window_status": "partial_history",
+                "actual_history_days": 10,
+            },
+        )
+
+        assert result["data_quality_label"] == "data_limited"
+        assert result["data_quality_score"] == 0.5
+        assert result["vote"] == "neutral"
+        assert any("部分覆盖" in warning for warning in result["data_quality_warnings"])
 
 
 class TestNarrativeAgent:

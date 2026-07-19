@@ -18,12 +18,16 @@
   - 资金流: 东方财富（降级: 新浪 / 中性值）
 """
 
+import hashlib
 import json
 import logging
+import math
 import os
 import re
+import stat
 import sys
 import time
+import io
 
 # ---- Windows console encoding fix ----
 if sys.stdout.encoding and sys.stdout.encoding.lower() in ("gbk", "cp936", "cp1252"):
@@ -31,6 +35,19 @@ if sys.stdout.encoding and sys.stdout.encoding.lower() in ("gbk", "cp936", "cp12
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+
+from theme_sector_radar.reporting.sector_score_contract import (
+    validate_sector_score_payload,
+)
+from theme_sector_radar.reporting.strict_json import (
+    load_strict_json_with_sha256,
+    loads_strict_json,
+)
+from theme_sector_radar.scoring.stock_sector_linkage import (
+    build_constituent_linkage_input_contract,
+    effective_legacy_linkage_policy_contract,
+    legacy_linkage_policy_contract,
+)
 
 # ============================================================
 # 代理环境变量清理（避免 Clash Verge 干扰）
@@ -60,12 +77,32 @@ logger = logging.getLogger(__name__)
 # ============================================================
 
 PROJECT_ROOT = Path(__file__).resolve().parent
-SCORES_DIR = PROJECT_ROOT / "reports" / "sector_scores"
-CACHE_DIR = PROJECT_ROOT / "data_cache" / "sector_stocks"
+REPORT_ROOT_ENV = "THEME_SECTOR_RADAR_REPORT_ROOT"
+SCORE_PAYLOAD_STDIN_ENV = "THEME_SECTOR_RADAR_SCORE_PAYLOAD_STDIN"
+SCORE_PAYLOAD_AS_OF_ENV = "THEME_SECTOR_RADAR_SCORE_PAYLOAD_AS_OF"
+_REPORT_ROOT_OVERRIDE = (
+    os.environ.get(REPORT_ROOT_ENV) if REPORT_ROOT_ENV in os.environ else None
+)
+REPORT_ROOT = (
+    Path(_REPORT_ROOT_OVERRIDE).expanduser().resolve()
+    if _REPORT_ROOT_OVERRIDE is not None and _REPORT_ROOT_OVERRIDE.strip()
+    else (
+        PROJECT_ROOT / "reports"
+        if _REPORT_ROOT_OVERRIDE is None
+        else PROJECT_ROOT / ".invalid_explicit_report_root"
+    )
+)
+SCORES_DIR = REPORT_ROOT / "sector_scores"
+CACHE_DIR = (
+    REPORT_ROOT / ".cache" / "sector_stocks"
+    if _REPORT_ROOT_OVERRIDE is not None
+    else PROJECT_ROOT / "data_cache" / "sector_stocks"
+)
 
 # Phase 22: stable data directories
-STABLE_RESEARCH_DIR = PROJECT_ROOT / "reports" / "full90" / "sector_research"
-STABLE_CONCEPT_DIR = PROJECT_ROOT / "reports" / "full_concept" / "unified_rank"
+STABLE_RESEARCH_DIR = REPORT_ROOT / "full90" / "sector_research"
+STABLE_CONCEPT_DIR = REPORT_ROOT / "full_concept" / "unified_rank"
+DIRECTION_SHADOW_DIR = REPORT_ROOT / "paper_shadow"
 
 # 关联度权重
 W_WEIGHT = 0.2
@@ -338,33 +375,84 @@ def find_latest_report(as_of_date: Optional[str] = None) -> Tuple[Optional[str],
     Returns:
         (as_of_date, report_path) 或 (None, None)
     """
-    if as_of_date:
-        report_path = SCORES_DIR / as_of_date / "sector_scores.json"
-        if report_path.exists():
-            return as_of_date, report_path
-        # 尝试 fallback 到最新可用日期
-        print(f"  ⚠️ 指定日期 {as_of_date} 无报告，尝试 fallback...")
-
-    # 自动查找最新
-    if not SCORES_DIR.exists():
+    if as_of_date is not None and not _is_valid_iso_date(as_of_date):
         return None, None
 
-    date_dirs = sorted(
-        [d for d in SCORES_DIR.iterdir() if d.is_dir() and re.match(r"\d{4}-\d{2}-\d{2}", d.name)],
-        reverse=True,
-    )
-    for d in date_dirs:
-        report_path = d / "sector_scores.json"
-        if report_path.exists():
-            return d.name, report_path
+    if _REPORT_ROOT_OVERRIDE is not None:
+        if not _REPORT_ROOT_OVERRIDE.strip():
+            return None, None
+        if as_of_date is None:
+            return None, None
+        try:
+            report_root = Path(_REPORT_ROOT_OVERRIDE).expanduser().resolve(strict=True)
+            if not report_root.is_dir():
+                return None, None
+            expected_score_root = report_root / "sector_scores"
+            score_root = expected_score_root.resolve(strict=True)
+            if score_root != expected_score_root:
+                return None, None
+            report_path = (score_root / as_of_date / "sector_scores.json").resolve()
+            report_path.relative_to(score_root)
+        except (OSError, RuntimeError, ValueError):
+            return None, None
+
+        if report_path.is_file():
+            return as_of_date, report_path
+        return None, None
+
+    candidates = _default_score_report_candidates(as_of_date)
+    if candidates:
+        return candidates[0]
 
     return None, None
 
 
+def _default_score_report_candidates(
+    as_of_date: Optional[str],
+) -> List[Tuple[str, Path]]:
+    """Return exact-only or descending historical candidates for default roots."""
+    if as_of_date is not None and not _is_valid_iso_date(as_of_date):
+        return []
+    if as_of_date:
+        exact_path = SCORES_DIR / as_of_date / "sector_scores.json"
+        if exact_path.exists():
+            return [(as_of_date, exact_path)]
+        print(f"  ⚠️ 指定日期 {as_of_date} 无报告，尝试 fallback...")
+    if not SCORES_DIR.exists():
+        return []
+    candidates = []
+    for date_dir in sorted(
+        (
+            path
+            for path in SCORES_DIR.iterdir()
+            if path.is_dir()
+            and _is_valid_iso_date(path.name)
+            and (as_of_date is None or path.name <= as_of_date)
+        ),
+        reverse=True,
+    ):
+        report_path = date_dir / "sector_scores.json"
+        if report_path.exists():
+            candidates.append((date_dir.name, report_path))
+    return candidates
+
+
 def load_sector_scores(report_path: Path) -> Dict[str, Any]:
     """加载板块评分报告，返回原始 JSON 数据"""
-    with open(report_path, "r", encoding="utf-8") as f:
-        return json.load(f)
+    if _REPORT_ROOT_OVERRIDE is not None:
+        text = _read_override_confined_text(report_path, encoding="utf-8-sig")
+        if text is None:
+            raise OSError(f"显式报告路径不安全或不可读: {report_path}")
+        data = loads_strict_json(text, context=str(report_path))
+        if not isinstance(data, dict):
+            raise ValueError("sector_scores payload must be an object")
+        return data
+    data = loads_strict_json(
+        report_path.read_text(encoding="utf-8-sig"), context=str(report_path)
+    )
+    if not isinstance(data, dict):
+        raise ValueError("sector_scores payload must be an object")
+    return data
 
 
 def extract_top_sectors(
@@ -413,7 +501,236 @@ def extract_top_sectors(
 # Phase 22: stable sector input loaders
 # ============================================================
 
-def load_stable_sector_inputs(as_of_date: str) -> Dict[str, Any]:
+def _override_confinement_root(confined_root: Optional[Path]) -> Tuple[Path, Path]:
+    report_root = Path(_REPORT_ROOT_OVERRIDE).expanduser().resolve(strict=True)
+    if confined_root is None:
+        return report_root, report_root
+    expected_root = Path(os.path.abspath(os.path.expanduser(str(confined_root))))
+    expected_root.relative_to(report_root)
+    return report_root, expected_root
+
+
+def _resolve_override_confined_path(
+    path: Path,
+    *,
+    confined_root: Optional[Path] = None,
+) -> Optional[Path]:
+    """Resolve a path only when it remains inside its explicit input subtree."""
+    if _REPORT_ROOT_OVERRIDE is None:
+        return path
+    if not _REPORT_ROOT_OVERRIDE.strip():
+        return None
+    try:
+        _report_root, expected_root = _override_confinement_root(confined_root)
+        resolved = path.expanduser().resolve()
+        resolved.relative_to(expected_root)
+    except (OSError, RuntimeError, ValueError):
+        return None
+    return resolved
+
+
+def _read_override_confined_text(
+    path: Path,
+    *,
+    encoding: str,
+    confined_root: Optional[Path] = None,
+) -> Optional[str]:
+    """Open first, then prove the opened file still belongs to the explicit root."""
+    if _REPORT_ROOT_OVERRIDE is None:
+        try:
+            return path.read_text(encoding=encoding)
+        except (OSError, UnicodeError):
+            return None
+
+    try:
+        expected_report_root, expected_root = _override_confinement_root(
+            confined_root
+        )
+        resolved = _resolve_override_confined_path(
+            path, confined_root=confined_root
+        )
+        if resolved is None:
+            return None
+        fd = os.open(
+            resolved,
+            os.O_RDONLY
+            | getattr(os, "O_BINARY", 0)
+            | getattr(os, "O_NONBLOCK", 0),
+        )
+    except (OSError, RuntimeError, ValueError):
+        return None
+
+    try:
+        current_root = Path(_REPORT_ROOT_OVERRIDE).expanduser().resolve(strict=True)
+        current_path = path.expanduser().resolve(strict=True)
+        if current_root != expected_report_root or current_path != resolved:
+            return None
+        current_path.relative_to(expected_root)
+        opened_stat = os.fstat(fd)
+        if not stat.S_ISREG(opened_stat.st_mode):
+            return None
+        if not os.path.samestat(opened_stat, os.stat(current_path)):
+            return None
+        with os.fdopen(fd, "rb", closefd=False) as handle:
+            return handle.read().decode(encoding)
+    except (OSError, RuntimeError, UnicodeError, ValueError):
+        return None
+    finally:
+        os.close(fd)
+
+
+def validate_explicit_score_report(
+    as_of_date: Optional[str],
+) -> Tuple[bool, Optional[Tuple[str, Path, Dict[str, Any]]], Optional[str]]:
+    """Load and validate the resolved score report before any network work."""
+    if os.environ.get(SCORE_PAYLOAD_STDIN_ENV) == "1":
+        try:
+            if (
+                as_of_date is None
+                or re.fullmatch(r"\d{4}-\d{2}-\d{2}", as_of_date) is None
+                or datetime.strptime(as_of_date, "%Y-%m-%d").strftime("%Y-%m-%d")
+                != as_of_date
+            ):
+                raise ValueError(f"无效分析日期: {as_of_date}")
+            payload_date = os.environ.get(SCORE_PAYLOAD_AS_OF_ENV) or as_of_date
+            if (
+                re.fullmatch(r"\d{4}-\d{2}-\d{2}", payload_date) is None
+                or datetime.strptime(payload_date, "%Y-%m-%d").strftime("%Y-%m-%d")
+                != payload_date
+                or payload_date > as_of_date
+            ):
+                raise ValueError(f"无效父进程评分日期: {payload_date}")
+            if _REPORT_ROOT_OVERRIDE is None:
+                score_root = Path(SCORES_DIR).expanduser().resolve()
+            else:
+                if not _REPORT_ROOT_OVERRIDE.strip():
+                    raise OSError("显式报告根不能为空")
+                report_root = Path(_REPORT_ROOT_OVERRIDE).expanduser().resolve(strict=True)
+                if not report_root.is_dir():
+                    raise OSError(f"显式报告根不存在: {report_root}")
+                expected_score_root = report_root / "sector_scores"
+                score_root = expected_score_root.resolve(strict=True)
+                if score_root != expected_score_root:
+                    raise OSError("显式报告根的 sector_scores 不是精确子目录")
+            report_path = score_root / payload_date / "sector_scores.json"
+            report_path.relative_to(score_root)
+            data = loads_strict_json(
+                sys.stdin.read(), context="parent-validated sector_scores stdin"
+            )
+            validate_sector_score_payload(data, expected_as_of=payload_date)
+        except (
+            OSError,
+            RuntimeError,
+            UnicodeError,
+            ValueError,
+            json.JSONDecodeError,
+        ) as exc:
+            return False, None, f"父进程传递的 sector_scores JSON 无效: {exc}"
+        return True, (payload_date, report_path, data), None
+
+    if _REPORT_ROOT_OVERRIDE is None:
+        candidates = _default_score_report_candidates(as_of_date)
+        if not candidates:
+            return False, None, f"找不到板块评分报告 (请求日期: {as_of_date})"
+        last_error: Exception | None = None
+        for actual_date, report_path in candidates:
+            try:
+                data = load_sector_scores(report_path)
+                validate_sector_score_payload(data, expected_as_of=actual_date)
+            except (OSError, UnicodeError, ValueError, json.JSONDecodeError) as exc:
+                last_error = exc
+                continue
+            return True, (actual_date, report_path, data), None
+        return False, None, f"sector_scores JSON 无效: {last_error}"
+    if not _REPORT_ROOT_OVERRIDE.strip():
+        return False, None, "显式报告根不能为空"
+
+    actual_date, report_path = find_latest_report(as_of_date)
+    if actual_date is None or report_path is None:
+        return False, None, f"找不到显式报告根中的板块评分报告 (请求日期: {as_of_date})"
+    try:
+        data = load_sector_scores(report_path)
+        validate_sector_score_payload(data, expected_as_of=actual_date)
+    except (OSError, UnicodeError, ValueError, json.JSONDecodeError) as exc:
+        return False, None, f"显式报告根的 sector_scores JSON 无效: {exc}"
+    return True, (actual_date, report_path, data), None
+
+
+def _stable_text(value: Any, field: str, *, allow_empty: bool = False) -> str:
+    if not isinstance(value, str):
+        raise ValueError(f"{field} must be text")
+    normalized = value.strip()
+    if not allow_empty and not normalized:
+        raise ValueError(f"{field} must not be empty")
+    return normalized
+
+
+def _is_valid_iso_date(value: Any) -> bool:
+    if not isinstance(value, str) or re.fullmatch(r"\d{4}-\d{2}-\d{2}", value) is None:
+        return False
+    try:
+        parsed = datetime.strptime(value, "%Y-%m-%d")
+    except ValueError:
+        return False
+    return parsed.strftime("%Y-%m-%d") == value
+
+
+def _stable_finite_number(
+    value: Any,
+    field: str,
+    *,
+    allow_text: bool = False,
+) -> float:
+    if value is None or value == "":
+        value = 0
+    if isinstance(value, bool):
+        raise ValueError(f"{field} must be a finite number")
+    if isinstance(value, str):
+        if not allow_text:
+            raise ValueError(f"{field} must be a finite number")
+        value = value.strip() or "0"
+    elif not isinstance(value, (int, float)):
+        raise ValueError(f"{field} must be a finite number")
+    try:
+        number = float(value)
+    except (OverflowError, TypeError, ValueError) as exc:
+        raise ValueError(f"{field} must be a finite number") from exc
+    if not math.isfinite(number):
+        raise ValueError(f"{field} must be a finite number")
+    return number
+
+
+def _stable_required_finite_number(
+    value: Any,
+    field: str,
+    *,
+    allow_text: bool = False,
+) -> float:
+    if value is None or value == "":
+        raise ValueError(f"{field} must be a finite number")
+    return _stable_finite_number(value, field, allow_text=allow_text)
+
+
+def _stable_nonnegative_int(value: Any, field: str) -> int:
+    if value is None or value == "":
+        return 0
+    if isinstance(value, bool):
+        raise ValueError(f"{field} must be a nonnegative integer")
+    if isinstance(value, int):
+        number = value
+    elif isinstance(value, str) and re.fullmatch(r"[+]?[0-9]+", value.strip()):
+        number = int(value.strip())
+    else:
+        raise ValueError(f"{field} must be a nonnegative integer")
+    if number < 0:
+        raise ValueError(f"{field} must be a nonnegative integer")
+    return number
+
+
+def load_stable_sector_inputs(
+    as_of_date: str,
+    score_data: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
     """Load sector inputs from stable production outputs (full90/full_concept).
 
     Returns a dict with keys:
@@ -436,13 +753,56 @@ def load_stable_sector_inputs(as_of_date: str) -> Dict[str, Any]:
     }
 
     # --- Load industry from sector_research.json ---
-    industry_path = STABLE_RESEARCH_DIR / as_of_date / "sector_research.json"
+    industry_path = _resolve_override_confined_path(
+        STABLE_RESEARCH_DIR / as_of_date / "sector_research.json",
+        confined_root=STABLE_RESEARCH_DIR,
+    )
     # Also load trend/burst scores and level labels from sector_scores.json for industries
     _industry_score_map = {}
-    _scores_path = PROJECT_ROOT / "reports" / "sector_scores" / as_of_date / "sector_scores.json"
-    if _scores_path.exists():
+    _scores_path = _resolve_override_confined_path(
+        SCORES_DIR / as_of_date / "sector_scores.json",
+        confined_root=SCORES_DIR,
+    )
+    if score_data is not None:
+        _scores_data = score_data
+        for _s in _scores_data.get("scores", []):
+            if _s.get("sector_type") == "industry":
+                _industry_score_map[_s["sector_name"]] = {
+                    "trend_score": _stable_finite_number(
+                        _s.get("trend_continuation_score", 0),
+                        "trend_continuation_score",
+                    ),
+                    "burst_score": _stable_finite_number(
+                        _s.get("short_term_burst_score", 0),
+                        "short_term_burst_score",
+                    ),
+                    "trend_level": _stable_text(
+                        _s.get("trend_level", ""), "trend_level", allow_empty=True
+                    ),
+                    "trend_level_cn": _stable_text(
+                        _s.get("trend_level_cn", ""),
+                        "trend_level_cn",
+                        allow_empty=True,
+                    ),
+                    "burst_level": _stable_text(
+                        _s.get("burst_level", ""), "burst_level", allow_empty=True
+                    ),
+                    "burst_level_cn": _stable_text(
+                        _s.get("burst_level_cn", ""),
+                        "burst_level_cn",
+                        allow_empty=True,
+                    ),
+                }
+    elif _scores_path is not None:
         try:
-            _scores_data = json.loads(_scores_path.read_text(encoding="utf-8"))
+            _scores_text = _read_override_confined_text(
+                _scores_path, encoding="utf-8-sig", confined_root=SCORES_DIR
+            )
+            if _scores_text is None:
+                raise OSError("score input escaped explicit report root")
+            _scores_data = loads_strict_json(
+                _scores_text, context=str(_scores_path)
+            )
             for _s in _scores_data.get("scores", []):
                 if _s.get("sector_type") == "industry":
                     _industry_score_map[_s["sector_name"]] = {
@@ -456,49 +816,159 @@ def load_stable_sector_inputs(as_of_date: str) -> Dict[str, Any]:
         except Exception:
             pass
 
-    if industry_path.exists():
+    if industry_path is not None:
         try:
-            data = json.loads(industry_path.read_text(encoding="utf-8"))
-            for item in data.get("research_results", []):
-                if item.get("sector_type") != "industry":
-                    continue
-                _name = item.get("sector_name", "")
+            industry_text = _read_override_confined_text(
+                industry_path,
+                encoding="utf-8-sig",
+                confined_root=STABLE_RESEARCH_DIR,
+            )
+            if industry_text is None:
+                raise OSError("industry input escaped explicit report root")
+            data = loads_strict_json(industry_text, context=str(industry_path))
+            if not isinstance(data, dict) or not isinstance(
+                data.get("research_results"), list
+            ):
+                raise ValueError("industry research_results must be a list")
+            if data.get("as_of_date") != as_of_date:
+                raise ValueError("industry as_of_date mismatch")
+            if data.get("sector_type") != "industry":
+                raise ValueError("industry top-level sector_type mismatch")
+            if data.get("report_type") != "sector_research":
+                raise ValueError("industry report_type mismatch")
+            parsed_industries = []
+            for item in data["research_results"]:
+                if not isinstance(item, dict):
+                    raise ValueError("industry row must be an object")
+                required_fields = {
+                    "sector_name",
+                    "sector_type",
+                    "consensus_label",
+                    "ranking_score",
+                    "opportunity_score",
+                    "evidence_score",
+                    "confidence_score",
+                }
+                if not required_fields.issubset(item):
+                    raise ValueError("industry row missing required fields")
+                _name = _stable_text(item.get("sector_name"), "sector_name")
+                _sector_type = _stable_text(
+                    item.get("sector_type"), "sector_type"
+                )
+                if _sector_type != "industry":
+                    raise ValueError("industry row sector_type mismatch")
                 _scores = _industry_score_map.get(_name, {})
-                result["industries"].append({
+                parsed_industries.append({
                     "sector_name": _name,
                     "sector_type": "industry",
-                    "ranking_score": item.get("ranking_score", 0),
-                    "opportunity_score": item.get("opportunity_score", 0),
-                    "evidence_score": item.get("evidence_score", 0),
-                    "confidence_score": item.get("confidence_score", 0),
-                    "trend_score": _scores.get("trend_score", 0),
-                    "burst_score": _scores.get("burst_score", 0),
-                    "trend_level": _scores.get("trend_level", ""),
-                    "trend_level_cn": _scores.get("trend_level_cn", ""),
-                    "burst_level": _scores.get("burst_level", ""),
-                    "burst_level_cn": _scores.get("burst_level_cn", ""),
-                    "agent_label": item.get("consensus_label", ""),
+                    "ranking_score": _stable_required_finite_number(
+                        item.get("ranking_score"), "ranking_score"
+                    ),
+                    "opportunity_score": _stable_required_finite_number(
+                        item.get("opportunity_score"), "opportunity_score"
+                    ),
+                    "evidence_score": _stable_required_finite_number(
+                        item.get("evidence_score"), "evidence_score"
+                    ),
+                    "confidence_score": _stable_required_finite_number(
+                        item.get("confidence_score"), "confidence_score"
+                    ),
+                    "trend_score": _stable_finite_number(
+                        _scores.get("trend_score", 0), "trend_score"
+                    ),
+                    "burst_score": _stable_finite_number(
+                        _scores.get("burst_score", 0), "burst_score"
+                    ),
+                    "trend_level": _stable_text(
+                        _scores.get("trend_level", ""),
+                        "trend_level",
+                        allow_empty=True,
+                    ),
+                    "trend_level_cn": _stable_text(
+                        _scores.get("trend_level_cn", ""),
+                        "trend_level_cn",
+                        allow_empty=True,
+                    ),
+                    "burst_level": _stable_text(
+                        _scores.get("burst_level", ""),
+                        "burst_level",
+                        allow_empty=True,
+                    ),
+                    "burst_level_cn": _stable_text(
+                        _scores.get("burst_level_cn", ""),
+                        "burst_level_cn",
+                        allow_empty=True,
+                    ),
+                    "agent_label": _stable_text(
+                        item.get("consensus_label"),
+                        "consensus_label",
+                    ),
                 })
+            result["industries"] = parsed_industries
         except Exception:
             pass
 
     # --- Load concepts from concept_unified_rank.csv ---
-    concept_path = STABLE_CONCEPT_DIR / as_of_date / "concept_unified_rank.csv"
-    if concept_path.exists():
+    concept_path = _resolve_override_confined_path(
+        STABLE_CONCEPT_DIR / as_of_date / "concept_unified_rank.csv",
+        confined_root=STABLE_CONCEPT_DIR,
+    )
+    if concept_path is not None:
         try:
             import csv
-            with open(concept_path, "r", encoding="utf-8-sig") as f:
-                reader = csv.DictReader(f)
-                for row in reader:
-                    result["concepts"].append({
-                        "sector_name": row.get("sector_name", ""),
-                        "sector_type": "concept",
-                        "composite_score": float(row.get("concept_final_rank_score", 0) or 0),
-                        "trend_score": float(row.get("trend_continuation_score", 0) or 0),
-                        "burst_score": float(row.get("short_term_burst_score", 0) or 0),
-                        "rank": int(row.get("rank", 0) or 0),
-                        "agent_label": row.get("agent_consensus_label", ""),
-                    })
+            concept_text = _read_override_confined_text(
+                concept_path,
+                encoding="utf-8-sig",
+                confined_root=STABLE_CONCEPT_DIR,
+            )
+            if concept_text is None:
+                raise OSError("concept input escaped explicit report root")
+            reader = csv.DictReader(io.StringIO(concept_text))
+            required_columns = {
+                "rank",
+                "sector_name",
+                "concept_final_rank_score",
+                "trend_continuation_score",
+                "short_term_burst_score",
+                "agent_consensus_label",
+            }
+            if reader.fieldnames is None or not required_columns.issubset(
+                reader.fieldnames
+            ):
+                raise ValueError("concept input missing required columns")
+            parsed_concepts = []
+            for row in reader:
+                if not isinstance(row, dict):
+                    raise ValueError("concept row must be an object")
+                if row.get("rank") in (None, ""):
+                    raise ValueError("rank must be a nonnegative integer")
+                parsed_concepts.append({
+                    "sector_name": _stable_text(
+                        row.get("sector_name"), "sector_name"
+                    ),
+                    "sector_type": "concept",
+                    "composite_score": _stable_required_finite_number(
+                        row.get("concept_final_rank_score"),
+                        "concept_final_rank_score",
+                        allow_text=True,
+                    ),
+                    "trend_score": _stable_required_finite_number(
+                        row.get("trend_continuation_score"),
+                        "trend_continuation_score",
+                        allow_text=True,
+                    ),
+                    "burst_score": _stable_required_finite_number(
+                        row.get("short_term_burst_score"),
+                        "short_term_burst_score",
+                        allow_text=True,
+                    ),
+                    "rank": _stable_nonnegative_int(row.get("rank"), "rank"),
+                    "agent_label": _stable_text(
+                        row.get("agent_consensus_label"),
+                        "agent_consensus_label",
+                    ),
+                })
+            result["concepts"] = parsed_concepts
         except Exception:
             pass
 
@@ -542,7 +1012,11 @@ def extract_top_sectors_from_stable(
         trend_sectors.append({
             "sector_name": s["sector_name"],
             "sector_type": s.get("sector_type", "industry"),
-            "trend_score": s.get("trend_score", 0) or s.get("ranking_score", 0),
+            "trend_score": (
+                s.get("trend_score")
+                if s.get("trend_score") is not None
+                else s.get("ranking_score", 0)
+            ),
             "burst_score": s.get("burst_score", 0),
             "trend_level": s.get("trend_level", "") or s.get("agent_label", ""),
             "trend_level_cn": s.get("trend_level_cn", ""),
@@ -559,13 +1033,119 @@ def extract_top_sectors_from_stable(
         burst_sectors.append({
             "sector_name": s["sector_name"],
             "sector_type": s.get("sector_type", "industry"),
-            "trend_score": s.get("trend_score", 0) or s.get("ranking_score", 0),
+            "trend_score": (
+                s.get("trend_score")
+                if s.get("trend_score") is not None
+                else s.get("ranking_score", 0)
+            ),
             "burst_score": s.get("burst_score", 0),
             "burst_level": s.get("burst_level", "") or s.get("agent_label", ""),
             "burst_level_cn": s.get("burst_level_cn", ""),
         })
 
     return trend_sectors, burst_sectors
+
+
+def load_direction_candidate_shadow(
+    as_of_date: str,
+    *,
+    candidate_path: Optional[Path] = None,
+) -> Dict[str, Any]:
+    """Load confirmed direction candidates without affecting legacy inputs."""
+    path = candidate_path or (
+        DIRECTION_SHADOW_DIR
+        / f"industry_direction_{as_of_date}"
+        / "industry_direction_candidates.json"
+    )
+    result: Dict[str, Any] = {
+        "status": "unavailable",
+        "mode": "paper_shadow_research_only",
+        "path": str(path),
+        "sha256": None,
+        "eligible_sectors": [],
+        "confirmation_required": [],
+        "error": None,
+    }
+    if not path.is_file():
+        result["error"] = "direction candidate shadow report is missing"
+        return result
+    try:
+        payload, sha256 = load_strict_json_with_sha256(path)
+        if not isinstance(payload, dict):
+            raise ValueError("direction candidate report must be an object")
+        if payload.get("schema_version") != "industry_direction_candidate_selection.v1":
+            raise ValueError("direction candidate schema_version mismatch")
+        if payload.get("mode") != "paper_shadow_research_only":
+            raise ValueError("direction candidate report must remain paper shadow")
+        if payload.get("as_of_date") != as_of_date:
+            raise ValueError("direction candidate as_of_date mismatch")
+
+        eligible = []
+        seen_names = set()
+        for group_name in ("core_candidates", "supplemental_candidates"):
+            rows = payload.get(group_name)
+            if not isinstance(rows, list):
+                raise ValueError(f"{group_name} must be an array")
+            for row in rows:
+                if not isinstance(row, dict):
+                    raise ValueError(f"{group_name} row must be an object")
+                name = str(row.get("sector_name") or "").strip()
+                if not name or name in seen_names:
+                    raise ValueError("direction candidate sector identity is invalid")
+                seen_names.add(name)
+                eligible.append(
+                    {
+                        "sector_name": name,
+                        "sector_type": "industry",
+                        "trend_score": _stable_required_finite_number(
+                            row.get("time_series_score"), "time_series_score"
+                        ),
+                        "burst_score": _stable_required_finite_number(
+                            row.get("rank_momentum_score"), "rank_momentum_score"
+                        ),
+                        "direction_score_shadow": _stable_required_finite_number(
+                            row.get("direction_score_shadow"),
+                            "direction_score_shadow",
+                        ),
+                        "direction_state": _stable_text(
+                            row.get("direction_state"), "direction_state"
+                        ),
+                        "candidate_tier": (
+                            "core" if group_name == "core_candidates" else "supplemental"
+                        ),
+                    }
+                )
+        confirmation_rows = payload.get("confirmation_required")
+        if not isinstance(confirmation_rows, list):
+            raise ValueError("confirmation_required must be an array")
+        confirmations = []
+        for row in confirmation_rows:
+            if not isinstance(row, dict):
+                raise ValueError("confirmation_required row must be an object")
+            name = str(row.get("sector_name") or "").strip()
+            if not name:
+                raise ValueError("confirmation sector identity is invalid")
+            confirmations.append(
+                {
+                    "sector_name": name,
+                    "direction_score_shadow": _stable_required_finite_number(
+                        row.get("direction_score_shadow"),
+                        "direction_score_shadow",
+                    ),
+                    "direction_state": "pulse_confirmation_required",
+                }
+            )
+        result.update(
+            {
+                "status": "ok",
+                "sha256": sha256,
+                "eligible_sectors": eligible,
+                "confirmation_required": confirmations,
+            }
+        )
+    except (OSError, UnicodeError, ValueError) as exc:
+        result["error"] = str(exc)
+    return result
 
 
 def find_cross_sectors(trend_sectors: List[Dict], burst_sectors: List[Dict]) -> List[str]:
@@ -583,13 +1163,103 @@ def _cache_key(sector_name: str, sector_type: str, date_str: str) -> str:
     return f"{date_str}_{sector_type}_{sector_name}"
 
 
-def _load_cache(key: str) -> Optional[Dict]:
-    """从缓存加载板块成分股数据"""
-    cache_file = CACHE_DIR / f"{key}.json"
-    if cache_file.exists():
+_CACHE_STATUS_VALUES = {"ok", "degraded", "failed"}
+_CACHE_SOURCE_VALUES = {
+    "http_em",
+    "http_stale",
+    "http_mapping",
+    "http_local_industry",
+    "http_local_concept_members",
+    "sina_fallback",
+    "local_emergency_mapping",
+    "unavailable",
+}
+
+
+def _valid_cache_payload(
+    data: Any,
+    *,
+    expected_sector_name: Optional[str],
+    expected_sector_type: Optional[str],
+    expected_as_of_date: Optional[str],
+) -> bool:
+    required = {
+        "status", "as_of_date", "sector_name", "sector_type", "stocks", "error",
+        "fallback_used", "source",
+    }
+    if not isinstance(data, dict) or not required.issubset(data):
+        return False
+    if data["status"] not in _CACHE_STATUS_VALUES:
+        return False
+    if not isinstance(data["as_of_date"], str):
+        return False
+    try:
+        cache_date = datetime.strptime(data["as_of_date"], "%Y-%m-%d")
+    except ValueError:
+        return False
+    if cache_date.strftime("%Y-%m-%d") != data["as_of_date"]:
+        return False
+    if expected_as_of_date is not None and data["as_of_date"] != expected_as_of_date:
+        return False
+    if not isinstance(data["sector_name"], str) or not data["sector_name"].strip():
+        return False
+    if not isinstance(data["sector_type"], str) or not data["sector_type"].strip():
+        return False
+    if expected_sector_name is not None and data["sector_name"] != expected_sector_name:
+        return False
+    if expected_sector_type is not None and data["sector_type"] != expected_sector_type:
+        return False
+    if data["error"] is not None and not isinstance(data["error"], str):
+        return False
+    if not isinstance(data["fallback_used"], bool):
+        return False
+    if data["source"] not in _CACHE_SOURCE_VALUES:
+        return False
+    if not isinstance(data["stocks"], list):
+        return False
+    for stock in data["stocks"]:
+        if not isinstance(stock, dict):
+            return False
+        if not isinstance(stock.get("code"), str) or not stock["code"].strip():
+            return False
+        if not isinstance(stock.get("name"), str) or not stock["name"].strip():
+            return False
+        weight = stock.get("weight")
+        if isinstance(weight, bool) or not isinstance(weight, (int, float)):
+            return False
         try:
-            with open(cache_file, "r", encoding="utf-8") as f:
-                return json.load(f)
+            finite_weight = float(weight)
+        except (OverflowError, TypeError, ValueError):
+            return False
+        if not math.isfinite(finite_weight) or finite_weight < 0:
+            return False
+    return True
+
+
+def _load_cache(
+    key: str,
+    *,
+    expected_sector_name: Optional[str] = None,
+    expected_sector_type: Optional[str] = None,
+    expected_as_of_date: Optional[str] = None,
+) -> Optional[Dict]:
+    """从缓存加载板块成分股数据"""
+    cache_file = _resolve_cache_file(key)
+    if cache_file is not None:
+        try:
+            cache_text = _read_override_confined_text(
+                cache_file, encoding="utf-8-sig", confined_root=CACHE_DIR
+            )
+            if cache_text is None:
+                return None
+            cache_data = loads_strict_json(cache_text, context=str(cache_file))
+            if _valid_cache_payload(
+                cache_data,
+                expected_sector_name=expected_sector_name,
+                expected_sector_type=expected_sector_type,
+                expected_as_of_date=expected_as_of_date,
+            ):
+                return cache_data
         except Exception:
             pass
     return None
@@ -597,10 +1267,35 @@ def _load_cache(key: str) -> Optional[Dict]:
 
 def _save_cache(key: str, data: Dict):
     """保存板块成分股数据到缓存"""
-    CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    cache_file = CACHE_DIR / f"{key}.json"
+    if _REPORT_ROOT_OVERRIDE is not None:
+        # Explicit roots are immutable inputs. Disabling cache writes removes the
+        # create-time junction race while preserving the legacy default cache.
+        return
+    cache_dir = CACHE_DIR.expanduser().resolve()
+    cache_file = _resolve_cache_file(key)
+    if cache_dir is None or cache_file is None:
+        return
+    cache_dir.mkdir(parents=True, exist_ok=True)
     with open(cache_file, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+def _resolve_cache_file(key: str) -> Optional[Path]:
+    if not isinstance(key, str) or not key or "\x00" in key:
+        return None
+    if _REPORT_ROOT_OVERRIDE is not None:
+        return _resolve_override_confined_path(
+            CACHE_DIR / f"{key}.json", confined_root=CACHE_DIR
+        )
+    try:
+        cache_root = CACHE_DIR.expanduser().resolve()
+        cache_file = (cache_root / f"{key}.json").resolve()
+        cache_file.relative_to(cache_root)
+        if cache_file.parent != cache_root:
+            return None
+    except (OSError, RuntimeError, ValueError):
+        return None
+    return cache_file
 
 
 # ============================================================
@@ -652,15 +1347,24 @@ def fetch_sector_constituents(sector_name: str, sector_type: str = "industry", a
             "source": "http_em" | "http_mapping" | "http_local_industry" | "http_local_concept_members" | "local_emergency_mapping" | "unavailable",
         }
     """
-    # 检查缓存（当天有效）
-    today = datetime.now().strftime("%Y-%m-%d")
-    cache_key = _cache_key(sector_name, sector_type, today)
-    cached = _load_cache(cache_key)
+    if as_of is not None and not _is_valid_iso_date(as_of):
+        raise ValueError(f"invalid analysis date: {as_of}")
+
+    # Bind cache identity to the requested research date, or today for legacy calls.
+    cache_date = as_of or datetime.now().strftime("%Y-%m-%d")
+    cache_key = _cache_key(sector_name, sector_type, cache_date)
+    cached = _load_cache(
+        cache_key,
+        expected_sector_name=sector_name,
+        expected_sector_type=sector_type,
+        expected_as_of_date=cache_date,
+    )
     if cached:
         return cached
 
     result = {
         "status": "ok",
+        "as_of_date": cache_date,
         "sector_name": sector_name,
         "sector_type": sector_type,
         "stocks": [],
@@ -1157,6 +1861,7 @@ def run_bridge(
     trend_top_n: int = DEFAULT_TREND_TOP_N,
     burst_top_n: int = DEFAULT_BURST_TOP_N,
     min_relevance: float = DEFAULT_MIN_RELEVANCE,
+    _validated_score_report: Optional[Tuple[str, Path, Dict[str, Any]]] = None,
 ) -> Dict[str, Any]:
     """
     执行完整的板块-个股桥接流程。
@@ -1175,6 +1880,8 @@ def run_bridge(
         "status": "ok",
         "trend_sectors": [],
         "burst_sectors": [],
+        "direction_shadow_sectors": [],
+        "direction_confirmation_sectors": [],
         "cross_sectors": [],
         "api_status": {
             "http_constituents": "ok",
@@ -1183,30 +1890,72 @@ def run_bridge(
         },
         "warnings": [],
         "generated_at": datetime.now().isoformat(),
+        "linkage_research": {
+            "mode": "paper_shadow_research_only",
+            "legacy_policy": legacy_linkage_policy_contract(),
+            "effective_policy": effective_legacy_linkage_policy_contract(
+                trend_top_n=trend_top_n,
+                burst_top_n=burst_top_n,
+                minimum_relevance=min_relevance,
+            ),
+            "score_input": None,
+            "sector_funnel": [],
+            "constituent_audit_by_sector": {},
+            "disclaimer": "No broker connection and no live order instruction.",
+        },
     }
 
     # Step 1: 读取板块评分报告 (Phase 22: stable inputs first)
     print("  [1/5] 读取板块评分报告...")
-    actual_date, report_path = find_latest_report(as_of_date)
-    if not report_path:
+    if _validated_score_report is None:
+        valid, _validated_score_report, error = validate_explicit_score_report(
+            as_of_date
+        )
+        if not valid or _validated_score_report is None:
+            output["status"] = "failed"
+            output["warnings"].append(error or "板块评分报告校验失败")
+            return output
+    actual_date, report_path, validated_score_data = _validated_score_report
+    try:
+        validate_sector_score_payload(validated_score_data, expected_as_of=actual_date)
+    except ValueError as exc:
         output["status"] = "failed"
-        output["warnings"].append(f"找不到板块评分报告 (请求日期: {as_of_date})")
+        output["warnings"].append(f"sector_scores JSON 无效: {exc}")
         return output
 
     if actual_date != as_of_date:
         output["warnings"].append(f"指定日期 {as_of_date} 无报告，使用 {actual_date}")
 
     output["as_of_date"] = actual_date
+    canonical_score_input = json.dumps(
+        validated_score_data,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    score_input_sha256 = hashlib.sha256(canonical_score_input).hexdigest()
+    output["linkage_research"]["score_input"] = {
+        "as_of_date": actual_date,
+        "path": str(report_path),
+        "sha256": score_input_sha256,
+        "sha256_basis": "canonical_validated_payload",
+        "source_file_sha256": (
+            hashlib.sha256(report_path.read_bytes()).hexdigest()
+            if report_path.is_file()
+            else None
+        ),
+    }
 
     # Phase 22: try stable inputs first
-    stable = load_stable_sector_inputs(actual_date)
+    stable = load_stable_sector_inputs(actual_date, score_data=validated_score_data)
     if stable["available"]:
         trend_sectors_meta, burst_sectors_meta = extract_top_sectors_from_stable(stable, trend_top_n, burst_top_n)
         output["sector_input_source"] = stable["source"]
         print(f"    ✅ 使用稳定产线数据: {stable['source']} "
               f"(行业{len(stable['industries'])}个, 概念{len(stable['concepts'])}个)")
     else:
-        data = load_sector_scores(report_path)
+        data = validated_score_data or load_sector_scores(report_path)
         trend_sectors_meta, burst_sectors_meta = extract_top_sectors(data, trend_top_n, burst_top_n)
         output["sector_input_source"] = "legacy_sector_scores"
         print(f"    ⚠️ 使用旧评分数据 (无稳定产线数据)")
@@ -1214,8 +1963,24 @@ def run_bridge(
     cross_sector_names = find_cross_sectors(trend_sectors_meta, burst_sectors_meta)
     output["cross_sectors"] = cross_sector_names
 
-    all_sectors = {s["sector_name"]: s for s in trend_sectors_meta}
-    all_sectors.update({s["sector_name"]: s for s in burst_sectors_meta})
+    direction_shadow = load_direction_candidate_shadow(actual_date)
+    output["linkage_research"]["direction_shadow_input"] = {
+        key: direction_shadow.get(key)
+        for key in ("status", "mode", "path", "sha256", "error")
+    }
+    direction_sectors_meta = direction_shadow["eligible_sectors"]
+    output["direction_confirmation_sectors"] = direction_shadow[
+        "confirmation_required"
+    ]
+
+    legacy_sectors = {s["sector_name"]: s for s in trend_sectors_meta}
+    legacy_sectors.update({s["sector_name"]: s for s in burst_sectors_meta})
+    direction_only_sectors = {
+        sector["sector_name"]: sector
+        for sector in direction_sectors_meta
+        if sector["sector_name"] not in legacy_sectors
+    }
+    all_sectors = {**legacy_sectors, **direction_only_sectors}
 
     print(f"    趋势 Top{trend_top_n}: {[s['sector_name'] for s in trend_sectors_meta]}")
     print(f"    短线 Top{burst_top_n}: {[s['sector_name'] for s in burst_sectors_meta]}")
@@ -1228,33 +1993,48 @@ def run_bridge(
     source_counter = {"http_em": 0, "http_stale": 0, "http_mapping": 0,
                       "http_local_industry": 0, "http_local_concept_members": 0,
                       "local_emergency_mapping": 0, "unavailable": 0}
+    direction_source_counter = dict.fromkeys(source_counter, 0)
 
     for name in all_sectors:
         meta = all_sectors[name]
         result = fetch_sector_constituents(name, meta.get("sector_type", "industry"), as_of=output.get("as_of_date"))
         sector_stocks[name] = result
         src = result.get("source", "unavailable")
-        if src in source_counter:
-            source_counter[src] += 1
+        target_counter = (
+            source_counter if name in legacy_sectors else direction_source_counter
+        )
+        if src in target_counter:
+            target_counter[src] += 1
         else:
-            source_counter[src] = 1
+            target_counter[src] = 1
         status_emoji = "✅" if result["status"] == "ok" else "⚠️" if result["status"] == "degraded" else "❌"
         print(f"    {status_emoji} {name}: {len(result['stocks'])} 只成分股 [{src}]" +
               (f" ({result['error']})" if result["error"] else ""))
-        if "local_emergency" in result.get("source", ""):
+        if name in legacy_sectors and "local_emergency" in result.get("source", ""):
             output["api_status"]["http_constituents"] = "degraded"
 
     output["constituent_source_summary"] = source_counter
+    output["linkage_research"]["direction_constituent_source_summary"] = (
+        direction_source_counter
+    )
 
     # Step 3: 获取行情数据
     print("  [3/5] 获取成分股行情...")
-    all_codes = set()
+    legacy_codes = set()
+    direction_codes = set()
     for name, sec_data in sector_stocks.items():
         for s in sec_data.get("stocks", []):
-            all_codes.add(s["code"])
+            if name in legacy_sectors:
+                legacy_codes.add(s["code"])
+            elif s["code"] not in legacy_codes:
+                direction_codes.add(s["code"])
 
-    quotes = fetch_tencent_quotes(list(all_codes))
-    if not quotes:
+    legacy_quotes = fetch_tencent_quotes(list(legacy_codes))
+    direction_quotes = (
+        fetch_tencent_quotes(list(direction_codes)) if direction_codes else {}
+    )
+    quotes = {**legacy_quotes, **direction_quotes}
+    if not legacy_quotes:
         output["api_status"]["tencent_quotes"] = "failed"
         output["warnings"].append("腾讯行情 API 无数据")
     else:
@@ -1269,12 +2049,16 @@ def run_bridge(
         status_emoji = "✅" if flow["status"] == "ok" else "⚠️"
         print(f"    {status_emoji} {name}: {flow['direction']}" +
               (f" ({flow['error']})" if flow.get("error") else ""))
-        if flow["status"] != "ok":
+        if name in legacy_sectors and flow["status"] != "ok":
             output["api_status"]["fund_flow"] = "degraded"
 
     # 获取个股资金流
-    individual_flows = fetch_individual_fund_flow(list(all_codes))
-    if individual_flows:
+    legacy_individual_flows = fetch_individual_fund_flow(list(legacy_codes))
+    direction_individual_flows = (
+        fetch_individual_fund_flow(list(direction_codes)) if direction_codes else {}
+    )
+    individual_flows = {**legacy_individual_flows, **direction_individual_flows}
+    if legacy_individual_flows:
         print(f"    ✅ 获取 {len(individual_flows)} 只个股资金流")
     else:
         print("    ⚠️ 个股资金流不可用，使用中性值")
@@ -1300,6 +2084,7 @@ def run_bridge(
                 enriched.append({
                     "code": code,
                     "name": s.get("name") or q.get("name", ""),
+                    "weight": s.get("weight", 0),
                     "sector_weight": s.get("weight", 0),
                     "change_pct": q.get("change_pct", 0),
                     "price": q.get("price", 0),
@@ -1308,11 +2093,61 @@ def run_bridge(
                     "pb": q.get("pb", 0),
                     "individual_fund_flow": flow.get("net_flow", 0),
                     "individual_flow_direction": flow.get("direction", "neutral"),
+                    "individual_flow_available": code in individual_flows,
+                    "quote_available": code in quotes,
                 })
 
             # 计算关联度
             flow_data = sector_flows.get(name, {"direction": "neutral"})
             filtered = compute_relevance_scores(enriched, flow_data, min_relevance)
+            informative_weights = {
+                float(stock.get("weight", 0))
+                for stock in enriched
+                if isinstance(stock.get("weight"), (int, float))
+                and not isinstance(stock.get("weight"), bool)
+                and math.isfinite(float(stock.get("weight", 0)))
+                and float(stock.get("weight", 0)) > 0
+            }
+            weight_signal_available = len(informative_weights) > 1
+            sector_flow_available = (
+                flow_data.get("status") == "ok"
+                and flow_data.get("direction") in {"inflow", "outflow"}
+            )
+            for stock in enriched:
+                stock["weight_signal_available"] = weight_signal_available
+                stock["constituent_source"] = sec_data.get(
+                    "source", "unavailable"
+                )
+                stock["sector_flow_status"] = flow_data.get(
+                    "status", "unavailable"
+                )
+                stock["sector_flow_direction"] = flow_data.get(
+                    "direction", "neutral"
+                )
+                if (
+                    sector_flow_available
+                    and stock["individual_flow_available"]
+                    and stock["individual_flow_direction"] in {"inflow", "outflow"}
+                ):
+                    stock["linkage_flow_alignment_score"] = (
+                        _compute_flow_alignment(
+                            stock["individual_flow_direction"],
+                            stock["sector_flow_direction"],
+                        )
+                    )
+                else:
+                    stock["linkage_flow_alignment_score"] = None
+            if name not in output["linkage_research"]["constituent_audit_by_sector"]:
+                output["linkage_research"]["constituent_audit_by_sector"][name] = (
+                    build_constituent_linkage_input_contract(
+                        enriched,
+                        as_of_date=output["as_of_date"],
+                        sector_name=name,
+                        sector_type=meta.get("sector_type", "industry"),
+                        constituent_source=sec_data.get("source", "unavailable"),
+                        sector_flow_status=flow_data.get("status", "unavailable"),
+                    )
+                )
 
             sector_entry = {
                 "sector_name": name,
@@ -1324,7 +2159,30 @@ def run_bridge(
                 "high_relevance_count": len(filtered),
                 "stocks": filtered,
             }
+            if label == "direction_shadow":
+                sector_entry.update(
+                    {
+                        "candidate_tier": meta.get("candidate_tier"),
+                        "direction_score_shadow": meta.get(
+                            "direction_score_shadow"
+                        ),
+                        "direction_state": meta.get("direction_state"),
+                        "shadow_prefilter_stocks": enriched,
+                    }
+                )
             sector_results.append(sector_entry)
+            output["linkage_research"]["sector_funnel"].append(
+                {
+                    "path": label,
+                    "sector_name": name,
+                    "sector_type": meta.get("sector_type", "industry"),
+                    "constituent_source": sec_data.get("source", "unavailable"),
+                    "raw_constituent_count": len(stocks_raw),
+                    "legacy_relevance_pass_count": len(filtered),
+                    "legacy_relevance_reject_count": len(stocks_raw) - len(filtered),
+                    "minimum_relevance": min_relevance,
+                }
+            )
 
             status_emoji = "✅" if filtered else "⚠️"
             print(f"    {status_emoji} [{label}] {name}: {len(filtered)}/{len(stocks_raw)} 只高关联度")
@@ -1333,6 +2191,9 @@ def run_bridge(
 
     output["trend_sectors"] = _build_sector_stocks(trend_sectors_meta, "趋势")
     output["burst_sectors"] = _build_sector_stocks(burst_sectors_meta, "短线")
+    output["direction_shadow_sectors"] = _build_sector_stocks(
+        direction_sectors_meta, "direction_shadow"
+    )
 
     # 汇总
     total_trend_stocks = sum(len(s["stocks"]) for s in output["trend_sectors"])

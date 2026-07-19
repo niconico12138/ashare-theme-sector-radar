@@ -67,6 +67,36 @@ class TestSectorNormalizer:
         assert result.constituents[0].code == "688981"
         assert result.constituents[0].is_core is True
 
+    def test_normalize_preserves_explicit_zero_and_price_availability(self):
+        raw_data = {
+            "sector_id": "BK0000",
+            "name": "零值板块",
+            "price_change_pct": 0.0,
+            "change_pct": 9.0,
+            "turnover": 0.0,
+            "amount": 99.0,
+            "main_net_inflow": 0.0,
+            "net_inflow": 88.0,
+            "price_change_available": False,
+        }
+
+        result = normalize_snapshot(raw_data, SectorType.INDUSTRY)
+
+        assert result.price_change_pct == 0.0
+        assert result.turnover == 0.0
+        assert result.main_net_inflow == 0.0
+        assert result.price_change_available is False
+
+    @pytest.mark.parametrize("raw_value", ["false", "False", "0", 0, False])
+    def test_normalize_constituent_parses_false_core_values(self, raw_value):
+        result = normalize_snapshot(
+            {"sector_id": "BK0000", "name": "测试"},
+            SectorType.INDUSTRY,
+            [{"code": "000001", "name": "测试股", "is_core": raw_value}],
+        )
+
+        assert result.constituents[0].is_core is False
+
     def test_normalize_agent_output(self):
         """测试 Agent 标准化输出"""
         raw_sectors = [

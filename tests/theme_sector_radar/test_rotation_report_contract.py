@@ -71,6 +71,27 @@ class TestRotationReportContract:
             assert "compare_to_date" in data["comparison"]
             assert data["comparison"]["compare_to_date"] == "2026-06-27"
 
+    def test_json_sector_rows_include_rotation_ranks(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            _, day2_dir = self._run_day1_day2(tmpdir)
+
+            json_path = os.path.join(day2_dir, "theme_sector_radar.json")
+            with open(json_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+
+            comparable = [
+                row
+                for row in data["industry_top"]
+                if row.get("previous_rank") is not None
+            ]
+            assert comparable
+            for row in comparable:
+                assert isinstance(row["current_rank"], int)
+                assert row["current_rank"] > 0
+                assert isinstance(row["rank_tied"], bool)
+                assert row["rank_tie_count"] >= 1
+                assert row["rank_change"] == row["previous_rank"] - row["current_rank"]
+
     def test_markdown_has_rotation_section(self):
         """测试 Markdown 包含板块轮动变化章节"""
         with tempfile.TemporaryDirectory() as tmpdir:

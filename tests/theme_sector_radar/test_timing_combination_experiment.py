@@ -128,8 +128,11 @@ def test_strategy_stability_exposes_inactive_periods():
 def test_default_strategy_versions_are_paper_only_factor_combinations():
     versions = build_default_strategy_versions()
 
-    assert len(versions) >= 30
+    assert len(versions) >= 32
     assert all(version.version_id for version in versions)
+    version_ids = {version.version_id for version in versions}
+    assert "v31_expanded_balanced_tail_guard" in version_ids
+    assert "v32_expanded_defensive_breakdown_guard" in version_ids
     all_fields = {condition.factor_id for version in versions for condition in version.conditions}
     assert "open_to_midday_resilience_score" in all_fields
     assert "vwap_above_ratio_score" in all_fields
@@ -138,7 +141,10 @@ def test_default_strategy_versions_are_paper_only_factor_combinations():
     assert "optimized_watch_score" in all_fields
     assert "sector_breadth_quality_score" in all_fields
     assert "execution_turnover_depth_score" in all_fields
+    assert "execution_tradeability_score" in all_fields
     assert "cashout_failed_late_breakout_risk" in all_fields
+    assert "failed_breakout_risk" in all_fields
+    assert "late_breakdown_risk" in all_fields
     assert not {
         "final_score",
         "v2_score",

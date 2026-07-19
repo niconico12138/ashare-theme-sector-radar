@@ -385,6 +385,11 @@ def test_main_can_fail_on_stale_artifacts(monkeypatch, tmp_path):
         "write_daily_run_report",
         lambda *args, **kwargs: {"json": tmp_path / "daily.json", "md": tmp_path / "daily.md"},
     )
+    monkeypatch.setattr(
+        run_daily,
+        "write_artifact_manifest",
+        lambda *args, **kwargs: tmp_path / "run_manifest.json",
+    )
 
     try:
         run_daily.main()
@@ -443,6 +448,11 @@ def test_main_dry_run_lists_steps_without_running_them(monkeypatch, tmp_path):
     monkeypatch.setattr(run_daily, "build_steps", lambda date, py, quick=False, skip_agent=False: [step])
     monkeypatch.setattr(run_daily, "run_step", lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("run_step called")))
     monkeypatch.setattr(run_daily, "write_daily_run_report", lambda *args, **kwargs: {"json": tmp_path / "x.json", "md": tmp_path / "x.md"})
+    monkeypatch.setattr(
+        run_daily,
+        "write_artifact_manifest",
+        lambda *args, **kwargs: tmp_path / "run_manifest.json",
+    )
 
     try:
         run_daily.main()

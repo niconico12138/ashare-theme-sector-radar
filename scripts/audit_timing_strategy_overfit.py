@@ -20,8 +20,8 @@ from scripts.run_timing_combination_experiment import (  # noqa: E402
     _discover_candidate_files,
     _float,
     _load_json,
-    _load_selection_validation_returns,
 )
+from theme_sector_radar.reporting.artifact_archive import write_text_preserving_previous  # noqa: E402
 from theme_sector_radar.factors.calculators import calculate_intraday_factors  # noqa: E402
 from theme_sector_radar.timing.combination_experiment import (  # noqa: E402
     FactorCondition,
@@ -92,9 +92,18 @@ def run_overfit_audit(
     output_dir.mkdir(parents=True, exist_ok=True)
     json_path = output_dir / f"v29_overfit_audit_{as_of}_{snapshot_label}.json"
     markdown_path = output_dir / f"v29_overfit_audit_{as_of}_{snapshot_label}.md"
-    json_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
-    markdown_path.write_text(_markdown(report), encoding="utf-8")
-    return {"status": "ok", "json_path": json_path, "markdown_path": markdown_path, "report": report}
+    archived_json_path = write_text_preserving_previous(
+        json_path,
+        json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False),
+    )
+    archived_markdown_path = write_text_preserving_previous(markdown_path, _markdown(report))
+    return {
+        "status": "ok",
+        "json_path": json_path,
+        "markdown_path": markdown_path,
+        "archived_previous_paths": [path for path in (archived_json_path, archived_markdown_path) if path],
+        "report": report,
+    }
 
 
 def _focus_versions() -> list[StrategyVersion]:
@@ -108,20 +117,73 @@ def _load_samples(
     start: str | None,
     end: str | None,
     selection_validation_root: Path | None,
+    candidate_document_snapshots: Mapping[Path, Mapping[str, Any]] | None = None,
+    selection_document_snapshots: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
     samples: list[dict[str, Any]] = []
-    for path in _discover_candidate_files(candidate_root, start, end):
+    paths = (
+        sorted(candidate_document_snapshots)
+        if candidate_document_snapshots is not None
+        else _discover_candidate_files(candidate_root, start, end)
+    )
+    for path in paths:
         date = path.parent.name
-        dated_returns = _load_selection_validation_returns(selection_validation_root, date)
-        for row in _candidate_rows(_load_json(path)):
+        if selection_document_snapshots is None:
+            dated_returns = _load_selection_validation_returns(selection_validation_root, date)
+        else:
+            dated_returns = _selection_returns_from_document(
+                selection_document_snapshots.get(date)
+            )
+        document = (
+            candidate_document_snapshots[path]
+            if candidate_document_snapshots is not None
+            else _load_json(path)
+        )
+        sample_mode = bool(document.get("sample_mode")) if isinstance(document, Mapping) else False
+        for row in _candidate_rows(document):
             code = str(row.get("code") or "").strip()
             enriched = dict(row)
             enriched["_sample_date"] = date
+            enriched["_sample_mode"] = sample_mode
             if enriched.get("forward_return_pct") is None and code in dated_returns:
                 enriched["forward_return_pct"] = dated_returns[code]
             _backfill_intraday_factors_in_memory(enriched)
             samples.append(enriched)
     return samples
+
+
+def _selection_returns_from_document(
+    document: Mapping[str, Any] | None,
+) -> dict[str, float]:
+    rows = document.get("per_stock") if isinstance(document, Mapping) else None
+    if not isinstance(rows, list):
+        return {}
+    result: dict[str, float] = {}
+    for item in rows:
+        if not isinstance(item, Mapping):
+            continue
+        code = str(item.get("code") or "").strip()
+        raw_value = (
+            item.get("next_return_pct")
+            if item.get("next_return_pct") is not None
+            else item.get("forward_return_pct")
+        )
+        value = _float(raw_value)
+        if code and value is not None:
+            result[code] = value
+    return result
+
+
+def _load_selection_validation_returns(root: Path | None, date: str) -> dict[str, float]:
+    if root is None:
+        return {}
+    path = root / date / "next_day_selection_validation.json"
+    if not path.exists():
+        return {}
+    document = _load_json(path)
+    return _selection_returns_from_document(
+        document if isinstance(document, Mapping) else None
+    )
 
 
 def _backfill_intraday_factors_in_memory(row: dict[str, Any]) -> None:

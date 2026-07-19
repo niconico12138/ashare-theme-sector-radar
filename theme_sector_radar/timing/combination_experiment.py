@@ -388,6 +388,41 @@ def build_default_strategy_versions() -> list[StrategyVersion]:
                 FactorCondition("cashout_failed_late_breakout_risk", "<=", 70.0),
             ),
         ),
+        StrategyVersion(
+            "v31_expanded_balanced_tail_guard",
+            "Expanded-sample v26 setup with stricter failed-breakout, late-surge, and lower-low guards.",
+            (
+                FactorCondition("open_to_midday_resilience_score", ">=", 53.0),
+                FactorCondition("midday_hold_score", ">=", 56.0),
+                FactorCondition("vwap_above_ratio_score", ">=", 48.0),
+                FactorCondition("late_high_near_close_score", ">=", 80.0),
+                FactorCondition("high_to_close_drawdown_score", "<=", 20.0),
+                FactorCondition("lower_low_sequence_risk", "<=", 25.0),
+                FactorCondition("stock_vs_market_intraday_alpha_score", ">=", 59.0),
+                FactorCondition("relative_resilience_score", ">=", 67.0),
+                FactorCondition("optimized_watch_score", ">=", 75.36),
+                FactorCondition("late_amount_surge_score", "<=", 45.0),
+                FactorCondition("failed_breakout_risk", "<=", 25.0),
+            ),
+        ),
+        StrategyVersion(
+            "v32_expanded_defensive_breakdown_guard",
+            "Expanded-sample defensive v26 setup with tradeability, capped late surge, late-breakdown, and lower-low guards.",
+            (
+                FactorCondition("open_to_midday_resilience_score", ">=", 53.0),
+                FactorCondition("midday_hold_score", ">=", 56.0),
+                FactorCondition("vwap_above_ratio_score", ">=", 48.0),
+                FactorCondition("late_high_near_close_score", ">=", 80.0),
+                FactorCondition("high_to_close_drawdown_score", "<=", 20.0),
+                FactorCondition("lower_low_sequence_risk", "<=", 25.0),
+                FactorCondition("stock_vs_market_intraday_alpha_score", ">=", 59.0),
+                FactorCondition("relative_resilience_score", ">=", 67.0),
+                FactorCondition("optimized_watch_score", ">=", 75.36),
+                FactorCondition("late_amount_surge_score", "<=", 40.0),
+                FactorCondition("execution_tradeability_score", ">=", 55.0),
+                FactorCondition("late_breakdown_risk", "<=", 2.0),
+            ),
+        ),
     ]
 
 

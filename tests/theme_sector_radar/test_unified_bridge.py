@@ -12,36 +12,179 @@ sector_stock_bridge 和 unified_pipeline 最小测试。
 
 import json
 import os
+import shutil
 import sys
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-# 确保项目根目录在 path 中
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-sys.path.insert(0, str(PROJECT_ROOT))
 
-from sector_stock_bridge import (
-    _compute_flow_alignment,
-    _compute_rank_scores,
-    _normalize_weights,
-    compute_relevance_scores,
-    extract_top_sectors,
-    find_cross_sectors,
-    find_latest_report,
-    load_sector_scores,
+def _is_proxy_env_key(key: str) -> bool:
+    normalized = key.upper()
+    return normalized.endswith("_PROXY") or normalized.endswith("_PROXY_")
+
+
+def _snapshot_proxy_env() -> dict[str, str]:
+    return {key: value for key, value in os.environ.items() if _is_proxy_env_key(key)}
+
+
+def _restore_proxy_env(snapshot: dict[str, str]) -> None:
+    for key in list(os.environ):
+        if _is_proxy_env_key(key):
+            os.environ.pop(key, None)
+    os.environ.update(snapshot)
+
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+_COLLECTION_SYS_PATH = list(sys.path)
+_COLLECTION_PROXY_ENV = _snapshot_proxy_env()
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+try:
+    from sector_stock_bridge import (
+        _compute_flow_alignment,
+        _compute_rank_scores,
+        _normalize_weights,
+        compute_relevance_scores,
+        extract_top_sectors,
+        extract_top_sectors_from_stable,
+        find_cross_sectors,
+        find_latest_report,
+        load_sector_scores,
+    )
+    from unified_pipeline import (
+        _compute_fallback_quant_score,
+        compute_final_scores,
+        compute_quant_scores,
+    )
+    from tests.theme_sector_radar.report_fixture_factory import (
+        build_sector_score_tree,
+        write_json,
+    )
+finally:
+    sys.path[:] = _COLLECTION_SYS_PATH
+    _restore_proxy_env(_COLLECTION_PROXY_ENV)
+
+
+def _link_directory_or_skip(link: Path, target: Path) -> None:
+    try:
+        link.symlink_to(target, target_is_directory=True)
+        return
+    except OSError as exc:
+        if os.name != "nt":
+            pytest.skip(f"directory symlink unavailable: {exc}")
+
+    import subprocess
+
+    junction = subprocess.run(
+        ["cmd", "/c", "mklink", "/J", str(link), str(target)],
+        capture_output=True,
+        text=True,
+    )
+    if junction.returncode != 0:
+        pytest.skip(f"directory link unavailable: {junction.stderr}")
+
+
+def test_module_import_preserves_process_globals():
+    """Collecting this test module must not leak path or proxy mutations."""
+    import subprocess
+
+    probe = """
+import os
+import sys
+
+proxy_keys = (
+    "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY",
+    "http_proxy", "https_proxy", "all_proxy",
+    "NO_PROXY", "CUSTOM_PROXY", "CUSTOM_PROXY_",
 )
-from unified_pipeline import (
-    _compute_fallback_quant_score,
-    compute_final_scores,
-    compute_quant_scores,
-)
+for key in proxy_keys:
+    os.environ[key] = f"fixture-{key}"
+before_path = list(sys.path)
+before_proxy = {key: os.environ.get(key) for key in proxy_keys}
+import tests.theme_sector_radar.test_unified_bridge  # noqa: F401
+assert sys.path == before_path, (before_path, sys.path)
+assert {key: os.environ.get(key) for key in proxy_keys} == before_proxy
+"""
+    proc = subprocess.run(
+        [sys.executable, "-c", probe],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        cwd=str(PROJECT_ROOT),
+    )
+
+    assert proc.returncode == 0, proc.stderr
 
 
 # ============================================================
 # Fixtures
 # ============================================================
+
+
+@pytest.fixture(autouse=True)
+def isolate_inherited_report_root(monkeypatch):
+    """Reset import-time report-root state before every in-process test."""
+    import sector_stock_bridge as bridge
+
+    original_sys_path = list(sys.path)
+    original_proxy_env = _snapshot_proxy_env()
+    report_root = bridge.PROJECT_ROOT / "reports"
+    monkeypatch.delenv("THEME_SECTOR_RADAR_REPORT_ROOT", raising=False)
+    monkeypatch.setattr(bridge, "_REPORT_ROOT_OVERRIDE", None)
+    monkeypatch.setattr(bridge, "REPORT_ROOT", report_root)
+    monkeypatch.setattr(bridge, "SCORES_DIR", report_root / "sector_scores")
+    monkeypatch.setattr(
+        bridge, "STABLE_RESEARCH_DIR", report_root / "full90" / "sector_research"
+    )
+    monkeypatch.setattr(
+        bridge,
+        "STABLE_CONCEPT_DIR",
+        report_root / "full_concept" / "unified_rank",
+    )
+    monkeypatch.setattr(
+        bridge, "CACHE_DIR", bridge.PROJECT_ROOT / "data_cache" / "sector_stocks"
+    )
+    yield
+    sys.path[:] = original_sys_path
+    _restore_proxy_env(original_proxy_env)
+
+
+@pytest.fixture
+def isolated_bridge_reports(tmp_path, monkeypatch):
+    """Build the smallest report tree and bind every bridge path to it."""
+    import sector_stock_bridge as bridge
+
+    monkeypatch.delenv("THEME_SECTOR_RADAR_REPORT_ROOT", raising=False)
+    monkeypatch.setattr(bridge, "_REPORT_ROOT_OVERRIDE", None)
+    roots = build_sector_score_tree(tmp_path, ["2026-06-30", "2026-07-01"])
+    monkeypatch.setattr(bridge, "SCORES_DIR", roots["sector_scores"])
+    monkeypatch.setattr(bridge, "STABLE_RESEARCH_DIR", roots["sector_research"])
+    monkeypatch.setattr(bridge, "STABLE_CONCEPT_DIR", roots["concept_rank"])
+    monkeypatch.setattr(bridge, "CACHE_DIR", tmp_path / "data_cache" / "sector_stocks")
+    return roots
+
+
+@pytest.fixture
+def offline_bridge_io(monkeypatch):
+    """Keep bridge integration tests off every direct market-data endpoint."""
+    import sector_stock_bridge as bridge
+
+    monkeypatch.setattr(bridge, "fetch_tencent_quotes", lambda _codes: {})
+    monkeypatch.setattr(
+        bridge,
+        "fetch_sector_fund_flow",
+        lambda _name: {
+            "status": "degraded",
+            "net_flow": None,
+            "direction": "neutral",
+            "error": "offline fixture",
+        },
+    )
+    monkeypatch.setattr(bridge, "fetch_individual_fund_flow", lambda _codes: {})
 
 @pytest.fixture
 def sample_scores_data():
@@ -164,32 +307,571 @@ def sample_stocks():
     ]
 
 
+def _valid_industry_research_payload(as_of):
+    return {
+        "as_of_date": as_of,
+        "sector_type": "industry",
+        "report_type": "sector_research",
+        "research_results": [
+            {
+                "sector_name": "Valid Industry",
+                "sector_type": "industry",
+                "consensus_label": "observe",
+                "ranking_score": 80.0,
+                "opportunity_score": 70.0,
+                "evidence_score": 60.0,
+                "confidence_score": 50.0,
+            }
+        ],
+    }
+
+
 # ============================================================
 # 测试：报告读取
 # ============================================================
 
 class TestReportReading:
 
-    def test_find_latest_report_with_date(self):
+    def test_find_latest_report_with_date(self, isolated_bridge_reports):
         """指定日期读取报告"""
         date, path = find_latest_report("2026-07-01")
         assert date == "2026-07-01"
         assert path is not None
         assert path.exists()
+        assert path.is_relative_to(isolated_bridge_reports["sector_scores"])
 
-    def test_find_latest_report_fallback(self):
+    def test_find_latest_report_fallback(self, isolated_bridge_reports):
         """不存在的日期应 fallback 到最新"""
         date, path = find_latest_report("2099-01-01")
-        # 应该 fallback 到最新可用日期
-        if date:
-            assert date <= "2099-01-01"
-            assert path is not None
+        assert date == "2026-07-01"
+        assert path is not None
+        assert path.is_relative_to(isolated_bridge_reports["sector_scores"])
 
-    def test_find_latest_report_no_date(self):
+    def test_stable_sector_extraction_preserves_explicit_zero_trend_score(self):
+        stable = {
+            "industries": [
+                {
+                    "sector_name": "Zero Trend",
+                    "sector_type": "industry",
+                    "ranking_score": 88.0,
+                    "opportunity_score": 70.0,
+                    "trend_score": 0.0,
+                    "burst_score": 60.0,
+                }
+            ],
+            "concepts": [],
+        }
+
+        trend, burst = extract_top_sectors_from_stable(stable, 1, 1)
+
+        assert trend[0]["trend_score"] == 0.0
+        assert burst[0]["trend_score"] == 0.0
+
+    def test_find_latest_report_no_date(self, isolated_bridge_reports):
         """不指定日期应找到最新"""
         date, path = find_latest_report(None)
-        assert date is not None
+        assert date == "2026-07-01"
         assert path is not None
+        assert path.is_relative_to(isolated_bridge_reports["sector_scores"])
+
+    def test_default_report_root_rejects_as_of_path_traversal(
+        self, tmp_path, monkeypatch
+    ):
+        import sector_stock_bridge as bridge
+
+        scores_dir = tmp_path / "sector_scores"
+        write_json(
+            tmp_path / "escape" / "sector_scores.json",
+            {"as_of_date": "../escape", "scores": []},
+        )
+        monkeypatch.setattr(bridge, "_REPORT_ROOT_OVERRIDE", None)
+        monkeypatch.setattr(bridge, "SCORES_DIR", scores_dir)
+
+        assert bridge.find_latest_report("../escape") == (None, None)
+
+    def test_default_cache_rejects_key_traversal_on_read_and_write(
+        self, tmp_path, monkeypatch
+    ):
+        import sector_stock_bridge as bridge
+
+        cache_dir = tmp_path / "cache"
+        payload = {
+            "status": "ok",
+            "as_of_date": "2026-07-02",
+            "sector_name": "证券",
+            "sector_type": "industry",
+            "stocks": [{"code": "600030", "name": "中信证券", "weight": 1.0}],
+            "error": None,
+            "fallback_used": False,
+            "source": "http_em",
+        }
+        write_json(tmp_path / "outside.json", payload)
+        monkeypatch.setattr(bridge, "_REPORT_ROOT_OVERRIDE", None)
+        monkeypatch.setattr(bridge, "CACHE_DIR", cache_dir)
+
+        assert bridge._load_cache("../outside") is None
+        bridge._save_cache("../written", payload)
+        assert not (tmp_path / "written.json").exists()
+
+    def test_fetch_constituents_rejects_invalid_as_of_before_cache_or_network(
+        self, monkeypatch
+    ):
+        import sector_stock_bridge as bridge
+
+        monkeypatch.setattr(
+            bridge,
+            "_load_cache",
+            lambda *_args, **_kwargs: pytest.fail("cache work must not run"),
+        )
+        monkeypatch.setattr(
+            bridge,
+            "_get_http_client",
+            lambda: pytest.fail("network work must not run"),
+        )
+
+        with pytest.raises(ValueError, match="analysis date"):
+            bridge.fetch_sector_constituents("证券", as_of="../escape")
+
+    def test_explicit_override_missing_exact_date_never_falls_back(
+        self, tmp_path, monkeypatch
+    ):
+        """An explicit report root may only serve the requested exact date."""
+        import sector_stock_bridge as bridge
+
+        roots = build_sector_score_tree(tmp_path, ["2026-07-01"])
+        report_root = roots["sector_scores"].parent
+        monkeypatch.setattr(bridge, "_REPORT_ROOT_OVERRIDE", str(report_root))
+        monkeypatch.setattr(bridge, "SCORES_DIR", roots["sector_scores"])
+
+        date, path = bridge.find_latest_report("2026-07-02")
+
+        assert date is None
+        assert path is None
+
+    def test_explicit_override_rejects_linked_date_escape(
+        self, tmp_path, monkeypatch
+    ):
+        """The child bridge rejects a linked exact date outside its score root."""
+        import sector_stock_bridge as bridge
+
+        report_root = tmp_path / "reports"
+        score_root = report_root / "sector_scores"
+        score_root.mkdir(parents=True)
+        outside_date = tmp_path / "outside-date"
+        write_json(
+            outside_date / "sector_scores.json",
+            {"as_of_date": "2026-07-02"},
+        )
+        _link_directory_or_skip(score_root / "2026-07-02", outside_date)
+        monkeypatch.setattr(bridge, "_REPORT_ROOT_OVERRIDE", str(report_root))
+
+        date, path = bridge.find_latest_report("2026-07-02")
+
+        assert date is None
+        assert path is None
+
+    def test_explicit_override_rejects_score_root_linked_to_sibling(
+        self, tmp_path, monkeypatch
+    ):
+        """The lexical sector_scores root may not redirect to a sibling tree."""
+        import sector_stock_bridge as bridge
+
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        as_of = "2026-07-02"
+        source = build_sector_score_tree(tmp_path / "source", [as_of])
+        report_root = tmp_path / "reports"
+        sibling_scores = report_root / "unrelated-scores"
+        shutil.copytree(source["sector_scores"], sibling_scores)
+        _link_directory_or_skip(report_root / "sector_scores", sibling_scores)
+
+        monkeypatch.setattr(bridge, "_REPORT_ROOT_OVERRIDE", str(report_root))
+        monkeypatch.setattr(bridge, "SCORES_DIR", report_root / "sector_scores")
+
+        assert bridge.find_latest_report(as_of) == (None, None)
+        ok, validated, _error = bridge.validate_explicit_score_report(as_of)
+        assert ok is False
+        assert validated is None
+        daily_ok, _detail = daily._validate_report_root(str(report_root), as_of)
+        assert daily_ok is False
+
+    def test_explicit_override_rejects_payload_date_before_network(
+        self, tmp_path, monkeypatch
+    ):
+        """The child must recheck the score payload date before any API work."""
+        import sector_stock_bridge as bridge
+
+        as_of = "2026-07-02"
+        roots = build_sector_score_tree(tmp_path, [as_of])
+        report_root = roots["sector_scores"].parent
+        score_path = roots["sector_scores"] / as_of / "sector_scores.json"
+        score_payload = load_sector_scores(score_path)
+        score_payload["as_of_date"] = "2026-07-01"
+        write_json(score_path, score_payload)
+
+        monkeypatch.setattr(bridge, "_REPORT_ROOT_OVERRIDE", str(report_root))
+        monkeypatch.setattr(bridge, "SCORES_DIR", roots["sector_scores"])
+        monkeypatch.setattr(
+            bridge, "STABLE_RESEARCH_DIR", roots["sector_research"]
+        )
+        monkeypatch.setattr(bridge, "STABLE_CONCEPT_DIR", roots["concept_rank"])
+        for name in (
+            "fetch_sector_constituents",
+            "fetch_tencent_quotes",
+            "fetch_sector_fund_flow",
+            "fetch_individual_fund_flow",
+        ):
+            monkeypatch.setattr(
+                bridge,
+                name,
+                lambda *_args, **_kwargs: pytest.fail("network work must not run"),
+            )
+
+        result = bridge.run_bridge(as_of_date=as_of)
+
+        assert result["status"] == "failed"
+        assert result["as_of_date"] is None
+
+    def test_explicit_override_requires_as_of_instead_of_latest_fallback(
+        self, tmp_path, monkeypatch
+    ):
+        import sector_stock_bridge as bridge
+
+        roots = build_sector_score_tree(tmp_path, ["2026-07-02"])
+        monkeypatch.setattr(
+            bridge, "_REPORT_ROOT_OVERRIDE", str(roots["sector_scores"].parent)
+        )
+        monkeypatch.setattr(bridge, "SCORES_DIR", roots["sector_scores"])
+
+        assert bridge.find_latest_report(None) == (None, None)
+
+    def test_explicit_override_rejects_incomplete_score_payload_before_network(
+        self, tmp_path, monkeypatch
+    ):
+        import sector_stock_bridge as bridge
+        import unified_pipeline as pipeline
+
+        as_of = "2026-07-02"
+        roots = build_sector_score_tree(tmp_path, [as_of])
+        score_path = roots["sector_scores"] / as_of / "sector_scores.json"
+        write_json(score_path, {"as_of_date": as_of})
+        monkeypatch.setattr(
+            bridge, "_REPORT_ROOT_OVERRIDE", str(roots["sector_scores"].parent)
+        )
+        monkeypatch.setattr(bridge, "SCORES_DIR", roots["sector_scores"])
+        monkeypatch.setattr(
+            pipeline,
+            "_get_http_client",
+            lambda: pytest.fail("health network must not run for an invalid score payload"),
+        )
+
+        result = pipeline.run_pipeline(as_of_date=as_of)
+
+        assert result["status"] == "failed"
+        assert "scores" in result["warnings"][0]
+
+    def test_pipeline_rejects_explicit_payload_before_health_network(
+        self, tmp_path, monkeypatch
+    ):
+        """The unified child must reject score identity before its health request."""
+        import sector_stock_bridge as bridge
+        import unified_pipeline as pipeline
+
+        as_of = "2026-07-02"
+        roots = build_sector_score_tree(tmp_path, [as_of])
+        report_root = roots["sector_scores"].parent
+        score_path = roots["sector_scores"] / as_of / "sector_scores.json"
+        payload = load_sector_scores(score_path)
+        payload["as_of_date"] = "2026-07-01"
+        write_json(score_path, payload)
+
+        monkeypatch.setattr(bridge, "_REPORT_ROOT_OVERRIDE", str(report_root))
+        monkeypatch.setattr(bridge, "SCORES_DIR", roots["sector_scores"])
+        monkeypatch.setattr(
+            pipeline,
+            "_get_http_client",
+            lambda: pytest.fail("health network must not run before score validation"),
+        )
+
+        result = pipeline.run_pipeline(as_of_date=as_of)
+
+        assert result["status"] == "failed"
+        assert result["as_of_date"] is None
+
+    def test_pipeline_rejects_default_root_payload_before_health_network(
+        self, tmp_path, monkeypatch
+    ):
+        """The legacy/default root must use the same pre-network score contract."""
+        import sector_stock_bridge as bridge
+        import unified_pipeline as pipeline
+
+        as_of = "2026-07-02"
+        roots = build_sector_score_tree(tmp_path, [as_of])
+        score_path = roots["sector_scores"] / as_of / "sector_scores.json"
+        payload = load_sector_scores(score_path)
+        payload["scores"][0]["trend_level"] = ["not", "text"]
+        write_json(score_path, payload)
+        monkeypatch.setattr(bridge, "_REPORT_ROOT_OVERRIDE", None)
+        monkeypatch.setattr(bridge, "SCORES_DIR", roots["sector_scores"])
+        monkeypatch.setattr(
+            bridge, "STABLE_RESEARCH_DIR", roots["sector_research"]
+        )
+        monkeypatch.setattr(bridge, "STABLE_CONCEPT_DIR", roots["concept_rank"])
+        monkeypatch.setattr(
+            pipeline,
+            "_get_http_client",
+            lambda: pytest.fail("health network must not run before score validation"),
+        )
+
+        result = pipeline.run_pipeline(as_of_date=as_of)
+
+        assert result["status"] == "failed"
+        assert "trend_level" in result["warnings"][0]
+
+    def test_explicit_override_rejects_linked_stable_roots(
+        self, tmp_path, monkeypatch
+    ):
+        """Stable research and concept inputs may not escape an explicit root."""
+        import sector_stock_bridge as bridge
+
+        as_of = "2026-07-02"
+        roots = build_sector_score_tree(tmp_path / "inside", [as_of])
+        report_root = roots["sector_scores"].parent
+        outside = tmp_path / "outside"
+        write_json(
+            outside / "full90" / "sector_research" / as_of / "sector_research.json",
+            {
+                "research_results": [
+                    {
+                        "sector_name": "证券",
+                        "sector_type": "industry",
+                        "ranking_score": 80.0,
+                    }
+                ]
+            },
+        )
+        concept_path = (
+            outside
+            / "full_concept"
+            / "unified_rank"
+            / as_of
+            / "concept_unified_rank.csv"
+        )
+        concept_path.parent.mkdir(parents=True)
+        concept_path.write_text(
+            "sector_name,concept_final_rank_score,trend_continuation_score,"
+            "short_term_burst_score,rank\nOutside Concept,90,80,70,1\n",
+            encoding="utf-8",
+        )
+        _link_directory_or_skip(report_root / "full90", outside / "full90")
+        _link_directory_or_skip(
+            report_root / "full_concept", outside / "full_concept"
+        )
+
+        monkeypatch.setattr(bridge, "_REPORT_ROOT_OVERRIDE", str(report_root))
+        monkeypatch.setattr(bridge, "SCORES_DIR", roots["sector_scores"])
+        monkeypatch.setattr(
+            bridge, "STABLE_RESEARCH_DIR", report_root / "full90" / "sector_research"
+        )
+        monkeypatch.setattr(
+            bridge,
+            "STABLE_CONCEPT_DIR",
+            report_root / "full_concept" / "unified_rank",
+        )
+
+        stable = bridge.load_stable_sector_inputs(as_of)
+
+        assert stable["available"] is False
+        assert stable["industries"] == []
+        assert stable["concepts"] == []
+
+    def test_explicit_override_rejects_linked_cache_root(
+        self, tmp_path, monkeypatch
+    ):
+        """Explicit-root cache reads and writes may not follow links outside it."""
+        import sector_stock_bridge as bridge
+
+        report_root = tmp_path / "reports"
+        report_root.mkdir()
+        outside_cache = tmp_path / "outside-cache"
+        outside_cache.mkdir()
+        _link_directory_or_skip(report_root / ".cache", outside_cache)
+        cache_dir = report_root / ".cache" / "sector_stocks"
+        outside_file = outside_cache / "sector_stocks" / "linked.json"
+        write_json(outside_file, {"source": "outside"})
+
+        monkeypatch.setattr(bridge, "_REPORT_ROOT_OVERRIDE", str(report_root))
+        monkeypatch.setattr(bridge, "CACHE_DIR", cache_dir)
+
+        assert bridge._load_cache("linked") is None
+        bridge._save_cache("new", {"source": "must-not-write"})
+        assert not (outside_cache / "sector_stocks" / "new.json").exists()
+
+    def test_explicit_override_rejects_stable_root_linked_to_sibling(
+        self, tmp_path, monkeypatch
+    ):
+        """A stable input root may not redirect to another report-root subtree."""
+        import sector_stock_bridge as bridge
+
+        as_of = "2026-07-02"
+        roots = build_sector_score_tree(tmp_path, [as_of])
+        report_root = roots["sector_scores"].parent
+        sibling_root = report_root / "unrelated-research"
+        write_json(
+            sibling_root / as_of / "sector_research.json",
+            {
+                "research_results": [
+                    {
+                        "sector_name": "Sibling Industry",
+                        "sector_type": "industry",
+                        "ranking_score": 99.0,
+                    }
+                ]
+            },
+        )
+        roots["sector_research"].parent.mkdir(parents=True, exist_ok=True)
+        _link_directory_or_skip(roots["sector_research"], sibling_root)
+
+        monkeypatch.setattr(bridge, "_REPORT_ROOT_OVERRIDE", str(report_root))
+        monkeypatch.setattr(bridge, "SCORES_DIR", roots["sector_scores"])
+        monkeypatch.setattr(
+            bridge, "STABLE_RESEARCH_DIR", roots["sector_research"]
+        )
+        monkeypatch.setattr(bridge, "STABLE_CONCEPT_DIR", roots["concept_rank"])
+
+        stable = bridge.load_stable_sector_inputs(
+            as_of,
+            score_data=load_sector_scores(
+                roots["sector_scores"] / as_of / "sector_scores.json"
+            ),
+        )
+
+        assert stable["available"] is False
+        assert stable["industries"] == []
+
+    def test_explicit_override_rejects_cache_root_linked_to_sibling(
+        self, tmp_path, monkeypatch
+    ):
+        """An explicit cache root may not redirect to a sibling subtree."""
+        import sector_stock_bridge as bridge
+
+        report_root = tmp_path / "reports"
+        sibling_cache = report_root / "unrelated-cache"
+        write_json(sibling_cache / "linked.json", {"source": "sibling"})
+        cache_root = report_root / ".cache" / "sector_stocks"
+        cache_root.parent.mkdir(parents=True)
+        _link_directory_or_skip(cache_root, sibling_cache)
+
+        monkeypatch.setattr(bridge, "_REPORT_ROOT_OVERRIDE", str(report_root))
+        monkeypatch.setattr(bridge, "CACHE_DIR", cache_root)
+
+        assert bridge._load_cache("linked") is None
+
+    def test_override_reader_rejects_non_regular_opened_file(
+        self, tmp_path, monkeypatch
+    ):
+        """The handle-bound reader must reject non-regular file identities."""
+        import stat
+
+        import sector_stock_bridge as bridge
+
+        report_root = tmp_path / "reports"
+        stable_root = report_root / "full90" / "sector_research"
+        input_path = stable_root / "2026-07-02" / "sector_research.json"
+        write_json(input_path, {"research_results": []})
+        real_stat = os.stat(input_path)
+        non_regular_stat = os.stat_result(
+            (stat.S_IFIFO | 0o600, *tuple(real_stat)[1:])
+        )
+
+        monkeypatch.setattr(bridge, "_REPORT_ROOT_OVERRIDE", str(report_root))
+        monkeypatch.setattr(bridge.os, "fstat", lambda _fd: non_regular_stat)
+
+        assert bridge._read_override_confined_text(
+            input_path, encoding="utf-8"
+        ) is None
+
+    def test_explicit_override_rejects_link_swap_after_stable_resolution(
+        self, tmp_path, monkeypatch
+    ):
+        import sector_stock_bridge as bridge
+
+        as_of = "2026-07-02"
+        roots = build_sector_score_tree(tmp_path / "inside", [as_of])
+        report_root = roots["sector_scores"].parent
+        inside_date = roots["sector_research"] / as_of
+        outside_date = tmp_path / "outside" / as_of
+        write_json(
+            inside_date / "sector_research.json",
+            {"research_results": []},
+        )
+        write_json(
+            outside_date / "sector_research.json",
+            {
+                "research_results": [
+                    {
+                        "sector_name": "Outside Industry",
+                        "sector_type": "industry",
+                        "ranking_score": 99.0,
+                    }
+                ]
+            },
+        )
+        monkeypatch.setattr(bridge, "_REPORT_ROOT_OVERRIDE", str(report_root))
+        monkeypatch.setattr(bridge, "SCORES_DIR", roots["sector_scores"])
+        monkeypatch.setattr(
+            bridge, "STABLE_RESEARCH_DIR", roots["sector_research"]
+        )
+        monkeypatch.setattr(bridge, "STABLE_CONCEPT_DIR", roots["concept_rank"])
+        original_resolve = bridge._resolve_override_confined_path
+        swapped = False
+
+        def resolve_then_swap(path, **kwargs):
+            nonlocal swapped
+            resolved = original_resolve(path, **kwargs)
+            if path.name == "sector_research.json" and not swapped:
+                swapped = True
+                shutil.rmtree(inside_date)
+                _link_directory_or_skip(inside_date, outside_date)
+            return resolved
+
+        monkeypatch.setattr(bridge, "_resolve_override_confined_path", resolve_then_swap)
+
+        stable = bridge.load_stable_sector_inputs(as_of)
+
+        assert stable["available"] is False
+        assert stable["industries"] == []
+
+    def test_explicit_override_rejects_link_swap_before_cache_write(
+        self, tmp_path, monkeypatch
+    ):
+        import sector_stock_bridge as bridge
+
+        report_root = tmp_path / "reports"
+        cache_dir = report_root / ".cache" / "sector_stocks"
+        outside_cache = tmp_path / "outside-cache"
+        cache_dir.mkdir(parents=True)
+        outside_cache.mkdir()
+        monkeypatch.setattr(bridge, "_REPORT_ROOT_OVERRIDE", str(report_root))
+        monkeypatch.setattr(bridge, "CACHE_DIR", cache_dir)
+        original_resolve = bridge._resolve_override_confined_path
+        swapped = False
+
+        def resolve_then_swap(path, **kwargs):
+            nonlocal swapped
+            resolved = original_resolve(path, **kwargs)
+            if path.name == "race.json" and not swapped:
+                swapped = True
+                shutil.rmtree(cache_dir)
+                _link_directory_or_skip(cache_dir, outside_cache)
+            return resolved
+
+        monkeypatch.setattr(bridge, "_resolve_override_confined_path", resolve_then_swap)
+
+        bridge._save_cache("race", {"source": "must-not-write"})
+
+        assert not (outside_cache / "race.json").exists()
 
     def test_load_sector_scores_structure(self, sample_scores_data):
         """加载的报告应有正确的结构"""
@@ -199,6 +881,279 @@ class TestReportReading:
         assert "sector_name" in first
         assert "trend_continuation_score" in first
         assert "short_term_burst_score" in first
+
+    def test_stable_inputs_use_injected_score_root(self, tmp_path, monkeypatch):
+        """Stable inputs must not mix an injected root with machine-local scores."""
+        import sector_stock_bridge as bridge
+
+        as_of = "2026-07-02"
+        injected = build_sector_score_tree(tmp_path / "injected", [as_of])
+        write_json(
+            injected["sector_research"] / as_of / "sector_research.json",
+            {
+                **_valid_industry_research_payload(as_of),
+                "research_results": [
+                    {
+                        **_valid_industry_research_payload(as_of)[
+                            "research_results"
+                        ][0],
+                        "sector_name": "证券",
+                    }
+                ],
+            },
+        )
+        machine = build_sector_score_tree(tmp_path / "machine", [as_of])
+        machine_scores = load_sector_scores(
+            machine["sector_scores"] / as_of / "sector_scores.json"
+        )
+        machine_scores["scores"][0]["trend_continuation_score"] = 1.0
+        write_json(
+            machine["sector_scores"] / as_of / "sector_scores.json",
+            machine_scores,
+        )
+
+        monkeypatch.setattr(bridge, "PROJECT_ROOT", tmp_path / "machine")
+        monkeypatch.setattr(bridge, "SCORES_DIR", injected["sector_scores"])
+        monkeypatch.setattr(
+            bridge, "STABLE_RESEARCH_DIR", injected["sector_research"]
+        )
+        monkeypatch.setattr(bridge, "STABLE_CONCEPT_DIR", injected["concept_rank"])
+
+        stable = bridge.load_stable_sector_inputs(as_of)
+
+        assert stable["available"] is True
+        assert stable["industries"][0]["trend_score"] == 72.0
+
+    @pytest.mark.parametrize(
+        "malformation",
+        [
+            "wrong_date",
+            "wrong_top_sector_type",
+            "wrong_report_type",
+            "missing_required_field",
+            "empty_required_number",
+            "mixed_sector_type",
+        ],
+    )
+    def test_stable_industry_source_rejects_incomplete_or_mismatched_schema(
+        self, tmp_path, monkeypatch, malformation
+    ):
+        import sector_stock_bridge as bridge
+
+        as_of = "2026-07-02"
+        roots = build_sector_score_tree(tmp_path, [as_of])
+        payload = _valid_industry_research_payload(as_of)
+        if malformation == "wrong_date":
+            payload["as_of_date"] = "2026-07-01"
+        elif malformation == "wrong_top_sector_type":
+            payload["sector_type"] = "concept"
+        elif malformation == "wrong_report_type":
+            payload["report_type"] = "other"
+        elif malformation == "missing_required_field":
+            payload["research_results"][0].pop("evidence_score")
+        elif malformation == "empty_required_number":
+            payload["research_results"][0]["ranking_score"] = ""
+        else:
+            payload["research_results"].append(
+                {
+                    **payload["research_results"][0],
+                    "sector_name": "Wrong Type",
+                    "sector_type": "concept",
+                }
+            )
+        write_json(
+            roots["sector_research"] / as_of / "sector_research.json", payload
+        )
+        monkeypatch.setattr(bridge, "SCORES_DIR", roots["sector_scores"])
+        monkeypatch.setattr(
+            bridge, "STABLE_RESEARCH_DIR", roots["sector_research"]
+        )
+        monkeypatch.setattr(bridge, "STABLE_CONCEPT_DIR", roots["concept_rank"])
+
+        stable = bridge.load_stable_sector_inputs(as_of)
+
+        assert stable["industries"] == []
+        assert stable["available"] is False
+
+    def test_stable_industry_source_rejects_all_rows_after_late_schema_error(
+        self, tmp_path, monkeypatch
+    ):
+        """A late malformed industry row must invalidate the whole source."""
+        import sector_stock_bridge as bridge
+
+        as_of = "2026-07-02"
+        roots = build_sector_score_tree(tmp_path, [as_of])
+        write_json(
+            roots["sector_research"] / as_of / "sector_research.json",
+            {
+                **_valid_industry_research_payload(as_of),
+                "research_results": [
+                    {
+                        **_valid_industry_research_payload(as_of)[
+                            "research_results"
+                        ][0],
+                    },
+                    {
+                        **_valid_industry_research_payload(as_of)[
+                            "research_results"
+                        ][0],
+                        "sector_name": "Overflow Industry",
+                        "ranking_score": 10**1000,
+                    },
+                ]
+            },
+        )
+        monkeypatch.setattr(bridge, "SCORES_DIR", roots["sector_scores"])
+        monkeypatch.setattr(
+            bridge, "STABLE_RESEARCH_DIR", roots["sector_research"]
+        )
+        monkeypatch.setattr(bridge, "STABLE_CONCEPT_DIR", roots["concept_rank"])
+
+        stable = bridge.load_stable_sector_inputs(
+            as_of,
+            score_data=load_sector_scores(
+                roots["sector_scores"] / as_of / "sector_scores.json"
+            ),
+        )
+
+        assert stable["industries"] == []
+        assert stable["available"] is False
+
+    def test_stable_concept_source_rejects_all_rows_after_nonfinite_value(
+        self, tmp_path, monkeypatch
+    ):
+        """A late NaN/Inf concept value must invalidate the whole CSV source."""
+        import sector_stock_bridge as bridge
+
+        as_of = "2026-07-02"
+        roots = build_sector_score_tree(tmp_path, [as_of])
+        concept_path = (
+            roots["concept_rank"] / as_of / "concept_unified_rank.csv"
+        )
+        concept_path.parent.mkdir(parents=True)
+        concept_path.write_text(
+            "sector_name,concept_final_rank_score,trend_continuation_score,"
+            "short_term_burst_score,rank,agent_consensus_label\n"
+            "Valid Concept,90,80,70,1,observe\n"
+            "Invalid Concept,NaN,80,70,2,observe\n",
+            encoding="utf-8",
+        )
+        monkeypatch.setattr(bridge, "SCORES_DIR", roots["sector_scores"])
+        monkeypatch.setattr(
+            bridge, "STABLE_RESEARCH_DIR", roots["sector_research"]
+        )
+        monkeypatch.setattr(bridge, "STABLE_CONCEPT_DIR", roots["concept_rank"])
+
+        stable = bridge.load_stable_sector_inputs(as_of)
+
+        assert stable["concepts"] == []
+        assert stable["available"] is False
+
+    @pytest.mark.parametrize("malformation", ["missing_header", "empty_number"])
+    def test_stable_concept_source_rejects_incomplete_schema(
+        self, tmp_path, monkeypatch, malformation
+    ):
+        import sector_stock_bridge as bridge
+
+        as_of = "2026-07-02"
+        roots = build_sector_score_tree(tmp_path, [as_of])
+        concept_path = roots["concept_rank"] / as_of / "concept_unified_rank.csv"
+        concept_path.parent.mkdir(parents=True)
+        if malformation == "missing_header":
+            csv_text = (
+                "rank,sector_name,concept_final_rank_score,trend_continuation_score,"
+                "agent_consensus_label\n"
+                "1,Incomplete Concept,90,80,observe\n"
+            )
+        else:
+            csv_text = (
+                "rank,sector_name,concept_final_rank_score,trend_continuation_score,"
+                "short_term_burst_score,agent_consensus_label\n"
+                "1,Empty Concept,,80,70,observe\n"
+            )
+        concept_path.write_text(csv_text, encoding="utf-8")
+        monkeypatch.setattr(bridge, "SCORES_DIR", roots["sector_scores"])
+        monkeypatch.setattr(
+            bridge, "STABLE_RESEARCH_DIR", roots["sector_research"]
+        )
+        monkeypatch.setattr(bridge, "STABLE_CONCEPT_DIR", roots["concept_rank"])
+
+        stable = bridge.load_stable_sector_inputs(as_of)
+
+        assert stable["concepts"] == []
+        assert stable["available"] is False
+
+    @pytest.mark.parametrize(
+        "malformation",
+        ["identity", "status", "weight", "source", "missing_field"],
+    )
+    def test_cache_loader_rejects_malformed_or_mismatched_payloads(
+        self, tmp_path, monkeypatch, malformation
+    ):
+        """Cache hits must satisfy the constituent result contract and identity."""
+        import sector_stock_bridge as bridge
+
+        cache_dir = tmp_path / "cache"
+        key = "2026-07-02_industry_证券"
+        payload = {
+            "status": "ok",
+            "as_of_date": "2026-07-02",
+            "sector_name": "证券",
+            "sector_type": "industry",
+            "stocks": [{"code": "600030", "name": "中信证券", "weight": 1.0}],
+            "error": None,
+            "fallback_used": False,
+            "source": "http_em",
+        }
+        if malformation == "identity":
+            payload["sector_name"] = "银行"
+        elif malformation == "status":
+            payload["status"] = "unknown"
+        elif malformation == "weight":
+            payload["stocks"][0]["weight"] = -0.1
+        elif malformation == "source":
+            payload["source"] = "untrusted"
+        else:
+            payload.pop("fallback_used")
+        write_json(cache_dir / f"{key}.json", payload)
+        monkeypatch.setattr(bridge, "CACHE_DIR", cache_dir)
+
+        assert bridge._load_cache(
+            key,
+            expected_sector_name="证券",
+            expected_sector_type="industry",
+        ) is None
+
+    def test_cache_loader_rejects_payload_from_another_request_date(
+        self, tmp_path, monkeypatch
+    ):
+        import sector_stock_bridge as bridge
+
+        cache_dir = tmp_path / "cache"
+        key = "2026-07-02_industry_证券"
+        write_json(
+            cache_dir / f"{key}.json",
+            {
+                "status": "ok",
+                "as_of_date": "2026-07-01",
+                "sector_name": "证券",
+                "sector_type": "industry",
+                "stocks": [
+                    {"code": "600030", "name": "中信证券", "weight": 1.0}
+                ],
+                "error": None,
+                "fallback_used": False,
+                "source": "http_em",
+            },
+        )
+        monkeypatch.setattr(bridge, "CACHE_DIR", cache_dir)
+
+        assert bridge._load_cache(
+            key,
+            expected_sector_name="证券",
+            expected_sector_type="industry",
+            expected_as_of_date="2026-07-02",
+        ) is None
 
 
 # ============================================================
@@ -316,6 +1271,69 @@ class TestRelevanceComputation:
             bd = s["relevance_breakdown"]
             expected = 0.2 * bd["weight_score"] + 0.4 * bd["rank_score"] + 0.4 * bd["flow_alignment"]
             assert s["relevance_score"] == pytest.approx(expected, abs=0.01)
+
+    def test_run_bridge_preserves_constituent_weight_for_normalization(
+        self, isolated_bridge_reports, monkeypatch
+    ):
+        import sector_stock_bridge as bridge
+
+        monkeypatch.setattr(
+            bridge,
+            "fetch_sector_constituents",
+            lambda *_args, **_kwargs: {
+                "status": "ok",
+                "stocks": [
+                    {"code": "600001", "name": "Heavy", "weight": 0.8},
+                    {"code": "600002", "name": "Light", "weight": 0.2},
+                ],
+                "error": None,
+                "fallback_used": False,
+                "source": "http_em",
+            },
+        )
+        monkeypatch.setattr(
+            bridge,
+            "fetch_tencent_quotes",
+            lambda _codes: {
+                "600001": {"change_pct": 0.0},
+                "600002": {"change_pct": 0.0},
+            },
+        )
+        monkeypatch.setattr(
+            bridge,
+            "fetch_sector_fund_flow",
+            lambda _name: {"status": "ok", "direction": "neutral", "error": None},
+        )
+        monkeypatch.setattr(bridge, "fetch_individual_fund_flow", lambda _codes: {})
+
+        result = bridge.run_bridge(
+            as_of_date="2026-07-01",
+            trend_top_n=1,
+            burst_top_n=1,
+            min_relevance=0.0,
+        )
+
+        stocks = {
+            stock["code"]: stock for stock in result["trend_sectors"][0]["stocks"]
+        }
+        assert stocks["600001"]["weight"] == pytest.approx(0.8)
+        assert stocks["600001"]["sector_weight"] == pytest.approx(0.8)
+        assert stocks["600001"]["weight_normalized"] == pytest.approx(1.0)
+        assert stocks["600002"]["weight_normalized"] == pytest.approx(0.25)
+        research = result["linkage_research"]
+        assert research["mode"] == "paper_shadow_research_only"
+        assert research["legacy_policy"]["status"] == "frozen_baseline"
+        assert len(research["legacy_policy"]["policy_sha256"]) == 64
+        assert len(research["score_input"]["sha256"]) == 64
+        assert research["sector_funnel"][0]["raw_constituent_count"] == 2
+        assert research["sector_funnel"][0]["legacy_relevance_pass_count"] == 2
+        research = result["linkage_research"]
+        assert research["mode"] == "paper_shadow_research_only"
+        assert research["legacy_policy"]["status"] == "frozen_baseline"
+        assert len(research["legacy_policy"]["policy_sha256"]) == 64
+        assert len(research["score_input"]["sha256"]) == 64
+        assert research["sector_funnel"][0]["raw_constituent_count"] == 2
+        assert research["sector_funnel"][0]["legacy_relevance_pass_count"] == 2
 
 
 # ============================================================
@@ -596,6 +1614,12 @@ class TestQuantScoreFallback:
 class TestBridgeHttpIntegration:
     """Test that fetch_sector_constituents uses simplified Phase 3 fallback."""
 
+    @pytest.fixture(autouse=True)
+    def _disable_live_sina(self, monkeypatch):
+        import sector_stock_bridge as bridge
+
+        monkeypatch.setattr(bridge, "_fetch_sina_constituents", lambda _name: [])
+
     # ------------------------------------------------------------------
     # HTTP success scenarios
     # ------------------------------------------------------------------
@@ -620,6 +1644,41 @@ class TestBridgeHttpIntegration:
                     assert result["fallback_used"] is False
                     assert len(result["stocks"]) == 2
                     assert result["stocks"][0]["code"] == "688981"
+
+    def test_requested_as_of_binds_cache_key_and_saved_payload(self, monkeypatch):
+        from unittest.mock import MagicMock
+        import sector_stock_bridge as bridge
+
+        requested_as_of = "2026-07-02"
+        observed = {}
+
+        def load_cache(key, **kwargs):
+            observed["load_key"] = key
+            observed["load_kwargs"] = kwargs
+            return None
+
+        def save_cache(key, payload):
+            observed["save_key"] = key
+            observed["payload"] = payload.copy()
+
+        mock_client = MagicMock()
+        mock_client.get_board_constituents.return_value = [
+            {"code": "600030", "name": "中信证券", "market_cap": 1.0, "source": "em"}
+        ]
+        monkeypatch.setattr(bridge, "_get_http_client", lambda: mock_client)
+        monkeypatch.setattr(bridge, "_load_cache", load_cache)
+        monkeypatch.setattr(bridge, "_save_cache", save_cache)
+
+        result = bridge.fetch_sector_constituents(
+            "证券", sector_type="industry", as_of=requested_as_of
+        )
+
+        expected_key = f"{requested_as_of}_industry_证券"
+        assert observed["load_key"] == expected_key
+        assert observed["save_key"] == expected_key
+        assert observed["load_kwargs"]["expected_as_of_date"] == requested_as_of
+        assert observed["payload"]["as_of_date"] == requested_as_of
+        assert result["as_of_date"] == requested_as_of
 
     def test_http_200_mapping_source(self):
         """HTTP 200 + stocks have source='mapping' → trust it, no local fallback."""
@@ -673,7 +1732,7 @@ class TestBridgeHttpIntegration:
             with patch.object(bridge, "_load_cache", return_value=None):
                 with patch.object(bridge, "_save_cache"):
                     result = bridge.fetch_sector_constituents("半导体")
-                    assert result["source"] in ("local_emergency_mapping", "sina_fallback")
+                    assert result["source"] == "local_emergency_mapping"
                     assert result["fallback_used"] is True
                     assert len(result["stocks"]) > 0
                     # Should come from SECTOR_STOCK_MAPPING or Sina
@@ -692,7 +1751,7 @@ class TestBridgeHttpIntegration:
             with patch.object(bridge, "_load_cache", return_value=None):
                 with patch.object(bridge, "_save_cache"):
                     result = bridge.fetch_sector_constituents("证券")
-                    assert result["source"] in ("local_emergency_mapping", "sina_fallback")
+                    assert result["source"] == "local_emergency_mapping"
                     assert len(result["stocks"]) > 0
                     codes = [s["code"] for s in result["stocks"]]
                     assert "600030" in codes or len(codes) > 0
@@ -726,7 +1785,7 @@ class TestBridgeHttpIntegration:
             with patch.object(bridge, "_load_cache", return_value=None):
                 with patch.object(bridge, "_save_cache"):
                     result = bridge.fetch_sector_constituents("半导体")
-                    assert result["source"] in ("local_emergency_mapping", "sina_fallback")
+                    assert result["source"] == "local_emergency_mapping"
                     assert len(result["stocks"]) > 0
 
     # ------------------------------------------------------------------
@@ -767,7 +1826,7 @@ class TestBridgeHttpIntegration:
             with patch.object(bridge, "_load_cache", return_value=None):
                 with patch.object(bridge, "_save_cache"):
                     r = bridge.fetch_sector_constituents("半导体")
-                    assert r["source"] in ("local_emergency_mapping", "sina_fallback")
+                    assert r["source"] == "local_emergency_mapping"
 
         # Unavailable
         mock_fail2 = MagicMock()
@@ -787,7 +1846,441 @@ class TestBridgeHttpIntegration:
 class TestSourceTransparency:
     """Test that output reports include source distribution summaries."""
 
-    def test_bridge_output_has_constituent_source_summary(self):
+    def test_direction_linkage_summary_is_machine_readable(self):
+        import unified_pipeline as up
+
+        summary = up._build_direction_linkage_summary(
+            [
+                {
+                    "sector_name": "Core A",
+                    "candidate_tier": "core",
+                    "linkage_v2_shadow": {"status": "unavailable"},
+                },
+                {
+                    "sector_name": "Core A",
+                    "candidate_tier": "core",
+                    "linkage_v2_shadow": {"status": "ok"},
+                },
+                {
+                    "sector_name": "Supplemental B",
+                    "candidate_tier": "supplemental",
+                    "linkage_v2_shadow": {"status": "partial"},
+                },
+            ],
+            {"selected_count": 2},
+            {"sector_count": 17},
+            [{"sector_name": "Confirm C"}],
+        )
+
+        assert summary == {
+            "sector_groups": {
+                "core": ["Core A"],
+                "supplemental": ["Supplemental B"],
+                "confirmation_required": ["Confirm C"],
+            },
+            "sector_group_counts": {
+                "core": 1,
+                "supplemental": 1,
+                "confirmation_required": 1,
+            },
+            "candidate_count": 3,
+            "linkage_v2_status_counts": {"ok": 1, "partial": 1, "unavailable": 1},
+            "selected_count": 2,
+            "history_sector_count": 17,
+        }
+
+    def test_sector_cluster_map_loader_is_sha_bound(self, tmp_path):
+        import unified_pipeline as up
+
+        path = write_json(
+            tmp_path / "clusters.json",
+            {
+                "schema_version": "path_a_sector_cluster_map.v1",
+                "mode": "paper_shadow_research_only",
+                "clusters": {
+                    "Health": ["Medical", "Pharma"],
+                    "Agriculture": ["Breeding"],
+                },
+            },
+        )
+
+        mapping, audit = up.load_sector_cluster_map(path)
+
+        assert mapping == {
+            "Medical": "Health",
+            "Pharma": "Health",
+            "Breeding": "Agriculture",
+        }
+        assert audit["status"] == "ok"
+        assert audit["mapped_sector_count"] == 3
+        assert len(audit["sha256"]) == 64
+        assert len(audit["mapping_sha256"]) == 64
+
+    def test_default_cluster_map_can_form_40pct_capped_portfolio(self):
+        import unified_pipeline as up
+
+        mapping, _audit = up.load_sector_cluster_map(
+            up.DEFAULT_SECTOR_CLUSTER_MAP_PATH
+        )
+        current_direction_sectors = {
+            "医疗服务",
+            "中药",
+            "化学制药",
+            "生物制品",
+            "医药商业",
+            "养殖业",
+        }
+
+        assert current_direction_sectors <= set(mapping)
+        assert len({mapping[name] for name in current_direction_sectors}) >= 3
+
+    def test_direction_shadow_runtime_stats_do_not_overwrite_legacy_stats(
+        self, tmp_path, monkeypatch
+    ):
+        from unittest.mock import MagicMock, patch
+        import unified_pipeline as up
+
+        client = MagicMock()
+        client.health_check.side_effect = ConnectionError("offline")
+        legacy_stock = {
+            "code": "600001",
+            "name": "Legacy",
+            "change_pct": 1.0,
+            "total_mv": 100.0,
+            "pe": 10.0,
+            "pb": 1.0,
+            "relevance_score": 0.8,
+        }
+        shadow_stock = {
+            "code": "600002",
+            "name": "Shadow",
+            "change_pct": 1.0,
+            "total_mv": 100.0,
+            "pe": 10.0,
+            "pb": 1.0,
+            "relevance_score": 0.8,
+        }
+        bridge_result = {
+            "status": "ok",
+            "as_of_date": "2026-07-01",
+            "trend_sectors": [
+                {
+                    "sector_name": "Legacy",
+                    "trend_score": 60.0,
+                    "burst_score": 50.0,
+                    "high_relevance_count": 1,
+                    "stocks": [legacy_stock],
+                }
+            ],
+            "burst_sectors": [],
+            "direction_shadow_sectors": [
+                {
+                    "sector_name": "Shadow",
+                    "sector_type": "industry",
+                    "trend_score": 0.0,
+                    "burst_score": 0.0,
+                    "candidate_tier": "core",
+                    "shadow_prefilter_stocks": [shadow_stock],
+                }
+            ],
+            "direction_confirmation_sectors": [],
+            "cross_sectors": [],
+            "constituent_source_summary": {},
+            "api_status": {},
+            "linkage_research": {},
+        }
+        validated = (
+            "2026-07-01",
+            tmp_path / "sector_scores.json",
+            {
+                "as_of_date": "2026-07-01",
+                "scores": [
+                    {
+                        "sector_name": "Legacy",
+                        "sector_type": "industry",
+                        "trend_continuation_score": 60.0,
+                        "short_term_burst_score": 50.0,
+                    }
+                ],
+            },
+        )
+
+        def fake_quant(stocks, **_kwargs):
+            source = "shadow_source" if stocks[0]["sector_name"] == "Shadow" else "legacy_source"
+            fake_quant._last_fund_flow_source = source
+            up.compute_quant_scores._last_fund_flow_source = source
+            for stock in stocks:
+                stock["quant_score"] = 50.0
+                stock["quant_breakdown"] = {}
+                stock["quant_source"] = "fallback_v2"
+                stock["linkage_v2_shadow"] = {
+                    "status": "unavailable",
+                    "score": None,
+                }
+            return stocks
+
+        with patch.object(
+            up, "validate_explicit_score_report", return_value=(True, validated, None)
+        ), patch.object(up, "run_bridge", return_value=bridge_result), patch.object(
+            up, "_get_http_client", return_value=client
+        ), patch.object(up, "compute_quant_scores", side_effect=fake_quant) as quant:
+            quant._last_fund_flow_source = "fund_flow_neutral"
+            result = up.run_pipeline(
+                as_of_date="2026-07-01",
+                output_dir=str(tmp_path / "out"),
+            )
+            bridge_result["trend_sectors"] = []
+            second_result = up.run_pipeline(
+                as_of_date="2026-07-01",
+                output_dir=str(tmp_path / "out-second"),
+            )
+
+        assert result["data_source"]["fund_flow_source"] == "legacy_source"
+        assert result["data_source"]["stock_info_sources"]["unknown"] == 1
+        assert result["direction_shadow_runtime_audit"]["fund_flow_source"] == "shadow_source"
+        assert result["direction_shadow_runtime_audit"]["stock_info_sources"]["unknown"] == 1
+        assert second_result["data_source"]["fund_flow_source"] == "not_evaluated"
+
+    def test_direction_shadow_uses_stockdb_bars_without_changing_legacy_path(
+        self, tmp_path, monkeypatch
+    ):
+        from unittest.mock import patch
+        import unified_pipeline as up
+
+        bars = [
+            {
+                "date": f"202607{day:02d}",
+                "open": 10.0 + day,
+                "high": 11.0 + day,
+                "low": 9.0 + day,
+                "close": 10.0 + day,
+                "volume": 1_000_000,
+                "amount": 100_000_000,
+            }
+            for day in range(1, 22)
+        ]
+
+        class OfflineHttp:
+            def health_check(self):
+                raise ConnectionError("offline")
+
+        class StockDbBars:
+            selection = {
+                "source": "stockdb-sdk",
+                "reason": "http_unavailable",
+                "http_latest_daily_date": None,
+                "sdk_latest_daily_date": "20260721",
+                "expected_min_date": "20260721",
+                "http_error": "offline",
+                "sdk_error": None,
+            }
+
+            def get_stock_bars(self, *_args, **_kwargs):
+                return bars
+
+        auto_calls = []
+
+        def fake_auto_bars_client(**kwargs):
+            auto_calls.append(kwargs)
+            return StockDbBars()
+
+        legacy_stock = {
+            "code": "600001",
+            "name": "Legacy",
+            "change_pct": 1.0,
+            "total_mv": 100.0,
+            "pe": 10.0,
+            "pb": 1.0,
+            "relevance_score": 0.8,
+        }
+        shadow_stock = {
+            "code": "600002",
+            "name": "Shadow",
+            "change_pct": 1.0,
+            "total_mv": 100.0,
+            "pe": 10.0,
+            "pb": 1.0,
+            "relevance_score": 0.8,
+            "quote_available": True,
+            "constituent_source": "http_em",
+        }
+        bridge_result = {
+            "status": "ok",
+            "as_of_date": "2026-07-21",
+            "trend_sectors": [
+                {
+                    "sector_name": "Legacy",
+                    "trend_score": 60.0,
+                    "burst_score": 50.0,
+                    "high_relevance_count": 1,
+                    "stocks": [legacy_stock],
+                }
+            ],
+            "burst_sectors": [],
+            "direction_shadow_sectors": [
+                {
+                    "sector_name": "Shadow",
+                    "sector_type": "industry",
+                    "trend_score": 70.0,
+                    "burst_score": 60.0,
+                    "candidate_tier": "core",
+                    "shadow_prefilter_stocks": [shadow_stock],
+                }
+            ],
+            "direction_confirmation_sectors": [],
+            "cross_sectors": [],
+            "constituent_source_summary": {},
+            "api_status": {},
+            "linkage_research": {},
+        }
+        validated = (
+            "2026-07-21",
+            tmp_path / "sector_scores.json",
+            {"as_of_date": "2026-07-21", "scores": []},
+        )
+        stock_returns = up.returns_by_date_from_bars(
+            [
+                {**bar, "date": f"2026-07-{index:02d}"}
+                for index, bar in enumerate(bars, 1)
+            ],
+            as_of_date="2026-07-21",
+        )
+        history = {
+            "Shadow": {
+                "recent_dates": list(stock_returns),
+                "recent_returns": [value * 0.8 for value in stock_returns.values()],
+            }
+        }
+        monkeypatch.setattr(up, "AutoBarsClient", fake_auto_bars_client, raising=False)
+
+        with patch.object(
+            up, "validate_explicit_score_report", return_value=(True, validated, None)
+        ), patch.object(up, "run_bridge", return_value=bridge_result), patch.object(
+            up, "_get_http_client", return_value=OfflineHttp()
+        ), patch.object(
+            up, "load_sector_trend_history", return_value=(history, [])
+        ):
+            result = up.run_pipeline(
+                as_of_date="2026-07-21",
+                sector_history_root=str(tmp_path / "history"),
+                output_dir=str(tmp_path / "out"),
+            )
+
+        assert len(auto_calls) == 1
+        assert auto_calls[0]["expected_min_date"] == "2026-07-21"
+        assert result["trend_top_stocks"][0]["quant_source"] == "fallback_v2"
+        shadow = result["direction_shadow_candidates_all"][0]
+        assert shadow["quant_source"] == "stockdb_sdk_enhanced_v2"
+        assert shadow["linkage_v2_shadow"]["status"] == "partial"
+        audit = result["direction_shadow_runtime_audit"]
+        assert audit["bars_source"] == "stockdb-sdk"
+        assert audit["bars_reason"] == "http_unavailable"
+        assert audit["latest_daily_date"] == "20260721"
+        assert audit["stock_bar_coverage"] == {
+            "requested_stock_count": 1,
+            "usable_stock_count": 1,
+            "requested_relation_count": 1,
+            "usable_relation_count": 1,
+            "coverage_ratio": 1.0,
+            "minimum_bars": 5,
+        }
+        assert audit["fund_flow_source"] == "fund_flow_neutral"
+
+    def test_direction_shadow_keeps_http_audit_when_auto_bars_init_fails(
+        self, tmp_path
+    ):
+        from unittest.mock import patch
+        import unified_pipeline as up
+
+        class HealthyHttp:
+            def health_check(self):
+                return {"latest_daily_date": "20260716"}
+
+            def get_stock_info_batch(self, _codes):
+                return None
+
+            def get_stock_info(self, _code):
+                return None
+
+        bridge_result = {
+            "status": "ok",
+            "as_of_date": "2026-07-16",
+            "trend_sectors": [],
+            "burst_sectors": [],
+            "direction_shadow_sectors": [
+                {
+                    "sector_name": "Shadow",
+                    "sector_type": "industry",
+                    "trend_score": 70.0,
+                    "burst_score": 60.0,
+                    "candidate_tier": "core",
+                    "shadow_prefilter_stocks": [
+                        {
+                            "code": "600002",
+                            "name": "Shadow",
+                            "change_pct": 1.0,
+                            "relevance_score": 0.8,
+                        }
+                    ],
+                }
+            ],
+            "direction_confirmation_sectors": [],
+            "cross_sectors": [],
+            "constituent_source_summary": {},
+            "api_status": {},
+            "linkage_research": {},
+        }
+        validated = (
+            "2026-07-16",
+            tmp_path / "sector_scores.json",
+            {"as_of_date": "2026-07-16", "scores": []},
+        )
+
+        def fake_quant(stocks, **_kwargs):
+            up.compute_quant_scores._last_fund_flow_source = "fund_flow_neutral"
+            up.compute_quant_scores._last_bars_audit = {
+                "source": "http",
+                "reason": "direct_client",
+                "latest_daily_date": "20260716",
+                "requested_stock_count": 1,
+                "usable_stock_count": 1,
+                "requested_relation_count": 1,
+                "usable_relation_count": 1,
+                "coverage_ratio": 1.0,
+                "minimum_bars": 5,
+            }
+            stocks[0]["linkage_v2_shadow"] = {
+                "status": "partial",
+                "score": 0.8,
+            }
+            stocks[0]["quant_score"] = 50.0
+            return stocks
+
+        with patch.object(
+            up, "validate_explicit_score_report", return_value=(True, validated, None)
+        ), patch.object(up, "run_bridge", return_value=bridge_result), patch.object(
+            up, "_get_http_client", return_value=HealthyHttp()
+        ), patch.object(
+            up, "load_sector_trend_history",
+            return_value=({"Shadow": {"recent_dates": [], "recent_returns": []}}, []),
+        ), patch.object(
+            up, "AutoBarsClient", side_effect=ImportError("SDK missing")
+        ), patch.object(up, "compute_quant_scores", side_effect=fake_quant):
+            result = up.run_pipeline(
+                as_of_date="2026-07-16",
+                sector_history_root=str(tmp_path / "history"),
+                output_dir=str(tmp_path / "out"),
+            )
+
+        audit = result["direction_shadow_runtime_audit"]
+        assert audit["bars_source"] == "http"
+        assert audit["latest_daily_date"] == "20260716"
+        assert audit["stock_bar_coverage"]["usable_stock_count"] == 1
+        assert "bars_error" not in audit
+
+    def test_bridge_output_has_constituent_source_summary(
+        self, isolated_bridge_reports, offline_bridge_io
+    ):
         """Bridge result should include constituent_source_summary dict."""
         from unittest.mock import MagicMock, patch
         import sector_stock_bridge as bridge
@@ -801,6 +2294,7 @@ class TestSourceTransparency:
             with patch.object(bridge, "_load_cache", return_value=None):
                 with patch.object(bridge, "_save_cache"):
                     result = bridge.run_bridge(as_of_date="2026-07-01")
+                    assert isinstance(result, dict)
                     assert "constituent_source_summary" in result
                     summary = result["constituent_source_summary"]
                     assert isinstance(summary, dict)
@@ -810,7 +2304,9 @@ class TestSourceTransparency:
                     total = sum(summary.values())
                     assert total > 0
 
-    def test_source_summary_fields_are_valid(self):
+    def test_source_summary_fields_are_valid(
+        self, isolated_bridge_reports, offline_bridge_io
+    ):
         """All keys in source summary should be known source labels."""
         from unittest.mock import MagicMock, patch
         import sector_stock_bridge as bridge
@@ -828,11 +2324,14 @@ class TestSourceTransparency:
             with patch.object(bridge, "_load_cache", return_value=None):
                 with patch.object(bridge, "_save_cache"):
                     result = bridge.run_bridge(as_of_date="2026-07-01")
+                    assert isinstance(result, dict)
                     summary = result["constituent_source_summary"]
                     for key in summary:
                         assert key in valid_labels, f"Unknown source label: {key}"
 
-    def test_unified_json_has_data_source_field(self):
+    def test_unified_json_has_data_source_field(
+        self, tmp_path, isolated_bridge_reports, offline_bridge_io
+    ):
         """Unified JSON report should include data_source section."""
         from unittest.mock import MagicMock, patch
         import unified_pipeline as up
@@ -857,7 +2356,12 @@ class TestSourceTransparency:
             with patch.object(up, "_get_http_client", return_value=mock_client):
                 with patch.object(bridge, "_load_cache", return_value=None):
                     with patch.object(bridge, "_save_cache"):
-                        result = up.run_pipeline(as_of_date="2026-07-01", mode="quick")
+                        result = up.run_pipeline(
+                            as_of_date="2026-07-01",
+                            mode="quick",
+                            output_dir=str(tmp_path / "unified"),
+                        )
+                        assert isinstance(result.get("bridge_result"), dict)
                         assert "data_source" in result
                         ds = result["data_source"]
                         assert "constituent_sources" in ds
@@ -865,7 +2369,9 @@ class TestSourceTransparency:
                         assert "has_unavailable_sectors" in ds
                         assert "has_emergency_fallback" in ds
 
-    def test_unified_json_has_bridge_source_summary(self):
+    def test_unified_json_has_bridge_source_summary(
+        self, tmp_path, isolated_bridge_reports, offline_bridge_io
+    ):
         """Bridge summary in unified JSON should include constituent_source_summary."""
         from unittest.mock import MagicMock, patch
         import unified_pipeline as up
@@ -888,8 +2394,13 @@ class TestSourceTransparency:
             with patch.object(up, "_get_http_client", return_value=mock_client):
                 with patch.object(bridge, "_load_cache", return_value=None):
                     with patch.object(bridge, "_save_cache"):
-                        result = up.run_pipeline(as_of_date="2026-07-01", mode="quick")
-                        bs = result.get("bridge_result", {})
+                        result = up.run_pipeline(
+                            as_of_date="2026-07-01",
+                            mode="quick",
+                            output_dir=str(tmp_path / "unified"),
+                        )
+                        bs = result.get("bridge_result")
+                        assert isinstance(bs, dict)
                         assert "constituent_source_summary" in bs
 
     def test_pipeline_reuses_single_failed_api_health_check(self, tmp_path):
@@ -921,10 +2432,31 @@ class TestSourceTransparency:
             "api_status": {"mock": "down"},
         }
 
-        with patch.object(up, "run_bridge", return_value=fake_bridge_result):
-            with patch.object(up, "_get_http_client", return_value=mock_client):
+        validated_score = (
+            "2026-07-01",
+            tmp_path / "sector_scores.json",
+            {
+                "as_of_date": "2026-07-01",
+                "scores": [
+                    {
+                        "sector_name": "VPN",
+                        "sector_type": "concept",
+                        "trend_continuation_score": 60.0,
+                        "short_term_burst_score": 50.0,
+                    }
+                ],
+            },
+        )
+        with patch.object(
+            up,
+            "validate_explicit_score_report",
+            return_value=(True, validated_score, None),
+        ):
+            with patch.object(up, "run_bridge", return_value=fake_bridge_result), patch.object(
+                up, "_get_http_client", return_value=mock_client
+            ):
                 result = up.run_pipeline(
-                    as_of_date="2026-07-01",
+                    as_of_date="2026-07-02",
                     mode="quick",
                     output_dir=str(tmp_path),
                 )
@@ -937,6 +2469,14 @@ class TestSourceTransparency:
         mock_client.get_stock_bars.assert_not_called()
         mock_client.get_stock_fund_flow_batch.assert_not_called()
         mock_client.get_stock_fund_flow.assert_not_called()
+        assert result["as_of_date"] == "2026-07-02"
+        assert result["score_as_of_date"] == "2026-07-01"
+        report = json.loads((tmp_path / "unified_report.json").read_text(encoding="utf-8"))
+        assert report["as_of_date"] == "2026-07-02"
+        assert report["score_as_of_date"] == "2026-07-01"
+        assert report["bridge_summary"]["score_as_of_date"] == "2026-07-01"
+        markdown = (tmp_path / "unified_report.md").read_text(encoding="utf-8")
+        assert "2026-07-01" in markdown
 
     def test_pipeline_maps_short_term_burst_score_to_stock_burst_score(self, tmp_path):
         """Stocks should inherit short_term_burst_score when bridge sectors do not expose burst_score."""
@@ -967,8 +2507,29 @@ class TestSourceTransparency:
             "api_status": {"mock": "down"},
         }
 
-        with patch.object(up, "run_bridge", return_value=fake_bridge_result):
-            with patch.object(up, "_get_http_client", return_value=mock_client):
+        validated_score = (
+            "2026-07-07",
+            tmp_path / "sector_scores.json",
+            {
+                "as_of_date": "2026-07-07",
+                "scores": [
+                    {
+                        "sector_name": "工程机械",
+                        "sector_type": "industry",
+                        "trend_continuation_score": 47.25,
+                        "short_term_burst_score": 63.1,
+                    }
+                ],
+            },
+        )
+        with patch.object(
+            up,
+            "validate_explicit_score_report",
+            return_value=(True, validated_score, None),
+        ):
+            with patch.object(up, "run_bridge", return_value=fake_bridge_result), patch.object(
+                up, "_get_http_client", return_value=mock_client
+            ):
                 result = up.run_pipeline(
                     as_of_date="2026-07-07",
                     mode="quick",
@@ -977,7 +2538,9 @@ class TestSourceTransparency:
 
         assert result["trend_candidates_all"][0]["sector_burst_score"] == 63.1
 
-    def test_markdown_report_has_data_source_section(self):
+    def test_markdown_report_has_data_source_section(
+        self, tmp_path, isolated_bridge_reports, offline_bridge_io
+    ):
         """Markdown report should contain '数据来源状态' section."""
         from unittest.mock import MagicMock, patch
         import unified_pipeline as up
@@ -997,14 +2560,21 @@ class TestSourceTransparency:
             with patch.object(up, "_get_http_client", return_value=mock_client):
                 with patch.object(bridge, "_load_cache", return_value=None):
                     with patch.object(bridge, "_save_cache"):
-                        result = up.run_pipeline(as_of_date="2026-07-01", mode="quick")
+                        result = up.run_pipeline(
+                            as_of_date="2026-07-01",
+                            mode="quick",
+                            output_dir=str(tmp_path / "unified"),
+                        )
+
+                        bridge_result = result.get("bridge_result")
+                        assert isinstance(bridge_result, dict)
 
                         # Generate markdown directly
                         md = up.generate_markdown_report(
                             as_of_date="2026-07-01",
                             trend_stocks=result.get("trend_top_stocks", []),
                             burst_stocks=result.get("burst_top_stocks", []),
-                            bridge_result=result.get("bridge_result", {}),
+                            bridge_result=bridge_result,
                         )
                         assert "数据来源状态" in md
                         assert "http_mapping" in md
@@ -1234,17 +2804,734 @@ class TestRunHealthGate:
 # ============================================================
 
 
+@pytest.fixture
+def offline_daily_runner(tmp_path, monkeypatch):
+    """Run the daily wrapper against a real, deterministic child process."""
+    sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+    import run_daily_unified_pipeline as daily
+
+    as_of = "2026-07-02"
+    fallback_as_of = "2026-07-01"
+    roots = build_sector_score_tree(tmp_path, [fallback_as_of, as_of])
+    report_root = roots["sector_scores"].parent
+    exact_score = roots["sector_scores"] / as_of / "sector_scores.json"
+    exact_payload = json.loads(exact_score.read_text(encoding="utf-8"))
+    exact_payload["scores"][0]["sector_name"] = "Exact Bound"
+    write_json(exact_score, exact_payload)
+    fallback_score = roots["sector_scores"] / fallback_as_of / "sector_scores.json"
+    fallback_payload = json.loads(fallback_score.read_text(encoding="utf-8"))
+    fallback_payload["scores"][0]["sector_name"] = "Fallback Only"
+    write_json(fallback_score, fallback_payload)
+    output_dir = tmp_path / "unified-output"
+    index_path = tmp_path / "unified_runs_index.jsonl"
+    child_script = tmp_path / "offline_unified_pipeline.py"
+    child_script.write_text(
+        f"""\
+import os
+import runpy
+import socket
+import sys
+import urllib.request
+from pathlib import Path
+
+def deny_network(*_args, **_kwargs):
+    raise AssertionError("offline child attempted network access")
+
+
+socket.create_connection = deny_network
+socket.socket.connect = deny_network
+socket.socket.connect_ex = deny_network
+socket.socket.sendto = deny_network
+urllib.request.urlopen = deny_network
+
+try:
+    import requests
+except ImportError:
+    requests = None
+if requests is not None:
+    requests.api.request = deny_network
+    requests.Session.request = deny_network
+    requests.sessions.Session.request = deny_network
+
+try:
+    import http.client
+    http.client.HTTPConnection.connect = deny_network
+    http.client.HTTPSConnection.connect = deny_network
+except ImportError:
+    pass
+
+sys.path.insert(0, {str(PROJECT_ROOT)!r})
+import sector_stock_bridge as bridge
+
+report_root = Path(os.environ["THEME_SECTOR_RADAR_REPORT_ROOT"]).resolve()
+expected_scores = report_root / "sector_scores"
+if bridge.SCORES_DIR.resolve() != expected_scores:
+    raise SystemExit(21)
+if bridge.STABLE_RESEARCH_DIR.resolve() != report_root / "full90" / "sector_research":
+    raise SystemExit(22)
+if bridge.STABLE_CONCEPT_DIR.resolve() != report_root / "full_concept" / "unified_rank":
+    raise SystemExit(23)
+if bridge.CACHE_DIR.resolve() != report_root / ".cache" / "sector_stocks":
+    raise SystemExit(24)
+
+def offline_constituents(sector_name, sector_type="industry", as_of=None):
+    return {{
+        "status": "degraded",
+        "sector_name": sector_name,
+        "sector_type": sector_type,
+        "stocks": [{{
+            "code": "600000",
+            "name": "Offline Bank",
+            "weight": 1.0,
+        }}],
+        "error": None,
+        "fallback_used": False,
+        "source": "unavailable",
+    }}
+
+
+def offline_quotes(codes):
+    return {{
+        code: {{
+            "name": "Offline Bank",
+            "change_pct": 1.0,
+            "price": 10.0,
+            "total_mv": 1000000000.0,
+            "pe": 10.0,
+            "pb": 1.0,
+        }}
+        for code in codes
+    }}
+
+
+def offline_sector_flow(_sector_name):
+    return {{
+        "status": "degraded",
+        "net_flow": 0.0,
+        "direction": "neutral",
+        "error": "offline fixture",
+    }}
+
+
+def offline_individual_flows(codes):
+    return {{
+        code: {{"net_flow": 0.0, "direction": "neutral"}}
+        for code in codes
+    }}
+
+
+bridge.fetch_sector_constituents = offline_constituents
+bridge.fetch_tencent_quotes = offline_quotes
+bridge.fetch_sector_fund_flow = offline_sector_flow
+bridge.fetch_individual_fund_flow = offline_individual_flows
+
+pipeline = runpy.run_path(
+    str(Path({str(PROJECT_ROOT)!r}) / "unified_pipeline.py"),
+    run_name="offline_unified_pipeline",
+)
+def offline_http_client():
+    return None
+
+
+pipeline["_get_http_client"] = offline_http_client
+pipeline["run_pipeline"].__globals__["_get_http_client"] = pipeline["_get_http_client"]
+pipeline["main"]()
+""",
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr(daily, "UNIFIED_PIPELINE", child_script)
+    monkeypatch.setattr(daily, "_check_tcp_port", lambda *_args, **_kwargs: False)
+    monkeypatch.setattr(
+        daily,
+        "_check_http_health",
+        lambda *_args, **_kwargs: (True, '{"stockdb": "offline_fixture"}'),
+    )
+
+    def run(*extra_args: str, output_dir_arg: str | None = None):
+        selected_output_dir = (
+            str(output_dir) if output_dir_arg is None else output_dir_arg
+        )
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "run_daily_unified_pipeline.py",
+                "--as-of", as_of,
+                "--mode", "quick",
+                "--report-root", str(report_root),
+                "--output-dir", selected_output_dir,
+                "--index-path", str(index_path),
+                *extra_args,
+            ],
+        )
+        return daily.main()
+
+    return {
+        "run": run,
+        "module": daily,
+        "as_of": as_of,
+        "fallback_as_of": fallback_as_of,
+        "report_root": report_root,
+        "output_dir": output_dir,
+        "index_path": index_path,
+    }
+
+
 class TestDailyRunScript:
     """Test scripts/run_daily_unified_pipeline.py utilities."""
+
+    def test_canonical_report_root_redirects_all_bridge_paths(
+        self, tmp_path
+    ):
+        """The canonical report-root env must redirect every bridge path."""
+        import subprocess
+
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        report_root = (tmp_path / "reports").resolve()
+        child_env = os.environ.copy()
+        child_env["THEME_SECTOR_RADAR_REPORT_ROOT"] = str(report_root)
+        probe = """
+import json
+import sector_stock_bridge as bridge
+
+print(json.dumps({
+    "scores": str(bridge.SCORES_DIR.resolve()),
+    "research": str(bridge.STABLE_RESEARCH_DIR.resolve()),
+    "concept": str(bridge.STABLE_CONCEPT_DIR.resolve()),
+    "cache": str(bridge.CACHE_DIR.resolve()),
+}))
+"""
+
+        proc = subprocess.run(
+            [sys.executable, "-c", probe],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            cwd=str(PROJECT_ROOT),
+            env=child_env,
+            check=True,
+        )
+        paths = json.loads(proc.stdout)
+
+        assert daily.REPORT_ROOT_ENV == "THEME_SECTOR_RADAR_REPORT_ROOT"
+        assert paths == {
+            "scores": str(report_root / "sector_scores"),
+            "research": str(report_root / "full90" / "sector_research"),
+            "concept": str(report_root / "full_concept" / "unified_rank"),
+            "cache": str(report_root / ".cache" / "sector_stocks"),
+        }
+
+    def test_default_bridge_paths_without_canonical_env(self):
+        """Without the canonical env, a fresh import keeps production defaults."""
+        import subprocess
+
+        child_env = os.environ.copy()
+        child_env.pop("THEME_SECTOR_RADAR_REPORT_ROOT", None)
+        probe = """
+import json
+import sector_stock_bridge as bridge
+
+print(json.dumps({
+    "scores": str(bridge.SCORES_DIR.resolve()),
+    "research": str(bridge.STABLE_RESEARCH_DIR.resolve()),
+    "concept": str(bridge.STABLE_CONCEPT_DIR.resolve()),
+    "cache": str(bridge.CACHE_DIR.resolve()),
+}))
+"""
+
+        proc = subprocess.run(
+            [sys.executable, "-c", probe],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            cwd=str(PROJECT_ROOT),
+            env=child_env,
+            check=True,
+        )
+        paths = json.loads(proc.stdout)
+
+        assert paths == {
+            "scores": str(PROJECT_ROOT / "reports" / "sector_scores"),
+            "research": str(
+                PROJECT_ROOT / "reports" / "full90" / "sector_research"
+            ),
+            "concept": str(
+                PROJECT_ROOT / "reports" / "full_concept" / "unified_rank"
+            ),
+            "cache": str(PROJECT_ROOT / "data_cache" / "sector_stocks"),
+        }
+
+    def test_empty_inherited_report_root_is_explicit_and_fails_closed(self):
+        """An inherited empty override may not become the default report root."""
+        import subprocess
+
+        child_env = os.environ.copy()
+        child_env["THEME_SECTOR_RADAR_REPORT_ROOT"] = ""
+        probe = """
+import sector_stock_bridge as bridge
+
+ok, payload, error = bridge.validate_explicit_score_report("2026-07-02")
+assert ok is False
+assert payload is None
+assert error
+"""
+        proc = subprocess.run(
+            [sys.executable, "-c", probe],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            cwd=str(PROJECT_ROOT),
+            env=child_env,
+        )
+
+        assert proc.returncode == 0, proc.stderr
+
+    def test_run_unified_pipeline_without_report_root_does_not_inject_env(self):
+        """The default child process must inherit its environment untouched."""
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        with patch.object(daily.subprocess, "run") as run:
+            daily._run_unified_pipeline(
+                as_of="2026-07-02",
+                mode="quick",
+                output_dir=None,
+                report_root=None,
+            )
+
+        assert "env" not in run.call_args.kwargs
+
+    def test_run_unified_pipeline_passes_sector_history_root_to_child(self):
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        with patch.object(daily.subprocess, "run") as run:
+            daily._run_unified_pipeline(
+                as_of="2026-07-02",
+                mode="quick",
+                sector_history_root="data_cache/sector_history",
+            )
+
+        command = run.call_args.args[0]
+        assert command[-2:] == [
+            "--sector-history-root",
+            "data_cache/sector_history",
+        ]
+
+    def test_run_unified_pipeline_passes_sector_cluster_map_to_child(self):
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        with patch.object(daily.subprocess, "run") as run:
+            daily._run_unified_pipeline(
+                as_of="2026-07-02",
+                mode="quick",
+                sector_cluster_map="config/path_a_sector_clusters.json",
+            )
+
+        assert run.call_args.args[0][-2:] == [
+            "--sector-cluster-map",
+            "config/path_a_sector_clusters.json",
+        ]
+
+    def test_default_child_consumes_parent_bound_score_payload_without_report_root(
+        self,
+        tmp_path,
+        monkeypatch,
+    ):
+        """A real default child consumes stdin without changing its report/cache roots."""
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        empty_scores = tmp_path / "empty-sector-scores"
+        empty_scores.mkdir()
+        child_script = tmp_path / "bound_payload_probe.py"
+        child_script.write_text(
+            f"""\
+import json
+import os
+import sys
+from pathlib import Path
+
+if {daily.REPORT_ROOT_ENV!r} in os.environ:
+    raise SystemExit(20)
+
+sys.path.insert(0, {str(PROJECT_ROOT)!r})
+import sector_stock_bridge as bridge
+bridge.SCORES_DIR = Path({str(empty_scores)!r})
+ok, validated, error = bridge.validate_explicit_score_report("2026-07-02")
+if not ok:
+    raise SystemExit(error or "missing parent-bound payload")
+print(json.dumps(validated[2]))
+""",
+            encoding="utf-8",
+        )
+        payload = {
+            "as_of_date": "2026-07-02",
+            "scores": [
+                {
+                    "sector_name": "Parent Bound",
+                    "sector_type": "industry",
+                    "trend_continuation_score": 1.0,
+                    "short_term_burst_score": 2.0,
+                }
+            ],
+        }
+        monkeypatch.setattr(daily, "UNIFIED_PIPELINE", child_script)
+
+        proc = daily._run_unified_pipeline(
+            as_of="2026-07-02",
+            mode="quick",
+            report_root=None,
+            score_payload=payload,
+            score_payload_as_of="2026-07-02",
+        )
+
+        assert proc.returncode == 0, proc.stderr
+        assert json.loads(proc.stdout)["scores"][0]["sector_name"] == "Parent Bound"
+
+    def test_run_unified_pipeline_passes_parent_validated_score_payload(self):
+        """The child must consume the exact payload authorized by parent preflight."""
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        payload = {
+            "as_of_date": "2026-07-02",
+            "scores": [
+                {
+                    "sector_name": "证券",
+                    "sector_type": "industry",
+                    "trend_continuation_score": 1.0,
+                    "short_term_burst_score": 2.0,
+                }
+            ],
+        }
+        with patch.object(daily.subprocess, "run") as run:
+            daily._run_unified_pipeline(
+                as_of="2026-07-02",
+                mode="quick",
+                report_root=str(PROJECT_ROOT / "reports"),
+                score_payload=payload,
+            )
+
+        kwargs = run.call_args.kwargs
+        assert kwargs["env"][daily.SCORE_PAYLOAD_STDIN_ENV] == "1"
+        assert json.loads(kwargs["input"]) == payload
+        assert all(ord(ch) < 128 for ch in kwargs["input"])
+        assert "\\u" in kwargs["input"]
+
+    def test_normalize_output_dir_resolves_relative_to_parent_cwd(
+        self, tmp_path, monkeypatch
+    ):
+        """Relative output paths use the daily wrapper caller's cwd."""
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        caller_cwd = tmp_path / "caller"
+        caller_cwd.mkdir()
+        monkeypatch.chdir(caller_cwd)
+
+        ok, normalized = daily._normalize_output_dir("relative-output")
+
+        assert ok is True
+        assert normalized == str((caller_cwd / "relative-output").resolve())
+
+    def test_normalize_output_dir_rejects_explicit_blank(self):
+        """An explicitly blank output path must fail closed."""
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        ok, detail = daily._normalize_output_dir("   ")
+
+        assert ok is False
+        assert "不能为空" in detail
+
+    def test_normalize_output_dir_rejects_existing_file(self, tmp_path):
+        """An existing non-directory output path must fail closed."""
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        output_file = tmp_path / "not-a-directory"
+        output_file.write_text("fixture", encoding="utf-8")
+
+        ok, detail = daily._normalize_output_dir(str(output_file))
+
+        assert ok is False
+        assert "不是目录" in detail
+
+    @pytest.mark.parametrize(
+        "as_of",
+        [
+            "2026-7-02",
+            "2026-07-2",
+            "2026-02-29",
+            "../2026-07-02",
+            "2026-07-02 ",
+        ],
+    )
+    def test_validate_as_of_rejects_invalid_or_non_round_trip_dates(self, as_of):
+        """Daily dates must be real, zero-padded YYYY-MM-DD values."""
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        ok, detail = daily._validate_as_of(as_of)
+
+        assert ok is False
+        assert "YYYY-MM-DD" in detail
+
+    def test_explicit_report_root_rejects_as_of_traversal(self, tmp_path):
+        """An as_of segment must not escape the canonical sector score root."""
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        report_root = tmp_path / "reports"
+        write_json(
+            report_root / "escape" / "sector_scores.json",
+            {"as_of_date": "escape"},
+        )
+
+        ok, _detail = daily._validate_report_root(str(report_root), "../escape")
+
+        assert ok is False
+
+    def test_explicit_report_root_rejects_symlink_escape(self, tmp_path):
+        """A linked date directory may not escape the canonical score root."""
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        report_root = tmp_path / "reports"
+        score_root = report_root / "sector_scores"
+        score_root.mkdir(parents=True)
+        outside_date = tmp_path / "outside-date"
+        write_json(
+            outside_date / "sector_scores.json",
+            {"as_of_date": "2026-07-02"},
+        )
+        linked_date = score_root / "2026-07-02"
+        _link_directory_or_skip(linked_date, outside_date)
+
+        ok, _detail = daily._validate_report_root(str(report_root), "2026-07-02")
+
+        assert ok is False
+
+    def test_explicit_report_root_rejects_link_swap_before_score_open(
+        self, tmp_path, monkeypatch
+    ):
+        """Parent preflight must bind validation to the file it actually opens."""
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        as_of = "2026-07-02"
+        roots = build_sector_score_tree(tmp_path / "inside", [as_of])
+        report_root = roots["sector_scores"].parent
+        inside_date = roots["sector_scores"] / as_of
+        score_path = inside_date / "sector_scores.json"
+        resolved_score_path = score_path.resolve()
+        outside = build_sector_score_tree(tmp_path / "outside", [as_of])
+        outside_date = outside["sector_scores"] / as_of
+        swapped = False
+        original_read_text = Path.read_text
+        original_os_open = os.open
+
+        def swap_date_directory():
+            nonlocal swapped
+            if swapped:
+                return
+            swapped = True
+            shutil.rmtree(inside_date)
+            _link_directory_or_skip(inside_date, outside_date)
+
+        def read_text_then_swap(path, *args, **kwargs):
+            if path == resolved_score_path:
+                swap_date_directory()
+            return original_read_text(path, *args, **kwargs)
+
+        def os_open_then_swap(path, flags, *args, **kwargs):
+            if Path(path) == resolved_score_path:
+                swap_date_directory()
+            return original_os_open(path, flags, *args, **kwargs)
+
+        monkeypatch.setattr(Path, "read_text", read_text_then_swap)
+        monkeypatch.setattr(daily.os, "open", os_open_then_swap)
+
+        ok, _detail = daily._validate_report_root(str(report_root), as_of)
+
+        assert ok is False
+
+    def test_explicit_report_root_rejects_payload_date_mismatch(self, tmp_path):
+        """The exact-date path must contain a score payload for that same date."""
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        as_of = "2026-07-02"
+        roots = build_sector_score_tree(tmp_path, [as_of])
+        score_path = roots["sector_scores"] / as_of / "sector_scores.json"
+        payload = load_sector_scores(score_path)
+        payload["as_of_date"] = "2026-07-01"
+        write_json(score_path, payload)
+
+        ok, detail = daily._validate_report_root(
+            str(roots["sector_scores"].parent), as_of
+        )
+
+        assert ok is False
+        assert "as_of_date" in detail
+
+    def test_explicit_report_root_rejects_invalid_score_json(self, tmp_path):
+        """Malformed exact-date score JSON must fail closed in parent preflight."""
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        as_of = "2026-07-02"
+        roots = build_sector_score_tree(tmp_path, [as_of])
+        score_path = roots["sector_scores"] / as_of / "sector_scores.json"
+        score_path.write_text("{not-json", encoding="utf-8")
+
+        ok, detail = daily._validate_report_root(
+            str(roots["sector_scores"].parent), as_of
+        )
+
+        assert ok is False
+        assert "JSON" in detail
+
+    def test_explicit_report_root_rejects_incomplete_score_payload(self, tmp_path):
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        as_of = "2026-07-02"
+        roots = build_sector_score_tree(tmp_path, [as_of])
+        write_json(
+            roots["sector_scores"] / as_of / "sector_scores.json",
+            {"as_of_date": as_of},
+        )
+
+        ok, detail = daily._validate_report_root(
+            str(roots["sector_scores"].parent), as_of
+        )
+
+        assert ok is False
+        assert "scores" in detail
+
+    @pytest.mark.parametrize(
+        ("mutation", "expected_fragment"),
+        [
+            (lambda payload: payload.update(scores=[]), "scores"),
+            (lambda payload: payload["scores"][0].update(sector_name=""), "sector_name"),
+            (lambda payload: payload["scores"][0].update(sector_type="other"), "sector_type"),
+            (
+                lambda payload: payload["scores"][0].pop(
+                    "trend_continuation_score"
+                ),
+                "trend_continuation_score",
+            ),
+            (
+                lambda payload: payload["scores"][0].update(
+                    short_term_burst_score=True
+                ),
+                "short_term_burst_score",
+            ),
+            (
+                lambda payload: payload["scores"][0].update(
+                    trend_continuation_score=10 ** 1000
+                ),
+                "trend_continuation_score",
+            ),
+        ],
+    )
+    def test_explicit_report_root_rejects_invalid_score_contract_fields(
+        self, tmp_path, mutation, expected_fragment
+    ):
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        as_of = "2026-07-02"
+        roots = build_sector_score_tree(tmp_path, [as_of])
+        score_path = roots["sector_scores"] / as_of / "sector_scores.json"
+        payload = load_sector_scores(score_path)
+        mutation(payload)
+        write_json(score_path, payload)
+
+        ok, detail = daily._validate_report_root(
+            str(roots["sector_scores"].parent), as_of
+        )
+
+        assert ok is False
+        assert expected_fragment in detail
+
+    def test_explicit_report_root_rejects_non_finite_score_before_network(
+        self, tmp_path
+    ):
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        as_of = "2026-07-02"
+        roots = build_sector_score_tree(tmp_path, [as_of])
+        score_path = roots["sector_scores"] / as_of / "sector_scores.json"
+        raw = score_path.read_text(encoding="utf-8")
+        score_path.write_text(
+            raw.replace('"trend_continuation_score": 72.0',
+                        '"trend_continuation_score": Infinity', 1),
+            encoding="utf-8",
+        )
+
+        ok, detail = daily._validate_report_root(
+            str(roots["sector_scores"].parent), as_of
+        )
+
+        assert ok is False
+        assert "non-finite" in detail
+
+    def test_score_level_type_is_rejected_before_http_preflight(
+        self, tmp_path, monkeypatch
+    ):
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        as_of = "2026-07-02"
+        roots = build_sector_score_tree(tmp_path, [as_of])
+        score_path = roots["sector_scores"] / as_of / "sector_scores.json"
+        payload = load_sector_scores(score_path)
+        payload["scores"][0]["trend_level"] = ["not", "text"]
+        write_json(score_path, payload)
+        monkeypatch.setattr(
+            daily,
+            "_check_tcp_port",
+            lambda *_args, **_kwargs: pytest.fail("TCP preflight must not run"),
+        )
+        monkeypatch.setattr(
+            daily,
+            "_check_http_health",
+            lambda *_args, **_kwargs: pytest.fail("HTTP preflight must not run"),
+        )
+        monkeypatch.setattr(
+            daily,
+            "_run_unified_pipeline",
+            lambda *_args, **_kwargs: pytest.fail("child process must not run"),
+        )
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "run_daily_unified_pipeline.py",
+                "--as-of",
+                as_of,
+                "--report-root",
+                str(roots["sector_scores"].parent),
+            ],
+        )
+
+        assert daily.main() == 1
 
     def test_check_tcp_port_localhost(self):
         """_check_tcp_port with a likely-open port should work."""
         sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
         from run_daily_unified_pipeline import _check_tcp_port
 
-        # StockDB should be running on 7899 in this environment
-        # If not, this just checks the function doesn't crash
-        result = _check_tcp_port("127.0.0.1", 7899, timeout=1.0)
+        with patch("socket.create_connection"):
+            result = _check_tcp_port("127.0.0.1", 7899, timeout=1.0)
         assert isinstance(result, bool)
 
     def test_check_tcp_port_closed(self):
@@ -1252,7 +3539,8 @@ class TestDailyRunScript:
         sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
         from run_daily_unified_pipeline import _check_tcp_port
 
-        result = _check_tcp_port("127.0.0.1", 59999, timeout=0.5)
+        with patch("socket.create_connection", side_effect=ConnectionRefusedError):
+            result = _check_tcp_port("127.0.0.1", 59999, timeout=0.5)
         assert result is False
 
     def test_check_http_health_api_url(self):
@@ -1260,43 +3548,51 @@ class TestDailyRunScript:
         sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
         from run_daily_unified_pipeline import _check_http_health
 
-        ok, body = _check_http_health("http://127.0.0.1:8000", timeout=3)
-        if ok:
-            assert "stockdb" in body
-        # If not ok, the function still shouldn't crash
+        response = MagicMock()
+        response.__enter__.return_value = response
+        response.read.return_value = b'{"stockdb": "offline_fixture"}'
+        with patch("urllib.request.urlopen", return_value=response):
+            ok, body = _check_http_health("http://fixture.invalid", timeout=3)
+        assert ok is True
+        assert "stockdb" in body
 
     def test_check_http_health_unreachable(self):
         """_check_http_health with unreachable URL should return False."""
         sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
         from run_daily_unified_pipeline import _check_http_health
 
-        ok, error = _check_http_health("http://127.0.0.1:59998", timeout=1)
+        with patch("urllib.request.urlopen", side_effect=OSError("offline")):
+            ok, error = _check_http_health("http://fixture.invalid", timeout=1)
         assert ok is False
         assert isinstance(error, str)
 
-    def test_find_latest_report(self):
+    def test_find_latest_report(self, tmp_path):
         """_find_latest_report should locate existing report."""
         sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
         from run_daily_unified_pipeline import _find_latest_report
 
-        path = _find_latest_report("2026-07-02")
-        if path:
-            assert path.exists()
-            assert path.name == "unified_report.json"
+        expected = write_json(tmp_path / "unified_report.json", {"status": "ok"})
+        path = _find_latest_report("2026-07-02", output_dir=str(tmp_path))
+        assert path == expected
+        assert path.exists()
 
-    def test_load_report_has_required_fields(self):
+    def test_load_report_has_required_fields(self, tmp_path):
         """Loaded report should have run_health and data_source."""
         sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
         from run_daily_unified_pipeline import _find_latest_report, _load_report
 
-        path = _find_latest_report("2026-07-02")
-        if path:
-            result = _load_report(path)
-            assert "run_health" in result
-            assert "data_source" in result
-            health = result["run_health"]
-            assert "status" in health
-            assert health["status"] in ("pass", "warn", "fail")
+        write_json(
+            tmp_path / "unified_report.json",
+            {"run_health": {"status": "warn"}, "data_source": {}},
+        )
+        path = _find_latest_report("2026-07-02", output_dir=str(tmp_path))
+        assert path is not None
+        result = _load_report(path)
+        assert "run_health" in result
+        assert "data_source" in result
+        health = result["run_health"]
+        assert "status" in health
+        assert health["status"] in ("pass", "warn", "fail")
 
     def test_main_help_does_not_crash(self):
         """python run_daily_unified_pipeline.py --help should exit 0."""
@@ -1309,56 +3605,479 @@ class TestDailyRunScript:
         assert proc.returncode == 0
         assert "每日一键运行" in (proc.stdout or "")
 
-    @staticmethod
-    def _api_available() -> bool:
-        """Check if market_data_service API is reachable."""
-        try:
-            import urllib.request
-            req = urllib.request.Request("http://127.0.0.1:8000/health")
-            with urllib.request.urlopen(req, timeout=3) as resp:
-                return resp.status == 200
-        except Exception:
-            return False
-
-    def test_main_api_unreachable(self):
+    def test_main_api_unreachable(self, tmp_path, monkeypatch, capsys):
         """API unreachable → exit 1."""
-        import subprocess, sys as _sys
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
 
-        proc = subprocess.run(
-            [_sys.executable, str(PROJECT_ROOT / "scripts" / "run_daily_unified_pipeline.py"),
-             "--as-of", "2026-07-02", "--api-url", "http://127.0.0.1:59999"],
-            capture_output=True, text=True, encoding="utf-8", cwd=str(PROJECT_ROOT),
+        build_sector_score_tree(tmp_path, ["2026-07-02"])
+        monkeypatch.setattr(daily, "PROJECT_ROOT", tmp_path)
+        monkeypatch.setattr(daily, "_check_tcp_port", lambda *_args, **_kwargs: False)
+        monkeypatch.setattr(
+            daily, "_check_http_health", lambda *_args, **_kwargs: (False, "offline")
         )
-        assert proc.returncode == 1
-        assert "API 未启动" in (proc.stdout or "") or "无法访问" in (proc.stdout or "")
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            ["run_daily_unified_pipeline.py", "--as-of", "2026-07-02"],
+        )
+        assert daily.main() == 1
+        output = capsys.readouterr().out
+        assert "API 未启动" in output or "无法访问" in output
 
-    def test_main_api_ok_runs_pipeline(self):
+    def test_main_invalid_as_of_fails_before_preflight(self, monkeypatch, capsys):
+        """An invalid calendar date is rejected entirely in the parent."""
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        monkeypatch.setattr(
+            daily,
+            "_check_tcp_port",
+            lambda *_args, **_kwargs: pytest.fail("preflight must not run"),
+        )
+        monkeypatch.setattr(
+            daily,
+            "_run_unified_pipeline",
+            lambda *_args, **_kwargs: pytest.fail("child must not run"),
+        )
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            ["run_daily_unified_pipeline.py", "--as-of", "2026-02-29"],
+        )
+
+        assert daily.main() == 1
+        assert "YYYY-MM-DD" in capsys.readouterr().out
+
+    def test_main_blank_output_dir_fails_before_preflight(self, monkeypatch, capsys):
+        """An explicitly blank output path is rejected entirely in the parent."""
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        monkeypatch.setattr(
+            daily,
+            "_check_tcp_port",
+            lambda *_args, **_kwargs: pytest.fail("preflight must not run"),
+        )
+        monkeypatch.setattr(
+            daily,
+            "_run_unified_pipeline",
+            lambda *_args, **_kwargs: pytest.fail("child must not run"),
+        )
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "run_daily_unified_pipeline.py",
+                "--as-of", "2026-07-02",
+                "--output-dir", "   ",
+            ],
+        )
+
+        assert daily.main() == 1
+        assert "不能为空" in capsys.readouterr().out
+
+    def test_main_child_zero_without_report_returns_one(
+        self, tmp_path, monkeypatch, capsys
+    ):
+        """A successful child code without its report is still a failed run."""
+        import subprocess
+
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        output_dir = tmp_path / "missing-output"
+        build_sector_score_tree(tmp_path, ["2026-07-02"])
+        monkeypatch.setattr(daily, "PROJECT_ROOT", tmp_path)
+        monkeypatch.setattr(daily, "_check_tcp_port", lambda *_args, **_kwargs: False)
+        monkeypatch.setattr(
+            daily,
+            "_check_http_health",
+            lambda *_args, **_kwargs: (True, '{"status": "offline_fixture"}'),
+        )
+        monkeypatch.setattr(
+            daily,
+            "_run_unified_pipeline",
+            lambda *_args, **_kwargs: subprocess.CompletedProcess([], 0, "", ""),
+        )
+        monkeypatch.setattr(
+            daily,
+            "_load_report",
+            lambda *_args, **_kwargs: pytest.fail("missing report must not load"),
+        )
+        monkeypatch.setattr(
+            daily,
+            "_append_index",
+            lambda *_args, **_kwargs: pytest.fail("missing report must not index"),
+        )
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "run_daily_unified_pipeline.py",
+                "--as-of", "2026-07-02",
+                "--output-dir", str(output_dir),
+                "--fail-on-health-fail",
+                "--index-path", str(tmp_path / "must-not-exist.jsonl"),
+            ],
+        )
+
+        assert daily.main() == 1
+        assert "未生成预期报告" in capsys.readouterr().out
+        assert not (tmp_path / "must-not-exist.jsonl").exists()
+
+    def test_main_api_ok_runs_pipeline(self, offline_daily_runner, capsys):
         """API reachable → should run pipeline and exit 0 (integration test)."""
-        if not self._api_available():
-            pytest.skip("market_data_service API not available")
+        assert offline_daily_runner["run"]() == 0
+        report_path = offline_daily_runner["output_dir"] / "unified_report.json"
+        report = json.loads(report_path.read_text(encoding="utf-8"))
+        assert report["report_type"] == "unified_pipeline"
+        assert report["as_of_date"] == offline_daily_runner["as_of"]
+        assert report["mode"] == "quick"
+        assert report["data_source"]["market_data_service_reachable"] is False
+        assert report["data_source"]["api_fast_path"] == "api_unavailable_fast_path"
+        assert "健康门禁" in capsys.readouterr().out
 
-        import subprocess, sys as _sys
-        proc = subprocess.run(
-            [_sys.executable, str(PROJECT_ROOT / "scripts" / "run_daily_unified_pipeline.py"),
-             "--as-of", "2026-07-02", "--mode", "quick"],
-            capture_output=True, text=True, encoding="utf-8", cwd=str(PROJECT_ROOT), timeout=300,
+    def test_relative_output_dir_uses_parent_cwd_and_absolute_index_path(
+        self, tmp_path, offline_daily_runner, monkeypatch
+    ):
+        """Child output and index report paths share the parent's absolute path."""
+        caller_cwd = tmp_path / "caller"
+        caller_cwd.mkdir()
+        monkeypatch.chdir(caller_cwd)
+        relative_output = "relative-unified"
+        expected_output = (caller_cwd / relative_output).resolve()
+
+        assert offline_daily_runner["run"](
+            output_dir_arg=relative_output
+        ) == 0
+
+        report_path = expected_output / "unified_report.json"
+        report = json.loads(report_path.read_text(encoding="utf-8"))
+        assert report["trend_candidates_all"]
+        index_entry = json.loads(
+            offline_daily_runner["index_path"].read_text(encoding="utf-8").strip()
         )
-        assert proc.returncode == 0
-        assert "健康门禁" in (proc.stdout or "")
+        assert index_entry["report_path"] == str(report_path)
+        assert Path(index_entry["report_path"]).is_absolute()
 
-    def test_main_fail_on_health_fail_flag(self):
+    def test_main_fail_on_health_fail_flag(self, offline_daily_runner, capsys):
         """--fail-on-health-fail flag integration test."""
-        if not self._api_available():
-            pytest.skip("market_data_service API not available")
+        assert offline_daily_runner["run"]("--fail-on-health-fail") == 2
+        assert "健康门禁" in capsys.readouterr().out
 
-        import subprocess, sys as _sys
-        proc = subprocess.run(
-            [_sys.executable, str(PROJECT_ROOT / "scripts" / "run_daily_unified_pipeline.py"),
-             "--as-of", "2026-07-02", "--mode", "quick", "--fail-on-health-fail"],
-            capture_output=True, text=True, encoding="utf-8", cwd=str(PROJECT_ROOT), timeout=300,
+    def test_child_uses_parent_payload_after_exact_score_is_removed(
+        self, offline_daily_runner, monkeypatch
+    ):
+        """The child must use the bound payload instead of an older score file."""
+        daily = offline_daily_runner["module"]
+        exact_score = (
+            offline_daily_runner["report_root"]
+            / "sector_scores"
+            / offline_daily_runner["as_of"]
+            / "sector_scores.json"
         )
-        assert proc.returncode in (0, 2)
-        assert "健康门禁" in (proc.stdout or "")
+        fallback_score = (
+            offline_daily_runner["report_root"]
+            / "sector_scores"
+            / offline_daily_runner["fallback_as_of"]
+            / "sector_scores.json"
+        )
+
+        def remove_exact_after_parent_validation(*_args, **_kwargs):
+            exact_score.unlink()
+            return True, '{"status": "offline_fixture"}'
+
+        monkeypatch.setattr(
+            daily, "_check_http_health", remove_exact_after_parent_validation
+        )
+
+        assert offline_daily_runner["run"]("--no-append-index") == 0
+        assert not exact_score.exists()
+        assert fallback_score.is_file()
+        report_path = offline_daily_runner["output_dir"] / "unified_report.json"
+        report = json.loads(report_path.read_text(encoding="utf-8"))
+        assert report["as_of_date"] == offline_daily_runner["as_of"]
+        sector_names = {
+            item["name"]
+            for group in ("trend_sectors", "burst_sectors")
+            for item in report["bridge_summary"][group]
+        }
+        assert "Exact Bound" in sector_names
+        assert "Fallback Only" not in sector_names
+
+    def test_missing_explicit_report_root_fails_closed(self, tmp_path, monkeypatch):
+        """An explicit missing root must fail before API or child-process work."""
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        monkeypatch.setattr(
+            daily,
+            "_check_http_health",
+            lambda *_args, **_kwargs: pytest.fail("API preflight must not run"),
+        )
+        monkeypatch.setattr(
+            daily,
+            "_run_unified_pipeline",
+            lambda *_args, **_kwargs: pytest.fail("child process must not run"),
+        )
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "run_daily_unified_pipeline.py",
+                "--as-of", "2026-07-02",
+                "--report-root", str(tmp_path / "missing"),
+            ],
+        )
+        assert daily.main() == 1
+
+    def test_inherited_report_root_fails_before_preflight_network(
+        self, tmp_path, monkeypatch
+    ):
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        monkeypatch.setenv(
+            "THEME_SECTOR_RADAR_REPORT_ROOT", str(tmp_path / "missing-inherited")
+        )
+        monkeypatch.setattr(
+            daily,
+            "_check_tcp_port",
+            lambda *_args, **_kwargs: pytest.fail("TCP preflight must not run"),
+        )
+        monkeypatch.setattr(
+            daily,
+            "_check_http_health",
+            lambda *_args, **_kwargs: pytest.fail("HTTP preflight must not run"),
+        )
+        monkeypatch.setattr(
+            daily,
+            "_run_unified_pipeline",
+            lambda *_args, **_kwargs: pytest.fail("child process must not run"),
+        )
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            ["run_daily_unified_pipeline.py", "--as-of", "2026-07-02"],
+        )
+
+        assert daily.main() == 1
+
+    def test_default_report_root_fails_before_preflight_network(
+        self, tmp_path, monkeypatch
+    ):
+        """The default report root must validate its exact score before TCP or HTTP."""
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        as_of = "2026-07-02"
+        score_path = tmp_path / "reports" / "sector_scores" / as_of / "sector_scores.json"
+        score_path.parent.mkdir(parents=True)
+        score_path.write_text('{"as_of_date":', encoding="utf-8")
+        monkeypatch.delenv("THEME_SECTOR_RADAR_REPORT_ROOT", raising=False)
+        monkeypatch.setattr(daily, "PROJECT_ROOT", tmp_path)
+        monkeypatch.setattr(
+            daily,
+            "_check_tcp_port",
+            lambda *_args, **_kwargs: pytest.fail("TCP preflight must not run"),
+        )
+        monkeypatch.setattr(
+            daily,
+            "_check_http_health",
+            lambda *_args, **_kwargs: pytest.fail("HTTP preflight must not run"),
+        )
+        monkeypatch.setattr(
+            daily,
+            "_run_unified_pipeline",
+            lambda *_args, **_kwargs: pytest.fail("child process must not run"),
+        )
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            ["run_daily_unified_pipeline.py", "--as-of", as_of],
+        )
+
+        assert daily.main() == 1
+
+    def test_default_report_root_preserves_valid_historical_fallback(
+        self, tmp_path, monkeypatch, capsys
+    ):
+        """A missing exact date may use the latest prior valid score on the default root."""
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        build_sector_score_tree(tmp_path, ["2026-07-01"])
+        monkeypatch.delenv("THEME_SECTOR_RADAR_REPORT_ROOT", raising=False)
+        monkeypatch.setattr(daily, "PROJECT_ROOT", tmp_path)
+        monkeypatch.setattr(daily, "_check_tcp_port", lambda *_args, **_kwargs: False)
+        health_calls = []
+
+        def offline_health(api_url, *_args, **_kwargs):
+            health_calls.append(api_url)
+            return False, "offline"
+
+        monkeypatch.setattr(daily, "_check_http_health", offline_health)
+        monkeypatch.setattr(
+            daily,
+            "_run_unified_pipeline",
+            lambda *_args, **_kwargs: pytest.fail("child must not run when health is down"),
+        )
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            ["run_daily_unified_pipeline.py", "--as-of", "2026-07-02"],
+        )
+
+        assert daily.main() == 1
+        assert health_calls == ["http://127.0.0.1:8000"]
+        assert "API" in capsys.readouterr().out
+
+    def test_bridge_default_fallback_never_reads_after_as_of(self, tmp_path, monkeypatch):
+        """The child fallback must not select a report newer than the research date."""
+        import sector_stock_bridge as bridge
+
+        roots = build_sector_score_tree(tmp_path, ["2026-07-04", "2026-07-10"])
+        monkeypatch.setattr(bridge, "_REPORT_ROOT_OVERRIDE", None)
+        monkeypatch.setattr(bridge, "SCORES_DIR", roots["sector_scores"])
+
+        actual_date, report_path = bridge.find_latest_report("2026-07-05")
+
+        assert actual_date == "2026-07-04"
+        assert report_path == roots["sector_scores"] / "2026-07-04" / "sector_scores.json"
+
+    def test_bridge_default_fallback_skips_corrupt_newest_prior_report(
+        self, tmp_path, monkeypatch
+    ):
+        """Direct bridge validation selects the newest valid prior score payload."""
+        import sector_stock_bridge as bridge
+
+        roots = build_sector_score_tree(tmp_path, ["2026-07-01", "2026-07-02"])
+        corrupt = roots["sector_scores"] / "2026-07-02" / "sector_scores.json"
+        corrupt.write_text("{", encoding="utf-8")
+        monkeypatch.setattr(bridge, "_REPORT_ROOT_OVERRIDE", None)
+        monkeypatch.setattr(bridge, "SCORES_DIR", roots["sector_scores"])
+
+        ok, validated, error = bridge.validate_explicit_score_report("2026-07-03")
+
+        assert ok is True, error
+        assert validated is not None
+        assert validated[0] == "2026-07-01"
+        assert validated[2]["as_of_date"] == "2026-07-01"
+
+    def test_default_fallback_passes_parent_bound_payload_and_actual_date(
+        self, tmp_path, monkeypatch
+    ):
+        """The wrapper binds fallback bytes without turning the default root into an override."""
+        import subprocess
+
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        roots = build_sector_score_tree(tmp_path, ["2026-07-04", "2026-07-10"])
+        monkeypatch.delenv("THEME_SECTOR_RADAR_REPORT_ROOT", raising=False)
+        monkeypatch.setattr(daily, "PROJECT_ROOT", tmp_path)
+        monkeypatch.setattr(daily, "_check_tcp_port", lambda *_args, **_kwargs: False)
+        monkeypatch.setattr(
+            daily,
+            "_check_http_health",
+            lambda *_args, **_kwargs: (True, "offline"),
+        )
+        captured = {}
+
+        def fake_run(**kwargs):
+            captured.update(kwargs)
+            return subprocess.CompletedProcess([], 9, "", "")
+
+        monkeypatch.setattr(daily, "_run_unified_pipeline", fake_run)
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            ["run_daily_unified_pipeline.py", "--as-of", "2026-07-05"],
+        )
+
+        assert daily.main() == 9
+        assert captured["report_root"] is None
+        assert captured["score_payload"]["as_of_date"] == "2026-07-04"
+        assert captured["score_payload_as_of"] == "2026-07-04"
+
+    def test_default_fallback_skips_corrupt_newest_prior_report(self, tmp_path):
+        """Fallback selects the newest valid history, not merely the newest file."""
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        roots = build_sector_score_tree(tmp_path, ["2026-07-01", "2026-07-02"])
+        corrupt = roots["sector_scores"] / "2026-07-02" / "sector_scores.json"
+        corrupt.write_text("{", encoding="utf-8")
+
+        ok, _detail, payload, fallback_date = daily._load_validated_default_report_root(
+            str(roots["sector_scores"].parent),
+            "2026-07-03",
+        )
+
+        assert ok is True
+        assert fallback_date == "2026-07-01"
+        assert payload["as_of_date"] == "2026-07-01"
+
+    def test_empty_explicit_report_root_fails_closed(self, tmp_path, monkeypatch):
+        """An explicit empty root must not resolve to a populated working directory."""
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        as_of = "2026-07-02"
+        roots = build_sector_score_tree(tmp_path, [as_of])
+        monkeypatch.chdir(roots["sector_scores"].parent)
+        monkeypatch.setattr(
+            daily,
+            "_check_http_health",
+            lambda *_args, **_kwargs: pytest.fail("API preflight must not run"),
+        )
+        monkeypatch.setattr(
+            daily,
+            "_run_unified_pipeline",
+            lambda *_args, **_kwargs: pytest.fail("child process must not run"),
+        )
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "run_daily_unified_pipeline.py",
+                "--as-of", as_of,
+                "--report-root", "",
+            ],
+        )
+
+        assert daily.main() == 1
+
+    def test_explicit_report_root_does_not_fallback_to_another_date(
+        self, tmp_path, monkeypatch
+    ):
+        """A populated root without the exact date must not use its latest report."""
+        sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+        import run_daily_unified_pipeline as daily
+
+        roots = build_sector_score_tree(tmp_path, ["2026-07-01"])
+        report_root = roots["sector_scores"].parent
+        monkeypatch.setattr(
+            daily,
+            "_check_http_health",
+            lambda *_args, **_kwargs: pytest.fail("API preflight must not run"),
+        )
+        monkeypatch.setattr(
+            daily,
+            "_run_unified_pipeline",
+            lambda *_args, **_kwargs: pytest.fail("child process must not run"),
+        )
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "run_daily_unified_pipeline.py",
+                "--as-of", "2026-07-02",
+                "--report-root", str(report_root),
+            ],
+        )
+        assert daily.main() == 1
 
 
 # ============================================================
@@ -1481,22 +4200,16 @@ class TestRunArchive:
         # New Phase 9: should show Summary block instead of raw total count line
         assert "Summary" in captured.out
 
-    def test_no_append_index_skips_write(self, tmp_path):
+    def test_no_append_index_skips_write(self, offline_daily_runner):
         """Running with --no-append-index should not write to index (integration)."""
-        if not TestDailyRunScript._api_available():
-            pytest.skip("market_data_service API not available")
-
-        import subprocess, sys as _sys
-
-        idx = tmp_path / "test_index.jsonl"
-        proc = subprocess.run(
-            [_sys.executable, str(PROJECT_ROOT / "scripts" / "run_daily_unified_pipeline.py"),
-             "--as-of", "2026-07-02", "--mode", "quick",
-             "--index-path", str(idx), "--no-append-index"],
-            capture_output=True, text=True, encoding="utf-8",
-            cwd=str(PROJECT_ROOT), timeout=300,
+        idx = offline_daily_runner["index_path"]
+        assert offline_daily_runner["run"]("--no-append-index") == 0
+        report = json.loads(
+            (
+                offline_daily_runner["output_dir"] / "unified_report.json"
+            ).read_text(encoding="utf-8")
         )
-        assert proc.returncode == 0
+        assert report["trend_candidates_all"]
         assert not idx.exists()
 
     def test_show_history_cli(self, tmp_path):
@@ -2020,5 +4733,3 @@ class TestScoreBreakdown:
         _annotate_score_breakdown(stocks)
         assert "score_breakdown" in stocks[0]
         assert stocks[0]["score_breakdown"]["final_score"] == 80.0
-
-

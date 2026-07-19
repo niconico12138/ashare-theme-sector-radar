@@ -418,8 +418,9 @@ def generate_markdown(
     lines.append(f"|{'─'*24}|{'─'*7}|{'─'*7}|{'─'*11}|{'─'*11}|{'─'*11}|{'─'*10}|{'─'*20}|{'─'*8}|")
     for factor in CALIBRATION_FACTORS:
         info = factor_results.get(factor, {})
-        n = info.get("sample_count", 0)
-        dates = info.get("date_count", 0)
+        all_info = info.get("all", {})
+        n = all_info.get("sample_count", info.get("sample_count", 0))
+        dates = all_info.get("date_count", info.get("date_count", 0))
         all_gap = info.get("all", {}).get("high_minus_low_gap")
         up_gap = info.get("broad_up", {}).get("high_minus_low_gap")
         down_gap = info.get("broad_down", {}).get("high_minus_low_gap")

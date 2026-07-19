@@ -1156,9 +1156,11 @@ def test_bridge_markdown_includes_execution_quality(monkeypatch, tmp_path):
 # ---------------------------------------------------------------------------
 
 
-def test_run_agent_score_health_check_produces_result():
+def test_run_agent_score_health_check_produces_result(monkeypatch, tmp_path):
     """Health check produces a result dict with expected fields."""
     module = _load_bridge_module()
+    monkeypatch.setattr(module, "PROJECT_ROOT", tmp_path)
+    monkeypatch.setattr(module, "OUTPUT_DIR", tmp_path / "reports" / "agent_bridge")
     result = module._run_agent_score_health_check("2026-07-08")
     assert "status" in result
     assert "overall_status" in result
@@ -1434,4 +1436,3 @@ def test_skipped_agents_no_poor_coverage_warning(monkeypatch, tmp_path):
     # so only 10 are expected, all 10 have scores → healthy
     score_cov = module.compute_agent_score_coverage_quality("2026-07-09")
     assert score_cov["quality_status"] == "healthy"
-

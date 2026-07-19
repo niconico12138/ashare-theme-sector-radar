@@ -4,6 +4,7 @@ CLI 板块综合评分测试
 测试 CLI 的 --score-sectors 命令。
 """
 
+import hashlib
 import json
 import os
 import sys
@@ -11,7 +12,12 @@ import tempfile
 
 import pytest
 
-from theme_sector_radar.cli import main
+from theme_sector_radar.cli import (
+    _calculate_history_metrics_from_snapshots,
+    _load_history_from_raw_snapshots,
+    main,
+)
+from theme_sector_radar.models import SectorType
 
 
 class TestCLISectorScoring:
@@ -242,6 +248,147 @@ class TestCLISectorScoring:
             score = score_report["scores"][0]
             assert score["history_source"] == "raw_snapshot_fallback"
             assert score["history_days"] >= 1
+
+    def test_raw_snapshot_metrics_ignore_unavailable_prices_and_compound_returns(
+        self, tmp_path
+    ):
+        metrics = _calculate_history_metrics_from_snapshots(
+            [
+                {"change_pct": 10.0, "price_change_available": True},
+                {"change_pct": 500.0, "price_change_available": False},
+                {"change_pct": 400.0},
+                {"change_pct": -10.0, "price_change_available": True},
+            ]
+        )
+
+        assert metrics["recent_returns"] == [10.0, -10.0]
+        assert metrics["total_return"] == pytest.approx(-1.0)
+        assert metrics["positive_days"] == 1
+        assert metrics["total_days"] == 2
+        assert metrics["max_drawdown"] == pytest.approx(-10.0)
+
+        cache_root = tmp_path / "cache"
+        snapshot_root = cache_root / "2026-06-29"
+        snapshot_root.mkdir(parents=True)
+        (snapshot_root / "raw_snapshot.json").write_text(
+            json.dumps(
+                {
+                    "metadata": {"as_of_date": "2026-06-29"},
+                    "data": {
+                        "industry_sectors": [
+                            {
+                                "name": "缺失涨跌幅",
+                                "price_change_available": True,
+                            }
+                        ]
+                    },
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+
+        history, warnings = _load_history_from_raw_snapshots(
+            str(cache_root),
+            "2026-06-29",
+            "2026-06-29",
+            [SectorType.INDUSTRY],
+        )
+
+        assert warnings == []
+        assert history["industry"]["缺失涨跌幅"]["recent_returns"] == []
+        assert history["industry"]["缺失涨跌幅"]["history_days"] == 0
+
+    def test_raw_snapshot_fallback_binds_strict_manifest(self, tmp_path):
+        cache_root = tmp_path / "cache"
+        snapshot_root = cache_root / "2026-06-29"
+        snapshot_root.mkdir(parents=True)
+        path = snapshot_root / "raw_snapshot.json"
+        path.write_text(
+            json.dumps(
+                {
+                    "metadata": {"as_of_date": "2026-06-29"},
+                    "data": {
+                        "industry_sectors": [
+                            {
+                                "name": "严格来源",
+                                "price_change_pct": 1.0,
+                                "price_change_available": True,
+                                "data_sources": ["unit"],
+                            }
+                        ],
+                        "concept_sectors": [],
+                    },
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+        provenance = {}
+
+        history, warnings = _load_history_from_raw_snapshots(
+            str(cache_root),
+            "2026-06-29",
+            "2026-06-29",
+            [SectorType.INDUSTRY],
+            provenance_out=provenance,
+        )
+
+        assert warnings == []
+        assert history["industry"]["严格来源"]["history_days"] == 1
+        assert provenance["source"] == "raw_snapshot_fallback"
+        assert provenance["document_count"] == 1
+        assert provenance["documents"] == [
+            {
+                "date": "2026-06-29",
+                "relative_path": "2026-06-29/raw_snapshot.json",
+                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+            }
+        ]
+        assert len(provenance["manifest_sha256"]) == 64
+
+    def test_raw_snapshot_fallback_rejects_duplicate_json_keys(self, tmp_path):
+        snapshot_root = tmp_path / "cache" / "2026-06-29"
+        snapshot_root.mkdir(parents=True)
+        (snapshot_root / "raw_snapshot.json").write_text(
+            '{"metadata":{"as_of_date":"2026-06-29"},"data":{},"data":{}}',
+            encoding="utf-8",
+        )
+
+        with pytest.raises(ValueError, match="duplicate JSON key.*data"):
+            _load_history_from_raw_snapshots(
+                str(tmp_path / "cache"),
+                "2026-06-29",
+                "2026-06-29",
+                [SectorType.INDUSTRY],
+            )
+
+    def test_raw_snapshot_fallback_rejects_duplicate_sector_rows(self, tmp_path):
+        snapshot_root = tmp_path / "cache" / "2026-06-29"
+        snapshot_root.mkdir(parents=True)
+        duplicate = {
+            "name": "重复行业",
+            "price_change_pct": 1.0,
+            "price_change_available": True,
+        }
+        (snapshot_root / "raw_snapshot.json").write_text(
+            json.dumps(
+                {
+                    "metadata": {"as_of_date": "2026-06-29"},
+                    "data": {"industry_sectors": [duplicate, dict(duplicate)]},
+                },
+                ensure_ascii=False,
+            ),
+            encoding="utf-8",
+        )
+
+        with pytest.raises(ValueError, match="duplicate raw snapshot sector identity"):
+            _load_history_from_raw_snapshots(
+                str(tmp_path / "cache"),
+                "2026-06-29",
+                "2026-06-29",
+                [SectorType.INDUSTRY],
+            )
 
     def test_score_sectors_markdown_raw_snapshot_explanation(self):
         """测试 Markdown 报告包含 raw_snapshot_fallback 说明"""
@@ -501,9 +648,10 @@ class TestCLISectorScoring:
             with open(os.path.join(output_dir, "2026-06-29", "sector_scores.json"), "r", encoding="utf-8") as f:
                 score_report = json.load(f)
 
-            # 验证 history_days >= 5
+            # 5 个收盘价只能产生 4 个有效收益日。
             score = score_report["scores"][0]
-            assert score["history_days"] >= 5
+            assert score["history_days"] == 4
+            assert score["history_source"] == "sector_history_cache"
 
             # 验证 history_source 是 sector_history_cache
             assert score["history_source"] == "sector_history_cache"

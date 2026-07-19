@@ -1,5 +1,6 @@
 import logging
 
+import theme_sector_radar.data.bars_data_router as bars_router
 from theme_sector_radar.data.bars_data_router import AutoBarsClient, extract_latest_daily_date
 
 
@@ -72,13 +73,37 @@ def test_auto_bars_client_uses_sdk_when_sdk_is_newer_than_http():
 
 def test_auto_bars_client_falls_back_to_http_when_sdk_is_unavailable():
     client = AutoBarsClient(
-        http_client=FakeHttp(latest="20260702"),
+        http_client=FakeHttp(latest="20260708"),
         sdk_client=FakeSdk(error="sdk down"),
         expected_min_date="2026-07-08",
     )
 
     assert client.selection["source"] == "http"
     assert client.selection["reason"] == "sdk_unavailable_http_fallback"
+
+
+def test_auto_bars_client_fails_closed_when_both_sources_are_stale():
+    client = AutoBarsClient(
+        http_client=FakeHttp(latest="20260701"),
+        sdk_client=FakeSdk(latest="20260702"),
+        expected_min_date="2026-07-16",
+    )
+
+    assert client.selection["source"] == "unavailable"
+    assert client.selection["reason"] == "no_source_meets_expected_min_date"
+    assert client.get_stock_bars("600001", "20260701", "20260716") == []
+
+
+def test_auto_bars_client_fails_closed_when_http_and_sdk_are_unavailable():
+    client = AutoBarsClient(
+        http_client=FakeHttp(error="http down"),
+        sdk_client=FakeSdk(error="sdk down"),
+        expected_min_date="2026-07-08",
+    )
+
+    assert client.selection["source"] == "unavailable"
+    assert client.selection["reason"] == "no_usable_bars_source"
+    assert client.get_stock_bars("600001", "20260701", "20260708") == []
 
 
 def test_auto_bars_client_suppresses_expected_http_health_warning(caplog):
@@ -92,3 +117,22 @@ def test_auto_bars_client_suppresses_expected_http_health_warning(caplog):
 
     assert client.selection["source"] == "stockdb-sdk"
     assert "connection refused" not in caplog.text
+
+
+def test_auto_bars_client_uses_fresh_http_when_sdk_initialization_fails(
+    monkeypatch,
+):
+    def missing_sdk():
+        raise ImportError("desktop SDK missing")
+
+    monkeypatch.setattr(bars_router, "StockDBSdkClient", missing_sdk)
+
+    client = AutoBarsClient(
+        http_client=FakeHttp(latest="20260716"),
+        expected_min_date="2026-07-16",
+    )
+
+    assert client.selection["source"] == "http"
+    assert client.selection["reason"] == "sdk_unavailable_http_fallback"
+    assert client.selection["sdk_error"] == "desktop SDK missing"
+    assert client.get_stock_bars("600001", "20260701", "20260716")[0]["source"] == "http"

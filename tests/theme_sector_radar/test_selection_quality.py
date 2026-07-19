@@ -28,18 +28,10 @@ from theme_sector_radar.reporting.selection_quality import (
     classify_stock_candidate,
     build_eligible_watchlist,
 )
-
-
-# ============================================================
-# Forbidden Words
-# ============================================================
-
-FORBIDDEN_WORDS = [
-    "buy", "sell", "hold",
-    "买入", "卖出", "持有", "推荐",
-    "建仓", "加仓", "减仓",
-    "止盈", "止损", "目标价",
-]
+from tests.theme_sector_radar.paper_only_contract import (
+    FORBIDDEN_WORDS,
+    extract_executable_instructions,
+)
 
 
 # ============================================================
@@ -250,6 +242,27 @@ class TestClassifyStockCandidate:
 class TestBuildEligibleWatchlist:
     """测试 eligible_watchlist 构建。"""
 
+    def test_executable_instruction_extractor_ignores_research_text(self):
+        payload = {
+            "research_note": "buy and hold research only",
+            "shadow_status": "paper_hold_observation",
+            "Orders": [{"side": "sell"}],
+            "command": {"side": "buy"},
+            "position_size": 0.5,
+            "submit_order": True,
+        }
+
+        instruction_keys, instruction_texts = extract_executable_instructions(payload)
+
+        assert instruction_keys == {
+            "orders",
+            "side",
+            "command",
+            "position_size",
+            "submit_order",
+        }
+        assert instruction_texts == ["sell", "buy", "0.5", "True"]
+
     def test_build_eligible_watchlist(self):
         """应正确构建 eligible_watchlist。"""
         stock_pools = {
@@ -377,10 +390,12 @@ class TestBuildEligibleWatchlist:
 
         result = build_eligible_watchlist(stock_pools)
 
-        result_str = json.dumps(result, ensure_ascii=False)
+        instruction_keys, instruction_texts = extract_executable_instructions(result)
+        assert not instruction_keys, f"Found executable instruction keys: {sorted(instruction_keys)}"
+        executable_text = "\n".join(instruction_texts).casefold()
 
         for word in FORBIDDEN_WORDS:
-            assert word not in result_str, f"Found forbidden word: {word}"
+            assert word.casefold() not in executable_text, f"Found forbidden word: {word}"
 
 
 class TestNewFactorSelectionQuality:

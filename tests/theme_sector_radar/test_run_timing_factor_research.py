@@ -34,7 +34,7 @@ def test_run_timing_factor_research_writes_json_and_markdown(tmp_path):
     assert result["json_path"].exists()
     assert result["markdown_path"].exists()
     report = json.loads(result["json_path"].read_text(encoding="utf-8"))
-    assert report["summary"]["category_count"] == 8
+    assert report["summary"]["category_count"] == 12
     assert report["paper_trading_only"] is True
     assert "opening_drive_score" in {item["factor_id"] for item in report["valuable_factors"]}
     markdown = result["markdown_path"].read_text(encoding="utf-8")

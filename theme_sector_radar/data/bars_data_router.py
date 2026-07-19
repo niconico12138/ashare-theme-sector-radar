@@ -66,8 +66,18 @@ class AutoBarsClient:
         sdk_client: Any | None = None,
         expected_min_date: str | None = None,
     ):
-        self.http_client = http_client or MarketDataHttpClient()
-        self.sdk_client = sdk_client or StockDBSdkClient()
+        self.http_client = (
+            http_client if http_client is not None else MarketDataHttpClient()
+        )
+        self._sdk_init_error = None
+        if sdk_client is not None:
+            self.sdk_client = sdk_client
+        else:
+            try:
+                self.sdk_client = StockDBSdkClient()
+            except (ImportError, OSError, ConnectionError, RuntimeError, ValueError) as exc:
+                self.sdk_client = None
+                self._sdk_init_error = str(exc)
         self.expected_min_date = normalize_date(expected_min_date)
         self.selection = self._select_source()
 
@@ -81,27 +91,49 @@ class AutoBarsClient:
             http_error = str(exc)
 
         sdk_latest = None
-        sdk_error = None
-        try:
-            sdk_latest = normalize_date(self.sdk_client.get_latest_daily_date())
-        except Exception as exc:
-            sdk_error = str(exc)
+        sdk_error = self._sdk_init_error
+        if self.sdk_client is not None:
+            try:
+                sdk_latest = normalize_date(self.sdk_client.get_latest_daily_date())
+            except Exception as exc:
+                sdk_error = str(exc)
 
-        reason = "http_fresh"
-        source = "http"
-        if http_error:
-            source = "stockdb-sdk"
-            reason = "http_unavailable"
-        elif self.expected_min_date and (not http_latest or http_latest < self.expected_min_date):
-            source = "stockdb-sdk"
-            reason = "http_older_than_expected"
-        elif sdk_latest and http_latest and sdk_latest > http_latest:
-            source = "stockdb-sdk"
-            reason = "sdk_newer_than_http"
+        http_available = http_error is None
+        sdk_available = sdk_error is None and self.sdk_client is not None
+        http_fresh = http_available and (
+            self.expected_min_date is None
+            or bool(http_latest and http_latest >= self.expected_min_date)
+        )
+        sdk_fresh = sdk_available and (
+            self.expected_min_date is None
+            or bool(sdk_latest and sdk_latest >= self.expected_min_date)
+        )
 
-        if source == "stockdb-sdk" and sdk_error:
+        source = "unavailable"
+        reason = "no_usable_bars_source"
+        if http_fresh and sdk_fresh:
+            if sdk_latest and http_latest and sdk_latest > http_latest:
+                source = "stockdb-sdk"
+                reason = "sdk_newer_than_http"
+            else:
+                source = "http"
+                reason = "http_fresh"
+        elif http_fresh:
             source = "http"
-            reason = "sdk_unavailable_http_fallback"
+            reason = (
+                "sdk_unavailable_http_fallback"
+                if sdk_error
+                else "http_fresh"
+            )
+        elif sdk_fresh:
+            source = "stockdb-sdk"
+            reason = (
+                "http_unavailable"
+                if http_error
+                else "http_older_than_expected"
+            )
+        elif self.expected_min_date and (http_available or sdk_available):
+            reason = "no_source_meets_expected_min_date"
 
         return {
             "source": source,
@@ -121,5 +153,7 @@ class AutoBarsClient:
         frequency: str = "1d",
         fq: str | None = "qfq",
     ) -> list[dict[str, Any]]:
+        if self.selection["source"] == "unavailable":
+            return []
         client = self.sdk_client if self.selection["source"] == "stockdb-sdk" else self.http_client
         return client.get_stock_bars(code, start, end, frequency=frequency, fq=fq)

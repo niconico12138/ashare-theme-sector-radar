@@ -25,14 +25,16 @@ sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
 class TestDataLineage:
     """测试数据血缘字段。"""
 
-    def test_diagnose_bars_group_discrimination_summary(self):
+    def test_diagnose_bars_group_discrimination_summary(self, tmp_path):
         """diagnose_bars_group_discrimination.py summary 应包含数据血缘字段。"""
         from diagnose_bars_group_discrimination import run_diagnosis
         from theme_sector_radar.reporting.report_filename import build_report_filename
 
         # 使用小范围测试
-        candidate_root = PROJECT_ROOT / "reports" / "agent_bridge"
-        forward_return_root = PROJECT_ROOT / "reports" / "forward_returns"
+        candidate_root = tmp_path / "agent_bridge"
+        forward_return_root = tmp_path / "forward_returns"
+        candidate_root.mkdir()
+        forward_return_root.mkdir()
 
         diagnosis = run_diagnosis(
             start_date="2026-07-08",
@@ -51,12 +53,14 @@ class TestDataLineage:
         assert summary["candidate_file_priority"] == ["analysis_backfilled", "factor_backfilled", "original"]
         assert summary["forward_return_file_pattern"] == "{date}.json"
 
-    def test_evaluate_bars_factor_shadow_policy_summary(self):
+    def test_evaluate_bars_factor_shadow_policy_summary(self, tmp_path):
         """evaluate_bars_factor_shadow_policy.py summary 应包含数据血缘字段。"""
         from evaluate_bars_factor_shadow_policy import run_analysis
 
-        candidate_root = PROJECT_ROOT / "reports" / "agent_bridge"
-        forward_return_root = PROJECT_ROOT / "reports" / "forward_returns"
+        candidate_root = tmp_path / "agent_bridge"
+        forward_return_root = tmp_path / "forward_returns"
+        candidate_root.mkdir()
+        forward_return_root.mkdir()
 
         analysis = run_analysis(
             start_date="2026-07-08",
@@ -74,12 +78,14 @@ class TestDataLineage:
         assert "generated_at" in summary
         assert summary["candidate_file_priority"] == ["analysis_backfilled", "factor_backfilled", "original"]
 
-    def test_validate_bars_factor_backfill_chain_summary(self):
+    def test_validate_bars_factor_backfill_chain_summary(self, tmp_path):
         """validate_bars_factor_backfill_chain.py summary 应包含数据血缘字段。"""
         from validate_bars_factor_backfill_chain import run_validation
 
-        candidate_root = PROJECT_ROOT / "reports" / "agent_bridge"
-        forward_return_root = PROJECT_ROOT / "reports" / "forward_returns"
+        candidate_root = tmp_path / "agent_bridge"
+        forward_return_root = tmp_path / "forward_returns"
+        candidate_root.mkdir()
+        forward_return_root.mkdir()
 
         validation = run_validation(
             start_date="2026-07-08",

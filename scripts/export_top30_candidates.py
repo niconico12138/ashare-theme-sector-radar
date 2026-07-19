@@ -234,10 +234,26 @@ def load_unified_candidates(date: str, pool_limit: int = POOL_LIMIT) -> tuple[li
     except Exception:
         return [], {"trend_requested": 0, "trend_actual": 0, "burst_requested": 0, "burst_actual": 0, "merged_unique": 0}
 
-    # Get complete candidate lists (Phase 39: read from trend_candidates_all/burst_candidates_all)
-    # Fall back to trend_top_stocks/burst_top_stocks if complete lists not available
-    raw_trend = report.get("trend_candidates_all", report.get("trend_top_stocks", []))
-    raw_burst = report.get("burst_candidates_all", report.get("burst_top_stocks", []))
+    formal = report.get("formal_candidate_selection")
+    formal_mode = report.get("candidate_chain") == "direction_linkage_v2"
+    if formal_mode:
+        if (
+            isinstance(formal, dict)
+            and formal.get("status") == "active_for_paper_research"
+            and isinstance(formal.get("selected"), list)
+        ):
+            raw_trend = formal["selected"]
+        else:
+            raw_trend = []
+        raw_burst = []
+    else:
+        # Legacy compatibility path.
+        raw_trend = report.get(
+            "trend_candidates_all", report.get("trend_top_stocks", [])
+        )
+        raw_burst = report.get(
+            "burst_candidates_all", report.get("burst_top_stocks", [])
+        )
 
     # Track detailed funnel statistics
     funnel = {
@@ -325,6 +341,10 @@ def load_unified_candidates(date: str, pool_limit: int = POOL_LIMIT) -> tuple[li
 
     def _create_entry(stock: dict, source_pool: str) -> dict:
         """Create a candidate entry from stock data."""
+        linkage_selection_score = _score(
+            stock, "linkage_selection_score", "linkage_selection_score"
+        )
+        final_score = _score(stock, "final_score", "final_score")
         return {
             "code": stock.get("code", ""),
             "name": stock.get("name", "").strip(),
@@ -336,7 +356,17 @@ def load_unified_candidates(date: str, pool_limit: int = POOL_LIMIT) -> tuple[li
             "burst_score": _score(stock, "burst_score", "sector_burst_score"),
             "relevance_score": _score(stock, "relevance_score", "relevance_score"),
             "quant_score": _score(stock, "quant_score", "quant_score"),
-            "final_score": _score(stock, "final_score", "final_score"),
+            "final_score": final_score,
+            "linkage_selection_score": linkage_selection_score,
+            "sector_direction_score": _score(
+                stock, "sector_direction_score", "direction_score_shadow"
+            ),
+            "active_selection_score": (
+                linkage_selection_score if formal_mode else final_score
+            ),
+            "candidate_chain": (
+                "direction_linkage_v2" if formal_mode else "legacy"
+            ),
         }
 
     # ─── Step 1: Filter each pool independently ───
@@ -353,8 +383,12 @@ def load_unified_candidates(date: str, pool_limit: int = POOL_LIMIT) -> tuple[li
     funnel["burst_pool"]["eligible"] = len(eligible_burst)
 
     # ─── Step 2: Sort each pool by final_score and take top pool_limit ───
-    eligible_trend.sort(key=lambda x: x.get("final_score", 0), reverse=True)
-    eligible_burst.sort(key=lambda x: x.get("final_score", 0), reverse=True)
+    eligible_trend.sort(
+        key=lambda x: x.get("active_selection_score", 0), reverse=True
+    )
+    eligible_burst.sort(
+        key=lambda x: x.get("active_selection_score", 0), reverse=True
+    )
 
     selected_trend = eligible_trend[:pool_limit]
     funnel["trend_pool"]["selected_initial"] = len(selected_trend)
@@ -369,7 +403,9 @@ def load_unified_candidates(date: str, pool_limit: int = POOL_LIMIT) -> tuple[li
         trend_codes = {s["code"] for s in selected_trend}
         # Backfill from burst pool (that are not already in trend)
         backfill_candidates = [s for s in eligible_burst if s["code"] not in trend_codes]
-        backfill_candidates.sort(key=lambda x: x.get("final_score", 0), reverse=True)
+        backfill_candidates.sort(
+            key=lambda x: x.get("active_selection_score", 0), reverse=True
+        )
         backfill = backfill_candidates[:needed]
         for s in backfill:
             s["source_pool"] = "both"  # Mark as cross-pool
@@ -383,7 +419,9 @@ def load_unified_candidates(date: str, pool_limit: int = POOL_LIMIT) -> tuple[li
         burst_codes = {s["code"] for s in selected_burst}
         # Backfill from trend pool (that are not already in burst)
         backfill_candidates = [s for s in eligible_trend if s["code"] not in burst_codes]
-        backfill_candidates.sort(key=lambda x: x.get("final_score", 0), reverse=True)
+        backfill_candidates.sort(
+            key=lambda x: x.get("active_selection_score", 0), reverse=True
+        )
         backfill = backfill_candidates[:needed]
         for s in backfill:
             s["source_pool"] = "both"  # Mark as cross-pool
@@ -411,6 +449,10 @@ def load_unified_candidates(date: str, pool_limit: int = POOL_LIMIT) -> tuple[li
             existing["relevance_score"] = max(existing.get("relevance_score", 0), entry.get("relevance_score", 0))
             existing["quant_score"] = max(existing.get("quant_score", 0), entry.get("quant_score", 0))
             existing["final_score"] = max(existing.get("final_score", 0), entry.get("final_score", 0))
+            existing["active_selection_score"] = max(
+                existing.get("active_selection_score", 0),
+                entry.get("active_selection_score", 0),
+            )
             funnel["merge"]["duplicates_removed"] += 1
         else:
             by_code[code] = entry
@@ -532,6 +574,12 @@ def build_candidate_entry(
         "relevance_score": relevance_score,
         "quant_score": quant_score,
         "final_score": final_score,
+        "candidate_chain": stock.get("candidate_chain", "legacy"),
+        "linkage_selection_score": stock.get("linkage_selection_score", 0),
+        "sector_direction_score": stock.get("sector_direction_score", 0),
+        "active_selection_score": stock.get(
+            "active_selection_score", final_score
+        ),
         "agent_label": agent_info.get("agent_label", ""),
         "candidate_reasons": reasons,
         "data_sources": ["market_data_service", "stable_sector_inputs"],
@@ -982,6 +1030,8 @@ def _select_agent_candidates(candidates: list[dict], agent_stock_limit: int | No
 
     def sort_key(c: dict) -> float:
         try:
+            if c.get("candidate_chain") == "direction_linkage_v2":
+                return float(c.get("active_selection_score", 0) or 0)
             return float(c.get("final_score", 0) or 0)
         except (TypeError, ValueError):
             return 0.0
@@ -1114,10 +1164,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
 
 
 

@@ -7,7 +7,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
@@ -17,6 +17,11 @@ from theme_sector_radar.timing.combination_experiment import (  # noqa: E402
     build_default_strategy_versions,
     evaluate_strategy_stability,
     evaluate_strategy_versions,
+)
+from theme_sector_radar.reporting.strict_json import load_strict_json  # noqa: E402
+from theme_sector_radar.reporting.artifact_archive import write_text_preserving_previous  # noqa: E402
+from theme_sector_radar.timing.selection_source_identity import (  # noqa: E402
+    validate_selection_source_identity,
 )
 
 
@@ -39,13 +44,23 @@ def run_timing_combination_experiment(
     selection_validation_root: Path | None = PROJECT_ROOT / "reports" / "selection_validation",
     min_selected: int = 20,
 ) -> dict[str, Any]:
-    candidate_files = _discover_candidate_files(candidate_root, start, end)
+    if selection_validation_root is None:
+        raise ValueError("selection validation root is required for a content-bound experiment")
+    effective_end = min(str(end or as_of), as_of)
+    selection_snapshots: dict[str, Mapping[str, Any]] = {}
+    selection_source_identity = validate_selection_source_identity(
+        selection_validation_root,
+        start=start,
+        end=effective_end,
+        document_snapshots=selection_snapshots,
+    )
+    candidate_files = _discover_candidate_files(candidate_root, start, effective_end)
     samples = []
     dates_without_selection_validation = []
     for path in candidate_files:
         date = path.parent.name
-        dated_returns = _load_selection_validation_returns(selection_validation_root, date)
-        if selection_validation_root is not None and not dated_returns:
+        dated_returns = _load_selection_validation_returns(selection_snapshots, date)
+        if not dated_returns:
             dates_without_selection_validation.append(date)
         for row in _candidate_rows(_load_json(path)):
             code = str(row.get("code") or "").strip()
@@ -74,19 +89,32 @@ def run_timing_combination_experiment(
         "labeled_sample_count": sum(1 for row in samples if _float(row.get("forward_return_pct")) is not None),
         "dates_without_selection_validation": sorted(set(dates_without_selection_validation)),
         "start": start,
-        "end": end,
+        "end": effective_end,
+        "requested_end": end,
     }
     report["source_files"] = {
         "candidate_root": str(candidate_root),
         "selection_validation_root": str(selection_validation_root) if selection_validation_root else None,
+        "selection_source_identity": selection_source_identity,
     }
 
     output_dir.mkdir(parents=True, exist_ok=True)
     json_path = output_dir / f"timing_combination_experiment_{as_of}_{snapshot_label}.json"
     markdown_path = output_dir / f"timing_combination_experiment_{as_of}_{snapshot_label}.md"
-    json_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
-    markdown_path.write_text(_markdown(report), encoding="utf-8")
-    return {"status": "ok", "json_path": json_path, "markdown_path": markdown_path, "report": report}
+    archived_json_path = write_text_preserving_previous(
+        json_path,
+        json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False),
+    )
+    archived_markdown_path = write_text_preserving_previous(markdown_path, _markdown(report))
+    return {
+        "status": "ok",
+        "json_path": json_path,
+        "markdown_path": markdown_path,
+        "archived_previous_paths": [
+            path for path in (archived_json_path, archived_markdown_path) if path is not None
+        ],
+        "report": report,
+    }
 
 
 def _annotate_stability_adjusted_scores(report: dict[str, Any]) -> None:
@@ -143,13 +171,11 @@ def _candidate_rows(data: Any) -> list[dict[str, Any]]:
     return []
 
 
-def _load_selection_validation_returns(root: Path | None, date: str) -> dict[str, float]:
-    if root is None:
-        return {}
-    path = root / date / "next_day_selection_validation.json"
-    if not path.exists():
-        return {}
-    data = _load_json(path)
+def _load_selection_validation_returns(
+    snapshots: Mapping[str, Mapping[str, Any]],
+    date: str,
+) -> dict[str, float]:
+    data = snapshots.get(date)
     rows = data.get("per_stock") if isinstance(data, dict) else None
     result = {}
     if not isinstance(rows, list):
@@ -165,7 +191,7 @@ def _load_selection_validation_returns(root: Path | None, date: str) -> dict[str
 
 
 def _load_json(path: Path) -> Any:
-    return json.loads(path.read_text(encoding="utf-8-sig"))
+    return load_strict_json(path)
 
 
 def _markdown(report: dict[str, Any]) -> str:

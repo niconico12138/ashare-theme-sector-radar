@@ -88,7 +88,9 @@ class RiskControlAgent:
         """生成风险标志"""
         flags = []
 
-        if trend_window_status != "ok":
+        if trend_window_status == "partial_history":
+            flags.append("history_partial")
+        elif trend_window_status != "ok":
             flags.append("history_unreliable")
 
         if data_warnings:
@@ -137,9 +139,13 @@ class RiskControlAgent:
         if risk_label in ["risk_high", "risk_extreme"]:
             return "negative"
 
-        # 2. 有风险标志 → negative
-        if risk_flags:
+        # 2. 严重风险标志 → negative；部分历史仅作软降级。
+        severe_flags = [flag for flag in risk_flags if flag != "history_partial"]
+        if severe_flags:
             return "negative"
+
+        if "history_partial" in risk_flags:
+            return "neutral"
 
         # 3. veto 触发 → negative
         veto_triggered = score_data.get("veto_triggered", False)

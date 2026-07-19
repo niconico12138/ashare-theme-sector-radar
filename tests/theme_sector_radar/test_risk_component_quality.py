@@ -15,8 +15,11 @@ from diagnose_risk_component_quality import (
     compute_tag_diagnostics,
     compute_eligibility_diagnostics,
     identify_root_causes,
+    build_recommendations,
+    generate_markdown,
     spearman_correlation,
 )
+from tests.theme_sector_radar.report_fixture_factory import write_json
 
 
 class TestDistribution:
@@ -165,30 +168,140 @@ class TestRootCauses:
         assert "drawdown_risk_underpowered" in cause_names
 
     def test_all_production_not_allowed(self):
-        from diagnose_risk_component_quality import build_recommendations
         recs = build_recommendations([{"cause": "test", "severity": "low", "evidence": "test"}])
         assert all(not r["production_change_allowed"] for r in recs)
 
 
-class TestIntegration:
-    def test_output_files_exist(self):
-        base = Path("reports/selection_validation/diagnostics/2026-06-01_to_2026-07-07/risk_components")
-        assert (base / "risk_component_quality.json").exists()
-        assert (base / "risk_component_quality.md").exists()
+def test_markdown_supports_flat_tag_diagnostics():
+    output = {
+        "tag_diagnostics": {
+            "tags": {
+                "legacy_risk": {
+                    "sample_count": 20,
+                    "avg_return": -1.0,
+                    "hit_rate": 25.0,
+                    "avg_next_low_return": -2.0,
+                    "flags": ["valid_negative_risk_tag"],
+                }
+            },
+            "no_tag_avg_return": 1.0,
+            "no_tag_count": 20,
+        }
+    }
 
-    def test_json_structure(self):
-        data = json.loads(Path("reports/selection_validation/diagnostics/2026-06-01_to_2026-07-07/risk_components/risk_component_quality.json").read_text(encoding="utf-8"))
+    markdown = generate_markdown(output)
+
+    assert "legacy_risk" in markdown
+    assert "Baseline count: 20" in markdown
+
+
+@pytest.fixture
+def risk_quality_output_paths(tmp_path):
+    records = []
+    for i in range(40):
+        has_risk_tag = i < 20
+        records.append({
+            "date": f"2026-07-{i // 10 + 1:02d}",
+            "data_available": True,
+            "next_return_pct": float(-2 - i / 100) if has_risk_tag else float(2 + i / 100),
+            "next_low_return_pct": float(-4 - i / 100) if has_risk_tag else float(-1 - i / 100),
+            "max_intraday_drawdown_pct": float(-3 - i / 100) if has_risk_tag else float(-0.5 - i / 100),
+            "market_regime": "broad_up" if (i // 10) % 2 == 0 else "broad_down",
+            "risk_penalty_score": float(i),
+            "hard_risk_penalty": float(i % 8),
+            "trade_risk_penalty": float(i % 15),
+            "volatility_elasticity_score": float(39 - i),
+            "drawdown_risk_score": float(i % 6),
+            "shadow_decision_score_v2": float(50 + i),
+            "risk_tags": ["synthetic_risk"] if has_risk_tag else [],
+            "risk_decomposition_tags": ["synthetic_decomposition"] if has_risk_tag else [],
+            "risk_quality_tags": ["synthetic_quality"] if has_risk_tag else [],
+            "trade_eligibility": "focus" if has_risk_tag else "avoid",
+        })
+    distribution_fields = [
+        "risk_penalty_score",
+        "hard_risk_penalty",
+        "trade_risk_penalty",
+        "volatility_elasticity_score",
+        "drawdown_risk_score",
+        "shadow_decision_score_v2",
+    ]
+    relationship_fields = distribution_fields[:-1]
+    distributions = {
+        field: compute_distribution([record[field] for record in records])
+        for field in distribution_fields
+    }
+    return_relationships = {
+        field: compute_return_relationship(records, field)
+        for field in relationship_fields
+    }
+    risk_tag_diag = compute_tag_diagnostics(records, "risk_tags")
+    decomposition_tag_diag = compute_tag_diagnostics(
+        records, "risk_decomposition_tags"
+    )
+    quality_tag_diag = compute_tag_diagnostics(records, "risk_quality_tags")
+    eligibility_diag = compute_eligibility_diagnostics(records)
+    merged_tag_diag = {
+        "tags": {
+            **risk_tag_diag["tags"],
+            **decomposition_tag_diag["tags"],
+            **quality_tag_diag["tags"],
+        }
+    }
+    root_causes = identify_root_causes(
+        distributions,
+        return_relationships,
+        merged_tag_diag,
+        eligibility_diag,
+    )
+    recommendations = build_recommendations(root_causes)
+    output = {
+        "as_of": "synthetic-test-window",
+        "dataset_summary": {
+            "valid_date_count": len({record["date"] for record in records}),
+            "total_records": len(records),
+            "records_with_data": len(records),
+        },
+        "distributions": distributions,
+        "return_relationships": return_relationships,
+        "tag_diagnostics": {
+            "risk_tags": risk_tag_diag,
+            "risk_decomposition_tags": decomposition_tag_diag,
+            "risk_quality_tags": quality_tag_diag,
+        },
+        "eligibility_diagnostics": eligibility_diag,
+        "root_causes": root_causes,
+        "recommendations": recommendations,
+    }
+
+    output_dir = tmp_path / "risk_components"
+    json_path = write_json(output_dir / "risk_component_quality.json", output)
+    markdown_path = output_dir / "risk_component_quality.md"
+    markdown_path.write_text(generate_markdown(output), encoding="utf-8")
+    return {"json": json_path, "markdown": markdown_path}
+
+
+class TestIntegration:
+    def test_output_files_exist(self, risk_quality_output_paths):
+        assert risk_quality_output_paths["json"].exists()
+        assert risk_quality_output_paths["markdown"].exists()
+
+    def test_json_structure(self, risk_quality_output_paths):
+        data = json.loads(
+            risk_quality_output_paths["json"].read_text(encoding="utf-8")
+        )
         assert "distributions" in data
         assert "return_relationships" in data
         assert "tag_diagnostics" in data
         assert "eligibility_diagnostics" in data
         assert "root_causes" in data
         assert "recommendations" in data
+        assert data["tag_diagnostics"]["risk_tags"]["tags"]["synthetic_risk"]["sample_count"] == 20
         # Verify all production_change_allowed = false
         assert all(not r["production_change_allowed"] for r in data["recommendations"])
 
-    def test_markdown_chapters(self):
-        md = Path("reports/selection_validation/diagnostics/2026-06-01_to_2026-07-07/risk_components/risk_component_quality.md").read_text(encoding="utf-8")
+    def test_markdown_chapters(self, risk_quality_output_paths):
+        md = risk_quality_output_paths["markdown"].read_text(encoding="utf-8")
         assert "Executive Summary" in md
         assert "Component Distribution" in md
         assert "Component Return Relationship" in md
@@ -197,6 +310,9 @@ class TestIntegration:
         assert "Root Causes" in md
         assert "Recommendations" in md
         assert "Do Not Change Production Yet" in md
+        assert "synthetic_risk" in md
+        assert "synthetic_decomposition" in md
+        assert "synthetic_quality" in md
 
 
 # ======================================================================

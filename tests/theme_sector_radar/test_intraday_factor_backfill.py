@@ -1,11 +1,22 @@
 import json
+import hashlib
 import sys
 from pathlib import Path
+
+import pytest
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
 
-from backfill_intraday_factors import backfill_intraday_candidates, normalize_intraday_bars
+from backfill_intraday_factors import (
+    DEFAULT_CANDIDATE_ROOT,
+    DEFAULT_OUTPUT_ROOT,
+    _read_json,
+    _write_json,
+    backfill_date,
+    backfill_intraday_candidates,
+    normalize_intraday_bars,
+)
 
 
 class FakeIntradayClient:
@@ -160,3 +171,40 @@ def test_backfill_intraday_candidates_persists_expanded_volume_money_flow_fields
     assert candidate["midday_amount_sustain_score"] is not None
     assert candidate["volume_price_alignment_score"] is not None
     assert candidate["late_money_flow_concentration_score"] is not None
+
+
+def test_backfill_defaults_and_function_reject_in_place_candidate_mutation(tmp_path):
+    assert DEFAULT_CANDIDATE_ROOT.resolve() != DEFAULT_OUTPUT_ROOT.resolve()
+    candidate_path = tmp_path / "2026-07-02" / "top30_candidates.json"
+    candidate_path.parent.mkdir(parents=True)
+    candidate_path.write_text('{"candidates":[]}', encoding="utf-8")
+
+    with pytest.raises(ValueError, match="candidate and output roots must differ"):
+        backfill_date(
+            "2026-07-02",
+            candidate_root=tmp_path,
+            output_root=tmp_path,
+            client=FakeIntradayClient(),
+        )
+
+
+def test_backfill_json_io_is_strict_atomic_and_content_addressed(tmp_path):
+    invalid_path = tmp_path / "invalid.json"
+    invalid_path.write_text('{"value":NaN}', encoding="utf-8")
+    with pytest.raises(ValueError, match="non-finite JSON number"):
+        _read_json(invalid_path)
+
+    output_path = tmp_path / "output.json"
+    _write_json(output_path, {"version": 1})
+    previous = output_path.read_bytes()
+    archived_path = _write_json(output_path, {"version": 2})
+
+    assert archived_path == output_path.with_name(
+        f"output.{hashlib.sha256(previous).hexdigest()[:12]}.json"
+    )
+    assert archived_path.read_bytes() == previous
+    assert _read_json(output_path) == {"version": 2}
+
+    with pytest.raises(ValueError, match="Out of range float values"):
+        _write_json(output_path, {"value": float("nan")})
+    assert _read_json(output_path) == {"version": 2}

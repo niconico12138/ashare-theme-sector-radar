@@ -31,10 +31,10 @@ python scripts/run_daily_bridge_report.py --as-of 2026-07-08 --agent-preset sele
 5. Evaluate score calibration when forward-return data is available:
 
 ```powershell
-python scripts/build_forward_returns.py --as-of 2026-07-08
+python scripts/build_forward_returns.py --as-of 2026-07-08 --trading-calendar-path reports/paper_shadow/trading_calendars/a_share_2026-07.json --expected-calendar-sha256 <sha256>
 python scripts/evaluate_scoring_calibration.py --as-of 2026-07-08 --returns-json reports/forward_returns/2026-07-08/forward_returns.json
 python scripts/aggregate_scoring_calibration.py --dates 2026-07-01,2026-07-02,2026-07-03 --horizons 1d
-python scripts/run_scoring_calibration_batch.py --horizons 1 --lookahead-days 3 --source auto --force
+python scripts/run_scoring_calibration_batch.py --horizons 1 --lookahead-days 3 --source auto --force --trading-calendar-path reports/paper_shadow/trading_calendars/a_share_2026-07.json --expected-calendar-sha256 <sha256>
 ```
 
 ## Key Flags
@@ -49,6 +49,7 @@ python scripts/run_scoring_calibration_batch.py --horizons 1 --lookahead-days 3 
 | `--data-update-poll-seconds` | `run_daily.py` | Seconds between automatic freshness checks. Defaults from `THEME_RADAR_DATA_UPDATE_POLL_SECONDS` or 30. |
 | `--resume` | `scripts/run_daily_bridge_report.py` | Reuse existing `top30_candidates.json` and `aihf_stock_ranking.json` when both are available. |
 | `--horizons` | `scripts/build_forward_returns.py` | Choose future trading-day horizons, for example `1,3,5`. |
+| `--trading-calendar-path` / `--expected-calendar-sha256` | Forward-return builders | Bind target dates to one versioned A-share exchange calendar. |
 | `--returns-json` | `scripts/evaluate_scoring_calibration.py` | Read code-level future-return observations for scoring calibration. |
 | `--dates` | `scripts/aggregate_scoring_calibration.py` | Aggregate dated candidate pools and forward returns before judging score-layer signal. |
 | `--source auto` | `scripts/build_forward_returns.py`, `scripts/run_scoring_calibration_batch.py` | Compare market_data_service freshness with the desktop StockDB SDK and use the fresher local bars source. |
@@ -81,7 +82,7 @@ If the latest data date is earlier than `--as-of`, `run_daily.py` adds `data_sta
 
 When `THEME_RADAR_AUTO_UPDATE_TODAY_DATA=1` or `--auto-update-data-source` is set, `run_daily.py` automatically runs `scripts/update_stockdb_and_verify.py` before execution only when `--as-of` is the current local date and the preflight status is stale. Historical dates do not trigger the updater. After the updater finishes, preflight is run again and the `data_update_attempt` record is written into the daily report and artifact manifest. If the refreshed data is still stale, `data_update_failed` is added to `degradation_flags` and the run continues with the stale condition explicit.
 
-Set `STOCKDB_ROOT` to the desktop StockDB folder, for example `C:\Users\Administrator\Desktop\stockdb`, so the updater can locate `stockdb.exe` and `数据更新.exe`.
+Set `STOCKDB_ROOT` to your local StockDB folder so the updater can locate `stockdb.exe` and `数据更新.exe`.
 
 ## Report Date Consistency
 
@@ -99,7 +100,7 @@ Any payload date mismatch is written under `report_date_consistency` in both the
 
 ## Scoring Calibration
 
-`scripts/build_forward_returns.py` builds the dated `forward_returns.json` file from `market_data_service` daily bars. It uses the candidate pool codes, fetches bars from the signal date through a lookahead window, and calculates future trading-day close-to-close returns.
+`scripts/build_forward_returns.py` builds the dated `forward_returns.json` file from daily bars. It uses a versioned exchange calendar for target dates and persists the QFQ endpoint closes and bar snapshot SHA; a suspended stock cannot roll its horizon to its next available bar.
 
 `scripts/evaluate_scoring_calibration.py` is an offline evaluator. It does not fetch market data and does not change ranking weights. It answers whether existing score layers separate later returns.
 
@@ -125,7 +126,7 @@ Outputs:
 - `reports/scoring_calibration/aggregate/DATE_RANGE/aggregate_scoring_calibration.md`
 - `reports/scoring_calibration/batch/DATE_RANGE/batch_scoring_calibration_summary.json`
 
-`scripts/run_daily_bridge_report.py` automatically tries `build_forward_returns.py` after candidate export, then runs the calibration evaluator when a `forward_returns.json` file exists. Missing future bars are treated as "not enough evidence yet", not as a daily-run failure.
+`scripts/run_daily_bridge_report.py` tries `build_forward_returns.py` only when both calendar path and expected SHA are supplied. Without them it skips forward generation explicitly. Missing future bars are treated as "not enough evidence yet", not as a daily-run failure.
 
 Use `scripts/aggregate_scoring_calibration.py` before tuning weights. It preserves every `date:code` pair as a separate sample, records missing candidate or forward-return files by date, and prevents one thin daily sample from driving formula changes.
 
@@ -134,4 +135,3 @@ For routine calibration, prefer `scripts/run_scoring_calibration_batch.py`. It s
 When `market_data_service /health` reports an older `latest_daily_date` than the desktop StockDB package contains, use `--source auto --force`. The auto router compares HTTP freshness with `<path-to-stockdb-sdk>\\stock_sdk.py` and uses the fresher bar source. Use `--source stockdb-sdk --force` only when you deliberately want to bypass HTTP.
 
 Batch calibration summaries include `bars_data_source_summary` with counts by source and reason. Check it after `--source auto` runs to confirm whether a batch used HTTP, the desktop StockDB SDK, or a fallback path.
-

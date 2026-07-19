@@ -11,6 +11,7 @@ from ..models import (
     ResonanceResult,
     SectorScore,
 )
+from ..reporting.strict_json import write_text_atomic
 
 
 def generate_markdown_report(
@@ -29,6 +30,7 @@ def generate_markdown_report(
     rotation_summary: dict = None,
     comparison: dict = None,
     provider_status=None,
+    warnings: List[str] = None,
 ) -> str:
     """
     生成 Markdown 报告
@@ -159,9 +161,10 @@ def generate_markdown_report(
         lines.append("|------|------|------|----------|------|------|----------|")
 
         for i, score in enumerate(industry_top, 1):
+            rank = score.current_rank if score.current_rank is not None else i
             reasons = "; ".join(score.downgrade_reasons[:2]) if score.downgrade_reasons else "-"
             lines.append(
-                f"| {i} | {score.name} | {score.score:.1f} | "
+                f"| {rank} | {score.name} | {score.score:.1f} | "
                 f"{score.focus_level.value} | - | "
                 f"{score.risk_level.value} | {reasons} |"
             )
@@ -185,9 +188,13 @@ def generate_markdown_report(
         lines.append("")
 
     if concept_top:
+        lines.append("| 排名 | 板块 | 分数 | 关注等级 | 阶段 | 风险 | 核心原因 |")
+        lines.append("|------|------|------|----------|------|------|----------|")
+        for i, score in enumerate(concept_top, 1):
+            rank = score.current_rank if score.current_rank is not None else i
             reasons = "; ".join(score.downgrade_reasons[:2]) if score.downgrade_reasons else "-"
             lines.append(
-                f"| {i} | {score.name} | {score.score:.1f} | "
+                f"| {rank} | {score.name} | {score.score:.1f} | "
                 f"{score.focus_level.value} | {score.phase.value} | "
                 f"{score.risk_level.value} | {reasons} |"
             )
@@ -347,6 +354,10 @@ def generate_markdown_report(
     ]
     if low_quality:
         lines.append(f"- **数据质量偏低板块**: {', '.join(low_quality)}")
+    if warnings:
+        lines.append("- **降级原因**:")
+        for warning in warnings:
+            lines.append(f"  - {warning}")
     lines.append("")
 
     # 声明
@@ -360,5 +371,4 @@ def generate_markdown_report(
 
 def save_markdown_report(report: str, filepath: str):
     """保存 Markdown 报告"""
-    with open(filepath, "w", encoding="utf-8") as f:
-        f.write(report)
+    write_text_atomic(filepath, report)

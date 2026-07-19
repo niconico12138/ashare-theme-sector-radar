@@ -60,6 +60,7 @@ htmlcov/
 
 # Local agent handoff prompts / private coordination notes
 PROMPT_FOR_CODEX.md
+.planning/
 # Local historical diagnostics / private coordination artifacts
 check_stockdb_freshness.py
 validate_data_quality.py
