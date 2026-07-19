@@ -333,6 +333,53 @@ def evaluate_rule_vs_ml_shadow(
             verified["baseline_rows"]
         ):
             raise ValueError("rule rows do not match the verified archive baseline")
+        prediction_rows = list(prediction_report.get("predictions") or [])
+        if (
+            prediction_report.get("strict_pit_eligible") is not True
+            or prediction_report.get("dataset_sha256")
+            != dataset.get("dataset_sha256")
+            or prediction_report.get("prediction_rows_sha256")
+            != canonical_sha256(prediction_rows)
+        ):
+            raise ValueError("strict prediction report is not bound to the dataset")
+        if not isinstance(folds, list) or not folds:
+            raise ValueError("strict prediction split audit is missing")
+        feature_universe = list(dataset.get("feature_universe_records") or [])
+        feature_dates = sorted(
+            {str(row.get("as_of_date") or "") for row in feature_universe}
+        )
+        expected_test_dates: set[str] = set()
+        for fold in folds:
+            if not isinstance(fold, Mapping):
+                raise ValueError("strict prediction fold audit is invalid")
+            start = str(fold.get("test_start") or "")
+            end = str(fold.get("test_end") or "")
+            fold_dates = [day for day in feature_dates if start <= day <= end]
+            if len(fold_dates) != int(fold.get("test_date_count") or 0):
+                raise ValueError("strict prediction fold test dates do not reproduce")
+            expected_test_dates.update(fold_dates)
+        expected_universe_rows = [
+            row
+            for row in feature_universe
+            if str(row.get("as_of_date") or "") in expected_test_dates
+        ]
+        if set(predictions) != {_identity(row) for row in expected_universe_rows}:
+            raise ValueError("strict prediction universe does not match the dataset")
+        if prediction_report.get("prediction_universe_sha256") != canonical_sha256(
+            expected_universe_rows
+        ):
+            raise ValueError("strict prediction universe SHA mismatch")
+        feature_sectors = {
+            _identity(row): str(row.get("sector_name") or "")
+            for row in expected_universe_rows
+        }
+        if any(
+            str(row.get("sector_name") or "") != feature_sectors[identity]
+            for identity, row in predictions.items()
+        ):
+            raise ValueError("strict prediction sector identity mismatch")
+        if baseline_strict_pit_eligible is not True:
+            raise ValueError("strict evaluation baseline evidence is missing")
     universe = sorted(predictions.keys() & rules.keys())
     if not universe:
         raise ValueError("no same-day paired rule/ML identities")
@@ -392,6 +439,9 @@ def evaluate_rule_vs_ml_shadow(
         require_finite(linkage_raw, context="Linkage V2 baseline scores")
         quant_scores = _same_day_percentiles(by_date, quant_raw)
         linkage_scores = _same_day_percentiles(by_date, linkage_raw)
+        for identity in universe:
+            if linkage_status[identity] == "unavailable":
+                linkage_scores[identity] = -1.0
         hybrid_scores: dict[tuple[str, str], float] = {}
         hybrid_rows: dict[tuple[str, str], dict[str, Any]] = {}
         for identity in universe:
@@ -428,22 +478,19 @@ def evaluate_rule_vs_ml_shadow(
             for identity in universe
             if bool(rules[identity].get("rule_eligible", True))
         }
-        linkage_eligible = {
-            identity
-            for identity in baseline_eligible
-            if linkage_status[identity] != "unavailable"
-        }
         score_maps = {
             "A_quant": quant_scores,
             "B_linkage_v2": linkage_scores,
             "C_hybrid": hybrid_scores,
             "D_ml": ml_scores,
         }
+        common_eligible = {
+            day: [identity for identity in identities if identity in baseline_eligible]
+            for day, identities in by_date.items()
+        }
         eligible_maps = {
-            "A_quant": {day: [i for i in ids if i in baseline_eligible] for day, ids in by_date.items()},
-            "B_linkage_v2": {day: [i for i in ids if i in linkage_eligible] for day, ids in by_date.items()},
-            "C_hybrid": {day: [i for i in ids if i in baseline_eligible] for day, ids in by_date.items()},
-            "D_ml": {day: list(ids) for day, ids in by_date.items()},
+            strategy: {day: list(identities) for day, identities in common_eligible.items()}
+            for strategy in score_maps
         }
         baseline_configuration = {
             "hybrid": {
@@ -452,7 +499,7 @@ def evaluate_rule_vs_ml_shadow(
                 "partial_linkage_v2_weight": float(hybrid_partial_linkage_weight),
                 "method": "same_day_percentile_weighted",
             },
-            "linkage_unavailable_policy": "quant_only_low_confidence_and_excluded_from_linkage_baseline",
+            "linkage_unavailable_policy": "fail_closed_lowest_rank_common_pool_and_quant_only_hybrid",
         }
     else:
         rule_scores = {
@@ -641,7 +688,7 @@ def evaluate_rule_vs_ml_shadow(
             "linkage_available_row_count": sum(
                 status_counts.get(status, 0) for status in ("ok", "partial")
             ),
-            "linkage_unavailable_policy": "fail_closed_linkage_baseline_quant_only_hybrid",
+            "linkage_unavailable_policy": "fail_closed_lowest_rank_common_pool_quant_only_hybrid",
         }
         report["ranking_audit"] = ranking_audit
     require_finite(report, context="ML evaluation report")
