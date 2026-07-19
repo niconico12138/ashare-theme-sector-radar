@@ -1,28 +1,115 @@
 # A-Share Theme Sector Radar
 
-A research-oriented A-share theme/sector rotation and stock-candidate analysis framework.
+> A research framework for A-share theme/sector rotation and stock-candidate analysis.
 
-中文定位：一个面向 A 股主题/板块轮动的研究型选股框架，支持候选股发现、因子评分、Agent 辅助分析、历史验证与 shadow score 研究。
+中文定位：面向 A 股主题与行业板块轮动的研究型分析框架。它将行情、板块成分、基准和因子数据组织为可审计的研究流水线，输出板块强弱、个股研究候选、数据质量标记和历史验证结果。
 
-## Disclaimer
+## Important boundary
 
-This project is for research, education, and workflow automation only. It is not investment advice, not a stock recommendation service, not an investment advisory service, and not an automated trading system. Outputs must not be used as buy, sell, hold, or return-guarantee instructions.
+This project is for research, education, and workflow automation only. It is **not** investment advice, a stock recommendation service, an investment advisory service, or an automated trading system. It does not connect to brokers, place orders, generate position instructions, or promise returns. All outputs require independent human review.
 
-Legacy boundary wording retained for downstream checks: 不作为个股操作依据.
+本项目仅用于研究、学习和工作流自动化；不构成投资建议，不生成买卖指令，不接入券商。候选股是后续研究对象，不是交易清单。
 
-## Core Capabilities
+## What it does
 
-- A-share industry and concept board analysis.
-- Candidate stock pool generation for research workflows.
-- Rule-based factor scoring and risk decomposition.
-- Daily pipeline reports in JSON and Markdown.
-- Historical selection validation.
-- Shadow score research, including V5 Regime Router Shadow Score.
-- Optional Agent-assisted analysis with strict research boundaries.
+- Scores A-share industry and concept boards to identify research directions.
+- Builds a board-aware stock candidate pool instead of ranking the whole market indiscriminately.
+- Evaluates momentum, trend, liquidity, valuation, volatility, drawdown, data quality and other factors.
+- Produces structured JSON/Markdown reports for reproducible daily research runs.
+- Validates candidate-selection methods against historical data and diagnoses failure modes.
+- Runs experimental Shadow Score models separately from the protected baseline ranking.
+- Supports optional agent-assisted diagnostics while preserving the research-only boundary.
 
-## Current Research Status
+## Architecture
 
-The latest internal validation window covers 2026-01-05 to 2026-07-08 with 120 valid validation days. Production `decision_score` remains unchanged and has ordinary 120d performance. The strongest current research model is V5 Regime Router Shadow Score:
+```mermaid
+flowchart TB
+    subgraph Sources["1. Data sources"]
+        S1["AkShare / public market data"]
+        S2["Local StockDB (optional)"]
+        S3["Local market-data service (optional)"]
+        S4["Offline fixtures / sanitized examples"]
+    end
+
+    subgraph Data["2. Data and provenance layer"]
+        D1["Provider routing & retry"]
+        D2["Snapshots, bars, benchmark & constituents"]
+        D3["Normalization & lineage checks"]
+        D4["Local cache (ignored by Git)"]
+    end
+
+    subgraph Research["3. Research and scoring layer"]
+        R1["Board scoring\ntrend · momentum · cross-section"]
+        R2["Risk & data-quality diagnostics"]
+        R3["Board rotation / direction candidates"]
+        R4["Stock factors & board-stock linkage"]
+        R5["Candidate selection\nranking · quotas · concentration controls"]
+    end
+
+    subgraph Validation["4. Validation and Shadow layer"]
+        V1["Forward-return labels"]
+        V2["Historical selection validation"]
+        V3["Calibration, attribution & stability diagnostics"]
+        V4["Shadow scores\nresearch only"]
+    end
+
+    subgraph Outputs["5. Outputs"]
+        O1["Daily JSON / Markdown reports"]
+        O2["Top-N research candidates"]
+        O3["Run logs, degradation flags & audit artifacts"]
+    end
+
+    S1 --> D1
+    S2 --> D1
+    S3 --> D1
+    S4 --> D1
+    D1 --> D2 --> D3 --> D4
+    D3 --> R1
+    D3 --> R2
+    R1 --> R3 --> R4 --> R5
+    R2 --> R1
+    R2 --> R5
+    R5 --> O1
+    R5 --> O2
+    R5 --> V1 --> V2 --> V3 --> V4
+    V2 --> O3
+    V3 --> O3
+    V4 --> O3
+```
+
+### Research data flow
+
+```mermaid
+flowchart LR
+    A["As-of date"] --> B["Load market & board inputs"]
+    B --> C["Validate freshness, identity and coverage"]
+    C -->|"usable"| D["Score boards"]
+    C -->|"degraded"| X["Record flags / use permitted fallback"]
+    D --> E["Select eligible research directions"]
+    E --> F["Fetch board constituents and stock factors"]
+    F --> G["Score stocks and board-stock linkage"]
+    G --> H["Apply deduplication and concentration limits"]
+    H --> I["Publish research candidates and reports"]
+    I --> J["Later: historical labels & validation"]
+```
+
+The pipeline is intentionally fail-aware: unavailable, stale, incomplete, or fallback data is recorded in outputs rather than silently treated as fully reliable.
+
+## Repository map
+
+| Path | Responsibility |
+|---|---|
+| `theme_sector_radar/` | Core package: data access, models, scoring, agents, history, backtests and reports. |
+| `scripts/` | Command-line workflows for daily runs, exports, validation, calibration and diagnostics. |
+| `tests/` | Pytest coverage for data contracts, scoring, pipelines and report schemas. |
+| `config/` | Public configuration examples. |
+| `docs/` | Runbooks, methodology, architecture notes and research documentation. |
+| `examples/` | Small sanitized examples that are safe to share. |
+| `reports/`, `data_cache/` | Generated/local artifacts; ignored by Git and not part of the public source distribution. |
+
+## Current research snapshot
+
+The following figures are a historical research snapshot, not a promise of future performance. The validation window covered 2026-01-05 to 2026-07-08 with 120 valid validation days. The strongest evaluated experimental model was V5 Regime Router Shadow Score:
 
 - 120d Top-Bottom Gap: +4.59
 - Hit Rate Diff: +56.0
