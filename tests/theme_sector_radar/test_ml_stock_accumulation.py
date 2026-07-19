@@ -155,18 +155,142 @@ def _active_report(as_of: str = "2026-07-16"):
     }
 
 
+def _physical_daily_sources(
+    root: Path,
+    *,
+    as_of: str,
+    report: dict,
+    calendar_dates: list[str],
+    generated_at: str,
+):
+    from theme_sector_radar.data.trading_calendar import load_trading_calendar
+    from theme_sector_radar.reporting.strict_json import (
+        load_strict_json_with_sha256,
+        write_strict_json_atomic,
+    )
+
+    source_root = root / "physical_sources"
+    candidate_path = source_root / "candidates" / f"{as_of}.json"
+    write_strict_json_atomic(candidate_path, report)
+    _candidate_doc, candidate_sha = load_strict_json_with_sha256(candidate_path)
+
+    selected = report["direction_linkage_v2_selection_shadow"]["selected"]
+    sector_name = str(selected[0]["sector_name"])
+    constituent_path = source_root / "constituents" / f"{as_of}.json"
+    write_strict_json_atomic(
+        constituent_path,
+        {
+            "as_of_date": as_of,
+            "sector_name": sector_name,
+            "stocks": [{"code": str(row["code"])} for row in selected],
+        },
+    )
+    _constituent_doc, constituent_sha = load_strict_json_with_sha256(
+        constituent_path
+    )
+
+    calendar_path = source_root / "calendar.json"
+    write_strict_json_atomic(
+        calendar_path,
+        {
+            "schema_version": "a_share_trading_calendar.v1",
+            "market": "CN_A",
+            "source": "prospective-unit-test-calendar",
+            "requested_start": calendar_dates[0],
+            "requested_end": calendar_dates[-1],
+            "dates": calendar_dates,
+            "date_count": len(calendar_dates),
+        },
+    )
+    calendar = load_trading_calendar(calendar_path, as_of=as_of, include_future=True)
+    return {
+        "candidate_source": {
+            "path": str(candidate_path.resolve()),
+            "sha256": candidate_sha,
+            "generated_at": generated_at,
+            "as_of_date": as_of,
+        },
+        "constituent_sources": [
+            {
+                "path": str(constituent_path.resolve()),
+                "sha256": constituent_sha,
+                "as_of_date": as_of,
+                "sector_name": sector_name,
+            }
+        ],
+        "trading_calendar": calendar,
+    }
+
+
+def _physical_label_source(
+    root: Path,
+    *,
+    signal_date: str,
+    label_as_of_date: str,
+    stock_prices: dict,
+    sector_prices: dict,
+):
+    from theme_sector_radar.reporting.strict_json import (
+        load_strict_json_with_sha256,
+        write_strict_json_atomic,
+    )
+
+    source_root = root / "physical_sources" / "labels" / signal_date
+    stock_sources = {}
+    for code, rows in stock_prices.items():
+        path = source_root / "stocks" / f"{code}.json"
+        write_strict_json_atomic(path, {"stock_code": code, "bars": rows})
+        _payload, sha256 = load_strict_json_with_sha256(path)
+        stock_sources[code] = {
+            "requested_source": "prospective-unit-test",
+            "actual_source": "prospective-unit-test",
+            "path": str(path.resolve()),
+            "sha256": sha256,
+        }
+    sector_sources = {}
+    for sector_name, rows in sector_prices.items():
+        filename = hashlib.sha256(sector_name.encode("utf-8")).hexdigest()
+        path = source_root / "sectors" / f"{filename}.json"
+        write_strict_json_atomic(path, {"sector_name": sector_name, "records": rows})
+        _payload, sha256 = load_strict_json_with_sha256(path)
+        sector_sources[sector_name] = {
+            "path": str(path.resolve()),
+            "sha256": sha256,
+        }
+    return {
+        "provider": "prospective-unit-test",
+        "adjustment": "qfq",
+        "frequency": "1d",
+        "query_end": label_as_of_date,
+        "stock_bars_by_code": stock_sources,
+        "sector_bars_by_name": sector_sources,
+    }
+
+
 def test_daily_snapshot_archive_is_prospective_content_bound_and_immutable(tmp_path):
     from theme_sector_radar.ml.accumulation import archive_daily_snapshot
 
     as_of = "2026-07-16"
+    report = _active_report(as_of)
+    calendar_dates = [
+        as_of,
+        "2026-07-17",
+        "2026-07-20",
+        "2026-07-21",
+        "2026-07-22",
+        "2026-07-23",
+    ]
+    physical = _physical_daily_sources(
+        tmp_path,
+        as_of=as_of,
+        report=report,
+        calendar_dates=calendar_dates,
+        generated_at="2026-07-16T16:30:00+08:00",
+    )
     kwargs = {
         "archive_root": tmp_path,
-        "candidate_report": _active_report(as_of),
-        "candidate_source": {
-            "path": "reports/2026-07-16/unified_report.json",
-            "sha256": "a" * 64,
-            "generated_at": "2026-07-16T16:30:00+08:00",
-        },
+        "candidate_report": report,
+        "candidate_source": physical["candidate_source"],
         "constituent_sources": [
             {
                 "path": "data_cache/sector_stocks/2026-07-16_industry_医疗服务.json",
@@ -175,6 +299,7 @@ def test_daily_snapshot_archive_is_prospective_content_bound_and_immutable(tmp_p
                 "sector_name": "医疗服务",
             }
         ],
+        "constituent_sources": physical["constituent_sources"],
         "bars_by_code": {"000001": _bars(as_of), "000002": _bars(as_of)},
         "bars_source": {
             "provider": "stockdb-sdk",
@@ -190,6 +315,7 @@ def test_daily_snapshot_archive_is_prospective_content_bound_and_immutable(tmp_p
             "requested_start": as_of,
             "requested_end": "2026-07-23",
         },
+        "trading_calendar": physical["trading_calendar"],
         "captured_at": datetime(2026, 7, 16, 18, 0, tzinfo=timezone.utc),
     }
 
