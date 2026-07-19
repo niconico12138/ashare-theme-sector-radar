@@ -185,17 +185,134 @@ def _source_identity(source: Mapping[str, Any], *, context: str) -> dict[str, An
 
 def _verify_source_file_if_addressable(
     source: Mapping[str, Any], *, context: str
-) -> None:
-    """Recheck absolute source paths; relative fixture identifiers remain logical."""
+) -> Path:
+    """Require and recheck one physical content-addressed source file."""
 
     path = Path(str(source.get("path") or ""))
     if not path.is_absolute():
-        return
+        raise ValueError(f"{context} source path must be absolute")
     if not path.is_file():
         raise ValueError(f"{context} source file is missing")
     actual = hashlib.sha256(path.read_bytes()).hexdigest()
     if actual != str(source.get("sha256") or "").lower():
         raise ValueError(f"{context} source file SHA mismatch")
+    return path
+
+
+def _source_blocking_reason(
+    source: Mapping[str, Any], *, reason: str, context: str
+) -> str | None:
+    try:
+        _verify_source_file_if_addressable(source, context=context)
+    except (OSError, ValueError):
+        return reason
+    return None
+
+
+def _constituent_stock_codes(payload: Mapping[str, Any]) -> set[str]:
+    stocks = payload.get("stocks")
+    if not isinstance(stocks, list):
+        raise ValueError("dated constituent source stocks are missing")
+    codes: set[str] = set()
+    for row in stocks:
+        raw = row
+        if isinstance(row, Mapping):
+            raw = row.get("code") or row.get("stock_code") or row.get("symbol")
+        code = str(raw or "").zfill(6)
+        if len(code) != 6 or not code.isdigit():
+            raise ValueError("dated constituent source stock code is invalid")
+        codes.add(code)
+    return codes
+
+
+def _verify_daily_source_contents(
+    *,
+    as_of_date: str,
+    extracted: Mapping[str, Any],
+    candidate_source: Mapping[str, Any],
+    constituent_sources: Sequence[Mapping[str, Any]],
+    calendar: Mapping[str, Any],
+) -> None:
+    candidate_path = _verify_source_file_if_addressable(
+        candidate_source, context="candidate"
+    )
+    candidate_report, candidate_sha = load_strict_json_with_sha256(candidate_path)
+    if candidate_sha != candidate_source.get("sha256"):
+        raise ValueError("candidate source SHA changed during verification")
+    if not isinstance(candidate_report, Mapping) or extract_candidate_snapshot(
+        candidate_report
+    ) != dict(extracted):
+        raise ValueError("candidate source contents do not match the archived selection")
+
+    expected_by_sector: dict[str, set[str]] = {}
+    for row in extracted.get("feature_candidates") or []:
+        sector_name = str(row.get("sector_name") or "")
+        expected_by_sector.setdefault(sector_name, set()).add(str(row["code"]))
+    seen_sectors: set[str] = set()
+    for source in constituent_sources:
+        path = _verify_source_file_if_addressable(
+            source, context="constituent"
+        )
+        payload, source_sha = load_strict_json_with_sha256(path)
+        if source_sha != source.get("sha256") or not isinstance(payload, Mapping):
+            raise ValueError("dated constituent source content identity mismatch")
+        sector_name = str(source.get("sector_name") or "")
+        if (
+            payload.get("as_of_date") != as_of_date
+            or payload.get("sector_name") != sector_name
+        ):
+            raise ValueError("dated constituent source identity mismatch")
+        if not expected_by_sector.get(sector_name, set()).issubset(
+            _constituent_stock_codes(payload)
+        ):
+            raise ValueError("selected stock is absent from its dated constituent source")
+        seen_sectors.add(sector_name)
+    if seen_sectors != set(expected_by_sector):
+        raise ValueError("dated constituent source sectors do not match the selection")
+
+    calendar_path = _verify_source_file_if_addressable(
+        calendar, context="trading calendar"
+    )
+    from theme_sector_radar.data.trading_calendar import load_trading_calendar
+
+    reloaded_calendar = load_trading_calendar(
+        calendar_path, as_of=as_of_date, include_future=True
+    )
+    if reloaded_calendar != dict(calendar):
+        raise ValueError("trading calendar contents do not match the archived identity")
+
+
+def _daily_source_blocking_reasons(
+    *,
+    candidate_source: Mapping[str, Any],
+    constituent_sources: Sequence[Mapping[str, Any]],
+    calendar: Mapping[str, Any],
+) -> list[str]:
+    reasons: list[str] = []
+    candidate_reason = _source_blocking_reason(
+        candidate_source,
+        reason="candidate_source_not_content_addressable",
+        context="candidate",
+    )
+    if candidate_reason:
+        reasons.append(candidate_reason)
+    if any(
+        _source_blocking_reason(
+            source,
+            reason="constituent_source_not_content_addressable",
+            context="constituent",
+        )
+        for source in constituent_sources
+    ):
+        reasons.append("constituent_source_not_content_addressable")
+    calendar_reason = _source_blocking_reason(
+        calendar,
+        reason="calendar_source_not_content_addressable",
+        context="trading calendar",
+    )
+    if calendar_reason:
+        reasons.append(calendar_reason)
+    return reasons
 
 
 def _canonical_calendar(calendar: Mapping[str, Any], *, as_of_date: str) -> dict[str, Any]:
@@ -432,6 +549,22 @@ def archive_daily_snapshot(
         candidate_source=candidate_identity,
         constituent_sources=constituent_identities,
     )
+    source_blocking_reasons = _daily_source_blocking_reasons(
+        candidate_source=candidate_identity,
+        constituent_sources=constituent_identities,
+        calendar=calendar_identity,
+    )
+    blocking_reasons.extend(source_blocking_reasons)
+    if source_blocking_reasons:
+        prospective = False
+    else:
+        _verify_daily_source_contents(
+            as_of_date=as_of_date,
+            extracted=extracted,
+            candidate_source=candidate_identity,
+            constituent_sources=constituent_identities,
+            calendar=calendar_identity,
+        )
     if prospective_calendar_block is not None:
         prospective = False
         blocking_reasons.append(prospective_calendar_block)
@@ -636,6 +769,99 @@ def _label_price_rows(
     return stock_rows, sector_rows
 
 
+def _label_source_details(
+    *,
+    label_source: Mapping[str, Any],
+    stock_rows: Sequence[Mapping[str, Any]],
+    sector_rows: Sequence[Mapping[str, Any]],
+) -> tuple[dict[str, Any], list[str]]:
+    stock_sources = label_source.get("stock_bars_by_code")
+    stock_sources = stock_sources if isinstance(stock_sources, Mapping) else {}
+    sector_sources = label_source.get("sector_bars_by_name")
+    sector_sources = sector_sources if isinstance(sector_sources, Mapping) else {}
+    requested_source = str(label_source.get("provider") or "")
+    rows_by_code: dict[str, list[dict[str, Any]]] = {}
+    for row in stock_rows:
+        rows_by_code.setdefault(str(row.get("stock_code") or ""), []).append(dict(row))
+    rows_by_sector: dict[str, list[dict[str, Any]]] = {}
+    for row in sector_rows:
+        rows_by_sector.setdefault(str(row.get("sector_name") or ""), []).append(dict(row))
+
+    reasons: list[str] = []
+    normalized_stocks: dict[str, dict[str, Any]] = {}
+    for code in sorted(rows_by_code):
+        supplied = stock_sources.get(code)
+        supplied = supplied if isinstance(supplied, Mapping) else {}
+        actual_source = str(
+            supplied.get("actual_source")
+            or supplied.get("source")
+            or (requested_source if requested_source != "auto" else "")
+        )
+        source_identity = {
+            "stock_code": code,
+            "requested_source": str(
+                supplied.get("requested_source") or requested_source
+            ),
+            "actual_source": actual_source,
+            "path": str(supplied.get("path") or ""),
+            "sha256": str(supplied.get("sha256") or "").lower(),
+            "price_rows_sha256": canonical_sha256(rows_by_code[code]),
+        }
+        if not actual_source or actual_source == "auto":
+            reasons.append("label_stock_actual_source_unavailable")
+        if (
+            not source_identity["path"]
+            or not _SHA256.fullmatch(source_identity["sha256"])
+            or _source_blocking_reason(
+                source_identity,
+                reason="label_stock_source_not_content_addressable",
+                context=f"label stock {code}",
+            )
+        ):
+            reasons.append("label_stock_source_not_content_addressable")
+        normalized_stocks[code] = source_identity
+
+    normalized_sectors: dict[str, dict[str, Any]] = {}
+    for sector_name in sorted(rows_by_sector):
+        supplied = sector_sources.get(sector_name)
+        supplied = supplied if isinstance(supplied, Mapping) else {}
+        source_identity = {
+            "sector_name": sector_name,
+            "path": str(supplied.get("path") or ""),
+            "sha256": str(supplied.get("sha256") or "").lower(),
+            "price_rows_sha256": canonical_sha256(rows_by_sector[sector_name]),
+        }
+        if (
+            not source_identity["path"]
+            or not _SHA256.fullmatch(source_identity["sha256"])
+            or _source_blocking_reason(
+                source_identity,
+                reason="label_sector_source_not_content_addressable",
+                context=f"label sector {sector_name}",
+            )
+        ):
+            reasons.append("label_sector_source_not_content_addressable")
+        normalized_sectors[sector_name] = source_identity
+    return {
+        "stock_bars_by_code": normalized_stocks,
+        "sector_bars_by_name": normalized_sectors,
+    }, sorted(set(reasons))
+
+
+def _persist_label_input_evidence(
+    *, archive_root: Path, signal_date: str, payload: Mapping[str, Any]
+) -> dict[str, str]:
+    path = archive_root / "label_inputs" / f"{signal_date}.json"
+    if path.exists():
+        existing, sha256 = load_strict_json_with_sha256(path)
+        if existing != dict(payload):
+            raise ValueError("immutable mature label source evidence changed")
+    else:
+        write_strict_json_atomic(path, dict(payload))
+        _existing, sha256 = load_strict_json_with_sha256(path)
+    return {"path": str(path.resolve()), "sha256": sha256}
+
+
 def archive_mature_label_snapshot(
     *,
     archive_root: Path | str,
@@ -676,18 +902,18 @@ def archive_mature_label_snapshot(
         }
     if captured_at.date().isoformat() < label_as_of_date:
         raise ValueError("label capture timestamp precedes label data as-of date")
-    label_source_identity = {
+    label_source_contract = {
         "provider": str(label_source.get("provider") or ""),
         "adjustment": str(label_source.get("adjustment") or ""),
         "frequency": str(label_source.get("frequency") or ""),
         "query_end": str(label_source.get("query_end") or ""),
     }
-    if label_source_identity != {
-        "provider": label_source_identity["provider"],
+    if label_source_contract != {
+        "provider": label_source_contract["provider"],
         "adjustment": "qfq",
         "frequency": "1d",
         "query_end": label_as_of_date,
-    } or not label_source_identity["provider"]:
+    } or not label_source_contract["provider"]:
         raise ValueError("label source must be dated 1d qfq evidence")
 
     baseline_rows = snapshot.get("baseline_rows")
@@ -730,6 +956,40 @@ def archive_mature_label_snapshot(
         ):
             raise ValueError("1d/3d/5d stock-sector labels are not fully mature")
 
+    source_details, label_blocking_reasons = _label_source_details(
+        label_source=label_source,
+        stock_rows=stock_rows,
+        sector_rows=sector_rows,
+    )
+    label_input_payload = {
+        "schema_version": "ml-stock-mature-label-input-v1",
+        "mode": MODE,
+        "signal_date": signal_date,
+        "label_as_of_date": label_as_of_date,
+        **label_source_contract,
+        **source_details,
+        "stock_price_rows": stock_rows,
+        "sector_price_rows": sector_rows,
+        "promotion_allowed": False,
+        "disclaimer": DISCLAIMER,
+    }
+    validate_no_executable_instructions(
+        label_input_payload, context="ML mature label input evidence"
+    )
+    evidence_identity = _persist_label_input_evidence(
+        archive_root=root,
+        signal_date=signal_date,
+        payload=label_input_payload,
+    )
+    label_source_identity = {
+        **label_source_contract,
+        **evidence_identity,
+        **source_details,
+    }
+    label_strict = bool(snapshot.get("strict_pit_eligible", False)) and not bool(
+        label_blocking_reasons
+    )
+
     input_identity = {
         "signal_date": signal_date,
         "label_as_of_date": label_as_of_date,
@@ -764,12 +1024,13 @@ def archive_mature_label_snapshot(
         "feature_snapshot_sha256": feature_snapshot_sha,
         "candidate_universe_sha256": snapshot["candidate_universe_sha256"],
         "input_identity_sha256": input_identity_sha256,
-        "strict_pit_eligible": bool(snapshot.get("strict_pit_eligible", False)),
+        "strict_pit_eligible": label_strict,
         "pit_evidence_status": (
             "prospective_labels_captured_after_maturity"
-            if snapshot.get("strict_pit_eligible")
+            if label_strict
             else "historical_reconstruction_labels"
         ),
+        "pit_blocking_reasons": label_blocking_reasons,
         "source_manifest": {
             "label_source": label_source_identity,
             "trading_calendar": dict(calendar),
@@ -910,9 +1171,6 @@ def _verify_replayable_snapshot(snapshot: Mapping[str, Any]) -> bool | None:
     )
     if normalized_candidate_source != dict(candidate_source):
         raise ValueError("replayable candidate source identity is not canonical")
-    _verify_source_file_if_addressable(
-        candidate_source, context="replayable candidate"
-    )
     normalized_constituents = [
         _source_identity(row, context="replayable constituent source")
         for row in constituent_sources
@@ -922,12 +1180,9 @@ def _verify_replayable_snapshot(snapshot: Mapping[str, Any]) -> bool | None:
         key=lambda row: (str(row.get("sector_name") or ""), row["path"]),
     ):
         raise ValueError("replayable constituent source identity is not canonical")
-    for row in constituent_sources:
-        _verify_source_file_if_addressable(row, context="replayable constituent")
     canonical_calendar = _canonical_calendar(calendar, as_of_date=as_of_date)
     if canonical_calendar != dict(calendar):
         raise ValueError("replayable trading calendar identity is not canonical")
-    _verify_source_file_if_addressable(calendar, context="replayable calendar")
     captured_at = datetime.fromisoformat(str(snapshot.get("captured_at") or ""))
     prospective, reasons, timestamp_quality = _pit_classification(
         as_of_date=as_of_date,
@@ -935,9 +1190,34 @@ def _verify_replayable_snapshot(snapshot: Mapping[str, Any]) -> bool | None:
         candidate_source=candidate_source,
         constituent_sources=constituent_sources,
     )
+    source_blocking_reasons = _daily_source_blocking_reasons(
+        candidate_source=candidate_source,
+        constituent_sources=constituent_sources,
+        calendar=calendar,
+    )
+    reasons.extend(source_blocking_reasons)
+    if source_blocking_reasons:
+        prospective = False
+    else:
+        _verify_daily_source_contents(
+            as_of_date=as_of_date,
+            extracted={
+                "as_of_date": as_of_date,
+                "selection_source_field": snapshot.get("selection_source_field"),
+                "candidate_count": snapshot.get("candidate_count"),
+                "feature_candidates": feature_candidates,
+                "baseline_rows": snapshot.get("baseline_rows"),
+            },
+            candidate_source=candidate_source,
+            constituent_sources=constituent_sources,
+            calendar=calendar,
+        )
     if sum(value > as_of_date for value in canonical_calendar["dates"]) < 5:
         prospective = False
         reasons.append("calendar_missing_5d_target")
+    if not Path(str(calendar.get("path") or "")).is_absolute():
+        prospective = False
+        reasons.append("calendar_source_not_content_addressable")
     if bool(snapshot.get("strict_pit_eligible")) != prospective:
         raise ValueError("snapshot strict PIT flag does not match replayed evidence")
     if set(snapshot.get("pit_blocking_reasons") or []) != set(reasons):
@@ -1129,16 +1409,6 @@ def verify_accumulation_archive(archive_root: Path | str) -> dict[str, Any]:
             raise ValueError("ML mature label was captured before the 5-day target")
         if captured_at.date() < label_as_of:
             raise ValueError("ML mature label capture precedes its data as-of date")
-        expected_label_strict = bool(feature_manifest["strict_pit_eligible"])
-        if bool(label_snapshot.get("strict_pit_eligible")) != expected_label_strict:
-            raise ValueError("ML mature label strict PIT identity mismatch")
-        expected_label_status = (
-            "prospective_labels_captured_after_maturity"
-            if expected_label_strict
-            else "historical_reconstruction_labels"
-        )
-        if label_snapshot.get("pit_evidence_status") != expected_label_status:
-            raise ValueError("ML mature label PIT status mismatch")
         label_source = label_snapshot.get("source_manifest", {}).get("label_source")
         if not isinstance(label_source, Mapping):
             raise ValueError("ML mature label source identity is missing")
@@ -1154,7 +1424,48 @@ def verify_accumulation_archive(archive_root: Path | str) -> dict[str, Any]:
             feature_snapshot.get("source_manifest", {}).get("trading_calendar") or {}
         ):
             raise ValueError("ML mature label calendar identity mismatch")
-        _verify_source_file_if_addressable(label_source, context="mature label")
+        source_details, label_blocking_reasons = _label_source_details(
+            label_source=label_source,
+            stock_rows=stock_rows,
+            sector_rows=sector_rows,
+        )
+        expected_label_strict = bool(
+            feature_manifest["strict_pit_eligible"] and not label_blocking_reasons
+        )
+        if bool(label_snapshot.get("strict_pit_eligible")) != expected_label_strict:
+            raise ValueError("ML mature label strict PIT identity mismatch")
+        if sorted(label_snapshot.get("pit_blocking_reasons") or []) != sorted(
+            label_blocking_reasons
+        ):
+            raise ValueError("ML mature label PIT blocking reasons mismatch")
+        expected_label_status = (
+            "prospective_labels_captured_after_maturity"
+            if expected_label_strict
+            else "historical_reconstruction_labels"
+        )
+        if label_snapshot.get("pit_evidence_status") != expected_label_status:
+            raise ValueError("ML mature label PIT status mismatch")
+        source_path = _verify_source_file_if_addressable(
+            label_source, context="mature label"
+        )
+        source_payload, source_sha = load_strict_json_with_sha256(source_path)
+        expected_source_payload = {
+            "schema_version": "ml-stock-mature-label-input-v1",
+            "mode": MODE,
+            "signal_date": day,
+            "label_as_of_date": label_snapshot.get("label_as_of_date"),
+            "provider": str(label_source.get("provider") or ""),
+            "adjustment": "qfq",
+            "frequency": "1d",
+            "query_end": label_snapshot.get("label_as_of_date"),
+            **source_details,
+            "stock_price_rows": stock_rows,
+            "sector_price_rows": sector_rows,
+            "promotion_allowed": False,
+            "disclaimer": DISCLAIMER,
+        }
+        if source_sha != label_source.get("sha256") or source_payload != expected_source_payload:
+            raise ValueError("ML mature label source evidence cannot be reproduced")
         rebuilt = build_forward_label_rows(
             stock_rows,
             sector_rows,

@@ -195,6 +195,9 @@ def load_model_bundle(
     }
     if any(registry.get(key) != value for key, value in safety_envelope.items()):
         raise ValueError("model registry safety envelope mismatch")
+    training_records_sha256 = str(registry.get("training_records_sha256") or "").lower()
+    if not _SHA256.fullmatch(training_records_sha256) or set(training_records_sha256) == {"0"}:
+        raise ValueError("model registry training records identity is invalid")
     if strict_pit_eligible:
         _validate_pit_evidence(registry.get("pit_evidence"))
     if tuple(registry.get("feature_names") or ()) != V1_FEATURE_NAMES:
