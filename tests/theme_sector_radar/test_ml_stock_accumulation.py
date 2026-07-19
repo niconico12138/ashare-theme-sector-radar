@@ -395,6 +395,56 @@ def test_relative_source_identities_can_never_claim_strict_pit(tmp_path):
     }
 
 
+def test_physical_candidate_source_must_reproduce_the_passed_selection(tmp_path):
+    from theme_sector_radar.ml.accumulation import archive_daily_snapshot
+    from theme_sector_radar.reporting.strict_json import (
+        load_strict_json_with_sha256,
+        write_strict_json_atomic,
+    )
+
+    as_of = "2026-07-16"
+    report = _active_report(as_of)
+    calendar_dates = [
+        as_of,
+        "2026-07-17",
+        "2026-07-20",
+        "2026-07-21",
+        "2026-07-22",
+        "2026-07-23",
+    ]
+    physical = _physical_daily_sources(
+        tmp_path,
+        as_of=as_of,
+        report=report,
+        calendar_dates=calendar_dates,
+        generated_at="2026-07-16T16:30:00+08:00",
+    )
+    source_report = copy.deepcopy(report)
+    source_report["direction_linkage_v2_selection_shadow"]["selected"].pop()
+    source_report["direction_linkage_v2_selection_shadow"]["selected_count"] = 1
+    candidate_path = Path(physical["candidate_source"]["path"])
+    write_strict_json_atomic(candidate_path, source_report)
+    _source_doc, source_sha = load_strict_json_with_sha256(candidate_path)
+    physical["candidate_source"]["sha256"] = source_sha
+
+    with pytest.raises(ValueError, match="candidate source contents"):
+        archive_daily_snapshot(
+            archive_root=tmp_path / "archive",
+            candidate_report=report,
+            candidate_source=physical["candidate_source"],
+            constituent_sources=physical["constituent_sources"],
+            bars_by_code={"000001": _bars(as_of), "000002": _bars(as_of)},
+            bars_source={
+                "provider": "stockdb-sdk",
+                "adjustment": "qfq",
+                "frequency": "1d",
+                "query_end": as_of,
+            },
+            trading_calendar=physical["trading_calendar"],
+            captured_at=datetime(2026, 7, 16, 18, 0, tzinfo=timezone.utc),
+        )
+
+
 def test_archive_verifier_recomputes_pit_status_instead_of_trusting_flag(tmp_path):
     from theme_sector_radar.ml.accumulation import (
         archive_daily_snapshot,
@@ -869,10 +919,27 @@ def test_sixty_day_archive_builds_strict_dataset_and_enters_train_evaluate(tmp_p
     assert train.returncode == 0, train.stderr
     assert load_strict_json(training_report_path)["strict_pit_eligible"] is True
 
-    from theme_sector_radar.ml.registry import load_model_bundle
+    from theme_sector_radar.ml.registry import load_model_bundle, save_model_bundle
     from theme_sector_radar.reporting.strict_json import write_strict_json_atomic
 
     registry_path = model_dir / "registry.json"
+    training_report = load_strict_json(training_report_path)
+    loaded_model = load_model_bundle(
+        model_dir,
+        expected_registry_sha256=training_report["model_bundle"]["registry_sha256"],
+    )
+    with pytest.raises(ValueError, match="dataset does not match"):
+        save_model_bundle(
+            loaded_model,
+            tmp_path / "mismatched-model",
+            model_version="mismatched_strict_dataset",
+            dataset_sha256="a" * 64,
+            strict_pit_eligible=True,
+            dataset_classification="observed_research",
+            model_available_from=loaded_model.metadata["model_available_from"],
+            pit_evidence=dataset["pit_evidence"],
+        )
+
     registry = load_strict_json(registry_path)
     registry["training_records_sha256"] = "0" * 64
     write_strict_json_atomic(registry_path, registry)
