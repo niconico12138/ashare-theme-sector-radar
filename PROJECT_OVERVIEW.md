@@ -13,29 +13,31 @@
 
 ---
 
-## 二、三层架构
+## 二、当前目标架构
 
 > 2026-07-19 运行约定：方向分路径是默认板块主路径；趋势 TopN / 短线 TopN 路径已关闭，仅保留为显式 `legacy` 研究模式。方向分或 Linkage V2 不可验证时不自动回退。
 
 ```
-Layer 1: 板块评分
-  theme_sector_radar CLI
-  → 方向分核心/补充候选（默认主路径）
-  → 趋势 Top N + 短线 Top N（legacy，默认关闭）
-  → 双评分：趋势持续分 + 短线爆发分
-  → 7 Agent 投票（技术/热度/轮动/风险/数据质量/市场环境/叙事）
+数据层
+  → 板块雷达基础分
+  → 方向分：时序 50% + 截面 30% + 排名动量 20%
+  → 方向板块主路径筛选
 
-Layer 2: 板块-个股桥接
-  sector_stock_bridge.py
-  → 板块成分股查询（AkShare / 内置映射）
-  → 三维度关联度计算
-  → 高关联度个股筛选
+基础分与方向分不直接相加：基础分生成当前板块排名，排名历史间接进入方向分的排名动量层；正式板块筛选由方向分主路径负责。
 
-Layer 3: 联合选股
-  unified_pipeline.py
-  → 板块评分 + 桥接 + 个股量化
-  → 方向分 + Linkage V2 候选池（默认最多 30 只）
-  → JSON + Markdown 报告
+板块-个股桥接
+  sector_stock_bridge.py / unified_pipeline.py
+  → 板块成分股查询与身份过滤
+  → Linkage V2：收益共振、相对强弱、成分股权重、资金流、数据质量
+  → Linkage V2 + 个股 Quant 排序
+  → 板块配额、去重、集群集中度约束
+  → 默认最多 30 只 Paper/Shadow 候选
+
+并行 Shadow 支路
+  → 行业板块 ML Shadow
+  → 个股候选池 ML Shadow
+  → 统一事件层与事件调整 Shadow
+  → 只做 A/B 研究对照，不覆盖正式评分或候选链
 ```
 
 ---
@@ -51,7 +53,7 @@ Layer 3: 联合选股
 | 数据模型 | `theme_sector_radar/models.py` | Pydantic 模型 |
 | 数据层 | `theme_sector_radar/data/` | AkShare / 缓存 / 降级 |
 | Agent 组 | `theme_sector_radar/agents/` | 7 个分析 Agent |
-| 评分算法 | `theme_sector_radar/scoring/` | 趋势+短线双评分 |
+| 评分算法 | `theme_sector_radar/scoring/` | 基础分、方向分、Linkage V2 与个股 Quant |
 | 报告生成 | `theme_sector_radar/reports/` | JSON / Markdown |
 
 ### 3.2 板块-个股桥接（新增）
@@ -61,14 +63,14 @@ Layer 3: 联合选股
 | 成分股查询 | AkShare `stock_board_industry_cons_em`，降级到内置映射 |
 | 行情获取 | 腾讯 API `qt.gtimg.cn`（绕过 Clash） |
 | 资金流 | 东方财富（被封锁时降级到中性值） |
-| 关联度计算 | `权重×0.2 + 涨幅排名×0.4 + 资金流对齐×0.4` |
+| 关联度计算 | Linkage V2：收益共振、相对强弱、权重、资金流、数据质量；旧关联度只作历史对照 |
 | 缓存 | `data_cache/sector_stocks/` 按日期缓存 |
 
 ### 3.3 联合选股（新增）
 
 | 功能 | 说明 |
 |---|---|
-| 综合评分 | `量化分×0.6 + 关联度×0.4` |
+| 综合评分 | `Linkage V2×0.7 + 个股 Quant×0.3` |
 | 量化评分 | 降级方案: 涨幅+估值+市值（预留 Qlib 接口） |
 | 输出 | 默认输出方向分 + Linkage V2 候选池；legacy 模式保留趋势/短线 Top10 |
 | 报告 | `reports/unified/{date}/` |
