@@ -148,6 +148,10 @@ flowchart LR
 
 当前候选排序的研究逻辑是：基础分生成板块当前排名，方向分使用板块自身时序、截面强度和历史排名动量，方向分主路径决定研究宇宙；基础分与方向分不直接相加，但基础排名会间接进入排名动量层。身份过滤后保留方向成分股，Linkage V2 判断股票是否承接板块，Quant 分补充股票自身质量；旧关联度只作为历史对照字段，趋势/短线旧路径默认关闭。行业 ML、个股 ML 和事件调整均为独立 Shadow，不覆盖受保护的正式评分字段。
 
+## Codex / MCP 调用层
+
+现有 Python 程序仍是策略和数据的唯一事实来源；MCP 只提供稳定的结构化调用边界，Skill 只规定调用顺序和安全规则。当前 MCP 工具包括 `check_data_health`、`get_direction_candidates`、`get_stock_ranking` 和 `run_full_paper_pipeline`。它们全部保持 `paper_shadow_research_only`，不连接券商、不生成订单。运行说明见 [`docs/mcp_paper_shadow.md`](docs/mcp_paper_shadow.md)。
+
 ## 数据层与可信度
 
 数据流按 `as_of` 日期组织，并尽量绑定以下证据：
