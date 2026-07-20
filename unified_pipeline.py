@@ -20,6 +20,7 @@ import copy
 import hashlib
 import json
 import logging
+import math
 import os
 import sys
 import time
@@ -183,10 +184,14 @@ def _activate_formal_candidate_chain(
         selected = []
         seen_codes = set()
         for source in legacy_candidates or []:
+            if source.get("sector_type") not in {None, "industry"}:
+                raise ValueError("formal candidate row must use industry sector_type")
+            source = copy.deepcopy(source)
+            source.setdefault("sector_type", "industry")
             code = str(source.get("code") or "").strip()
             if not code or code in seen_codes:
                 continue
-            selected.append(copy.deepcopy(source))
+            selected.append(source)
             seen_codes.add(code)
         return {
             "schema_version": "formal_candidate_selection.v1",
@@ -725,12 +730,327 @@ def _try_qlib_quant_score(codes: List[str]) -> Optional[Dict[str, float]]:
     return None
 
 
+# These definitions are used only by the quality-adjusted shadow audit.  The
+# formal scorer and its weights remain unchanged.
+_QUANT_SHADOW_ENHANCED_SPECS = (
+    ("momentum_quality", "1d_momentum", 8.0, "1d_momentum"),
+    ("momentum_quality", "5d_momentum_quality", 8.0, "5d_momentum_quality"),
+    ("momentum_quality", "ma_alignment", 8.0, "ma_alignment"),
+    ("momentum_quality", "continuity", 6.0, "continuity"),
+    ("valuation", "pe_score", 8.0, "pe_relative"),
+    ("valuation", "pb_score", 4.0, "pb_score"),
+    ("liquidity", "market_cap", 8.0, "market_cap"),
+    ("liquidity", "volume_trend", 8.0, "volume_trend"),
+    ("liquidity", "avg_amount", 6.0, "avg_amount"),
+    ("risk_control", "drawdown", 8.0, "drawdown"),
+    ("risk_control", "volatility", 6.0, "volatility"),
+    ("fund_flow", "fund_flow", 8.0, "fund_flow"),
+    ("fund_flow", "fund_flow_persistence", 6.0, "fund_flow_persistence"),
+    ("sector_fit", "sector_trend", 8.0, "sector_trend"),
+    ("sector_fit", "sector_burst", 4.0, "sector_burst"),
+)
+
+_QUANT_SHADOW_FALLBACK_SPECS = (
+    ("momentum_quality", "change_score", 15.0, "1d_momentum"),
+    ("valuation", "pe_score", 12.0, "pe_relative"),
+    ("valuation", "pb_score", 8.0, "pb_score"),
+    ("liquidity", "market_cap", 15.0, "market_cap"),
+    ("fund_flow", "fund_flow", 8.0, "fund_flow"),
+    ("sector_fit", "sector_trend", 8.0, "sector_trend"),
+    ("sector_fit", "sector_burst", 4.0, "sector_burst"),
+)
+
+
+def _shadow_factor_status(
+    stock: Dict[str, Any], canonical_name: str, qbd: Dict[str, Any], qkey: str
+) -> str:
+    """Return available/degraded/missing without changing formal scoring."""
+    available = set(stock.get("available_factors") or [])
+    degraded = set(stock.get("degraded_factors") or [])
+    missing = set(stock.get("missing_factors") or [])
+
+    # The validator historically exposed fund flow and sector match as broad
+    # fields.  Keep their sub-factors independent in this shadow audit.
+    if canonical_name == "fund_flow_persistence":
+        recent_days = (stock.get("_fund_flow") or {}).get("recent_inflow_days")
+        if isinstance(recent_days, (int, float)):
+            return "available"
+        if "fund_flow_persistence" in degraded or "fund_flow" in available:
+            return "degraded"
+        return "missing"
+    if canonical_name in {"sector_trend", "sector_burst"}:
+        source_key = f"{canonical_name}_score"
+        if isinstance(stock.get(source_key), (int, float)):
+            return "available"
+        if canonical_name in available:
+            return "available"
+        if canonical_name in degraded:
+            return "degraded"
+        if canonical_name in missing:
+            return "missing"
+        if "sector_match" in degraded:
+            return "degraded"
+        if "sector_match" in missing:
+            return "missing"
+        return "missing"
+    if canonical_name in available:
+        return "available"
+    if canonical_name in degraded:
+        return "degraded"
+    if canonical_name in missing:
+        return "missing"
+
+    # Keep the helper useful in unit tests and for old reports that predate
+    # the validator fields.  Presence of a validated numeric input is enough
+    # for a conservative inferred status; no formal score is recalculated.
+    if canonical_name == "1d_momentum":
+        return "available" if isinstance(stock.get("change_pct"), (int, float)) else "missing"
+    if canonical_name == "pe_relative":
+        return "available" if (stock.get("pe") or 0) > 0 else "missing"
+    if canonical_name == "pb_score":
+        return "available" if (stock.get("pb") or 0) > 0 else "missing"
+    if canonical_name == "market_cap":
+        return "available" if (stock.get("total_mv") or 0) > 0 else "missing"
+    if canonical_name == "fund_flow":
+        flow = stock.get("_fund_flow")
+        return (
+            "available"
+            if isinstance(flow, dict)
+            and flow.get("available") is not False
+            and isinstance(flow.get("main_net_inflow"), (int, float))
+            else "missing"
+        )
+    if canonical_name == "sector_match":
+        return "available" if any(
+            isinstance(stock.get(key), (int, float))
+            for key in ("sector_trend_score", "sector_burst_score")
+        ) else "missing"
+    return "available" if isinstance(qbd.get(qkey), (int, float)) else "missing"
+
+
+_QUANT_SHADOW_REDUNDANCY_MIN_SAMPLES = 20
+
+
+def _shadow_pearson(values_a: List[float], values_b: List[float]) -> Optional[float]:
+    if len(values_a) != len(values_b) or len(values_a) < _QUANT_SHADOW_REDUNDANCY_MIN_SAMPLES:
+        return None
+    mean_a = sum(values_a) / len(values_a)
+    mean_b = sum(values_b) / len(values_b)
+    centered_a = [value - mean_a for value in values_a]
+    centered_b = [value - mean_b for value in values_b]
+    denom_a = sum(value * value for value in centered_a) ** 0.5
+    denom_b = sum(value * value for value in centered_b) ** 0.5
+    if denom_a == 0 or denom_b == 0:
+        return 0.0
+    return round(
+        sum(a * b for a, b in zip(centered_a, centered_b)) / (denom_a * denom_b),
+        6,
+    )
+
+
+def diagnose_quant_factor_group_redundancy(stocks: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """Expose observational group correlation; never changes weights."""
+    group_values: Dict[str, Dict[str, float]] = {}
+    for stock in stocks:
+        code = str(stock.get("code") or "")
+        groups = stock.get("quant_score_shadow_factor_groups") or {}
+        for group, details in groups.items():
+            if details.get("status") != "available":
+                continue
+            value = details.get("normalized_score")
+            if isinstance(value, (int, float)):
+                group_values.setdefault(group, {})[code] = float(value)
+
+    group_names = sorted(group_values)
+    pairs: List[Dict[str, Any]] = []
+    high_pairs: List[Dict[str, Any]] = []
+    for index, left in enumerate(group_names):
+        for right in group_names[index + 1:]:
+            common = sorted(set(group_values[left]) & set(group_values[right]))
+            corr = _shadow_pearson(
+                [group_values[left][code] for code in common],
+                [group_values[right][code] for code in common],
+            )
+            if corr is None:
+                status = "insufficient_evidence"
+            elif abs(corr) >= 0.8:
+                status = "high"
+            elif abs(corr) >= 0.6:
+                status = "moderate"
+            else:
+                status = "low"
+            item = {
+                "left": left,
+                "right": right,
+                "sample_count": len(common),
+                "correlation": corr,
+                "status": status,
+            }
+            pairs.append(item)
+            if status == "high":
+                high_pairs.append(item)
+
+    valid_pair_count = sum(
+        1 for item in pairs if item["status"] != "insufficient_evidence"
+    )
+
+    return {
+        "schema_version": "quant_score_shadow_redundancy.v1",
+        "status": "ok" if valid_pair_count else "insufficient_evidence",
+        "sample_count": len(stocks),
+        "minimum_sample_count": _QUANT_SHADOW_REDUNDANCY_MIN_SAMPLES,
+        "valid_pair_count": valid_pair_count,
+        "groups": group_names,
+        "pairwise_correlations": pairs,
+        "high_redundancy_pairs": high_pairs,
+        "weights_changed": False,
+        "disclaimer": "Observational shadow diagnostic only; no formal weights changed.",
+    }
+
+
+def annotate_quant_score_shadow(
+    stocks: List[Dict[str, Any]],
+    *,
+    cross_sectional_context: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    """Attach quality-adjusted shadow scores without touching formal scores."""
+    context = dict(cross_sectional_context or {})
+    context.setdefault("universe_id", "compute_quant_scores_input")
+    context.setdefault("as_of_date", None)
+    context.setdefault("candidate_chain", "not_provided")
+    for stock in stocks:
+        qbd = stock.get("quant_breakdown") or {}
+        for key, value in list(qbd.items()):
+            if (
+                not isinstance(value, bool)
+                and isinstance(value, (int, float))
+                and not math.isfinite(float(value))
+            ):
+                qbd[key] = None
+        enhanced = float(qbd.get("raw_max") or 0) >= 100 or "1d_momentum" in qbd
+        specs = _QUANT_SHADOW_ENHANCED_SPECS if enhanced else _QUANT_SHADOW_FALLBACK_SPECS
+        group_state: Dict[str, Dict[str, Any]] = {}
+        shadow_raw_total = 0.0
+        shadow_available_max = 0.0
+        full_max = 0.0
+        for group, qkey, factor_max, canonical_name in specs:
+            full_max += factor_max
+            status = _shadow_factor_status(stock, canonical_name, qbd, qkey)
+            details = group_state.setdefault(
+                group,
+                {"raw_score": 0.0, "available_max": 0.0, "full_max": 0.0,
+                 "available_factors": [], "degraded_factors": [], "missing_factors": []},
+            )
+            details["full_max"] += factor_max
+            raw_value = qbd.get(qkey)
+            finite_value = (
+                not isinstance(raw_value, bool)
+                and isinstance(raw_value, (int, float))
+                and math.isfinite(float(raw_value))
+            )
+            if status == "available" and not finite_value:
+                status = "missing"
+            value = float(raw_value) if finite_value else 0.0
+            if status == "available":
+                details["raw_score"] += value
+                details["available_max"] += factor_max
+                details["available_factors"].append(qkey)
+                shadow_raw_total += value
+                shadow_available_max += factor_max
+            elif status == "degraded":
+                details["degraded_factors"].append(qkey)
+            else:
+                details["missing_factors"].append(qkey)
+
+        available_groups = []
+        degraded_groups = []
+        missing_groups = []
+        for group, details in group_state.items():
+            if details["available_factors"]:
+                available_groups.append(group)
+                if details["degraded_factors"] or details["missing_factors"]:
+                    details["status"] = "partial"
+                    degraded_groups.append(group)
+                else:
+                    details["status"] = "available"
+            elif details["degraded_factors"]:
+                details["status"] = "degraded"
+                degraded_groups.append(group)
+            else:
+                details["status"] = "missing"
+                missing_groups.append(group)
+            details["normalized_score"] = round(
+                details["raw_score"] / details["available_max"] * 100, 4
+            ) if details["available_max"] else None
+
+        adjusted = (
+            round(shadow_raw_total / shadow_available_max * 100, 2)
+            if shadow_available_max
+            else None
+        )
+        confidence = round(shadow_available_max / full_max * 100, 2) if full_max else 0.0
+        stock["quant_score_shadow_quality_adjusted"] = adjusted
+        stock["quant_score_shadow_available_factor_groups"] = sorted(available_groups)
+        stock["quant_score_shadow_missing_factor_groups"] = sorted(missing_groups)
+        stock["quant_score_shadow_degraded_factor_groups"] = sorted(set(degraded_groups))
+        stock["quant_score_shadow_confidence"] = confidence
+        stock["quant_score_shadow_factor_groups"] = group_state
+        stock["quant_score_shadow_cross_sectional_universe"] = context["universe_id"]
+        stock["quant_score_shadow_cross_sectional_as_of"] = context["as_of_date"]
+        stock["quant_score_shadow_cross_sectional_candidate_chain"] = context[
+            "candidate_chain"
+        ]
+
+    usable = [
+        stock for stock in stocks
+        if isinstance(stock.get("quant_score_shadow_quality_adjusted"), (int, float))
+    ]
+    for stock in stocks:
+        score = stock.get("quant_score_shadow_quality_adjusted")
+        if not usable or not isinstance(score, (int, float)):
+            percentile = None
+        else:
+            values = [item["quant_score_shadow_quality_adjusted"] for item in usable]
+            less = sum(value < score for value in values)
+            equal = sum(value == score for value in values)
+            percentile = round((less + equal / 2) / len(values) * 100, 2)
+        stock["quant_score_shadow_cross_sectional_percentile"] = percentile
+
+    redundancy = diagnose_quant_factor_group_redundancy(stocks)
+    confidence_values = [
+        float(stock["quant_score_shadow_confidence"])
+        for stock in stocks
+        if isinstance(stock.get("quant_score_shadow_confidence"), (int, float))
+    ]
+    group_status_counts: Dict[str, Dict[str, int]] = {}
+    for stock in stocks:
+        for group, details in (stock.get("quant_score_shadow_factor_groups") or {}).items():
+            status_counts = group_status_counts.setdefault(group, {})
+            status = str(details.get("status") or "missing")
+            status_counts[status] = status_counts.get(status, 0) + 1
+    return {
+        "schema_version": "quant_score_shadow_quality_adjusted.v1",
+        "mode": "paper_shadow_research_only",
+        "status": "ok" if usable else "unavailable",
+        "scored_stock_count": len(stocks),
+        "usable_shadow_score_count": len(usable),
+        "missing_shadow_score_count": len(stocks) - len(usable),
+        "average_confidence": round(sum(confidence_values) / len(confidence_values), 2)
+        if confidence_values else 0.0,
+        "factor_group_status_counts": group_status_counts,
+        "recalibration": "available_factor_max_only",
+        "score_interpretation": "conditional_on_available_factors",
+        "cross_sectional_context": context,
+        "weights_changed": False,
+        "redundancy_diagnostics": redundancy,
+        "disclaimer": "No broker connection and no live order instruction.",
+    }
+
+
 def _bars_for_linkage_returns(
     bars: List[Dict], *, bars_source: str
 ) -> List[Dict]:
-    """Adapt compact StockDB dates without weakening strict linkage parsing."""
-    if bars_source != "stockdb-sdk":
-        return bars
+    """Adapt compact provider dates without weakening strict linkage parsing."""
     normalized = []
     for bar in bars:
         if not isinstance(bar, dict):
@@ -938,6 +1258,18 @@ def compute_quant_scores(
         print_data_quality_summary(quality_reports)
     except ImportError:
         pass  # 数据核查模块不可用时跳过
+
+    # Independent quality-adjusted shadow audit. It is intentionally after
+    # formal scoring and validation, and never feeds formal sorting.
+    quant_shadow_audit = annotate_quant_score_shadow(
+        stocks,
+        cross_sectional_context={
+            "as_of_date": as_of_date,
+            "universe_id": "compute_quant_scores_input",
+            "candidate_chain": "not_provided",
+        },
+    )
+    compute_quant_scores._last_quant_shadow_audit = quant_shadow_audit
 
     # ---- Stock-to-sector linkage V2 (paper/shadow only) ----
     sector_returns_by_name = sector_returns_by_name or {}
@@ -1699,6 +2031,7 @@ def run_pipeline(
         "direction_shadow_candidates_all": [],
         "direction_linkage_v2_selection_shadow": {},
         "direction_shadow_runtime_audit": {},
+        "quant_score_shadow_audit": {},
         "sector_cluster_map": {},
         "bridge_result": None,
         "warnings": [],
@@ -1992,6 +2325,26 @@ def run_pipeline(
     direction_bars_audit = dict(
         getattr(compute_quant_scores, "_last_bars_audit", {})
     )
+    quant_shadow_audit = dict(
+        getattr(compute_quant_scores, "_last_quant_shadow_audit", {})
+    )
+    shadow_context = {
+        "as_of_date": bridge_result.get("as_of_date"),
+        "universe_id": "direction_shadow_candidates_all",
+        "candidate_chain": candidate_chain,
+    }
+    quant_shadow_audit["cross_sectional_context"] = shadow_context
+    for stock in direction_shadow_stocks:
+        stock["quant_score_shadow_cross_sectional_universe"] = shadow_context[
+            "universe_id"
+        ]
+        stock["quant_score_shadow_cross_sectional_as_of"] = shadow_context[
+            "as_of_date"
+        ]
+        stock["quant_score_shadow_cross_sectional_candidate_chain"] = shadow_context[
+            "candidate_chain"
+        ]
+    compute_quant_scores._last_quant_shadow_audit = quant_shadow_audit
     if (
         direction_bars_init_error
         and not direction_bars_client
@@ -2056,8 +2409,14 @@ def run_pipeline(
             "coverage_ratio": direction_bars_audit.get("coverage_ratio", 0.0),
             "minimum_bars": direction_bars_audit.get("minimum_bars", 5),
         },
+        "quant_score_shadow_audit": getattr(
+            compute_quant_scores, "_last_quant_shadow_audit", {}
+        ),
         "disclaimer": "No broker connection and no live order instruction.",
     }
+    result["quant_score_shadow_audit"] = result["direction_shadow_runtime_audit"][
+        "quant_score_shadow_audit"
+    ]
     if direction_bars_audit.get("error"):
         result["direction_shadow_runtime_audit"]["bars_error"] = (
             direction_bars_audit["error"]
@@ -2159,6 +2518,7 @@ def run_pipeline(
         "direction_shadow_runtime_audit": result[
             "direction_shadow_runtime_audit"
         ],
+        "quant_score_shadow_audit": result["quant_score_shadow_audit"],
         "bridge_summary": {
             "trend_sectors": [
                 {"name": s["sector_name"], "trend_score": s["trend_score"],
@@ -2222,8 +2582,26 @@ def run_pipeline(
     }
 
     json_file = out_path / "unified_report.json"
-    with open(json_file, "w", encoding="utf-8") as f:
-        json.dump(json_report, f, ensure_ascii=False, indent=2, default=str)
+    json_text = json.dumps(
+        json_report,
+        ensure_ascii=False,
+        indent=2,
+        default=str,
+        allow_nan=False,
+    ) + "\n"
+    json_tmp_file = json_file.with_name(json_file.name + ".tmp")
+    try:
+        with open(json_tmp_file, "w", encoding="utf-8", newline="") as f:
+            f.write(json_text)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(json_tmp_file, json_file)
+    except Exception:
+        try:
+            json_tmp_file.unlink(missing_ok=True)
+        except OSError:
+            pass
+        raise
     print(f"  ✅ JSON: {json_file}")
 
     # Markdown 报告

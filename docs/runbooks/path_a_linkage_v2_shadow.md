@@ -48,6 +48,17 @@ python scripts/run_daily_unified_pipeline.py `
   --sector-cluster-map config/path_a_sector_clusters.json
 ```
 
+### Legacy relevance status
+
+The direction-primary path keeps the complete enriched constituent set after
+identity validation. The legacy `relevance_score >= 0.60` threshold is not an
+active gate for direction candidates. The bridge still computes the frozen
+legacy score on every constituent and records it as `legacy_relevance_score`
+for historical comparison only. Formal board-to-stock association is decided
+by Linkage V2, followed by the fixed `70% Linkage V2 + 30% Quant` ranking and
+the sector/cluster quotas. Explicit `legacy` research mode retains the old
+threshold for compatibility and comparison.
+
 ## 3. Forward returns
 
 Run this only after the requested future 1/3/5 trading-day labels exist:

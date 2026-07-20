@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import argparse
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 import sys
 
@@ -13,6 +13,11 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from theme_sector_radar.ml.contract import canonical_sha256, optional_ml_dependency_readiness
 from theme_sector_radar.ml.dataset import validate_training_dataset
+from theme_sector_radar.ml.experiment import (
+    build_effective_experiment_config,
+    experiment_config_sha256,
+    validate_experiment_config,
+)
 from theme_sector_radar.ml.ranker import (
     train_lambdarank,
     walk_forward_ranker_predictions,
@@ -39,6 +44,7 @@ def _write_blocked(args, dataset_sha: str, *, reason: str, readiness=None) -> in
         "strict_pit_eligible": False,
         "eligible_for_oos_claim": False,
         "promotion_allowed": False,
+        "live_trading_allowed": False,
         "generated_at": datetime.now().astimezone().isoformat(),
         "disclaimer": DISCLAIMER,
     }
@@ -53,6 +59,7 @@ def _write_blocked(args, dataset_sha: str, *, reason: str, readiness=None) -> in
             "reason": reason,
             "predictions": [],
             "promotion_allowed": False,
+            "live_trading_allowed": False,
             "generated_at": datetime.now().astimezone().isoformat(),
             "disclaimer": DISCLAIMER,
         },
@@ -82,9 +89,33 @@ def main() -> int:
     parser.add_argument("--test-dates", type=int, default=20)
     parser.add_argument("--purge-dates", type=int, default=5)
     parser.add_argument("--n-estimators", type=int, default=80)
+    parser.add_argument(
+        "--experiment-config",
+        type=Path,
+        default=PROJECT_ROOT / "config" / "ml_stock_ranker_v1.json",
+    )
     args = parser.parse_args()
 
     dataset, dataset_file_sha = load_strict_json_with_sha256(args.dataset)
+    experiment_config, experiment_file_sha = load_strict_json_with_sha256(
+        args.experiment_config
+    )
+    experiment_config = build_effective_experiment_config(
+        validate_experiment_config(experiment_config),
+        split_overrides={
+            "min_train_dates": args.min_train_dates,
+            "test_dates": args.test_dates,
+            "purge_dates": args.purge_dates,
+        },
+        model_overrides={"n_estimators": args.n_estimators},
+        allow_fixture=bool(dataset.get("fixture_only", False)),
+    )
+    experiment_sha = experiment_config_sha256(
+        experiment_config,
+        allow_fixture=bool(dataset.get("fixture_only", False)),
+    )
+    split_config = experiment_config["split"]
+    model_config = experiment_config["model"]
     if dataset_file_sha != str(args.expected_dataset_file_sha256).lower():
         raise ValueError("dataset file SHA mismatch")
     if dataset.get("status") != "ok":
@@ -109,11 +140,15 @@ def main() -> int:
     walk_forward = walk_forward_ranker_predictions(
         records,
         prediction_universe_records=list(dataset["feature_universe_records"]),
-        min_train_dates=args.min_train_dates,
-        test_dates=args.test_dates,
-        purge_dates=args.purge_dates,
+        min_train_dates=int(split_config["min_train_dates"]),
+        test_dates=int(split_config["test_dates"]),
+        purge_dates=int(split_config["purge_dates"]),
         max_label_horizon=5,
-        n_estimators=args.n_estimators,
+        n_estimators=int(model_config["n_estimators"]),
+        relevance_levels=int(model_config["relevance_levels"]),
+        learning_rate=float(model_config["learning_rate"]),
+        num_leaves=int(model_config["num_leaves"]),
+        random_state=int(model_config["random_state"]),
     )
     if walk_forward["status"] != "ok":
         return _write_unavailable(
@@ -148,6 +183,12 @@ def main() -> int:
         "eligible_for_oos_claim": False,
         "dataset_sha256": dataset["dataset_sha256"],
         "dataset_file_sha256": dataset_file_sha,
+        "experiment": {
+            "config_path": str(args.experiment_config.resolve()),
+            "config_sha256": experiment_sha,
+            "file_sha256": experiment_file_sha,
+            "config": experiment_config,
+        },
         "split": {
             "type": walk_forward["split_type"],
             "min_train_dates": walk_forward["min_train_dates"],
@@ -162,6 +203,7 @@ def main() -> int:
         ),
         "predictions": prediction_rows,
         "promotion_allowed": False,
+        "live_trading_allowed": False,
         "generated_at": datetime.now().astimezone().isoformat(),
         "disclaimer": DISCLAIMER,
     }
@@ -173,7 +215,14 @@ def main() -> int:
         args.walk_forward_output
     )
 
-    trained = train_lambdarank(records, n_estimators=args.n_estimators)
+    trained = train_lambdarank(
+        records,
+        relevance_levels=int(model_config["relevance_levels"]),
+        n_estimators=int(model_config["n_estimators"]),
+        learning_rate=float(model_config["learning_rate"]),
+        num_leaves=int(model_config["num_leaves"]),
+        random_state=int(model_config["random_state"]),
+    )
     source_manifest = dataset.get("source_manifest")
     fixture_only = bool(dataset.get("fixture_only", False))
     if isinstance(source_manifest, dict) and "fixture_only" in source_manifest:
@@ -193,13 +242,17 @@ def main() -> int:
         ),
         model_available_from=(
             args.model_available_from
-            or datetime.now().astimezone().date().isoformat()
+            or (
+                datetime.now().astimezone().date() + timedelta(days=1)
+            ).isoformat()
         ),
         pit_evidence=(
             dataset.get("pit_evidence")
             if bool(dataset.get("strict_pit_eligible", False))
             else None
         ),
+        experiment_config=experiment_config,
+        experiment_config_sha256=experiment_sha,
     )
     report = {
         "schema_version": "ml-stock-training-report-v1",
@@ -212,6 +265,12 @@ def main() -> int:
             "file_sha256": dataset_file_sha,
             "dataset_sha256": dataset["dataset_sha256"],
             "strict_pit_eligible": bool(dataset.get("strict_pit_eligible", False)),
+        },
+        "experiment": {
+            "config_path": str(args.experiment_config.resolve()),
+            "config_sha256": experiment_sha,
+            "file_sha256": experiment_file_sha,
+            "config": experiment_config,
         },
         "model_bundle": {
             "registry_path": bundle["registry_path"],
@@ -229,6 +288,7 @@ def main() -> int:
         "strict_pit_eligible": bool(dataset.get("strict_pit_eligible", False)),
         "eligible_for_oos_claim": False,
         "promotion_allowed": False,
+        "live_trading_allowed": False,
         "generated_at": datetime.now().astimezone().isoformat(),
         "disclaimer": DISCLAIMER,
     }

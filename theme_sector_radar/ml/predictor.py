@@ -12,6 +12,17 @@ from theme_sector_radar.reporting.paper_only_contract import (
 )
 
 from .ranker import RankerModel, prepare_prediction_matrix
+from .registry import (
+    _validate_pit_evidence,
+    is_verified_model_bundle,
+    predict_verified_booster,
+)
+from .experiment import (
+    experiment_config_sha256,
+    validate_booster_parameter_binding,
+    validate_experiment_config,
+    validate_model_parameter_binding,
+)
 from .schema import (
     DISCLAIMER,
     FEATURE_SCHEMA_VERSION,
@@ -47,6 +58,8 @@ def _validate_contract(
     *,
     allow_fixture: bool,
 ) -> None:
+    if not is_verified_model_bundle(model):
+        raise ValueError("model bundle was not loaded through the verified registry")
     metadata = model.metadata
     if tuple(model.feature_names) != V1_FEATURE_NAMES:
         raise ValueError("model feature order/schema mismatch")
@@ -54,6 +67,17 @@ def _validate_contract(
         raise ValueError("model feature schema SHA mismatch")
     if not metadata.get("registry_sha256"):
         raise ValueError("model registry SHA is unavailable")
+    if metadata.get("mode") != MODE:
+        raise ValueError("model mode is not paper/shadow research")
+    classification = metadata.get("dataset_classification")
+    if classification not in {"observed_research", "synthetic_fixture"}:
+        raise ValueError("model dataset classification is unsupported")
+    if metadata.get("eligible_for_oos_claim") is not False:
+        raise ValueError("model OOS safety flag mismatch")
+    if metadata.get("promotion_allowed") is not False:
+        raise ValueError("model promotion safety flag mismatch")
+    if metadata.get("live_trading_allowed") is not False:
+        raise ValueError("model live-trading safety flag mismatch")
     freshness = metadata.get("model_freshness")
     if not isinstance(freshness, Mapping):
         raise ValueError("model freshness metadata is unavailable")
@@ -66,10 +90,31 @@ def _validate_contract(
     except ValueError as exc:
         raise ValueError("model available-from date is invalid") from exc
     if (
-        metadata.get("dataset_classification") == "synthetic_fixture"
+        classification == "synthetic_fixture"
         and not allow_fixture
     ):
         raise ValueError("synthetic fixture model is not eligible for normal prediction")
+    if classification == "synthetic_fixture" and metadata.get(
+        "strict_pit_eligible"
+    ) is not False:
+        raise ValueError("synthetic fixture strict-PIT safety flag mismatch")
+    experiment = metadata.get("experiment")
+    if not isinstance(experiment, Mapping):
+        raise ValueError("model requires an experiment contract")
+    config = validate_experiment_config(
+        experiment.get("config") or {},
+        allow_fixture=classification == "synthetic_fixture",
+    )
+    if experiment.get("config_sha256") != experiment_config_sha256(
+        config, allow_fixture=classification == "synthetic_fixture"
+    ):
+        raise ValueError("model experiment SHA mismatch")
+    validate_model_parameter_binding(metadata.get("parameters") or {}, config)
+    validate_booster_parameter_binding(model.booster, config)
+    if classification == "observed_research":
+        if metadata.get("strict_pit_eligible") is not True:
+            raise ValueError("observed research model requires strict PIT eligibility")
+        _validate_pit_evidence(metadata.get("pit_evidence"))
     latest_eligible_date = available_from + timedelta(days=MODEL_MAX_AGE_DAYS)
     for row in rows:
         _reject_prediction_leakage(row)
@@ -118,6 +163,7 @@ def _unavailable(model: RankerModel, *, error: Exception) -> dict[str, Any]:
         "fixture_only": model.metadata.get("dataset_classification") == "synthetic_fixture",
         "predictions": [],
         "promotion_allowed": False,
+        "live_trading_allowed": False,
         "generated_at": datetime.now().astimezone().isoformat(),
         "disclaimer": DISCLAIMER,
     }
@@ -136,7 +182,9 @@ def unavailable_prediction_report(
         "error_type": type(error).__name__,
         "model_version": model_version,
         "predictions": [],
+        "eligible_for_oos_claim": False,
         "promotion_allowed": False,
+        "live_trading_allowed": False,
         "generated_at": datetime.now().astimezone().isoformat(),
         "disclaimer": DISCLAIMER,
     }
@@ -157,7 +205,7 @@ def predict_shadow(
             raise ValueError("prediction feature rows must not be empty")
         _validate_contract(model, feature_rows, allow_fixture=allow_fixture)
         matrix = prepare_prediction_matrix(feature_rows, feature_names=model.feature_names)
-        raw = model.booster.predict(matrix["features"])
+        raw = predict_verified_booster(model, matrix["features"])
         values = [float(value) for value in raw]
         if len(values) != len(matrix["records"]) or not all(
             math.isfinite(value) for value in values
@@ -216,6 +264,7 @@ def predict_shadow(
         "strict_pit_eligible": bool(model.metadata.get("strict_pit_eligible", False)),
         "eligible_for_oos_claim": False,
         "promotion_allowed": False,
+        "live_trading_allowed": False,
         "predictions": predictions,
         "provenance": {
             "feature_schema_version": FEATURE_SCHEMA_VERSION,

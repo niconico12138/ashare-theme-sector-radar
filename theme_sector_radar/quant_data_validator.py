@@ -406,12 +406,9 @@ def validate_sector_data(stock: Dict) -> StockDataQualityReport:
     else:
         report.add("sector_name", None, "missing", "无板块名称")
 
-    # 关联度
-    relevance = stock.get("relevance_score")
-    if _is_valid_number(relevance):
-        _check_range(relevance, 0.0, 1.0, "relevance_score", report)
-    else:
-        report.add("relevance_score", None, "missing", "无关联度数据")
+    # Legacy relevance is a historical comparison field, not a formal quality
+    # factor. Keeping it out of this report prevents it from influencing
+    # data_quality_score, factor coverage, or ML shadow inputs indirectly.
 
     return report
 

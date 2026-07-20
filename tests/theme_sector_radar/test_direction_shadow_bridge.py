@@ -167,6 +167,7 @@ def test_run_bridge_isolates_shadow_market_requests_and_binds_consumed_payload(
         trend_top_n=1,
         burst_top_n=1,
         min_relevance=0.0,
+        include_legacy_sector_paths=True,
         _validated_score_report=("2026-07-17", source_path, payload),
     )
 
@@ -209,3 +210,100 @@ def test_run_bridge_isolates_shadow_market_requests_and_binds_consumed_payload(
     assert direction_only["linkage_research"][
         "direction_constituent_source_summary"
     ]["test"] == 1
+
+
+def test_direction_path_keeps_low_legacy_relevance_constituents(tmp_path, monkeypatch):
+    import sector_stock_bridge as bridge
+
+    payload = {
+        "as_of_date": "2026-07-17",
+        "scores": [
+            {
+                "sector_name": "Legacy",
+                "sector_type": "industry",
+                "trend_continuation_score": 70.0,
+                "short_term_burst_score": 60.0,
+            }
+        ],
+    }
+    source_path = tmp_path / "sector_scores.json"
+    source_path.write_text(json.dumps(payload), encoding="utf-8")
+
+    monkeypatch.setattr(
+        bridge,
+        "load_stable_sector_inputs",
+        lambda *_args, **_kwargs: {"available": False},
+    )
+    monkeypatch.setattr(
+        bridge,
+        "load_direction_candidate_shadow",
+        lambda _day: {
+            "status": "ok",
+            "mode": "paper_shadow_research_only",
+            "path": str(tmp_path / "direction.json"),
+            "sha256": "a" * 64,
+            "error": None,
+            "eligible_sectors": [
+                {
+                    "sector_name": "Shadow",
+                    "sector_type": "industry",
+                    "candidate_tier": "core",
+                }
+            ],
+            "confirmation_required": [],
+        },
+    )
+    monkeypatch.setattr(
+        bridge,
+        "fetch_sector_constituents",
+        lambda *_args, **_kwargs: {
+            "status": "ok",
+            "stocks": [
+                {"code": "600001", "name": "Heavy", "weight": 0.9},
+                {"code": "600002", "name": "Light", "weight": 0.1},
+            ],
+            "source": "test",
+            "error": None,
+        },
+    )
+    monkeypatch.setattr(
+        bridge,
+        "fetch_tencent_quotes",
+        lambda _codes: {
+            "600001": {"change_pct": 0.0},
+            "600002": {"change_pct": -5.0},
+        },
+    )
+    monkeypatch.setattr(bridge, "fetch_individual_fund_flow", lambda _codes: {})
+    monkeypatch.setattr(
+        bridge,
+        "fetch_sector_fund_flow",
+        lambda _name: {
+            "status": "degraded",
+            "direction": "neutral",
+            "error": "offline",
+        },
+    )
+
+    result = bridge.run_bridge(
+        as_of_date="2026-07-17",
+        trend_top_n=1,
+        burst_top_n=1,
+        min_relevance=0.95,
+        include_legacy_sector_paths=False,
+        _validated_score_report=("2026-07-17", source_path, payload),
+    )
+
+    sector = result["direction_shadow_sectors"][0]
+    assert sector["legacy_relevance_filter_applied"] is False
+    assert sector["active_constituent_count"] == 2
+    assert sector["high_relevance_count"] < sector["active_constituent_count"]
+    assert {row["code"] for row in sector["stocks"]} == {"600001", "600002"}
+    assert all(
+        row["legacy_relevance_role"] == "historical_comparison_only"
+        for row in sector["stocks"]
+    )
+
+    funnel = result["linkage_research"]["sector_funnel"][0]
+    assert funnel["legacy_relevance_filter_applied"] is False
+    assert funnel["active_constituent_count"] == 2

@@ -28,8 +28,10 @@
 
 - 方向分 → Linkage V2 → `formal_candidate_selection` 链已可运行。2026-07-16 的一次结果包含 1,029 条候选关系、554 只股票，最终保留 30 条研究候选；这不是生产晋级。
 - 当前默认候选主链是方向分 → Linkage V2。趋势 TopN / 短线 TopN 路径已从默认运行中关闭，仅在显式 `legacy` 研究模式下启用；方向主链证据不足时 fail-closed，不自动回退旧路径。
+- 旧 `relevance_score` 的 `0.60` 门槛不再参与方向主链筛选；它仍在桥接层全量计算并以 `legacy_relevance_score` 形式保留，仅用于历史对照。正式板块关联准入由 Linkage V2 负责；显式 `legacy` 模式仍保留旧筛选行为以便复核。
 - Linkage V2 的 A/B/C 评估仍为 `insufficient_evidence`：历史成分股没有完成足够可靠的版本化，严格 PIT 证据和成熟 3/5 日标签不足。
 - ML 支路采用 LightGBM LambdaRank 做候选池内的个股 Shadow 重排序，不负责选板块，也不决定买入、止盈或止损。当前只有 1 个历史重建日、0 个前瞻候选日和 0 个成熟 5 日标签日，因此真实训练被门禁阻止；合成训练仅用于验证软件链。
+- ML 训练参数由 `config/ml_stock_ranker_v1.json` 和 `theme_sector_radar/ml/experiment.py` 统一登记；配置内容 SHA 与物理文件 SHA 分开记录，旧关联度不进入 ML 特征，promotion 和 live trading 永远关闭。
 - 择时、非平稳入场、动态止盈、动态止损和压力集研究均保留保守结论；样本不足时保持 `observe`、`insufficient_evidence` 或 `not_evaluated`，不会包装成可交易策略。
 
 ## 总体架构
@@ -126,7 +128,7 @@ flowchart LR
     J --> K["未来标签、择时研究与 ML Shadow 对照"]
 ```
 
-当前候选排序的研究逻辑是：板块方向先决定研究宇宙，Linkage V2 判断股票是否承接板块，Quant 分补充股票自身质量；趋势/短线旧路径默认关闭。ML 只在同一个候选池中做独立 Shadow 重排序，不覆盖受保护的正式评分字段。
+当前候选排序的研究逻辑是：板块方向先决定研究宇宙，身份过滤后保留完整方向成分股，Linkage V2 判断股票是否承接板块，Quant 分补充股票自身质量；旧关联度只作为历史对照字段，趋势/短线旧路径默认关闭。ML 只在同一个候选池中做独立 Shadow 重排序，不覆盖受保护的正式评分字段。
 
 ## 数据层与可信度
 

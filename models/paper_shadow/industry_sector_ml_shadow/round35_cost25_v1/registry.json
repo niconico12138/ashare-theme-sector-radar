@@ -1,0 +1,67 @@
+{
+  "schema_version": "ml-industry-sector-shadow-model-v1",
+  "mode": "paper_shadow_research_only",
+  "status": "research_only",
+  "dataset_classification": "real_historical_reconstruction_research",
+  "feature_profile": "all_v1",
+  "feature_names": [
+    "momentum_1d",
+    "momentum_3d",
+    "momentum_5d",
+    "momentum_10d",
+    "momentum_20d",
+    "volatility_5d",
+    "volatility_20d",
+    "drawdown_20d",
+    "volume_change_5d",
+    "amount_change_5d",
+    "rank_pct_5d",
+    "rank_pct_20d",
+    "rank_momentum_5d",
+    "market_return_1d",
+    "market_return_5d",
+    "market_breadth_1d",
+    "market_dispersion_1d",
+    "market_volatility_20d",
+    "rule_time_series_score",
+    "rule_cross_section_score",
+    "rule_rank_momentum_score",
+    "rule_direction_score"
+  ],
+  "dataset_sha256": "4fb067baad7ff654f0109d16adbf74fa1bc85414152029340726b4ff1cc7c5a3",
+  "experiment": {
+    "min_train_dates": 60,
+    "test_dates": 10,
+    "purge_dates": 5,
+    "max_train_dates": null,
+    "n_estimators": 40,
+    "learning_rate": 0.05,
+    "num_leaves": 15,
+    "random_state": 20260720,
+    "feature_value_mode": "raw",
+    "rule_gate_threshold": 50.0,
+    "top_k_values": [
+      3,
+      5,
+      7
+    ],
+    "evaluation_start": null,
+    "evaluation_end": null,
+    "evaluation_regimes": null,
+    "transaction_cost_bps": 25.0
+  },
+  "model_artifact": {
+    "path": "model.txt",
+    "sha256": "ff922e9000ae34159fef136bf72f611b230c0f1d4305b3a1a47d911359fad8b2"
+  },
+  "strict_pit_eligible": false,
+  "eligible_for_oos_claim": false,
+  "promotion_allowed": false,
+  "live_trading_allowed": false,
+  "formal_predictor_compatible": false,
+  "agent_interface": {
+    "enabled": false,
+    "status": "reserved_not_run"
+  },
+  "disclaimer": "Research output only; no broker connection and no live order instruction."
+}

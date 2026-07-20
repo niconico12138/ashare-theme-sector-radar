@@ -34,6 +34,7 @@ def _selected_row(code="600001"):
         "selection_score": 69.0,
         "selection_score_adjusted": 68.0,
         "linkage_v2_shadow": {"status": "ok", "score": 0.88},
+        "linkage_selection_score": 85.9,
     }
 
 
@@ -113,6 +114,54 @@ def test_formal_replacement_rejects_selected_row_without_direction_identity():
         )
 
 
+def test_formal_replacement_rejects_concept_sector_rows():
+    row = _selected_row()
+    row["sector_type"] = "concept"
+
+    with pytest.raises(ValueError, match="industry sector_type"):
+        build_formal_candidate_selection(
+            direction_source=_direction_source(),
+            linkage_selection=_linkage_selection([row]),
+        )
+
+
+def test_formal_replacement_rejects_tampered_ranking_weights():
+    linkage = _linkage_selection([_selected_row()])
+    linkage["policy"]["ranking_weights"] = {"linkage_v2": 0.40, "quant_score": 0.60}
+
+    with pytest.raises(ValueError, match="ranking weights"):
+        build_formal_candidate_selection(
+            direction_source=_direction_source(),
+            linkage_selection=linkage,
+        )
+
+
+def test_formal_replacement_rejects_tampered_selection_score():
+    row = _selected_row()
+    row["linkage_selection_score"] = 0.0
+
+    with pytest.raises(ValueError, match="selection score mismatch"):
+        build_formal_candidate_selection(
+            direction_source=_direction_source(),
+            linkage_selection=_linkage_selection([row]),
+        )
+
+
+def test_formal_replacement_rejects_tampered_selection_order():
+    first = _selected_row("600001")
+    second = _selected_row("600002")
+    first["linkage_v2_shadow"]["score"] = 0.90
+    first["linkage_selection_score"] = 87.3
+    second["linkage_v2_shadow"]["score"] = 0.80
+    second["linkage_selection_score"] = 80.3
+
+    with pytest.raises(ValueError, match="selection order mismatch"):
+        build_formal_candidate_selection(
+            direction_source=_direction_source(),
+            linkage_selection=_linkage_selection([second, first]),
+        )
+
+
 def test_pipeline_activation_routes_active_candidate_pool_to_replacement_chain():
     result = _activate_formal_candidate_chain(
         candidate_chain="direction_linkage_v2",
@@ -134,6 +183,19 @@ def test_pipeline_activation_does_not_fallback_to_legacy_when_replacement_is_una
     assert result["status"] == "unavailable"
     assert result["selected"] == []
     assert result["fallback_used"] is False
+
+
+def test_legacy_activation_rejects_concept_rows():
+    row = _selected_row()
+    row["sector_type"] = "concept"
+
+    with pytest.raises(ValueError, match="industry sector_type"):
+        _activate_formal_candidate_chain(
+            candidate_chain="legacy",
+            direction_source={},
+            linkage_selection={},
+            legacy_candidates=[row],
+        )
 
 
 def test_pipeline_legacy_mode_exposes_deduplicated_active_pool_only_when_explicit():

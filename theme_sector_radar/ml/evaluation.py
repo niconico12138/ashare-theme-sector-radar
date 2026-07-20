@@ -736,6 +736,7 @@ def evaluate_rule_vs_ml_shadow(
         "promotion_gates": promotion_gates,
         "promotion_status": "architecture_only_shadow",
         "promotion_allowed": promotion_allowed,
+        "live_trading_allowed": False,
         "generated_at": datetime.now().astimezone().isoformat(),
         "disclaimer": DISCLAIMER,
     }

@@ -28,6 +28,29 @@ def _bars(count: int = 25) -> list[dict[str, object]]:
     return rows
 
 
+def _feature_and_label() -> tuple[dict, dict]:
+    from theme_sector_radar.ml.feature_builder import build_feature_row
+    from theme_sector_radar.ml.schema import LABEL_DEFINITION
+
+    feature = build_feature_row(
+        {"code": "000001", "sector_name": "bank"},
+        _bars(),
+        as_of_date=str(_bars()[-1]["date"]),
+    )
+    label = {
+        "as_of_date": feature["as_of_date"],
+        "stock_code": "000001",
+        "sector_name": "bank",
+        "training_label": 0.03,
+        "labels": {"future_excess_return_5d": 0.03},
+        "label_dates": {"future_excess_return_5d": "2026-01-30"},
+        "training_label_end_date": "2026-01-30",
+        "label_definition": LABEL_DEFINITION,
+        "max_label_horizon": 5,
+    }
+    return feature, label
+
+
 def test_feature_builder_uses_only_as_of_data_and_excludes_rule_scores():
     from theme_sector_radar.ml.feature_builder import build_feature_row
     from theme_sector_radar.ml.schema import V1_FEATURE_NAMES
@@ -43,6 +66,8 @@ def test_feature_builder_uses_only_as_of_data_and_excludes_rule_scores():
         "total_mv": 2500.0,
         "quant_score": 88.0,
         "final_score": 91.0,
+        "relevance_score": 0.12,
+        "legacy_relevance_score": 0.12,
         "sector_trend_score": 63.0,
         "sector_burst_score": 51.0,
     }
@@ -56,6 +81,8 @@ def test_feature_builder_uses_only_as_of_data_and_excludes_rule_scores():
     assert tuple(row["features"]) == V1_FEATURE_NAMES
     assert "quant_score" not in row["features"]
     assert "final_score" not in row["features"]
+    assert "relevance_score" not in row["features"]
+    assert "legacy_relevance_score" not in row["features"]
     assert row["features"]["momentum_1d"] == pytest.approx(12.3 / 12.2 - 1.0)
     assert row["provenance"]["latest_bar_date"] == as_of
     assert candidate == candidate_before
@@ -150,7 +177,13 @@ def test_feature_builder_rejects_future_or_label_fields():
     with pytest.raises(ValueError, match="forbidden future/label field"):
         build_feature_row(candidate, _bars(), as_of_date=str(_bars()[-1]["date"]))
 
-    for field in ("training_label", "training_label_end_date", "label_date"):
+    for field in (
+        "training_label",
+        "training_label_end_date",
+        "label_date",
+        "label_value",
+        "target_return",
+    ):
         with pytest.raises(ValueError, match="forbidden future/label field"):
             build_feature_row(
                 {"code": "000001", "sector_name": "bank", field: "future"},
@@ -313,6 +346,8 @@ def test_label_source_requires_bound_versioned_calendar_identity():
     source = {
         "schema_version": "ml-stock-label-source-v1",
         "mode": "paper_shadow_research_only",
+        "fixture_only": True,
+        "strict_pit_eligible": False,
         "trading_calendar": {"sha256": "a" * 64},
         "stock_price_rows": [],
         "sector_price_rows": [],
@@ -327,7 +362,9 @@ def test_label_source_requires_bound_versioned_calendar_identity():
     }
 
     with pytest.raises(ValueError, match="calendar identity mismatch"):
-        build_label_rows_from_source(source, trading_calendar=calendar)
+        build_label_rows_from_source(
+            source, trading_calendar=calendar, allow_fixture=True
+        )
 
 
 def test_dataset_builder_joins_identity_and_freezes_feature_manifest():
@@ -428,6 +465,7 @@ def test_dataset_rejects_cross_view_feature_or_label_identity_drift():
         / "reports/paper_shadow/ml_stock_ranker/synthetic_fixture_calendar_v2_2026-07-18/dataset.json"
     )
     dataset = load_strict_json(fixture)
+    dataset["live_trading_allowed"] = False
     dataset["feature_universe_records"][0]["features"]["momentum_1d"] += 123.0
     core = {
         key: dataset[key]
@@ -435,7 +473,8 @@ def test_dataset_rejects_cross_view_feature_or_label_identity_drift():
             "schema_version", "mode", "feature_schema_version",
             "feature_schema_sha256", "feature_names", "label_definition",
             "max_label_horizon", "strict_pit_eligible", "pit_evidence_status",
-            "eligible_for_oos_claim", "promotion_allowed", "fixture_only",
+            "eligible_for_oos_claim", "promotion_allowed", "live_trading_allowed",
+            "fixture_only",
             "feature_universe_records", "evaluation_label_records", "records",
         )
     }
@@ -551,7 +590,7 @@ def _synthetic_training_records(date_count: int = 12, stock_count: int = 8):
 
 
 def test_lightgbm_bundle_round_trip_binds_schema_versions_and_hashes(tmp_path):
-    from theme_sector_radar.ml.ranker import train_lambdarank
+    from theme_sector_radar.ml.ranker import RankerModel, train_lambdarank
     from theme_sector_radar.ml.registry import load_model_bundle, save_model_bundle
     from theme_sector_radar.ml.schema import LABEL_DEFINITION, V1_FEATURE_NAMES
 
@@ -565,20 +604,27 @@ def test_lightgbm_bundle_round_trip_binds_schema_versions_and_hashes(tmp_path):
         model_version="stock_ranker_lgbm_v1_test",
         dataset_sha256="a" * 64,
         strict_pit_eligible=False,
-        dataset_classification="observed_research",
+        dataset_classification="synthetic_fixture",
         model_available_from="2026-04-17",
     )
     loaded = load_model_bundle(
         output, expected_registry_sha256=saved["registry_sha256"]
     )
 
+    with pytest.raises(TypeError):
+        loaded.booster.params["objective"] = "tampered"
+
     assert saved["registry"]["label_definition"] == LABEL_DEFINITION
     assert saved["registry"]["feature_names"] == list(V1_FEATURE_NAMES)
     assert saved["registry"]["training_period"]["date_count"] == 12
     assert len(saved["registry"]["model_artifact"]["sha256"]) == 64
     assert len(saved["registry_sha256"]) == 64
-    before = trained.predict(records[:8])
-    after = loaded.predict(records[:8])
+    from theme_sector_radar.ml.ranker import prepare_prediction_matrix
+    from theme_sector_radar.ml.registry import predict_verified_booster
+
+    matrix = prepare_prediction_matrix(records[:8])
+    before = trained.booster.predict(matrix["features"])
+    after = predict_verified_booster(loaded, matrix["features"])
     assert after.tolist() == pytest.approx(before.tolist())
 
 
@@ -620,6 +666,80 @@ def test_model_bundle_requires_external_registry_sha_and_rejects_reclassificatio
         load_model_bundle(output, expected_registry_sha256=tampered_sha)
 
 
+def test_legacy_fixture_registry_without_live_flag_is_rejected(tmp_path):
+    import hashlib
+
+    from theme_sector_radar.ml.ranker import train_lambdarank
+    from theme_sector_radar.ml.registry import load_model_bundle, save_model_bundle
+    from theme_sector_radar.reporting.strict_json import (
+        load_strict_json,
+        write_strict_json_atomic,
+    )
+
+    trained = train_lambdarank(_synthetic_training_records(), n_estimators=4)
+    output = tmp_path / "legacy-model"
+    save_model_bundle(
+        trained,
+        output,
+        model_version="legacy-fixture",
+        dataset_sha256="8" * 64,
+        strict_pit_eligible=False,
+        dataset_classification="synthetic_fixture",
+        model_available_from="2026-04-17",
+    )
+    registry = load_strict_json(output / "registry.json")
+    registry.pop("live_trading_allowed")
+    write_strict_json_atomic(output / "registry.json", registry)
+    registry_sha = hashlib.sha256((output / "registry.json").read_bytes()).hexdigest()
+
+    with pytest.raises(ValueError, match="safety envelope"):
+        load_model_bundle(output, expected_registry_sha256=registry_sha)
+
+
+def test_synthetic_fixture_registry_requires_experiment_contract(tmp_path):
+    import hashlib
+
+    from theme_sector_radar.ml.ranker import train_lambdarank
+    from theme_sector_radar.ml.registry import load_model_bundle, save_model_bundle
+    from theme_sector_radar.reporting.strict_json import (
+        load_strict_json,
+        write_strict_json_atomic,
+    )
+
+    trained = train_lambdarank(_synthetic_training_records(), n_estimators=4)
+    output = tmp_path / "fixture-model"
+    save_model_bundle(
+        trained,
+        output,
+        model_version="fixture-without-contract",
+        dataset_sha256="7" * 64,
+        strict_pit_eligible=False,
+        dataset_classification="synthetic_fixture",
+        model_available_from="2026-04-17",
+    )
+    registry = load_strict_json(output / "registry.json")
+    registry.pop("experiment")
+    write_strict_json_atomic(output / "registry.json", registry)
+    registry_sha = hashlib.sha256((output / "registry.json").read_bytes()).hexdigest()
+
+    with pytest.raises(ValueError, match="experiment contract"):
+        load_model_bundle(output, expected_registry_sha256=registry_sha)
+
+
+def test_legacy_fixture_dataset_without_live_flag_is_rejected():
+    from theme_sector_radar.ml.dataset import (
+        build_training_dataset,
+        validate_training_dataset,
+    )
+
+    feature, label = _feature_and_label()
+    dataset = build_training_dataset([feature], [label], strict_pit_eligible=False)
+    dataset.pop("live_trading_allowed")
+
+    with pytest.raises(ValueError, match="safety envelope"):
+        validate_training_dataset(dataset)
+
+
 def test_strict_registry_evidence_must_reverify_archive(tmp_path):
     from theme_sector_radar.ml.contract import canonical_sha256
     from theme_sector_radar.ml.registry import _validate_pit_evidence
@@ -653,7 +773,7 @@ def test_predictor_outputs_daily_percentiles_and_fails_closed_on_drift(tmp_path)
         model_version="stock_ranker_lgbm_v1_test",
         dataset_sha256="b" * 64,
         strict_pit_eligible=False,
-        dataset_classification="observed_research",
+        dataset_classification="synthetic_fixture",
         model_available_from="2026-04-17",
     )
     loaded = load_model_bundle(
@@ -677,7 +797,7 @@ def test_predictor_outputs_daily_percentiles_and_fails_closed_on_drift(tmp_path)
             }
         )
 
-    report = predict_shadow(loaded, prediction_rows)
+    report = predict_shadow(loaded, prediction_rows, allow_fixture=True)
 
     assert report["status"] == "ok"
     assert report["mode"] == "paper_shadow_research_only"
@@ -692,7 +812,7 @@ def test_predictor_outputs_daily_percentiles_and_fails_closed_on_drift(tmp_path)
 
     drifted = [dict(prediction_rows[0])]
     drifted[0]["features"] = dict(reversed(list(drifted[0]["features"].items())))
-    unavailable = predict_shadow(loaded, drifted)
+    unavailable = predict_shadow(loaded, drifted, allow_fixture=True)
     assert unavailable["status"] == "unavailable"
     assert unavailable["reason"] == "feature_or_model_contract_rejected"
     assert unavailable["predictions"] == []
@@ -712,7 +832,7 @@ def test_predictor_fails_closed_outside_training_forward_window(tmp_path):
         model_version="stock_ranker_lgbm_v1_test",
         dataset_sha256="e" * 64,
         strict_pit_eligible=False,
-        dataset_classification="observed_research",
+        dataset_classification="synthetic_fixture",
         model_available_from="2026-04-17",
     )
     loaded = load_model_bundle(
@@ -729,13 +849,13 @@ def test_predictor_fails_closed_outside_training_forward_window(tmp_path):
         "provenance": {"feature_schema_sha256": feature_schema_sha256()},
     }
 
-    report = predict_shadow(loaded, [feature_row])
+    report = predict_shadow(loaded, [feature_row], allow_fixture=True)
 
     assert report["status"] == "unavailable"
     assert report["reason"] == "feature_or_model_contract_rejected"
 
     feature_row["as_of_date"] = "2026-04-16"
-    report = predict_shadow(loaded, [feature_row])
+    report = predict_shadow(loaded, [feature_row], allow_fixture=True)
 
     assert report["status"] == "unavailable"
     assert report["reason"] == "feature_or_model_contract_rejected"
@@ -743,7 +863,7 @@ def test_predictor_fails_closed_outside_training_forward_window(tmp_path):
 
 def test_fixture_bundle_is_bound_and_rejected_by_normal_prediction(tmp_path):
     from theme_sector_radar.ml.predictor import predict_shadow
-    from theme_sector_radar.ml.ranker import train_lambdarank
+    from theme_sector_radar.ml.ranker import RankerModel, train_lambdarank
     from theme_sector_radar.ml.registry import load_model_bundle, save_model_bundle
     from theme_sector_radar.ml.schema import FEATURE_SCHEMA_VERSION, feature_schema_sha256
 
@@ -775,6 +895,74 @@ def test_fixture_bundle_is_bound_and_rejected_by_normal_prediction(tmp_path):
     assert saved["registry"]["dataset_classification"] == "synthetic_fixture"
     assert predict_shadow(loaded, [row])["status"] == "unavailable"
     assert predict_shadow(loaded, [row], allow_fixture=True)["status"] == "ok"
+    with pytest.raises(RuntimeError, match="verified|shadow"):
+        loaded.booster.predict([[0.0] * len(loaded.feature_names)])
+
+    original_version = loaded.metadata["model_version"]
+    loaded.metadata["model_version"] = "forged-version"
+    assert predict_shadow(loaded, [row], allow_fixture=True)["status"] == "unavailable"
+    loaded.metadata["model_version"] = original_version
+
+    forged_direct_wrapper = RankerModel(
+        booster=loaded.booster,
+        feature_names=loaded.feature_names,
+        metadata=dict(loaded.metadata),
+    )
+    assert (
+        predict_shadow(forged_direct_wrapper, [row], allow_fixture=True)["status"]
+        == "unavailable"
+    )
+
+    for field, value in (
+        ("dataset_classification", None),
+        ("dataset_classification", "unknown"),
+        ("eligible_for_oos_claim", True),
+        ("promotion_allowed", True),
+        ("live_trading_allowed", None),
+        ("live_trading_allowed", True),
+    ):
+        metadata = dict(loaded.metadata)
+        if value is None:
+            metadata.pop(field, None)
+        else:
+            metadata[field] = value
+        tampered = RankerModel(
+            booster=loaded.booster,
+            feature_names=loaded.feature_names,
+            metadata=metadata,
+        )
+        assert (
+            predict_shadow(tampered, [row], allow_fixture=True)["status"]
+            == "unavailable"
+        )
+
+    from theme_sector_radar.ml.experiment import (
+        build_effective_experiment_config,
+        default_experiment_config,
+        experiment_config_sha256,
+    )
+
+    observed_config = build_effective_experiment_config(
+        default_experiment_config(), model_overrides={"n_estimators": 4}
+    )
+    forged_observed_metadata = dict(loaded.metadata)
+    forged_observed_metadata.update(
+        {
+            "dataset_classification": "observed_research",
+            "strict_pit_eligible": True,
+            "experiment": {
+                "config": observed_config,
+                "config_sha256": experiment_config_sha256(observed_config),
+            },
+            "pit_evidence": None,
+        }
+    )
+    forged_observed = RankerModel(
+        booster=loaded.booster,
+        feature_names=loaded.feature_names,
+        metadata=forged_observed_metadata,
+    )
+    assert predict_shadow(forged_observed, [row])['status'] == 'unavailable'
 
 
 def test_evaluation_compares_rule_ml_hybrid_and_consensus_same_day():
@@ -1129,7 +1317,7 @@ def test_model_bundle_rejects_model_artifact_tampering(tmp_path):
         model_version="stock_ranker_lgbm_v1_test",
         dataset_sha256="c" * 64,
         strict_pit_eligible=False,
-        dataset_classification="observed_research",
+        dataset_classification="synthetic_fixture",
         model_available_from="2026-04-17",
     )
     with (output / "model.txt").open("a", encoding="utf-8") as handle:
@@ -1205,6 +1393,224 @@ def test_synthetic_fixture_sources_use_explicit_anchor_date():
         date.fromisoformat(value).weekday() < 5
         for value in label_source["trading_calendar"]["dates"]
     )
+
+
+def test_observed_feature_source_requires_verified_archive_identity():
+    from theme_sector_radar.ml.source import build_feature_rows_from_source
+
+    source = {
+        "schema_version": "ml-stock-feature-source-v1",
+        "mode": "paper_shadow_research_only",
+        "fixture_only": False,
+        "strict_pit_eligible": True,
+        "snapshots": [],
+    }
+    with pytest.raises(ValueError, match="PIT manifest|physical identity"):
+        build_feature_rows_from_source(source)
+
+
+def test_observed_feature_source_must_replay_verified_archive_rows(
+    tmp_path, monkeypatch
+):
+    from theme_sector_radar.ml.contract import canonical_sha256
+    from theme_sector_radar.ml.source import build_feature_rows_from_source
+    from theme_sector_radar.reporting.strict_json import (
+        load_strict_json_with_sha256,
+        write_strict_json_atomic,
+    )
+
+    day = str(_bars()[-1]["date"])
+    candidate = {"code": "000001", "sector_name": "bank", "pe": 6.0}
+    archive_root = tmp_path / "archive"
+    snapshot_path = archive_root / "snapshots" / f"{day}.json"
+    archive_snapshot = {
+        "as_of_date": day,
+        "feature_candidates": [candidate],
+        "bars_by_code": {"000001": _bars()},
+    }
+    write_strict_json_atomic(snapshot_path, archive_snapshot)
+    _snapshot, snapshot_sha = load_strict_json_with_sha256(snapshot_path)
+    evidence_core = {
+        "archive_root": str(archive_root.resolve()),
+        "strict_pit_eligible": True,
+        "snapshots": [
+            {
+                "as_of_date": day,
+                "path": str(snapshot_path.resolve()),
+                "sha256": snapshot_sha,
+                "strict_pit_eligible": True,
+            }
+        ],
+    }
+    evidence = {
+        **evidence_core,
+        "evidence_sha256": canonical_sha256(evidence_core),
+    }
+    monkeypatch.setattr(
+        "theme_sector_radar.ml.accumulation.verify_accumulation_archive",
+        lambda _root: evidence,
+    )
+    source = {
+        "schema_version": "ml-stock-feature-source-v1",
+        "mode": "paper_shadow_research_only",
+        "fixture_only": False,
+        "strict_pit_eligible": True,
+        "source_manifest": {
+            "archive_root": str(archive_root.resolve()),
+            "pit_evidence_sha256": evidence["evidence_sha256"],
+        },
+        "snapshots": [
+            {
+                "as_of_date": day,
+                "candidates": [{**candidate, "pe": 600.0}],
+                "bars_by_code": {"000001": _bars()},
+            }
+        ],
+    }
+    source_path = tmp_path / "feature_source.json"
+    write_strict_json_atomic(source_path, source)
+    _source, source_sha = load_strict_json_with_sha256(source_path)
+
+    with pytest.raises(ValueError, match="verified archive"):
+        build_feature_rows_from_source(
+            source,
+            source_identity={"path": str(source_path.resolve()), "sha256": source_sha},
+        )
+
+
+def test_observed_feature_source_rejects_non_strict_archive_snapshot(
+    tmp_path, monkeypatch
+):
+    from theme_sector_radar.ml.contract import canonical_sha256
+    from theme_sector_radar.ml.source import build_feature_rows_from_source
+    from theme_sector_radar.reporting.strict_json import (
+        load_strict_json_with_sha256,
+        write_strict_json_atomic,
+    )
+
+    day = str(_bars()[-1]["date"])
+    archive_root = tmp_path / "archive"
+    snapshot_path = archive_root / "snapshots" / f"{day}.json"
+    candidate = {"code": "000001", "sector_name": "bank", "pe": 6.0}
+    snapshot = {
+        "as_of_date": day,
+        "feature_candidates": [candidate],
+        "bars_by_code": {"000001": _bars()},
+    }
+    write_strict_json_atomic(snapshot_path, snapshot)
+    _snapshot, snapshot_sha = load_strict_json_with_sha256(snapshot_path)
+    evidence_core = {
+        "archive_root": str(archive_root.resolve()),
+        "strict_pit_eligible": True,
+        "snapshots": [
+            {
+                "as_of_date": day,
+                "path": str(snapshot_path.resolve()),
+                "sha256": snapshot_sha,
+                "strict_pit_eligible": False,
+            }
+        ],
+    }
+    evidence = {**evidence_core, "evidence_sha256": canonical_sha256(evidence_core)}
+    monkeypatch.setattr(
+        "theme_sector_radar.ml.accumulation.verify_accumulation_archive",
+        lambda _root: evidence,
+    )
+    source = {
+        "schema_version": "ml-stock-feature-source-v1",
+        "mode": "paper_shadow_research_only",
+        "fixture_only": False,
+        "strict_pit_eligible": True,
+        "source_manifest": {
+            "archive_root": str(archive_root.resolve()),
+            "pit_evidence_sha256": evidence["evidence_sha256"],
+        },
+        "snapshots": [
+            {
+                "as_of_date": day,
+                "candidates": [candidate],
+                "bars_by_code": {"000001": _bars()},
+            }
+        ],
+    }
+    source_path = tmp_path / "source.json"
+    write_strict_json_atomic(source_path, source)
+    _source, source_sha = load_strict_json_with_sha256(source_path)
+
+    with pytest.raises(ValueError, match="strict"):
+        build_feature_rows_from_source(
+            source,
+            source_identity={"path": str(source_path.resolve()), "sha256": source_sha},
+        )
+
+
+def test_observed_label_source_must_replay_verified_archive_rows(
+    tmp_path, monkeypatch
+):
+    from theme_sector_radar.ml.contract import canonical_sha256
+    from theme_sector_radar.ml.source import build_label_rows_from_source
+    from theme_sector_radar.reporting.strict_json import (
+        load_strict_json_with_sha256,
+        write_strict_json_atomic,
+    )
+
+    day = "2026-01-05"
+    archive_root = tmp_path / "archive"
+    label_snapshot_path = archive_root / "labels" / f"{day}.json"
+    stock_rows = [{"date": day, "stock_code": "000001", "close": 10.0}]
+    sector_rows = [{"date": day, "sector_name": "bank", "close": 100.0}]
+    calendar = {
+        "schema_version": "a_share_trading_calendar.v1",
+        "market": "CN_A",
+        "dates": [day, "2026-01-06", "2026-01-07", "2026-01-08", "2026-01-09", "2026-01-12"],
+    }
+    label_snapshot = {
+        "signal_date": day,
+        "stock_price_rows": stock_rows,
+        "sector_price_rows": sector_rows,
+        "source_manifest": {"trading_calendar": calendar},
+    }
+    write_strict_json_atomic(label_snapshot_path, label_snapshot)
+    _label_doc, label_sha = load_strict_json_with_sha256(label_snapshot_path)
+    evidence_core = {
+        "archive_root": str(archive_root.resolve()),
+        "strict_pit_eligible": True,
+        "labels": [
+            {
+                "signal_date": day,
+                "path": str(label_snapshot_path.resolve()),
+                "sha256": label_sha,
+                "strict_pit_eligible": True,
+            }
+        ],
+    }
+    evidence = {**evidence_core, "evidence_sha256": canonical_sha256(evidence_core)}
+    monkeypatch.setattr(
+        "theme_sector_radar.ml.accumulation.verify_accumulation_archive",
+        lambda _root: evidence,
+    )
+    source = {
+        "schema_version": "ml-stock-label-source-v1",
+        "mode": "paper_shadow_research_only",
+        "fixture_only": False,
+        "strict_pit_eligible": True,
+        "source_manifest": {
+            "archive_root": str(archive_root.resolve()),
+            "pit_evidence_sha256": evidence["evidence_sha256"],
+        },
+        "trading_calendar": calendar,
+        "stock_price_rows": [{**stock_rows[0], "close": 999.0}],
+        "sector_price_rows": sector_rows,
+    }
+    source_path = tmp_path / "label_source.json"
+    write_strict_json_atomic(source_path, source)
+    _source, source_sha = load_strict_json_with_sha256(source_path)
+
+    with pytest.raises(ValueError, match="verified archive"):
+        build_label_rows_from_source(
+            source,
+            source_identity={"path": str(source_path.resolve()), "sha256": source_sha},
+        )
 
 
 def test_ml_shadow_cli_synthetic_end_to_end(tmp_path):

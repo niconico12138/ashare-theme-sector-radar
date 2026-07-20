@@ -3,7 +3,7 @@
 ## 状态与边界
 
 - 状态：已确认，后续研究方向固定。
-- 执行状态：历次评分可信度复审发现均已完成 TDD。当前 fresh hermetic 全量 `3003 passed, 19 deselected in 17.95s`，0 failed；Path A v3 产物身份与 paper-only 可信链未重算。行业方向三层分解仅作为新增 shadow breakdown，正式分与晋级结论不变。前六对本轮复审未双清零，结束仍须下一对全新独立只读复审同时清零 Critical/Important。
+- 执行状态：历次评分可信度复审发现均已完成 TDD。当前 fresh hermetic 全量 `3258 passed, 19 deselected in 246.70s`，0 failed；Path A v3 产物身份与 paper-only 可信链未重算。行业方向三层分解仅作为新增 shadow breakdown，正式分与晋级结论不变。旧关联度已降级为历史对照字段，方向主链不再使用 `0.60` 硬门槛。ML Shadow 真实数据 readiness 仍阻断训练，最终独立复审已完成且 A/B 均为 `Critical=0, Important=0`。
 - 当前固定身份：selection manifest `9e297b2aa8914f8bded8a2eb507f91b7752bffe065dd036cb248fb25720fa066`；candidate 1m/5m manifest 分别为 `d085d410bccb629565202af6134242a9611b2df7ed6b3c039b4636cfdde8b4fc` / `b5338934e24cf4b2d11d71e7665e560d62adda54e8a14ed977d940859f8cb08f`；decision SHA 为 `7c8cfa3500495ee095c5952d36f6fcea472891ea9e6c8dd9e78e68b66585e3f9`；calendar SHA 为 `62ce83c12f6e73fd598e220896d27cffc6bc23268ad9644c622f4bca24e1e8f7`；长期事件 SHA 为 `e92a2fd232cddb2df0abb14b0e8e374ad7a2423f2e1840df6a02d46506ab979a`。当前决策为 11 `observe`、3 `insufficient_evidence`、0 Champion/Challenger，`live_trading_ready=false`。旧 `35dc70...` 及更早 decision SHA 均为内容寻址历史身份。
 - 范围：paper trading / shadow research。
 - 禁止：不连接券商，不生成实盘指令，不修改官方分数字段。
@@ -147,7 +147,7 @@
 - Direction input SHA: `44c776aec07052f9152ba634b7b9ac739f926704bcb66c14f936562134867152`. Sector history root: `data_cache/sector_history_v20260717`, with 90 industry histories available through 2026-07-16. Cluster-map SHA: `06cd454ce47cdb690a0a1c3f67a699528ca93e8e710935ae81be501a0fa4c77b`.
 - Fresh isolated report: `test_output/formal_replacement_2026-07-16-with-history-stockdb/unified_report.json`, SHA `6ebca8c3db369a357fac1f9d09e0f30223e58e0e6ba79988ea4afe1d5c701e73`; it reports `active_for_paper_research` with 30 selected stocks. V2 coverage is 1,001/1,029 relations and 540/554 unique stocks; maximum cluster ratio is `0.333333`, with zero unmapped sectors.
 - This status does not change the A/B/C promotion result: historical evidence remains insufficient, `strict_pit_eligible=false`, Legacy remains the frozen scoring baseline, and no broker, order, position, or live instruction path is present.
-- Current verification: full pytest `3137 passed, 19 deselected in 35.13s`; replacement-chain regression `287 passed in 6.78s`; `compileall` and `git diff --check` pass. Strict parse is `261 JSON + 1 JSONL + 12 lines`; paper-only artifacts pass; protected-field scan is `tracked_added=0, untracked_production=0`; formal machine acceptance passes. Fresh independent read-only Review A and Review B both pass with `Critical=0, Important=0, Minor=0`.
+- Historical formal-chain verification snapshot: full pytest `3137 passed, 19 deselected in 35.13s`; replacement-chain regression `287 passed in 6.78s`; `compileall` and `git diff --check` pass. Strict parse is `261 JSON + 1 JSONL + 12 lines`; paper-only artifacts pass; protected-field scan is `tracked_added=0, untracked_production=0`; formal machine acceptance passes. Its Review A and Review B are historical and not the current closing credential.
 
 The A4/B3 pair closed the earlier Phase 11 and is historical evidence only. It is not a completion credential for the 2026-07-17 score-credibility extension. The first new pair returned A=`0/2/2`, B=`0/7/1`; the second returned A2=`0/1/0`, B2=`0/2/0`; the third returned C=`0/2/0`, D=`0/1/0`. None cleared the gate. The third pair's findings were fixed with a `3 failed` RED to `3 passed` GREEN before requesting a fourth pair: non-labelable dates now advance scoring/rank state, the gate requires exactly 1d/3d/5d with positive train and test folds across every horizon, and fold comparisons cover both train and test against same-horizon production baselines.
 
@@ -173,4 +173,57 @@ The historical temporary decision SHA is `5af98e818170c767d3c388f71eb4b8d0847f52
 - Fresh candidate streaming found 148 stale `complete_session=false` classifications per timeframe after the StockDB alternate-session contract became authoritative. No compatibility bypass was added: only the existing candidate→records→audits→decision chain was re-derived; PIT and unrelated data layers were not recalculated.
 - The caller-bound entry-bars manifest SHA is `884b40b60bee79da40e7402c3c5eb706447df67f6ad00d582b29013af9b13ec1` for 182 sessions (147 complete / 35 invalid). Current candidate manifests are 1m `d085d410bccb629565202af6134242a9611b2df7ed6b3c039b4636cfdde8b4fc` and 5m `b5338934e24cf4b2d11d71e7665e560d62adda54e8a14ed977d940859f8cb08f`, each with 160 documents and 1,409 complete / 1,393 invalid candidates.
 - Current records counts/causal-valid counts are entry 1m `193/161`, entry 5m `198/152`, profit 1m `64/55` for both thresholds, and profit 5m `65/47` for both thresholds. Durable records manifest SHA is `21db14443d2ebd30e596887b3aee1590a8058c0fffd2e174bc18e039651bcfa6`; all eight audits report tail `20`, source `18`, complete `14`; final decision SHA is `7c8cfa3500495ee095c5952d36f6fcea472891ea9e6c8dd9e78e68b66585e3f9`, with 11/3/0 and live false unchanged.
-- The historical canonical root snapshot strictly parsed as `172 JSON + 2 JSONL + 38,778 lines`; it is retained as provenance. The current code suite is `3137 passed, 19 deselected`; the current formal-candidate strict inventory is `261 JSON + 1 JSONL + 12 lines`.
+- The historical canonical root snapshot strictly parsed as `172 JSON + 2 JSONL + 38,778 lines`; it is retained as provenance. The superseded code suite was `3137 passed, 19 deselected`; the superseded formal-candidate strict inventory was `261 JSON + 1 JSONL + 12 lines`.
+
+## Historical Verification Snapshot (2026-07-19; superseded)
+
+- The current code suite is `3253 passed, 19 deselected in 236.06s`; the old-relevance/Linkage regression remains `309 passed`, while current ML/archive/experiment/inventory coverage is `82 passed`. `compileall`, `git diff --check`, protected-field scanning, and strict JSON/JSONL parsing pass. The current strict inventory parsed 379 JSON files and 1 JSONL file with 12 lines; one pre-existing truncated `test_output/theme_sector_radar.json` is explicitly excluded and was not overwritten. The direction bridge now records legacy relevance for comparison only and leaves active association to Linkage V2. The ML artifact inventory binds 68 files: 63 immutable legacy JSON files are `superseded_legacy`, 3 model binaries are hash-bound, and the 2 current cycle JSON files contain inline `live_trading_allowed=false`.
+
+Historical predictor-safety snapshot, superseded by the current artifact-contract result below: full pytest
+`3224 passed, 19 deselected in 249.86s`; ML/archive focused regression remains
+`53 passed`, strict inventory remains `378 JSON + 1 JSONL/12 lines`, ML-scope
+paper-only remains `51/51`, and protected exact writes remain `0`.
+- The latest artifact-contract continuation supersedes the earlier ML timing and artifact
+identities: full pytest is `3253 passed, 19 deselected in 236.06s`, focused ML coverage is
+`82 passed`, readiness SHA is `80ea9944c6e2fea4978054fa3f1033c722a4172e559dc2b248b053105fd9ba87`,
+cycle SHA is `4d910f9657cb31aa285066deba324e7732400b8dd72ae5372eacbcdbc2aaa6af`,
+config file SHA is `949101a2c1c7ee69bf235120fb11f720efeb448eccd27df591b2e14f778096cf`,
+effective experiment SHA is `a315047c2783f174b068999733f27aa8d86fce38f292b3a814b5536f7d6a7b7d`,
+and artifact-inventory SHA is `0655da8b5be1b71c1000a967a184537183f235bf490680cf2459d10274437ff1`.
+Observed feature and label sources must now replay exactly from the verified archive;
+readiness independently re-runs that verifier. Archive and inventory safety flags are
+fail-closed, registry/model files are paired, all known ML test-output roots are covered,
+and synthetic bundles carry a parameter-bound experiment contract at save, load, and
+prediction. Missing safety fields on immutable historical archive files only downgrade
+their strict-evidence eligibility; those files are not rewritten.
+Readiness remains blocked at one historical candidate snapshot, zero prospective dates,
+zero verified training dates, and zero mature five-day labels; no observed model exists.
+- Historical interrupted-run snapshot, superseded by the artifact-inventory result above: full pytest
+`3224 passed, 19 deselected in 250.84s`; observed-cycle readiness SHA is
+`fae2a73cad95ef31f6ba50c89951c38af6cb77c13f09150fd5cf1c869857e527` and cycle report
+SHA is `2fab11135deed739ea19622d1bdad082c765acc90c9b612afacb03274bc46497`.
+The experiment file SHA is `b21f89c4b41f7ac903b412a0d1b245505a79b5adaad472601bb49a04cae92020`;
+the effective experiment SHA is `a4d6e3c8fc705cc2363de0d419f14e752791403e8aca1a1613f6d44f6684e972`.
+Readiness remains blocked at 1 candidate snapshot, 0 prospective dates, 0 verified training
+dates and 0 mature 5-day labels; no observed model directory exists.
+- The canonical nonstationary identities remain the fourth-round values: selection manifest `9e297b2aa8914f8bded8a2eb507f91b7752bffe065dd036cb248fb25720fa066`, decision SHA `8a0c2f202032991a3e11b55205a3ce2dc6c277fe85e25b21577703027535df3b`, long-history event SHA `e92a2fd232cddb2df0abb14b0e8e374ad7a2423f2e1840df6a02d46506ab979a`. This concept-data stage did not recalculate canonical records, audits, or final decision.
+- Concept data is an independent paper/shadow path: StockDB native board keys -> immutable date-bound membership snapshot -> AkShare concept history -> `concept_direction_score_shadow.v1` -> concept member bridge. It never enters the formal industry candidate chain and cannot write `quant_score`, `final_score`, `v2_score`, `selection_score`, or `selection_score_adjusted`.
+- A read-only StockDB probe found 978 concept keys; 977 were usable A-share member boards and 1 ETF-only board was excluded with a recorded source audit. Historical dates without an exact membership snapshot remain fail-closed. No broker or executable instruction path is present.
+
+## Current ML Shadow Verification Override (2026-07-20)
+
+Fresh full pytest is `3258 passed, 19 deselected in 246.70s`; the ML/archive/experiment/
+inventory suite is `87 passed in 34.94s`; and the archive-focused suite is `20 passed in
+28.27s`. The observed cycle remains fail-closed at `readiness_gate_blocked_training`,
+so no observed model or live path exists.
+
+Current readiness SHA is
+`7d350962f51239869c66d667c12e932e76e0ad0cfd9a82d59a4fe3d9211797a6`; cycle report SHA
+is `91443a9d7b42a47857e5b2827b946f3395f82bbd009e07474b99e25953e52753`; artifact
+inventory SHA is `c6d6f22c3412aaa43c32a30a8a4230d31c6b931f1c48d2c1e54487ccb1ec6e53`; and
+archive evidence SHA is `2c3f7058826e19a7d311942598435ad9e83b82692d2e863ca5c0e72eb449ffe2`.
+
+The inventory contains 69 artifacts (66 JSON and 3 model binaries), including 64
+immutable legacy JSON artifacts and 2 current cycle JSON artifacts. Strict parsing is
+`379 JSON + 1 JSONL/12 lines`; compileall, diff-check, expected-SHA, and protected-field
+checks pass. The two fresh independent read-only reviews remain the closing gate.

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import date, datetime
+from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 from theme_sector_radar.reporting.paper_only_contract import (
@@ -10,6 +11,7 @@ from theme_sector_radar.reporting.paper_only_contract import (
 )
 
 from .contract import canonical_sha256, optional_ml_dependency_readiness, require_finite
+from .accumulation import verify_accumulation_archive
 from .schema import DISCLAIMER, MODE
 
 
@@ -72,6 +74,7 @@ def build_data_readiness_report(
     prospective_candidate_dates: list[str] = []
     verified_training_dates: list[str] = []
     pit_evidence_sha256 = None
+    pit_minimum_history_verified = False
     if pit_evidence is not None:
         if not isinstance(pit_evidence, Mapping):
             raise ValueError("PIT evidence must be an object")
@@ -81,6 +84,17 @@ def build_data_readiness_report(
         pit_evidence_sha256 = str(pit_evidence.get("evidence_sha256") or "")
         if canonical_sha256(evidence_core) != pit_evidence_sha256:
             raise ValueError("PIT evidence SHA mismatch")
+        archive_root = (
+            source_manifest.get("archive_root")
+            if isinstance(source_manifest, Mapping)
+            else None
+        )
+        if not isinstance(archive_root, str) or not Path(archive_root).is_absolute():
+            raise ValueError("PIT evidence archive verifier root is missing")
+        verified_archive_evidence = verify_accumulation_archive(archive_root)
+        archive_binding_verified = (
+            verified_archive_evidence.get("evidence_sha256") == pit_evidence_sha256
+        )
         if (
             pit_evidence.get("schema_version") != "ml-stock-pit-evidence-v1"
             or pit_evidence.get("mode") != MODE
@@ -129,9 +143,17 @@ def build_data_readiness_report(
             or counts.get("verified_training_dates") != len(verified_training_dates)
         ):
             raise ValueError("PIT evidence counts mismatch")
-        evidence_verified = True
+        pit_minimum_history_verified = (
+            pit_evidence.get("minimum_60_dates_satisfied") is True
+            and pit_evidence.get("strict_pit_eligible") is True
+            and len(prospective_candidate_dates) >= 60
+            and len(verified_training_dates) >= 60
+        )
+        evidence_verified = archive_binding_verified
     dependencies = optional_ml_dependency_readiness()
     reasons: list[str] = []
+    if pit_evidence is not None and not evidence_verified:
+        reasons.append("pit_evidence_not_bound_to_archive_verifier")
     feature_buildable = all(
         bool(row.get("feature_buildable", True)) for row in candidate_snapshots
     )
@@ -154,6 +176,8 @@ def build_data_readiness_report(
         reasons.append("historical_candidate_universe_not_trusted")
     elif not historical_universe_verified:
         reasons.append("strict_pit_evidence_unverified")
+    if pit_evidence is not None and not pit_minimum_history_verified:
+        reasons.append("pit_evidence_minimum_history_not_verified")
     if label_gate_count < 60:
         reasons.append("fewer_than_60_mature_5d_excess_label_dates")
     if coverage_by_horizon["5d"] < 0.90:
@@ -163,6 +187,7 @@ def build_data_readiness_report(
     strict_pit_eligible = bool(
         evidence_verified
         and pit_evidence.get("strict_pit_eligible") is True
+        and pit_evidence.get("minimum_60_dates_satisfied") is True
         and len(verified_training_dates) >= 60
         and len(prospective_candidate_dates) >= 60
     )
@@ -189,6 +214,7 @@ def build_data_readiness_report(
         "pit_evidence_sha256": pit_evidence_sha256,
         "eligible_for_oos_claim": False,
         "promotion_allowed": False,
+        "live_trading_allowed": False,
         "minimum_requirements": {
             "candidate_snapshot_dates": 60,
             "forward_label_dates": 60,

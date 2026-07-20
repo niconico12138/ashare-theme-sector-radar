@@ -68,6 +68,23 @@ finally:
     _restore_proxy_env(_COLLECTION_PROXY_ENV)
 
 
+def test_http_compact_bar_dates_are_normalized_for_strict_linkage():
+    import unified_pipeline as up
+
+    bars = [
+        {"date": "20260719", "close": 10.0},
+        {"date": "20260720", "close": 10.5},
+    ]
+
+    normalized = up._bars_for_linkage_returns(bars, bars_source="http")
+
+    assert [bar["date"] for bar in normalized] == [
+        "2026-07-19",
+        "2026-07-20",
+    ]
+    assert bars[0]["date"] == "20260719"
+
+
 def _link_directory_or_skip(link: Path, target: Path) -> None:
     try:
         link.symlink_to(target, target_is_directory=True)
@@ -1311,6 +1328,7 @@ class TestRelevanceComputation:
             trend_top_n=1,
             burst_top_n=1,
             min_relevance=0.0,
+            include_legacy_sector_paths=True,
         )
 
         stocks = {
@@ -2296,7 +2314,10 @@ class TestSourceTransparency:
         with patch.object(bridge, "_get_http_client", return_value=mock_client):
             with patch.object(bridge, "_load_cache", return_value=None):
                 with patch.object(bridge, "_save_cache"):
-                    result = bridge.run_bridge(as_of_date="2026-07-01")
+                    result = bridge.run_bridge(
+                        as_of_date="2026-07-01",
+                        include_legacy_sector_paths=True,
+                    )
                     assert isinstance(result, dict)
                     assert "constituent_source_summary" in result
                     summary = result["constituent_source_summary"]

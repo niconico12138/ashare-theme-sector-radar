@@ -56,6 +56,8 @@ V1_FEATURE_NAMES = (
 FUTURE_OR_LABEL_FIELD_PREFIXES = (
     "future",
     "forward",
+    "label",
+    "target",
 )
 
 FUTURE_OR_LABEL_FIELD_NAMES = frozenset({

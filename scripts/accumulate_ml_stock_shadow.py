@@ -38,6 +38,7 @@ def _blocked(path: Path, *, reason: str, error: Exception | None = None) -> int:
         "reason": reason,
         "error_type": type(error).__name__ if error else None,
         "promotion_allowed": False,
+        "live_trading_allowed": False,
         "generated_at": datetime.now().astimezone().isoformat(),
         "disclaimer": "Research output only; no broker connection and no live order instruction.",
     }
@@ -111,6 +112,7 @@ def _fetch_stock_bars(
                 "source": str(result.get("source") or ""),
                 "bars": bars[code],
                 "promotion_allowed": False,
+                "live_trading_allowed": False,
                 "disclaimer": "Research output only; no broker connection and no live order instruction.",
             },
         )
@@ -175,6 +177,7 @@ def _mature_labels(
                     "signal_date": signal_date,
                     "label_snapshot_sha256": existing_sha,
                     "promotion_allowed": False,
+                    "live_trading_allowed": False,
                 }
             )
             continue
@@ -195,6 +198,7 @@ def _mature_labels(
                     "status": "pending_calendar_coverage",
                     "signal_date": signal_date,
                     "promotion_allowed": False,
+                    "live_trading_allowed": False,
                 }
             )
             continue
@@ -205,6 +209,7 @@ def _mature_labels(
                     "signal_date": signal_date,
                     "target_5d": target_5d,
                     "promotion_allowed": False,
+                    "live_trading_allowed": False,
                 }
             )
             continue
@@ -269,6 +274,7 @@ def _mature_labels(
                     "error_type": type(exc).__name__,
                     "reason": str(exc),
                     "promotion_allowed": False,
+                    "live_trading_allowed": False,
                 }
             )
     return results
@@ -321,6 +327,7 @@ def main() -> int:
                 "sha256": report_sha,
                 "generated_at": report.get("generated_at"),
                 "as_of_date": as_of_date,
+                "source": "unified_pipeline_direction_linkage_v2",
             },
             constituent_sources=constituent_sources,
             bars_by_code=bars,
@@ -362,6 +369,7 @@ def main() -> int:
             "mature_label_results": label_results,
             "readiness": readiness,
             "promotion_allowed": False,
+            "live_trading_allowed": False,
             "generated_at": datetime.now().astimezone().isoformat(),
             "disclaimer": "Research output only; no broker connection and no live order instruction.",
         }

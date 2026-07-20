@@ -312,9 +312,14 @@ def build_constituent_linkage_input_contract(
             "individual_flow_direction": stock.get(
                 "individual_flow_direction", "neutral"
             ),
-            "legacy_relevance_score": stock.get("relevance_score"),
+            "legacy_relevance_score": stock.get(
+                "legacy_relevance_score", stock.get("relevance_score")
+            ),
             "legacy_relevance_breakdown": copy.deepcopy(
-                stock.get("relevance_breakdown")
+                stock.get(
+                    "legacy_relevance_breakdown",
+                    stock.get("relevance_breakdown"),
+                )
             ),
         }
         rows.append(row)
@@ -548,6 +553,10 @@ def build_formal_candidate_selection(
     if linkage_selection.get("mode") != "paper_shadow_research_only":
         result["error"] = "Linkage V2 selection mode is not paper-only"
         return result
+    policy = linkage_selection.get("policy")
+    weights = policy.get("ranking_weights") if isinstance(policy, Mapping) else None
+    if weights != {"linkage_v2": 0.70, "quant_score": 0.30}:
+        raise ValueError("formal candidate Linkage V2 ranking weights are invalid")
 
     selected = linkage_selection.get("selected")
     if not isinstance(selected, list) or not selected:
@@ -559,15 +568,24 @@ def build_formal_candidate_selection(
         return result
 
     normalized: list[dict[str, Any]] = []
+    computed_scores: list[tuple[str, float]] = []
     seen_codes: set[str] = set()
     for rank, source in enumerate(selected, 1):
         if not isinstance(source, Mapping):
             raise ValueError("formal candidate row must be an object")
         item = copy.deepcopy(dict(source))
+        if item.get("sector_type") != "industry":
+            raise ValueError("formal candidate row must use industry sector_type")
         code = str(item.get("code") or "").strip()
         if not code or code in seen_codes:
             raise ValueError("formal candidate stock identity is invalid")
         seen_codes.add(code)
+
+        quant_score = _finite(
+            item.get("quant_score"), field="formal candidate quant_score"
+        )
+        if not 0.0 <= quant_score <= 100.0:
+            raise ValueError("formal candidate quant_score must be within [0, 100]")
 
         direction_score = item.get("sector_direction_score")
         if direction_score is None:
@@ -585,13 +603,42 @@ def build_formal_candidate_selection(
             raise ValueError("formal candidate Linkage V2 result is required")
         if linkage.get("status") not in {"ok", "partial"}:
             raise ValueError("formal candidate Linkage V2 result is unavailable")
-        _unit_interval(linkage.get("score"), field="formal candidate Linkage V2 score")
+        linkage_score = _unit_interval(
+            linkage.get("score"), field="formal candidate Linkage V2 score"
+        )
+        expected_selection_score = round(
+            0.70 * linkage_score * 100.0 + 0.30 * quant_score, 6
+        )
+        declared_selection_score = item.get("linkage_selection_score")
+        if declared_selection_score is None:
+            raise ValueError("formal candidate Linkage V2 selection score is required")
+        declared_selection_score = _finite(
+            declared_selection_score,
+            field="formal candidate Linkage V2 selection score",
+        )
+        if not math.isclose(
+            declared_selection_score,
+            expected_selection_score,
+            rel_tol=0.0,
+            abs_tol=1e-6,
+        ):
+            raise ValueError("formal candidate Linkage V2 selection score mismatch")
 
         item["formal_candidate_rank"] = rank
         item["formal_candidate_source"] = (
             "direction_score_shadow+linkage_v2_shadow"
         )
         normalized.append(item)
+        computed_scores.append((code, expected_selection_score))
+
+    expected_order = [
+        code
+        for code, _score in sorted(
+            computed_scores, key=lambda row: (-row[1], row[0])
+        )
+    ]
+    if [str(item["code"]) for item in normalized] != expected_order:
+        raise ValueError("formal candidate Linkage V2 selection order mismatch")
 
     result.update(
         {

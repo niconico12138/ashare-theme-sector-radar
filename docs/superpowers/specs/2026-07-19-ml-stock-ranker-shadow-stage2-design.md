@@ -48,3 +48,26 @@ walk-forward prediction universe back to the verified archive and dataset SHA. A
 outputs are shadow reports.
 
 Raw prediction distributions, not daily percentile means, drive prediction drift.
+
+## Historical Reconstruction Research Extension (2026-07-20)
+
+The independent historical reconstruction branch reads archived candidate pools,
+verified forward-return files, and the explicit A-share trading calendar. It is a
+paper/shadow research path only. It uses the separate `stability_core_v1` feature
+profile when requested and never feeds the formal predictor or protected score
+fields. Historical reconstruction remains `strict_pit_eligible=false`,
+`eligible_for_oos_claim=false`, `promotion_allowed=false`, and
+`live_trading_allowed=false`.
+
+The branch supports expanding and rolling walk-forward windows, immutable input SHA
+binding, fail-closed immature labels, and explicit rejection of historical research
+bundles by the formal model loader. This extension does not alter the formal
+candidate-selection architecture.
+
+The credibility follow-up requires deterministic replay of every declared historical
+walk-forward experiment before metrics are accepted. ML/universe metrics use the full
+labeled prediction universe; rule comparisons use a separately disclosed baseline-
+available intersection. Five-day labels are arithmetically replayed from `close_t` and
+`close_5d`, checked against the trading-calendar maturity boundary, and explicitly
+classified as source-bar-not-content-addressed. They therefore remain historical
+reconstruction evidence and cannot satisfy strict PIT or OOS gates.
