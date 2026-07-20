@@ -1,0 +1,57 @@
+{
+  "schema_version": "ml-industry-sector-shadow-model-v1",
+  "mode": "paper_shadow_research_only",
+  "status": "research_only",
+  "dataset_classification": "real_historical_reconstruction_research",
+  "feature_profile": "time_series_market_v1",
+  "feature_names": [
+    "momentum_1d",
+    "momentum_3d",
+    "momentum_5d",
+    "momentum_10d",
+    "momentum_20d",
+    "volatility_5d",
+    "volatility_20d",
+    "drawdown_20d",
+    "market_return_1d",
+    "market_return_5d",
+    "market_breadth_1d",
+    "market_dispersion_1d",
+    "market_volatility_20d"
+  ],
+  "dataset_sha256": "4fb067baad7ff654f0109d16adbf74fa1bc85414152029340726b4ff1cc7c5a3",
+  "experiment": {
+    "min_train_dates": 60,
+    "test_dates": 10,
+    "purge_dates": 5,
+    "max_train_dates": null,
+    "n_estimators": 40,
+    "learning_rate": 0.05,
+    "num_leaves": 15,
+    "random_state": 20260720,
+    "feature_value_mode": "raw",
+    "rule_gate_threshold": 50.0,
+    "top_k_values": [
+      3,
+      5,
+      7
+    ],
+    "evaluation_start": null,
+    "evaluation_end": null,
+    "transaction_cost_bps": 0.0
+  },
+  "model_artifact": {
+    "path": "model.txt",
+    "sha256": "cacce539d817f026b2dfdbf757da9363ae829bb7a227bc27af37573f8f9dc177"
+  },
+  "strict_pit_eligible": false,
+  "eligible_for_oos_claim": false,
+  "promotion_allowed": false,
+  "live_trading_allowed": false,
+  "formal_predictor_compatible": false,
+  "agent_interface": {
+    "enabled": false,
+    "status": "reserved_not_run"
+  },
+  "disclaimer": "Research output only; no broker connection and no live order instruction."
+}

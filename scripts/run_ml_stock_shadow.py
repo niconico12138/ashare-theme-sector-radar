@@ -41,7 +41,12 @@ def main() -> int:
 
     try:
         source, source_sha = load_strict_json_with_sha256(args.feature_source)
-        rows = build_feature_rows_from_source(source, as_of_date=args.as_of)
+        rows = build_feature_rows_from_source(
+            source,
+            as_of_date=args.as_of,
+            allow_fixture=args.allow_fixture,
+            source_identity={"path": str(args.feature_source.resolve()), "sha256": source_sha},
+        )
         model = load_model_bundle(
             args.model_dir,
             expected_registry_sha256=args.expected_registry_sha256,

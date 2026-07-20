@@ -1,0 +1,34 @@
+{
+  "schema_version": "ml-industry-sector-shadow-model-v1",
+  "mode": "paper_shadow_research_only",
+  "status": "research_only",
+  "dataset_classification": "real_historical_reconstruction_research",
+  "feature_profile": "time_series_only_v1",
+  "feature_names": [
+    "momentum_1d",
+    "momentum_3d",
+    "momentum_5d",
+    "momentum_10d",
+    "momentum_20d",
+    "volatility_5d",
+    "volatility_20d",
+    "drawdown_20d",
+    "volume_change_5d",
+    "amount_change_5d"
+  ],
+  "dataset_sha256": "4fb067baad7ff654f0109d16adbf74fa1bc85414152029340726b4ff1cc7c5a3",
+  "model_artifact": {
+    "path": "model.txt",
+    "sha256": "453d9223e7ae6f54b32d9ce6db33dbaf909211c2d061fa61cbc57cd1c7f816fe"
+  },
+  "strict_pit_eligible": false,
+  "eligible_for_oos_claim": false,
+  "promotion_allowed": false,
+  "live_trading_allowed": false,
+  "formal_predictor_compatible": false,
+  "agent_interface": {
+    "enabled": false,
+    "status": "reserved_not_run"
+  },
+  "disclaimer": "Research output only; no broker connection and no live order instruction."
+}

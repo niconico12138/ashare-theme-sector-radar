@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import argparse
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 import sys
 
@@ -18,6 +18,11 @@ from theme_sector_radar.ml.accumulation import (
 )
 from theme_sector_radar.ml.dataset import build_training_dataset, validate_training_dataset
 from theme_sector_radar.ml.evaluation import evaluate_rule_vs_ml_shadow
+from theme_sector_radar.ml.experiment import (
+    build_effective_experiment_config,
+    experiment_config_sha256,
+    validate_experiment_config,
+)
 from theme_sector_radar.ml.ranker import train_lambdarank, walk_forward_ranker_predictions
 from theme_sector_radar.ml.registry import save_model_bundle
 from theme_sector_radar.ml.contract import canonical_sha256, optional_ml_dependency_readiness
@@ -29,7 +34,15 @@ from theme_sector_radar.reporting.strict_json import (
 )
 
 
-def _write_blocked(output_root: Path, readiness: dict, *, reason: str) -> int:
+def _write_blocked(
+    output_root: Path,
+    readiness: dict,
+    *,
+    reason: str,
+    experiment_config: dict | None = None,
+    experiment_sha256: str | None = None,
+    experiment_file_sha256: str | None = None,
+) -> int:
     output_root.mkdir(parents=True, exist_ok=True)
     write_strict_json_atomic(
         output_root / "readiness.json",
@@ -41,7 +54,18 @@ def _write_blocked(output_root: Path, readiness: dict, *, reason: str) -> int:
         "status": "blocked",
         "reason": reason,
         "readiness": readiness,
+        "experiment": (
+            {
+                "config": experiment_config,
+                "config_sha256": experiment_sha256,
+                "file_sha256": experiment_file_sha256,
+            }
+            if experiment_config is not None
+            else None
+        ),
+        "eligible_for_oos_claim": False,
         "promotion_allowed": False,
+        "live_trading_allowed": False,
         "generated_at": datetime.now().astimezone().isoformat(),
         "disclaimer": DISCLAIMER,
     }
@@ -57,17 +81,65 @@ def main() -> int:
     parser.add_argument("--output-root", required=True, type=Path)
     parser.add_argument("--model-dir", required=True, type=Path)
     parser.add_argument("--model-version", required=True)
-    parser.add_argument("--min-train-dates", type=int, default=60)
-    parser.add_argument("--test-dates", type=int, default=20)
-    parser.add_argument("--purge-dates", type=int, default=5)
-    parser.add_argument("--n-estimators", type=int, default=80)
-    parser.add_argument("--hybrid-quant-weight", type=float, default=0.65)
-    parser.add_argument("--hybrid-linkage-weight", type=float, default=0.35)
-    parser.add_argument("--hybrid-partial-linkage-weight", type=float, default=0.20)
+    parser.add_argument(
+        "--experiment-config",
+        type=Path,
+        default=PROJECT_ROOT / "config" / "ml_stock_ranker_v1.json",
+    )
+    parser.add_argument("--min-train-dates", type=int, default=None)
+    parser.add_argument("--test-dates", type=int, default=None)
+    parser.add_argument("--purge-dates", type=int, default=None)
+    parser.add_argument("--n-estimators", type=int, default=None)
+    parser.add_argument("--hybrid-quant-weight", type=float, default=None)
+    parser.add_argument("--hybrid-linkage-weight", type=float, default=None)
+    parser.add_argument("--hybrid-partial-linkage-weight", type=float, default=None)
     parser.add_argument("--sector-history-root", type=Path, default=None)
     args = parser.parse_args()
 
     try:
+        experiment_config, experiment_file_sha = load_strict_json_with_sha256(
+            args.experiment_config
+        )
+        experiment_config = validate_experiment_config(experiment_config)
+        experiment_config = build_effective_experiment_config(
+            experiment_config,
+            split_overrides={
+                key: value
+                for key, value in {
+                    "min_train_dates": args.min_train_dates,
+                    "test_dates": args.test_dates,
+                    "purge_dates": args.purge_dates,
+                }.items()
+                if value is not None
+            },
+            model_overrides=(
+                {"n_estimators": args.n_estimators}
+                if args.n_estimators is not None
+                else None
+            ),
+            baseline_overrides={
+                key: value
+                for key, value in {
+                    "hybrid_quant_weight": args.hybrid_quant_weight,
+                    "hybrid_linkage_weight": args.hybrid_linkage_weight,
+                    "hybrid_partial_linkage_weight": args.hybrid_partial_linkage_weight,
+                }.items()
+                if value is not None
+            },
+        )
+        experiment_sha = experiment_config_sha256(experiment_config)
+        split_config = experiment_config["split"]
+        model_config = experiment_config["model"]
+        baseline_config = experiment_config["baseline"]
+        min_train_dates = int(split_config["min_train_dates"])
+        test_dates = int(split_config["test_dates"])
+        purge_dates = int(split_config["purge_dates"])
+        n_estimators = int(model_config["n_estimators"])
+        hybrid_quant_weight = float(baseline_config["hybrid_quant_weight"])
+        hybrid_linkage_weight = float(baseline_config["hybrid_linkage_weight"])
+        hybrid_partial_linkage_weight = float(
+            baseline_config["hybrid_partial_linkage_weight"]
+        )
         readiness = build_archive_readiness_report(
             args.archive_root,
             sector_history_date_count=(
@@ -81,6 +153,9 @@ def main() -> int:
                 args.output_root,
                 readiness,
                 reason="readiness_gate_blocked_training",
+                experiment_config=experiment_config,
+                experiment_sha256=experiment_sha,
+                experiment_file_sha256=experiment_file_sha,
             )
         dependencies = optional_ml_dependency_readiness()
         if dependencies["status"] != "ready":
@@ -91,6 +166,9 @@ def main() -> int:
                 args.output_root,
                 readiness,
                 reason="optional_ml_dependencies_missing",
+                experiment_config=experiment_config,
+                experiment_sha256=experiment_sha,
+                experiment_file_sha256=experiment_file_sha,
             )
 
         loaded = load_verified_training_inputs(args.archive_root)
@@ -104,12 +182,14 @@ def main() -> int:
             "strict_pit_eligible": True,
             "pit_evidence_sha256": evidence["evidence_sha256"],
             "hybrid_defaults": {
-                "quant_weight": args.hybrid_quant_weight,
-                "linkage_v2_weight": args.hybrid_linkage_weight,
-                "partial_linkage_v2_weight": args.hybrid_partial_linkage_weight,
+                "quant_weight": hybrid_quant_weight,
+                "linkage_v2_weight": hybrid_linkage_weight,
+                "partial_linkage_v2_weight": hybrid_partial_linkage_weight,
             },
             "records": loaded["baseline_rows"],
+            "eligible_for_oos_claim": False,
             "promotion_allowed": False,
+            "live_trading_allowed": False,
             "generated_at": datetime.now().astimezone().isoformat(),
             "disclaimer": DISCLAIMER,
         }
@@ -131,6 +211,11 @@ def main() -> int:
                     "path": str(baseline_path.resolve()),
                     "sha256": baseline_sha,
                 },
+                "experiment_config": {
+                    "path": str(args.experiment_config.resolve()),
+                    "sha256": experiment_file_sha,
+                    "config_sha256": experiment_sha,
+                },
             },
             pit_evidence=evidence,
         )
@@ -141,17 +226,24 @@ def main() -> int:
         walk_forward = walk_forward_ranker_predictions(
             records,
             prediction_universe_records=list(dataset_loaded["feature_universe_records"]),
-            min_train_dates=args.min_train_dates,
-            test_dates=args.test_dates,
-            purge_dates=args.purge_dates,
+            min_train_dates=min_train_dates,
+            test_dates=test_dates,
+            purge_dates=purge_dates,
             max_label_horizon=5,
-            n_estimators=args.n_estimators,
+            n_estimators=n_estimators,
+            relevance_levels=int(model_config["relevance_levels"]),
+            learning_rate=float(model_config["learning_rate"]),
+            num_leaves=int(model_config["num_leaves"]),
+            random_state=int(model_config["random_state"]),
         )
         if walk_forward.get("status") != "ok":
             return _write_blocked(
                 args.output_root,
                 readiness,
                 reason=str(walk_forward.get("reason") or "walk_forward_blocked"),
+                experiment_config=experiment_config,
+                experiment_sha256=experiment_sha,
+                experiment_file_sha256=experiment_file_sha,
             )
         prediction_rows = list(walk_forward["predictions"])
         prediction_identities = {
@@ -173,6 +265,12 @@ def main() -> int:
             "eligible_for_oos_claim": False,
             "dataset_sha256": dataset_loaded["dataset_sha256"],
             "dataset_file_sha256": dataset_file_sha,
+            "experiment": {
+                "config_path": str(args.experiment_config.resolve()),
+                "config_sha256": experiment_sha,
+                "file_sha256": experiment_file_sha,
+                "config": experiment_config,
+            },
             "split": {
                 "type": walk_forward["split_type"],
                 "min_train_dates": walk_forward["min_train_dates"],
@@ -186,7 +284,9 @@ def main() -> int:
                 prediction_universe_rows
             ),
             "predictions": prediction_rows,
+            "eligible_for_oos_claim": False,
             "promotion_allowed": False,
+            "live_trading_allowed": False,
             "generated_at": datetime.now().astimezone().isoformat(),
             "disclaimer": DISCLAIMER,
         }
@@ -206,13 +306,20 @@ def main() -> int:
             top_ks=(10, 20, 30),
             horizons=(1, 3, 5),
             baseline_strict_pit_eligible=True,
-            hybrid_quant_weight=args.hybrid_quant_weight,
-            hybrid_linkage_weight=args.hybrid_linkage_weight,
-            hybrid_partial_linkage_weight=args.hybrid_partial_linkage_weight,
+            hybrid_quant_weight=hybrid_quant_weight,
+            hybrid_linkage_weight=hybrid_linkage_weight,
+            hybrid_partial_linkage_weight=hybrid_partial_linkage_weight,
         )
         evaluation_path = args.output_root / "evaluation.json"
         write_strict_json_atomic(evaluation_path, evaluation)
-        trained = train_lambdarank(records, n_estimators=args.n_estimators)
+        trained = train_lambdarank(
+            records,
+            relevance_levels=int(model_config["relevance_levels"]),
+            n_estimators=n_estimators,
+            learning_rate=float(model_config["learning_rate"]),
+            num_leaves=int(model_config["num_leaves"]),
+            random_state=int(model_config["random_state"]),
+        )
         bundle = save_model_bundle(
             trained,
             args.model_dir,
@@ -220,10 +327,12 @@ def main() -> int:
             dataset_sha256=dataset_loaded["dataset_sha256"],
             strict_pit_eligible=True,
             dataset_classification="observed_research",
-            model_available_from=max(
-                str(row["training_label_end_date"]) for row in records
-            ),
+            model_available_from=(
+                datetime.now().astimezone().date() + timedelta(days=1)
+            ).isoformat(),
             pit_evidence=evidence,
+            experiment_config=experiment_config,
+            experiment_config_sha256=experiment_sha,
         )
         training_report = {
             "schema_version": "ml-stock-training-report-v1",
@@ -248,12 +357,19 @@ def main() -> int:
                 "sha256": walk_forward_sha,
                 "fold_count": len(walk_forward["folds"]),
                 "prediction_count": len(walk_forward["predictions"]),
-                "purge_dates": args.purge_dates,
+                "purge_dates": purge_dates,
             },
             "evaluation": {"path": str(evaluation_path)},
+            "experiment": {
+                "config_path": str(args.experiment_config.resolve()),
+                "config_sha256": experiment_sha,
+                "file_sha256": experiment_file_sha,
+                "config": experiment_config,
+            },
             "strict_pit_eligible": True,
             "eligible_for_oos_claim": False,
             "promotion_allowed": False,
+            "live_trading_allowed": False,
             "generated_at": datetime.now().astimezone().isoformat(),
             "disclaimer": DISCLAIMER,
         }
@@ -266,7 +382,14 @@ def main() -> int:
             "readiness": readiness,
             "training_report": str(args.output_root / "training_report.json"),
             "evaluation_report": str(evaluation_path),
+            "experiment": {
+                "config_path": str(args.experiment_config.resolve()),
+                "config_sha256": experiment_sha,
+                "file_sha256": experiment_file_sha,
+            },
+            "eligible_for_oos_claim": False,
             "promotion_allowed": False,
+            "live_trading_allowed": False,
             "generated_at": datetime.now().astimezone().isoformat(),
             "disclaimer": DISCLAIMER,
         }
@@ -284,7 +407,9 @@ def main() -> int:
                 "model_training_ready": False,
                 "strict_pit_eligible": False,
                 "blocking_reasons": ["training_cycle_exception_fail_closed"],
+                "eligible_for_oos_claim": False,
                 "promotion_allowed": False,
+                "live_trading_allowed": False,
                 "disclaimer": DISCLAIMER,
             },
             reason="training_cycle_exception_fail_closed",

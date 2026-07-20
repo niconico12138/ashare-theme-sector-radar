@@ -10,8 +10,19 @@ import sys
 import pytest
 
 
+@pytest.fixture
+def capture_time(monkeypatch):
+    def set_capture_time(value: datetime) -> None:
+        monkeypatch.setattr(
+            "theme_sector_radar.ml.accumulation._capture_now",
+            lambda value=value: value,
+        )
+
+    return set_capture_time
+
+
 def _candidate(code: str, *, quant: float, linkage_status: str, linkage: float | None):
-    return {
+    candidate = {
         "code": code,
         "name": f"stock-{code}",
         "sector_name": "医疗服务",
@@ -31,6 +42,11 @@ def _candidate(code: str, *, quant: float, linkage_status: str, linkage: float |
             "components": {},
         },
     }
+    if linkage is not None:
+        candidate["linkage_selection_score"] = round(
+            0.70 * linkage * 100.0 + 0.30 * quant, 6
+        )
+    return candidate
 
 
 def test_extract_candidate_snapshot_uses_active_direction_linkage_selection_only():
@@ -45,6 +61,7 @@ def test_extract_candidate_snapshot_uses_active_direction_linkage_selection_only
         "direction_linkage_v2_selection_shadow": {
             "schema_version": "direction_linkage_v2_selection_shadow.v1",
             "mode": "paper_shadow_research_only",
+            "policy": {"ranking_weights": {"linkage_v2": 0.70, "quant_score": 0.30}},
             "selected_count": 2,
             "selected": [
                 _candidate("000001", quant=80.0, linkage_status="ok", linkage=0.7),
@@ -117,6 +134,33 @@ def test_extract_candidate_snapshot_rejects_formal_selection_count_drift():
         )
 
 
+def test_archive_capture_time_is_not_caller_injectable():
+    import inspect
+
+    from theme_sector_radar.ml.accumulation import (
+        archive_daily_snapshot,
+        archive_mature_label_snapshot,
+    )
+
+    assert "captured_at" not in inspect.signature(archive_daily_snapshot).parameters
+    assert "captured_at" not in inspect.signature(
+        archive_mature_label_snapshot
+    ).parameters
+
+
+def test_candidate_selection_requires_replayable_policy_contract():
+    from theme_sector_radar.ml.accumulation import extract_candidate_snapshot
+
+    report = _active_report()
+    report["direction_linkage_v2_selection_shadow"]["policy"]["ranking_weights"] = {
+        "linkage_v2": 0.4,
+        "quant_score": 0.6,
+    }
+
+    with pytest.raises(ValueError, match="ranking weights|selection contract"):
+        extract_candidate_snapshot(report)
+
+
 def _bars(as_of: str, *, count: int = 25):
     from datetime import date, timedelta
 
@@ -142,18 +186,35 @@ def _bars(as_of: str, *, count: int = 25):
 
 
 def _active_report(as_of: str = "2026-07-16"):
+    from theme_sector_radar.scoring.stock_sector_linkage import (
+        build_formal_candidate_selection,
+    )
+
+    linkage = {
+        "schema_version": "direction_linkage_v2_selection_shadow.v1",
+        "mode": "paper_shadow_research_only",
+        "policy": {"ranking_weights": {"linkage_v2": 0.70, "quant_score": 0.30}},
+        "selected_count": 2,
+        "selected": [
+            _candidate("000001", quant=80.0, linkage_status="ok", linkage=0.7),
+            _candidate("000002", quant=60.0, linkage_status="partial", linkage=0.4),
+        ],
+    }
+    direction_source = {
+        "status": "ok",
+        "mode": "paper_shadow_research_only",
+        "path": "direction.json",
+        "sha256": "a" * 64,
+    }
+    formal = build_formal_candidate_selection(
+        direction_source=direction_source,
+        linkage_selection=linkage,
+    )
     return {
         "as_of_date": as_of,
         "candidate_chain": "direction_linkage_v2",
-        "direction_linkage_v2_selection_shadow": {
-            "schema_version": "direction_linkage_v2_selection_shadow.v1",
-            "mode": "paper_shadow_research_only",
-            "selected_count": 2,
-            "selected": [
-                _candidate("000001", quant=80.0, linkage_status="ok", linkage=0.7),
-                _candidate("000002", quant=60.0, linkage_status="partial", linkage=0.4),
-            ],
-        },
+        "direction_linkage_v2_selection_shadow": linkage,
+        "formal_candidate_selection": formal,
     }
 
 
@@ -186,6 +247,7 @@ def _physical_daily_sources(
             "as_of_date": as_of,
             "sector_name": sector_name,
             "sector_type": sector_type,
+            "source": "http_em",
             "stocks": [{"code": str(row["code"])} for row in selected],
         },
     )
@@ -199,7 +261,7 @@ def _physical_daily_sources(
         {
             "schema_version": "a_share_trading_calendar.v1",
             "market": "CN_A",
-            "source": "prospective-unit-test-calendar",
+            "source": "akshare.tool_trade_date_hist_sina",
             "requested_start": calendar_dates[0],
             "requested_end": calendar_dates[-1],
             "dates": calendar_dates,
@@ -213,6 +275,7 @@ def _physical_daily_sources(
             "sha256": candidate_sha,
             "generated_at": generated_at,
             "as_of_date": as_of,
+            "source": "unified_pipeline_direction_linkage_v2",
         },
         "constituent_sources": [
             {
@@ -221,6 +284,7 @@ def _physical_daily_sources(
                 "as_of_date": as_of,
                 "sector_name": sector_name,
                 "sector_type": sector_type,
+                "source": "http_em",
             }
         ],
         "trading_calendar": calendar,
@@ -247,8 +311,8 @@ def _physical_label_source(
         write_strict_json_atomic(path, {"stock_code": code, "bars": rows})
         _payload, sha256 = load_strict_json_with_sha256(path)
         stock_sources[code] = {
-            "requested_source": "prospective-unit-test",
-            "actual_source": "prospective-unit-test",
+            "requested_source": "stockdb-sdk",
+            "actual_source": "stockdb-sdk",
             "path": str(path.resolve()),
             "sha256": sha256,
         }
@@ -258,16 +322,22 @@ def _physical_label_source(
         path = source_root / "sectors" / f"{filename}.json"
         write_strict_json_atomic(
             path,
-            {"sector_name": sector_name, "sector_type": "industry", "records": rows},
+            {
+                "sector_name": sector_name,
+                "sector_type": "industry",
+                "source": "sector_history/ths_industry_index",
+                "records": rows,
+            },
         )
         _payload, sha256 = load_strict_json_with_sha256(path)
         sector_sources[sector_name] = {
             "sector_type": "industry",
+            "source": "sector_history/ths_industry_index",
             "path": str(path.resolve()),
             "sha256": sha256,
         }
     return {
-        "provider": "prospective-unit-test",
+        "provider": "stockdb-sdk",
         "adjustment": "qfq",
         "frequency": "1d",
         "query_end": label_as_of_date,
@@ -281,7 +351,7 @@ def _physical_daily_bars_source(
     *,
     as_of: str,
     bars_by_code: dict,
-    provider: str = "prospective-unit-test",
+    provider: str = "stockdb-sdk",
 ):
     from theme_sector_radar.reporting.strict_json import (
         load_strict_json_with_sha256,
@@ -316,7 +386,9 @@ def _physical_daily_bars_source(
     }
 
 
-def test_daily_snapshot_archive_is_prospective_content_bound_and_immutable(tmp_path):
+def test_daily_snapshot_archive_is_prospective_content_bound_and_immutable(
+    tmp_path, capture_time
+):
     from theme_sector_radar.ml.accumulation import archive_daily_snapshot
 
     as_of = "2026-07-16"
@@ -348,9 +420,9 @@ def test_daily_snapshot_archive_is_prospective_content_bound_and_immutable(tmp_p
         "bars_by_code": bars_by_code,
         "bars_source": bars_source,
         "trading_calendar": physical["trading_calendar"],
-        "captured_at": datetime(2026, 7, 16, 18, 0, tzinfo=timezone.utc),
     }
 
+    capture_time(datetime(2026, 7, 16, 18, 0, tzinfo=timezone.utc))
     created = archive_daily_snapshot(**kwargs)
     repeated = archive_daily_snapshot(**kwargs)
 
@@ -367,7 +439,7 @@ def test_daily_snapshot_archive_is_prospective_content_bound_and_immutable(tmp_p
         "000002",
     }
     assert all(
-        row["actual_source"] == "prospective-unit-test"
+        row["actual_source"] == "stockdb-sdk"
         and row["query_end"] == as_of
         and len(row["bars_sha256"]) == 64
         for row in created["snapshot"]["bars_source_by_code"].values()
@@ -387,7 +459,67 @@ def test_daily_snapshot_archive_is_prospective_content_bound_and_immutable(tmp_p
         archive_daily_snapshot(**changed)
 
 
-def test_relative_source_identities_can_never_claim_strict_pit(tmp_path):
+@pytest.mark.parametrize(
+    ("fixture_target", "expected_reason"),
+    (
+        ("candidate", "candidate_source_not_approved_for_observed_research"),
+        ("constituent", "constituent_source_not_approved_for_observed_research"),
+        ("bars", "daily_bars_source_not_approved_for_observed_research"),
+    ),
+)
+def test_fixture_sources_can_never_claim_prospective_pit(
+    tmp_path, fixture_target, expected_reason, capture_time
+):
+    from theme_sector_radar.ml.accumulation import archive_daily_snapshot
+
+    as_of = "2026-07-16"
+    report = _active_report(as_of)
+    physical = _physical_daily_sources(
+        tmp_path,
+        as_of=as_of,
+        report=report,
+        calendar_dates=[
+            as_of,
+            "2026-07-17",
+            "2026-07-20",
+            "2026-07-21",
+            "2026-07-22",
+            "2026-07-23",
+        ],
+        generated_at="2026-07-16T16:30:00+08:00",
+    )
+    bars_by_code = {"000001": _bars(as_of), "000002": _bars(as_of)}
+    bars_source = _physical_daily_bars_source(
+        tmp_path, as_of=as_of, bars_by_code=bars_by_code
+    )
+    if fixture_target == "candidate":
+        physical["candidate_source"]["source"] = "synthetic_fixture"
+    elif fixture_target == "constituent":
+        physical["constituent_sources"][0]["source"] = "fixture"
+    else:
+        bars_source = _physical_daily_bars_source(
+            tmp_path,
+            as_of=as_of,
+            bars_by_code=bars_by_code,
+            provider="synthetic_fixture",
+        )
+
+    capture_time(datetime(2026, 7, 16, 18, 0, tzinfo=timezone.utc))
+    captured = archive_daily_snapshot(
+        archive_root=tmp_path / "archive",
+        candidate_report=report,
+        candidate_source=physical["candidate_source"],
+        constituent_sources=physical["constituent_sources"],
+        bars_by_code=bars_by_code,
+        bars_source=bars_source,
+        trading_calendar=physical["trading_calendar"],
+    )
+
+    assert captured["snapshot"]["strict_pit_eligible"] is False
+    assert expected_reason in captured["snapshot"]["pit_blocking_reasons"]
+
+
+def test_relative_source_identities_can_never_claim_strict_pit(tmp_path, capture_time):
     from theme_sector_radar.ml.accumulation import archive_daily_snapshot
 
     as_of = "2026-07-16"
@@ -395,6 +527,7 @@ def test_relative_source_identities_can_never_claim_strict_pit(tmp_path):
     sector_name = report["direction_linkage_v2_selection_shadow"]["selected"][0][
         "sector_name"
     ]
+    capture_time(datetime(2026, 7, 16, 18, 0, tzinfo=timezone.utc))
     result = archive_daily_snapshot(
         archive_root=tmp_path,
         candidate_report=report,
@@ -434,7 +567,6 @@ def test_relative_source_identities_can_never_claim_strict_pit(tmp_path):
             "requested_start": as_of,
             "requested_end": "2026-07-23",
         },
-        captured_at=datetime(2026, 7, 16, 18, 0, tzinfo=timezone.utc),
     )
 
     assert result["snapshot"]["strict_pit_eligible"] is False
@@ -445,7 +577,9 @@ def test_relative_source_identities_can_never_claim_strict_pit(tmp_path):
     }
 
 
-def test_physical_candidate_source_must_reproduce_the_passed_selection(tmp_path):
+def test_physical_candidate_source_must_reproduce_the_passed_selection(
+    tmp_path, capture_time
+):
     from theme_sector_radar.ml.accumulation import archive_daily_snapshot
     from theme_sector_radar.reporting.strict_json import (
         load_strict_json_with_sha256,
@@ -481,7 +615,11 @@ def test_physical_candidate_source_must_reproduce_the_passed_selection(tmp_path)
         tmp_path, as_of=as_of, bars_by_code=bars_by_code
     )
 
-    with pytest.raises(ValueError, match="candidate source contents"):
+    capture_time(datetime(2026, 7, 16, 18, 0, tzinfo=timezone.utc))
+    with pytest.raises(
+        ValueError,
+        match="formal candidate selection contract|candidate source contents",
+    ):
         archive_daily_snapshot(
             archive_root=tmp_path / "archive",
             candidate_report=report,
@@ -490,11 +628,12 @@ def test_physical_candidate_source_must_reproduce_the_passed_selection(tmp_path)
             bars_by_code=bars_by_code,
             bars_source=bars_source,
             trading_calendar=physical["trading_calendar"],
-            captured_at=datetime(2026, 7, 16, 18, 0, tzinfo=timezone.utc),
         )
 
 
-def test_archive_verifier_recomputes_pit_status_instead_of_trusting_flag(tmp_path):
+def test_archive_verifier_recomputes_pit_status_instead_of_trusting_flag(
+    tmp_path, capture_time
+):
     from theme_sector_radar.ml.accumulation import (
         archive_daily_snapshot,
         verify_accumulation_archive,
@@ -538,8 +677,8 @@ def test_archive_verifier_recomputes_pit_status_instead_of_trusting_flag(tmp_pat
             "requested_start": as_of,
             "requested_end": "2026-07-23",
         },
-        "captured_at": datetime(2026, 7, 18, 18, 0, tzinfo=timezone.utc),
     }
+    capture_time(datetime(2026, 7, 18, 18, 0, tzinfo=timezone.utc))
     archive_daily_snapshot(**kwargs)
     snapshot_path = tmp_path / "snapshots" / f"{as_of}.json"
     snapshot, _ = load_strict_json_with_sha256(snapshot_path)
@@ -563,10 +702,11 @@ def test_archive_verifier_recomputes_pit_status_instead_of_trusting_flag(tmp_pat
         verify_accumulation_archive(tmp_path)
 
 
-def test_historical_daily_snapshot_never_claims_strict_pit(tmp_path):
+def test_historical_daily_snapshot_never_claims_strict_pit(tmp_path, capture_time):
     from theme_sector_radar.ml.accumulation import archive_daily_snapshot
 
     as_of = "2026-07-16"
+    capture_time(datetime(2026, 7, 18, 18, 0, tzinfo=timezone.utc))
     result = archive_daily_snapshot(
         archive_root=tmp_path,
         candidate_report=_active_report(as_of),
@@ -598,7 +738,6 @@ def test_historical_daily_snapshot_never_claims_strict_pit(tmp_path):
             "requested_start": as_of,
             "requested_end": "2026-07-23",
         },
-        captured_at=datetime(2026, 7, 18, 18, 0, tzinfo=timezone.utc),
     )
 
     assert result["snapshot"]["strict_pit_eligible"] is False
@@ -615,7 +754,9 @@ def test_historical_daily_snapshot_never_claims_strict_pit(tmp_path):
     assert readiness["historical_candidate_universe_verified"] is False
 
 
-def test_same_day_naive_source_time_uses_timezone_aware_archive_witness(tmp_path):
+def test_same_day_naive_source_time_uses_timezone_aware_archive_witness(
+    tmp_path, capture_time
+):
     from theme_sector_radar.ml.accumulation import archive_daily_snapshot
 
     as_of = "2026-07-16"
@@ -639,6 +780,7 @@ def test_same_day_naive_source_time_uses_timezone_aware_archive_witness(tmp_path
     bars_source = _physical_daily_bars_source(
         tmp_path, as_of=as_of, bars_by_code=bars_by_code
     )
+    capture_time(datetime(2026, 7, 16, 18, 0, tzinfo=timezone.utc))
     result = archive_daily_snapshot(
         archive_root=tmp_path,
         candidate_report=report,
@@ -647,7 +789,6 @@ def test_same_day_naive_source_time_uses_timezone_aware_archive_witness(tmp_path
         candidate_source=physical["candidate_source"],
         constituent_sources=physical["constituent_sources"],
         trading_calendar=physical["trading_calendar"],
-        captured_at=datetime(2026, 7, 16, 18, 0, tzinfo=timezone.utc),
     )
 
     assert result["snapshot"]["strict_pit_eligible"] is True
@@ -659,7 +800,9 @@ def test_same_day_naive_source_time_uses_timezone_aware_archive_witness(tmp_path
     assert result["snapshot"]["pit_blocking_reasons"] == []
 
 
-def test_label_archive_waits_for_five_day_maturity_then_binds_snapshot(tmp_path):
+def test_label_archive_waits_for_five_day_maturity_then_binds_snapshot(
+    tmp_path, capture_time
+):
     from theme_sector_radar.ml.accumulation import (
         archive_daily_snapshot,
         archive_mature_label_snapshot,
@@ -687,6 +830,7 @@ def test_label_archive_waits_for_five_day_maturity_then_binds_snapshot(tmp_path)
         tmp_path, as_of=as_of, bars_by_code=feature_bars
     )
     calendar = physical["trading_calendar"]
+    capture_time(datetime(2026, 7, 16, 18, 0, tzinfo=timezone.utc))
     archived = archive_daily_snapshot(
         archive_root=tmp_path,
         candidate_report=report,
@@ -695,7 +839,6 @@ def test_label_archive_waits_for_five_day_maturity_then_binds_snapshot(tmp_path)
         bars_by_code=feature_bars,
         bars_source=feature_bars_source,
         trading_calendar=calendar,
-        captured_at=datetime(2026, 7, 16, 18, 0, tzinfo=timezone.utc),
     )
     prices = {
         code: [
@@ -718,6 +861,7 @@ def test_label_archive_waits_for_five_day_maturity_then_binds_snapshot(tmp_path)
         sector_prices=sector_prices,
     )
 
+    capture_time(datetime(2026, 7, 22, 18, 0, tzinfo=timezone.utc))
     pending = archive_mature_label_snapshot(
         archive_root=tmp_path,
         signal_date=as_of,
@@ -730,15 +874,16 @@ def test_label_archive_waits_for_five_day_maturity_then_binds_snapshot(tmp_path)
             "frequency": "1d",
             "query_end": "2026-07-22",
         },
-        captured_at=datetime(2026, 7, 22, 18, 0, tzinfo=timezone.utc),
     )
     assert pending == {
         "status": "pending_label_maturity",
         "signal_date": as_of,
         "target_5d": "2026-07-23",
         "promotion_allowed": False,
+        "live_trading_allowed": False,
     }
 
+    capture_time(datetime(2026, 7, 23, 18, 0, tzinfo=timezone.utc))
     mature = archive_mature_label_snapshot(
         archive_root=tmp_path,
         signal_date=as_of,
@@ -746,7 +891,6 @@ def test_label_archive_waits_for_five_day_maturity_then_binds_snapshot(tmp_path)
         stock_bars_by_code=prices,
         sector_bars_by_name=sector_prices,
         label_source=mature_label_source,
-        captured_at=datetime(2026, 7, 23, 18, 0, tzinfo=timezone.utc),
     )
     assert mature["status"] == "captured"
     assert mature["label_snapshot"]["feature_snapshot_sha256"] == archived[
@@ -828,7 +972,9 @@ def test_label_archive_waits_for_five_day_maturity_then_binds_snapshot(tmp_path)
         verify_accumulation_archive(tmp_path)
 
 
-def test_sixty_day_archive_builds_strict_dataset_and_enters_train_evaluate(tmp_path):
+def test_sixty_day_archive_builds_strict_dataset_and_enters_train_evaluate(
+    tmp_path, capture_time
+):
     from theme_sector_radar.ml.accumulation import (
         archive_daily_snapshot,
         archive_mature_label_snapshot,
@@ -843,12 +989,12 @@ def test_sixty_day_archive_builds_strict_dataset_and_enters_train_evaluate(tmp_p
     project_root = Path(__file__).resolve().parents[2]
     trading_dates = []
     cursor = date(2026, 1, 5)
-    while len(trading_dates) < 71:
+    while len(trading_dates) < 72:
         if cursor.weekday() < 5:
             trading_dates.append(cursor.isoformat())
         cursor += timedelta(days=1)
     archive_root = tmp_path / "archive"
-    for day in trading_dates[:66]:
+    for day_index, day in enumerate(trading_dates[:67]):
         report = _active_report(day)
         physical = _physical_daily_sources(
             tmp_path,
@@ -861,6 +1007,8 @@ def test_sixty_day_archive_builds_strict_dataset_and_enters_train_evaluate(tmp_p
         feature_bars_source = _physical_daily_bars_source(
             tmp_path, as_of=day, bars_by_code=feature_bars
         )
+        capture_day = date.fromisoformat(day) + timedelta(days=day_index == 0)
+        capture_time(datetime.combine(capture_day, time(18, 0), tzinfo=timezone.utc))
         archive_daily_snapshot(
             archive_root=archive_root,
             candidate_report=report,
@@ -869,11 +1017,8 @@ def test_sixty_day_archive_builds_strict_dataset_and_enters_train_evaluate(tmp_p
             bars_by_code=feature_bars,
             bars_source=feature_bars_source,
             trading_calendar=physical["trading_calendar"],
-            captured_at=datetime.combine(
-                date.fromisoformat(day), time(18, 0), tzinfo=timezone.utc
-            ),
         )
-    for index, day in enumerate(trading_dates[:66]):
+    for index, day in enumerate(trading_dates[:67]):
         label_dates = trading_dates[index : index + 6]
         target = label_dates[-1]
         stock_prices = {
@@ -899,6 +1044,11 @@ def test_sixty_day_archive_builds_strict_dataset_and_enters_train_evaluate(tmp_p
             stock_prices=stock_prices,
             sector_prices=sector_prices,
         )
+        capture_time(
+            datetime.combine(
+                date.fromisoformat(target), time(18, 0), tzinfo=timezone.utc
+            )
+        )
         archive_mature_label_snapshot(
             archive_root=archive_root,
             signal_date=day,
@@ -906,9 +1056,6 @@ def test_sixty_day_archive_builds_strict_dataset_and_enters_train_evaluate(tmp_p
             stock_bars_by_code=stock_prices,
             sector_bars_by_name=sector_prices,
             label_source=label_source,
-            captured_at=datetime.combine(
-                date.fromisoformat(target), time(18, 0), tzinfo=timezone.utc
-            ),
         )
 
     dataset_path = tmp_path / "dataset.json"
@@ -937,6 +1084,9 @@ def test_sixty_day_archive_builds_strict_dataset_and_enters_train_evaluate(tmp_p
     baseline = load_strict_json(baseline_path)
     assert baseline["strict_pit_eligible"] is True
     assert len(baseline["records"]) == 132
+    assert load_strict_json(readiness_path)[
+        "historical_candidate_universe_verified"
+    ] is True
     _dataset_doc, dataset_file_sha = load_strict_json_with_sha256(dataset_path)
 
     model_dir = tmp_path / "model"
@@ -970,6 +1120,17 @@ def test_sixty_day_archive_builds_strict_dataset_and_enters_train_evaluate(tmp_p
 
     registry_path = model_dir / "registry.json"
     training_report = load_strict_json(training_report_path)
+    registry_before_load = load_strict_json(registry_path)
+    assert date.fromisoformat(registry_before_load["model_available_from"]) > max(
+        datetime.fromisoformat(registry_before_load["registered_at"]).date(),
+        max(
+            datetime.fromisoformat(row["captured_at"]).date()
+            for row in (
+                load_strict_json(archive_root / "labels" / f"{day}.json")
+                for day in dataset["pit_evidence"]["verified_training_dates"]
+            )
+        ),
+    )
     loaded_model = load_model_bundle(
         model_dir,
         expected_registry_sha256=training_report["model_bundle"]["registry_sha256"],
@@ -984,6 +1145,8 @@ def test_sixty_day_archive_builds_strict_dataset_and_enters_train_evaluate(tmp_p
             dataset_classification="observed_research",
             model_available_from=loaded_model.metadata["model_available_from"],
             pit_evidence=dataset["pit_evidence"],
+            experiment_config=loaded_model.metadata["experiment"]["config"],
+            experiment_config_sha256=loaded_model.metadata["experiment"]["config_sha256"],
         )
 
     registry = load_strict_json(registry_path)
@@ -1121,7 +1284,7 @@ def test_sixty_day_archive_builds_strict_dataset_and_enters_train_evaluate(tmp_p
         validate_training_dataset(tampered_dataset)
 
 
-def test_readiness_accepts_only_sealed_sixty_day_pit_evidence(monkeypatch):
+def test_readiness_accepts_only_sealed_sixty_day_pit_evidence(monkeypatch, tmp_path):
     from datetime import date, timedelta
 
     from theme_sector_radar.ml.contract import canonical_sha256
@@ -1185,6 +1348,22 @@ def test_readiness_accepts_only_sealed_sixty_day_pit_evidence(monkeypatch):
         },
     )
 
+    with pytest.raises(ValueError, match="archive|verifier"):
+        build_data_readiness_report(
+            candidate_snapshots=snapshots,
+            forward_stock_return_dates_by_horizon={horizon: dates for horizon in ("1d", "3d", "5d")},
+            forward_excess_label_dates_by_horizon={horizon: dates for horizon in ("1d", "3d", "5d")},
+            forward_label_coverage_by_horizon={"1d": 0.95, "3d": 0.95, "5d": 0.95},
+            sector_history_date_count=120,
+            historical_candidate_universe_versioned=True,
+            source_manifest={"archive": "verified"},
+            pit_evidence=evidence,
+        )
+
+    monkeypatch.setattr(
+        "theme_sector_radar.ml.readiness.verify_accumulation_archive",
+        lambda _root: evidence,
+    )
     report = build_data_readiness_report(
         candidate_snapshots=snapshots,
         forward_stock_return_dates_by_horizon={horizon: dates for horizon in ("1d", "3d", "5d")},
@@ -1192,7 +1371,10 @@ def test_readiness_accepts_only_sealed_sixty_day_pit_evidence(monkeypatch):
         forward_label_coverage_by_horizon={"1d": 0.95, "3d": 0.95, "5d": 0.95},
         sector_history_date_count=120,
         historical_candidate_universe_versioned=True,
-        source_manifest={"archive": "verified"},
+        source_manifest={
+            "archive_root": str(tmp_path.resolve()),
+            "pit_evidence_sha256": evidence["evidence_sha256"],
+        },
         pit_evidence=evidence,
     )
 
@@ -1201,6 +1383,36 @@ def test_readiness_accepts_only_sealed_sixty_day_pit_evidence(monkeypatch):
     assert report["strict_pit_eligible"] is True
     assert report["counts"]["verified_training_dates"] == 60
     assert report["blocking_reasons"] == []
+
+    self_attested_minimum = dict(evidence)
+    self_attested_minimum["minimum_60_dates_satisfied"] = False
+    self_attested_core = {
+        key: value
+        for key, value in self_attested_minimum.items()
+        if key != "evidence_sha256"
+    }
+    self_attested_minimum["evidence_sha256"] = canonical_sha256(self_attested_core)
+    blocked_self_attested = build_data_readiness_report(
+        candidate_snapshots=snapshots,
+        forward_stock_return_dates_by_horizon={
+            horizon: dates for horizon in ("1d", "3d", "5d")
+        },
+        forward_excess_label_dates_by_horizon={
+            horizon: dates for horizon in ("1d", "3d", "5d")
+        },
+        forward_label_coverage_by_horizon={"1d": 0.95, "3d": 0.95, "5d": 0.95},
+        sector_history_date_count=120,
+        historical_candidate_universe_versioned=True,
+        source_manifest={
+            "archive_root": str(tmp_path.resolve()),
+            "pit_evidence_sha256": self_attested_minimum["evidence_sha256"],
+        },
+        pit_evidence=self_attested_minimum,
+    )
+    assert blocked_self_attested["model_training_ready"] is False
+    assert "pit_evidence_minimum_history_not_verified" in blocked_self_attested[
+        "blocking_reasons"
+    ]
 
     tampered = dict(evidence)
     tampered["verified_training_dates"] = dates[:-1]
@@ -1212,9 +1424,117 @@ def test_readiness_accepts_only_sealed_sixty_day_pit_evidence(monkeypatch):
             forward_label_coverage_by_horizon={"1d": 0.95, "3d": 0.95, "5d": 0.95},
             sector_history_date_count=120,
             historical_candidate_universe_versioned=True,
-            source_manifest={"archive": "verified"},
+            source_manifest={
+                "archive_root": str(tmp_path.resolve()),
+                "pit_evidence_sha256": evidence["evidence_sha256"],
+            },
             pit_evidence=tampered,
         )
+
+
+def test_archive_verifier_rejects_non_false_archive_safety_flags(tmp_path):
+    from theme_sector_radar.ml.accumulation import verify_accumulation_archive
+    from theme_sector_radar.reporting.strict_json import write_strict_json_atomic
+
+    index = {
+        "schema_version": "ml-stock-daily-archive-index-v1",
+        "mode": "paper_shadow_research_only",
+        "status": "active",
+        "entry_count": 0,
+        "chain_head_sha256": None,
+        "entries": [],
+        "promotion_allowed": False,
+        "live_trading_allowed": True,
+    }
+    write_strict_json_atomic(tmp_path / "index.json", index)
+
+    with pytest.raises(ValueError, match="live_trading_allowed"):
+        verify_accumulation_archive(tmp_path)
+
+
+def test_archive_missing_index_safety_fields_only_downgrades_strictness(
+    tmp_path, capture_time
+):
+    from theme_sector_radar.ml.accumulation import (
+        archive_daily_snapshot,
+        archive_mature_label_snapshot,
+        verify_accumulation_archive,
+    )
+    from theme_sector_radar.reporting.strict_json import (
+        load_strict_json_with_sha256,
+        write_strict_json_atomic,
+    )
+
+    as_of = "2026-07-16"
+    calendar_dates = [
+        as_of,
+        "2026-07-17",
+        "2026-07-20",
+        "2026-07-21",
+        "2026-07-22",
+        "2026-07-23",
+    ]
+    report = _active_report(as_of)
+    physical = _physical_daily_sources(
+        tmp_path,
+        as_of=as_of,
+        report=report,
+        calendar_dates=calendar_dates,
+        generated_at="2026-07-16T16:30:00+08:00",
+    )
+    bars_by_code = {"000001": _bars(as_of), "000002": _bars(as_of)}
+    capture_time(datetime(2026, 7, 16, 18, 0, tzinfo=timezone.utc))
+    archive_daily_snapshot(
+        archive_root=tmp_path,
+        candidate_report=report,
+        candidate_source=physical["candidate_source"],
+        constituent_sources=physical["constituent_sources"],
+        bars_by_code=bars_by_code,
+        bars_source=_physical_daily_bars_source(
+            tmp_path, as_of=as_of, bars_by_code=bars_by_code
+        ),
+        trading_calendar=physical["trading_calendar"],
+    )
+    prices = {
+        code: [
+            {"date": day, "close": 10.0 + index}
+            for index, day in enumerate(calendar_dates)
+        ]
+        for code in bars_by_code
+    }
+    sectors = {
+        "医疗服务": [
+            {"date": day, "close": 100.0 + index}
+            for index, day in enumerate(calendar_dates)
+        ]
+    }
+    capture_time(datetime(2026, 7, 23, 18, 0, tzinfo=timezone.utc))
+    archive_mature_label_snapshot(
+        archive_root=tmp_path,
+        signal_date=as_of,
+        label_as_of_date="2026-07-23",
+        stock_bars_by_code=prices,
+        sector_bars_by_name=sectors,
+        label_source=_physical_label_source(
+            tmp_path,
+            signal_date=as_of,
+            label_as_of_date="2026-07-23",
+            stock_prices=prices,
+            sector_prices=sectors,
+        ),
+    )
+
+    index_path = tmp_path / "index.json"
+    index, _ = load_strict_json_with_sha256(index_path)
+    index.pop("promotion_allowed")
+    index.pop("live_trading_allowed")
+    write_strict_json_atomic(index_path, index)
+
+    evidence = verify_accumulation_archive(tmp_path)
+    assert evidence["status"] == "verified"
+    assert evidence["strict_pit_eligible"] is False
+    assert evidence["counts"]["prospective_candidate_snapshot_dates"] == 0
+    assert evidence["counts"]["verified_training_dates"] == 0
 
 
 def test_multi_baseline_evaluation_quant_linkage_hybrid_and_ml_are_independent():

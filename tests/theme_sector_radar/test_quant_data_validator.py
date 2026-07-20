@@ -134,6 +134,18 @@ class TestSectorDataValidation:
         stock = {"code": "600030", "sector_trend_score": 65, "sector_burst_score": 55, "sector_name": "证券", "relevance_score": 0.8}
         report = validate_sector_data(stock)
         assert report.error_count == 0
+        assert all(detail.field != "relevance_score" for detail in report.results)
+
+    def test_legacy_relevance_is_not_a_quality_factor(self):
+        stock = {
+            "code": "600030",
+            "sector_trend_score": 65,
+            "sector_burst_score": 55,
+            "sector_name": "证券",
+            "legacy_relevance_score": 0.1,
+        }
+        report = validate_sector_data(stock)
+        assert all(detail.field != "legacy_relevance_score" for detail in report.results)
 
     def test_missing_sector_name(self):
         """缺失板块名称应标记为 missing"""

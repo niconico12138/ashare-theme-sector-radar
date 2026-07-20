@@ -1,0 +1,76 @@
+{
+  "schema_version": "ml-stock-historical-research-model-v1",
+  "mode": "paper_shadow_research_only",
+  "status": "research_only",
+  "model_version": "stock-ranker-historical-research-v6-stability-core-20260720",
+  "dataset_classification": "historical_reconstruction_research",
+  "dataset_sha256": "26429b80b0adda293c234c12995ee4a78d347b424ec799cc845ddd70b9226d03",
+  "feature_schema_version": "ml-stock-historical-research-features-v1",
+  "feature_schema_sha256": "5e80895ee9d0b5779940f246ef34a71964272494b58c110443907be128918d9f",
+  "feature_names": [
+    "contraction_score",
+    "range10_range20",
+    "drawdown_depth_20",
+    "breakout_distance_20",
+    "volume_stability_score",
+    "trend_persistence_score",
+    "limit_attention_score",
+    "intraday_reversal_risk_score",
+    "close_strength_score",
+    "volume_burst_quality_score",
+    "sector_support_score"
+  ],
+  "label_definition": "historical_forward_5d_stock_return",
+  "training_period": {
+    "start": "2026-01-30",
+    "end": "2026-07-03",
+    "date_count": 99,
+    "row_count": 1696
+  },
+  "label_maturity_period": {
+    "start": "2026-02-06",
+    "end": "2026-07-10"
+  },
+  "training_records_sha256": "ee95e75c2be577342ed8c295341c9f7358e28a3784d12ffe22a265a24484d346",
+  "parameters": {
+    "backend": "lightgbm_lambdarank",
+    "objective": "lambdarank",
+    "metric": [
+      "ndcg"
+    ],
+    "relevance_levels": 5,
+    "label_gain": [
+      0,
+      1,
+      3,
+      7,
+      15
+    ],
+    "n_estimators": 80,
+    "learning_rate": 0.05,
+    "num_leaves": 15,
+    "random_state": 20260718,
+    "min_child_samples": 2,
+    "subsample": 1.0,
+    "colsample_bytree": 1.0,
+    "reg_lambda": 1.0,
+    "deterministic": true,
+    "force_col_wise": true,
+    "n_jobs": 1,
+    "verbosity": -1,
+    "date_grouped": true,
+    "relevance_encoding": "within_date_nonnegative_discrete_0_to_4"
+  },
+  "strict_pit_eligible": false,
+  "pit_evidence_status": "historical_reconstruction_not_prospective",
+  "eligible_for_oos_claim": false,
+  "promotion_allowed": false,
+  "live_trading_allowed": false,
+  "formal_predictor_compatible": false,
+  "model_artifact": {
+    "path": "model.txt",
+    "sha256": "eb3ecfaf3b92f5d433f0d9e539be4fbb559434344b9a2d6aa31c459a315490a1"
+  },
+  "registered_at": "2026-07-20T09:02:37.422105+08:00",
+  "disclaimer": "Research output only; no broker connection and no live order instruction."
+}

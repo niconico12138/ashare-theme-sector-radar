@@ -115,6 +115,7 @@ def _safety_envelope_with_pit(
         ),
         "eligible_for_oos_claim": False,
         "promotion_allowed": False,
+        "live_trading_allowed": False,
         "fixture_only": bool(fixture_only),
     }
 
@@ -286,6 +287,7 @@ def build_training_dataset(
         "fixture_only": bool(fixture_only),
         "eligible_for_oos_claim": False,
         "promotion_allowed": False,
+        "live_trading_allowed": False,
         "feature_schema_version": FEATURE_SCHEMA_VERSION,
         "feature_schema_sha256": feature_schema_sha256(),
         "feature_names": list(V1_FEATURE_NAMES),

@@ -30,6 +30,36 @@ LABEL_ARCHIVE_INDEX_SCHEMA_VERSION = "ml-stock-label-archive-index-v1"
 
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 
+_APPROVED_CANDIDATE_SOURCES = frozenset({
+    "unified_pipeline_direction_linkage_v2",
+})
+_APPROVED_CONSTITUENT_SOURCES = frozenset({
+    "akshare/ths_industry",
+    "http_em",
+    "http_local_industry",
+    "sina_fallback",
+    "stockdb",
+    "stockdb-sdk",
+})
+_APPROVED_BARS_SOURCES = frozenset({"auto", "cache", "http", "stockdb-sdk"})
+_APPROVED_CALENDAR_SOURCES = frozenset({
+    "akshare.tool_trade_date_hist_sina",
+    "stockdb",
+    "stockdb-sdk",
+})
+_APPROVED_LABEL_SECTOR_SOURCES = frozenset({
+    "akshare/ths_industry",
+    "sector_history/ths_industry_index",
+    "stockdb",
+    "stockdb-sdk",
+})
+
+
+def _capture_now() -> datetime:
+    """Return the process capture witness; callers cannot backdate it."""
+
+    return datetime.now().astimezone()
+
 _FEATURE_CANDIDATE_FIELDS = (
     "code",
     "stock_code",
@@ -74,6 +104,21 @@ def _selection(report: Mapping[str, Any]) -> tuple[str, list[Mapping[str, Any]]]
         selected = list(formal["selected"])
         if formal.get("selected_count") != len(selected):
             raise ValueError("formal candidate selected_count mismatch")
+        from theme_sector_radar.scoring.stock_sector_linkage import (
+            build_formal_candidate_selection,
+        )
+
+        linkage = report.get("direction_linkage_v2_selection_shadow")
+        rebuilt = build_formal_candidate_selection(
+            direction_source=formal.get("direction_source") or {},
+            linkage_selection=linkage or {},
+        )
+        if (
+            rebuilt.get("status") != "active_for_paper_research"
+            or canonical_sha256(rebuilt.get("selected") or [])
+            != canonical_sha256(selected)
+        ):
+            raise ValueError("formal candidate selection contract cannot be replayed")
         return "formal_candidate_selection", selected
 
     active = report.get("direction_linkage_v2_selection_shadow")
@@ -87,6 +132,22 @@ def _selection(report: Mapping[str, Any]) -> tuple[str, list[Mapping[str, Any]]]
         selected = list(active["selected"])
         if active.get("selected_count") != len(selected):
             raise ValueError("active direction/linkage V2 selected_count mismatch")
+        policy = active.get("policy")
+        if not isinstance(policy, Mapping) or policy.get("ranking_weights") != {
+            "linkage_v2": 0.70,
+            "quant_score": 0.30,
+        }:
+            raise ValueError("active selection policy contract is invalid")
+        from theme_sector_radar.scoring.stock_sector_linkage import (
+            build_formal_candidate_selection,
+        )
+
+        rebuilt = build_formal_candidate_selection(
+            direction_source={"status": "ok", "mode": MODE},
+            linkage_selection=active,
+        )
+        if rebuilt.get("status") != "active_for_paper_research":
+            raise ValueError("active selection contract cannot be replayed")
         return "direction_linkage_v2_selection_shadow", selected
     raise ValueError("active direction/linkage V2 selection is required")
 
@@ -166,6 +227,7 @@ def extract_candidate_snapshot(report: Mapping[str, Any]) -> dict[str, Any]:
     return {
         "as_of_date": as_of_date,
         "selection_source_field": selection_field,
+        "selection_contract_verified": selection_field == "formal_candidate_selection",
         "candidate_count": len(feature_candidates),
         "feature_candidates": feature_candidates,
         "baseline_rows": baseline_rows,
@@ -527,6 +589,9 @@ def _pit_classification(
     captured_at: datetime,
     candidate_source: Mapping[str, Any],
     constituent_sources: Sequence[Mapping[str, Any]],
+    bars_source: Mapping[str, Any] | None = None,
+    bars_source_by_code: Mapping[str, Mapping[str, Any]] | None = None,
+    trading_calendar: Mapping[str, Any] | None = None,
 ) -> tuple[bool, list[str], dict[str, Any]]:
     if captured_at.tzinfo is None or captured_at.utcoffset() is None:
         raise ValueError("captured_at must be timezone-aware")
@@ -567,6 +632,24 @@ def _pit_classification(
             reasons.append("candidate_source_generated_after_archive_capture")
     if any(str(source.get("as_of_date") or "") != as_of_date for source in constituent_sources):
         reasons.append("constituent_source_not_versioned_for_signal_date")
+    if captured_at.date().isoformat() == as_of_date:
+        if str(candidate_source.get("source") or "") not in _APPROVED_CANDIDATE_SOURCES:
+            reasons.append("candidate_source_not_approved_for_observed_research")
+        if any(
+            str(source.get("source") or "") not in _APPROVED_CONSTITUENT_SOURCES
+            for source in constituent_sources
+        ):
+            reasons.append("constituent_source_not_approved_for_observed_research")
+        requested_bars_source = str((bars_source or {}).get("provider") or "")
+        if requested_bars_source not in _APPROVED_BARS_SOURCES:
+            reasons.append("daily_bars_source_not_approved_for_observed_research")
+        if any(
+            str(source.get("actual_source") or "") not in _APPROVED_BARS_SOURCES
+            for source in (bars_source_by_code or {}).values()
+        ):
+            reasons.append("daily_bars_source_not_approved_for_observed_research")
+        if str((trading_calendar or {}).get("source") or "") not in _APPROVED_CALENDAR_SOURCES:
+            reasons.append("calendar_source_not_approved_for_observed_research")
     return not reasons, reasons, timestamp_quality
 
 
@@ -579,11 +662,10 @@ def archive_daily_snapshot(
     bars_by_code: Mapping[str, Sequence[Mapping[str, Any]]],
     bars_source: Mapping[str, Any],
     trading_calendar: Mapping[str, Any],
-    captured_at: datetime | None = None,
 ) -> dict[str, Any]:
     """Append one immutable daily feature universe to a content-bound archive."""
 
-    captured_at = captured_at or datetime.now().astimezone()
+    captured_at = _capture_now()
     extracted = extract_candidate_snapshot(candidate_report)
     as_of_date = extracted["as_of_date"]
     candidate_identity = _source_identity(candidate_source, context="candidate source")
@@ -632,7 +714,13 @@ def archive_daily_snapshot(
         captured_at=captured_at,
         candidate_source=candidate_identity,
         constituent_sources=constituent_identities,
+        bars_source=bars_identity,
+        bars_source_by_code=bars_source_by_code,
+        trading_calendar=calendar_identity,
     )
+    if not extracted["selection_contract_verified"]:
+        blocking_reasons.append("candidate_selection_contract_not_formal_verified")
+        prospective = False
     source_blocking_reasons = _daily_source_blocking_reasons(
         candidate_source=candidate_identity,
         constituent_sources=constituent_identities,
@@ -741,6 +829,7 @@ def archive_daily_snapshot(
         "baseline_rows": extracted["baseline_rows"],
         "eligible_for_oos_claim": False,
         "promotion_allowed": False,
+        "live_trading_allowed": False,
         "disclaimer": DISCLAIMER,
     }
     require_finite(snapshot, context="ML daily snapshot")
@@ -763,6 +852,7 @@ def archive_daily_snapshot(
         "chain_head_sha256": entry["entry_sha256"],
         "entries": entries,
         "promotion_allowed": False,
+        "live_trading_allowed": False,
         "disclaimer": DISCLAIMER,
     }
     validate_no_executable_instructions(index, context="ML daily archive index")
@@ -934,6 +1024,9 @@ def _label_source_details(
         source_identity = {
             "sector_name": sector_name,
             "sector_type": sector_type,
+            "actual_source": str(
+                supplied.get("actual_source") or supplied.get("source") or ""
+            ),
             "path": str(supplied.get("path") or ""),
             "sha256": str(supplied.get("sha256") or "").lower(),
             "price_rows_sha256": canonical_sha256(rows_by_sector[sector_name]),
@@ -951,7 +1044,12 @@ def _label_source_details(
             )
         ):
             reasons.append("label_sector_source_not_content_addressable")
+        if source_identity["actual_source"] not in _APPROVED_LABEL_SECTOR_SOURCES:
+            reasons.append("label_sector_source_not_approved_for_observed_research")
         normalized_sectors[sector_name] = source_identity
+    for source in normalized_stocks.values():
+        if source["actual_source"] not in _APPROVED_BARS_SOURCES:
+            reasons.append("label_stock_source_not_approved_for_observed_research")
     return {
         "stock_bars_by_code": normalized_stocks,
         "sector_bars_by_name": normalized_sectors,
@@ -1056,12 +1154,11 @@ def archive_mature_label_snapshot(
     stock_bars_by_code: Mapping[str, Sequence[Mapping[str, Any]]],
     sector_bars_by_name: Mapping[str, Sequence[Mapping[str, Any]]],
     label_source: Mapping[str, Any],
-    captured_at: datetime | None = None,
 ) -> dict[str, Any]:
     """Persist one label set only after the exact five-day target has matured."""
 
     root = Path(archive_root)
-    captured_at = captured_at or datetime.now().astimezone()
+    captured_at = _capture_now()
     if captured_at.tzinfo is None or captured_at.utcoffset() is None:
         raise ValueError("captured_at must be timezone-aware")
     snapshot, feature_snapshot_sha = _load_daily_snapshot(
@@ -1085,6 +1182,7 @@ def archive_mature_label_snapshot(
             "signal_date": signal_date,
             "target_5d": target_5d,
             "promotion_allowed": False,
+            "live_trading_allowed": False,
         }
     if captured_at.date().isoformat() < label_as_of_date:
         raise ValueError("label capture timestamp precedes label data as-of date")
@@ -1157,6 +1255,7 @@ def archive_mature_label_snapshot(
         "stock_price_rows": stock_rows,
         "sector_price_rows": sector_rows,
         "promotion_allowed": False,
+        "live_trading_allowed": False,
         "disclaimer": DISCLAIMER,
     }
     validate_no_executable_instructions(
@@ -1238,6 +1337,7 @@ def archive_mature_label_snapshot(
         "label_rows": label_rows,
         "eligible_for_oos_claim": False,
         "promotion_allowed": False,
+        "live_trading_allowed": False,
         "disclaimer": DISCLAIMER,
     }
     require_finite(label_snapshot, context="ML mature label snapshot")
@@ -1279,6 +1379,7 @@ def archive_mature_label_snapshot(
         "chain_head_sha256": entry["entry_sha256"],
         "entries": entries,
         "promotion_allowed": False,
+        "live_trading_allowed": False,
         "disclaimer": DISCLAIMER,
     }
     write_strict_json_atomic(labels_index_path, labels_index)
@@ -1307,6 +1408,20 @@ def _verify_chain_entry(
     if not str(entry.get(date_field) or ""):
         raise ValueError(f"{context} date identity is missing")
     return entry_sha256
+
+
+def _validate_archive_safety_flags(
+    payload: Mapping[str, Any],
+    *,
+    required: tuple[str, ...],
+    context: str,
+) -> bool:
+    """Validate explicit safety flags and report whether the contract is complete."""
+
+    for field in required:
+        if field in payload and payload[field] is not False:
+            raise ValueError(f"{context} {field} must be false")
+    return all(field in payload for field in required)
 
 
 def _verify_replayable_snapshot(snapshot: Mapping[str, Any]) -> bool | None:
@@ -1384,7 +1499,13 @@ def _verify_replayable_snapshot(snapshot: Mapping[str, Any]) -> bool | None:
         captured_at=captured_at,
         candidate_source=candidate_source,
         constituent_sources=constituent_sources,
+        bars_source=bars_source,
+        bars_source_by_code=bars_source_by_code,
+        trading_calendar=calendar,
     )
+    if snapshot.get("selection_source_field") != "formal_candidate_selection":
+        reasons.append("candidate_selection_contract_not_formal_verified")
+        prospective = False
     source_blocking_reasons = _daily_source_blocking_reasons(
         candidate_source=candidate_source,
         constituent_sources=constituent_sources,
@@ -1403,6 +1524,10 @@ def _verify_replayable_snapshot(snapshot: Mapping[str, Any]) -> bool | None:
             extracted={
                 "as_of_date": as_of_date,
                 "selection_source_field": snapshot.get("selection_source_field"),
+                "selection_contract_verified": (
+                    snapshot.get("selection_source_field")
+                    == "formal_candidate_selection"
+                ),
                 "candidate_count": snapshot.get("candidate_count"),
                 "feature_candidates": feature_candidates,
                 "baseline_rows": snapshot.get("baseline_rows"),
@@ -1461,11 +1586,17 @@ def verify_accumulation_archive(archive_root: Path | str) -> dict[str, Any]:
         or not isinstance(daily_index.get("entries"), list)
     ):
         raise ValueError("ML daily archive index is invalid")
+    daily_index_safety_complete = _validate_archive_safety_flags(
+        daily_index,
+        required=("promotion_allowed", "live_trading_allowed"),
+        context="ML daily archive index",
+    )
     daily_entries = list(daily_index["entries"])
     if daily_index.get("entry_count") != len(daily_entries):
         raise ValueError("ML daily archive entry_count mismatch")
 
     snapshots_by_date: dict[str, dict[str, Any]] = {}
+    snapshot_source_strict_by_date: dict[str, bool] = {}
     snapshot_manifest: list[dict[str, Any]] = []
     previous: str | None = None
     prior_date: str | None = None
@@ -1508,17 +1639,32 @@ def verify_accumulation_archive(archive_root: Path | str) -> dict[str, Any]:
             != canonical_sha256(baseline_rows)
         ):
             raise ValueError("ML daily snapshot candidate universe mismatch")
+        snapshot_safety_complete = _validate_archive_safety_flags(
+            snapshot,
+            required=(
+                "eligible_for_oos_claim",
+                "promotion_allowed",
+                "live_trading_allowed",
+            ),
+            context="ML daily snapshot",
+        )
         replayed_strict = _verify_replayable_snapshot(snapshot)
         if replayed_strict is None and snapshot.get("strict_pit_eligible") is True:
             raise ValueError("legacy snapshot cannot claim strict PIT")
+        effective_snapshot_strict = bool(
+            replayed_strict
+            and daily_index_safety_complete
+            and snapshot_safety_complete
+        )
         snapshots_by_date[day] = snapshot
+        snapshot_source_strict_by_date[day] = bool(replayed_strict)
         snapshot_manifest.append(
             {
                 "as_of_date": day,
                 "path": str(expected_path),
                 "sha256": snapshot_sha,
                 "entry_sha256": previous,
-                "strict_pit_eligible": bool(replayed_strict),
+                "strict_pit_eligible": effective_snapshot_strict,
                 "candidate_count": len(feature_rows),
             }
         )
@@ -1529,6 +1675,7 @@ def verify_accumulation_archive(archive_root: Path | str) -> dict[str, Any]:
     label_entries: list[Mapping[str, Any]] = []
     labels_index_path = root / "labels_index.json"
     labels_index_sha = None
+    labels_index_safety_complete = True
     if labels_index_path.exists():
         labels_index, labels_index_sha = load_strict_json_with_sha256(
             labels_index_path
@@ -1540,6 +1687,11 @@ def verify_accumulation_archive(archive_root: Path | str) -> dict[str, Any]:
             or not isinstance(labels_index.get("entries"), list)
         ):
             raise ValueError("ML label archive index is invalid")
+        labels_index_safety_complete = _validate_archive_safety_flags(
+            labels_index,
+            required=("promotion_allowed", "live_trading_allowed"),
+            context="ML label archive index",
+        )
         label_entries = list(labels_index["entries"])
         if labels_index.get("entry_count") != len(label_entries):
             raise ValueError("ML label archive entry_count mismatch")
@@ -1580,6 +1732,15 @@ def verify_accumulation_archive(archive_root: Path | str) -> dict[str, Any]:
             != feature_snapshot.get("candidate_universe_sha256")
         ):
             raise ValueError("ML mature label snapshot identity mismatch")
+        label_safety_complete = _validate_archive_safety_flags(
+            label_snapshot,
+            required=(
+                "eligible_for_oos_claim",
+                "promotion_allowed",
+                "live_trading_allowed",
+            ),
+            context="ML mature label snapshot",
+        )
         stock_rows = label_snapshot.get("stock_price_rows")
         sector_rows = label_snapshot.get("sector_price_rows")
         label_rows = label_snapshot.get("label_rows")
@@ -1632,10 +1793,10 @@ def verify_accumulation_archive(archive_root: Path | str) -> dict[str, Any]:
             stock_rows=stock_rows,
             sector_rows=sector_rows,
         )
-        expected_label_strict = bool(
-            feature_manifest["strict_pit_eligible"] and not label_blocking_reasons
+        expected_label_source_strict = bool(
+            snapshot_source_strict_by_date.get(day) and not label_blocking_reasons
         )
-        if bool(label_snapshot.get("strict_pit_eligible")) != expected_label_strict:
+        if bool(label_snapshot.get("strict_pit_eligible")) != expected_label_source_strict:
             raise ValueError("ML mature label strict PIT identity mismatch")
         if sorted(label_snapshot.get("pit_blocking_reasons") or []) != sorted(
             label_blocking_reasons
@@ -1643,7 +1804,7 @@ def verify_accumulation_archive(archive_root: Path | str) -> dict[str, Any]:
             raise ValueError("ML mature label PIT blocking reasons mismatch")
         expected_label_status = (
             "prospective_labels_captured_after_maturity"
-            if expected_label_strict
+            if expected_label_source_strict
             else "historical_reconstruction_labels"
         )
         if label_snapshot.get("pit_evidence_status") != expected_label_status:
@@ -1662,10 +1823,11 @@ def verify_accumulation_archive(archive_root: Path | str) -> dict[str, Any]:
             "frequency": "1d",
             "query_end": label_snapshot.get("label_as_of_date"),
             **source_details,
-            "stock_price_rows": stock_rows,
-            "sector_price_rows": sector_rows,
-            "promotion_allowed": False,
-            "disclaimer": DISCLAIMER,
+        "stock_price_rows": stock_rows,
+        "sector_price_rows": sector_rows,
+        "promotion_allowed": False,
+        "live_trading_allowed": False,
+        "disclaimer": DISCLAIMER,
         }
         if source_sha != label_source.get("sha256") or source_payload != expected_source_payload:
             raise ValueError("ML mature label source evidence cannot be reproduced")
@@ -1707,13 +1869,19 @@ def verify_accumulation_archive(archive_root: Path | str) -> dict[str, Any]:
         if label_snapshot.get("input_identity_sha256") != canonical_sha256(input_identity):
             raise ValueError("ML mature label input identity mismatch")
         labels_by_date[day] = label_snapshot
+        effective_label_strict = bool(
+            feature_manifest["strict_pit_eligible"]
+            and expected_label_source_strict
+            and label_safety_complete
+            and labels_index_safety_complete
+        )
         label_manifest.append(
             {
                 "signal_date": day,
                 "path": str(expected_path),
                 "sha256": label_sha,
                 "entry_sha256": previous,
-                "strict_pit_eligible": bool(label_snapshot.get("strict_pit_eligible")),
+                "strict_pit_eligible": effective_label_strict,
                 "label_row_count": len(label_rows),
             }
         )
@@ -1728,9 +1896,9 @@ def verify_accumulation_archive(archive_root: Path | str) -> dict[str, Any]:
         if row["strict_pit_eligible"] is True
     }
     strict_label_dates = {
-        day
-        for day, snapshot in labels_by_date.items()
-        if snapshot.get("strict_pit_eligible") is True
+        row["signal_date"]
+        for row in label_manifest
+        if row["strict_pit_eligible"] is True
     }
     verified_training_dates = sorted(prospective_dates & strict_label_dates)
     verified_training_rows = sum(
@@ -1774,10 +1942,15 @@ def verify_accumulation_archive(archive_root: Path | str) -> dict[str, Any]:
         },
         "minimum_60_dates_satisfied": len(verified_training_dates) >= 60,
         "strict_pit_eligible": len(verified_training_dates) >= 60,
-        "historical_candidate_universe_versioned": bool(snapshots_by_date)
-        and all(row["strict_pit_eligible"] for row in snapshot_manifest),
+        "historical_candidate_universe_versioned": bool(verified_training_dates)
+        and all(
+            row["strict_pit_eligible"]
+            for row in snapshot_manifest
+            if row["as_of_date"] in verified_training_dates
+        ),
         "eligible_for_oos_claim": False,
         "promotion_allowed": False,
+        "live_trading_allowed": False,
         "disclaimer": DISCLAIMER,
     }
     evidence = {**core, "evidence_sha256": canonical_sha256(core)}

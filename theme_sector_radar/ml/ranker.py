@@ -26,13 +26,9 @@ class RankerModel:
     metadata: Mapping[str, Any]
 
     def predict(self, records: Sequence[Mapping[str, Any]]):
-        matrix = prepare_prediction_matrix(records, feature_names=self.feature_names)
-        values = self.booster.predict(matrix["features"])
-        np = _require_numpy()
-        predictions = np.asarray(values, dtype=float)
-        if not np.isfinite(predictions).all():
-            raise ValueError("ranker produced non-finite predictions")
-        return predictions
+        raise RuntimeError(
+            "RankerModel.predict is disabled; use the verified predict_shadow API"
+        )
 
 
 def _require_numpy():
@@ -178,22 +174,41 @@ def train_lambdarank(
     )
     if len(matrix["groups"]) < 2 or min(matrix["groups"]) < 2:
         raise ValueError("LambdaRank requires at least two date groups with two rows each")
+    parameter_contract = {
+        "backend": "lightgbm_lambdarank",
+        "objective": "lambdarank",
+        "metric": ["ndcg"],
+        "relevance_levels": int(relevance_levels),
+        "label_gain": [(2**index) - 1 for index in range(relevance_levels)],
+        "n_estimators": int(n_estimators),
+        "learning_rate": float(learning_rate),
+        "num_leaves": int(num_leaves),
+        "random_state": int(random_state),
+        "min_child_samples": 2,
+        "subsample": 1.0,
+        "colsample_bytree": 1.0,
+        "reg_lambda": 1.0,
+        "deterministic": True,
+        "force_col_wise": True,
+        "n_jobs": 1,
+        "verbosity": -1,
+    }
     estimator = lgb.LGBMRanker(
-        objective="lambdarank",
-        metric="ndcg",
+        objective=parameter_contract["objective"],
+        metric=parameter_contract["metric"],
         n_estimators=int(n_estimators),
         learning_rate=float(learning_rate),
         num_leaves=int(num_leaves),
-        min_child_samples=2,
-        subsample=1.0,
-        colsample_bytree=1.0,
-        reg_lambda=1.0,
+        min_child_samples=parameter_contract["min_child_samples"],
+        subsample=parameter_contract["subsample"],
+        colsample_bytree=parameter_contract["colsample_bytree"],
+        reg_lambda=parameter_contract["reg_lambda"],
         random_state=int(random_state),
-        deterministic=True,
-        force_col_wise=True,
-        n_jobs=1,
-        verbosity=-1,
-        label_gain=[(2**index) - 1 for index in range(relevance_levels)],
+        deterministic=parameter_contract["deterministic"],
+        force_col_wise=parameter_contract["force_col_wise"],
+        n_jobs=parameter_contract["n_jobs"],
+        verbosity=parameter_contract["verbosity"],
+        label_gain=parameter_contract["label_gain"],
     )
     estimator.fit(
         matrix["features"],
@@ -231,10 +246,7 @@ def train_lambdarank(
         "training_records_sha256": canonical_sha256(matrix["records"]),
         "libraries": readiness["versions"],
         "parameters": {
-            "n_estimators": int(n_estimators),
-            "learning_rate": float(learning_rate),
-            "num_leaves": int(num_leaves),
-            "random_state": int(random_state),
+            **parameter_contract,
             "date_grouped": True,
             "relevance_encoding": "within_date_nonnegative_discrete_0_to_4",
         },
@@ -250,13 +262,22 @@ def walk_forward_ranker_predictions(
     records: Sequence[Mapping[str, Any]],
     *,
     prediction_universe_records: Sequence[Mapping[str, Any]] | None = None,
+    feature_names: tuple[str, ...] = V1_FEATURE_NAMES,
     min_train_dates: int,
     test_dates: int,
     purge_dates: int,
+    max_train_dates: int | None = None,
     max_label_horizon: int = 5,
     n_estimators: int = 80,
+    relevance_levels: int = 5,
+    learning_rate: float = 0.05,
+    num_leaves: int = 15,
+    random_state: int = 20260718,
 ) -> dict[str, Any]:
     """Train expanding folds and return only purged future-fold predictions."""
+
+    if max_train_dates is not None and max_train_dates < min_train_dates:
+        raise ValueError("max_train_dates must be at least min_train_dates")
 
     universe_records = list(prediction_universe_records or records)
     folds = expanding_walk_forward_splits(
@@ -275,6 +296,7 @@ def walk_forward_ranker_predictions(
             "folds": [],
             "predictions": [],
             "promotion_allowed": False,
+            "live_trading_allowed": False,
             "generated_at": datetime.now().astimezone().isoformat(),
             "disclaimer": DISCLAIMER,
         }
@@ -291,7 +313,13 @@ def walk_forward_ranker_predictions(
         labels_by_identity[identity] = row
     for fold in folds:
         test_start = date.fromisoformat(fold["test_dates"][0])
-        train_dates = set(fold["train_dates"])
+        available_train_dates = sorted(set(fold["train_dates"]))
+        selected_train_dates = (
+            available_train_dates[-max_train_dates:]
+            if max_train_dates is not None
+            else available_train_dates
+        )
+        train_dates = set(selected_train_dates)
         train_rows = []
         for row in records:
             if str(row.get("as_of_date") or "") not in train_dates:
@@ -321,10 +349,19 @@ def walk_forward_ranker_predictions(
                 "folds": fold_audit,
                 "predictions": [],
                 "promotion_allowed": False,
+                "live_trading_allowed": False,
                 "generated_at": datetime.now().astimezone().isoformat(),
                 "disclaimer": DISCLAIMER,
             }
-        model = train_lambdarank(train_rows, n_estimators=n_estimators)
+        model = train_lambdarank(
+            train_rows,
+            feature_names=feature_names,
+            relevance_levels=relevance_levels,
+            n_estimators=n_estimators,
+            learning_rate=learning_rate,
+            num_leaves=num_leaves,
+            random_state=random_state,
+        )
         matrix = prepare_prediction_matrix(test_rows, feature_names=model.feature_names)
         raw = [float(value) for value in model.booster.predict(matrix["features"])]
         by_date: dict[str, list[int]] = defaultdict(list)
@@ -368,9 +405,9 @@ def walk_forward_ranker_predictions(
                 "train_end": mature_train_dates[-1],
                 "train_date_count": len(mature_train_dates),
                 "train_labeled_date_count": len(mature_train_dates),
-                "train_universe_start": fold["train_dates"][0],
-                "train_universe_end": fold["train_dates"][-1],
-                "train_universe_date_count": len(fold["train_dates"]),
+                "train_universe_start": selected_train_dates[0],
+                "train_universe_end": selected_train_dates[-1],
+                "train_universe_date_count": len(selected_train_dates),
                 "purged_dates": list(fold["purged_dates"]),
                 "test_start": fold["test_dates"][0],
                 "test_end": fold["test_dates"][-1],
@@ -390,11 +427,33 @@ def walk_forward_ranker_predictions(
         "min_train_dates": min_train_dates,
         "test_dates": test_dates,
         "purge_dates": purge_dates,
+        "max_train_dates": max_train_dates,
         "max_label_horizon": max_label_horizon,
+        "model_parameters": {
+            "backend": "lightgbm_lambdarank",
+            "objective": "lambdarank",
+            "metric": ["ndcg"],
+            "relevance_levels": relevance_levels,
+            "label_gain": [(2**index) - 1 for index in range(relevance_levels)],
+            "n_estimators": n_estimators,
+            "learning_rate": learning_rate,
+            "num_leaves": num_leaves,
+            "random_state": random_state,
+            "min_child_samples": 2,
+            "subsample": 1.0,
+            "colsample_bytree": 1.0,
+            "reg_lambda": 1.0,
+            "deterministic": True,
+            "force_col_wise": True,
+            "n_jobs": 1,
+            "verbosity": -1,
+        },
+        "feature_names": list(feature_names),
         "continuous_label_retained_for_evaluation": True,
         "folds": fold_audit,
         "predictions": predictions,
         "promotion_allowed": False,
+        "live_trading_allowed": False,
         "generated_at": datetime.now().astimezone().isoformat(),
         "disclaimer": DISCLAIMER,
     }

@@ -36,7 +36,14 @@ def main() -> int:
 
     feature_source, feature_sha = load_strict_json_with_sha256(args.feature_source)
     label_source, label_sha = load_strict_json_with_sha256(args.label_source)
-    features = build_feature_rows_from_source(feature_source)
+    fixture_only = bool(feature_source.get("fixture_only", False)) or bool(
+        label_source.get("fixture_only", False)
+    )
+    features = build_feature_rows_from_source(
+        feature_source,
+        allow_fixture=fixture_only,
+        source_identity={"path": str(args.feature_source.resolve()), "sha256": feature_sha},
+    )
     raw_dates = label_source.get("trading_dates") or (
         (label_source.get("trading_calendar") or {}).get("dates")
     )
@@ -50,7 +57,10 @@ def main() -> int:
     if calendar["sha256"] != str(args.expected_calendar_sha256).lower():
         raise ValueError("trading calendar SHA mismatch")
     labels = build_label_rows_from_source(
-        label_source, trading_calendar=calendar
+        label_source,
+        trading_calendar=calendar,
+        allow_fixture=fixture_only,
+        source_identity={"path": str(args.label_source.resolve()), "sha256": label_sha},
     )
     if feature_source.get("strict_pit_eligible") or label_source.get(
         "strict_pit_eligible"
@@ -58,9 +68,6 @@ def main() -> int:
         raise ValueError(
             "self-attested strict PIT is not accepted in ML Shadow Stage 1"
         )
-    fixture_only = bool(feature_source.get("fixture_only", False)) or bool(
-        label_source.get("fixture_only", False)
-    )
     dataset = build_training_dataset(
         features,
         labels,

@@ -1861,7 +1861,7 @@ def run_bridge(
     trend_top_n: int = DEFAULT_TREND_TOP_N,
     burst_top_n: int = DEFAULT_BURST_TOP_N,
     min_relevance: float = DEFAULT_MIN_RELEVANCE,
-    include_legacy_sector_paths: bool = True,
+    include_legacy_sector_paths: bool = False,
     _validated_score_report: Optional[Tuple[str, Path, Dict[str, Any]]] = None,
 ) -> Dict[str, Any]:
     """
@@ -2142,7 +2142,23 @@ def run_bridge(
 
             # 计算关联度
             flow_data = sector_flows.get(name, {"direction": "neutral"})
-            filtered = compute_relevance_scores(enriched, flow_data, min_relevance)
+            legacy_scored = compute_relevance_scores(
+                enriched, flow_data, min_relevance=0.0
+            )
+            legacy_filtered = [
+                stock
+                for stock in legacy_scored
+                if stock["relevance_score"] >= min_relevance
+            ]
+            for stock in enriched:
+                stock["legacy_relevance_score"] = stock.get("relevance_score")
+                stock["legacy_relevance_breakdown"] = stock.get(
+                    "relevance_breakdown"
+                )
+                stock["legacy_relevance_role"] = "historical_comparison_only"
+
+            direction_primary = label == "direction_shadow"
+            active_stocks = enriched if direction_primary else legacy_filtered
             informative_weights = {
                 float(stock.get("weight", 0))
                 for stock in enriched
@@ -2199,10 +2215,12 @@ def run_bridge(
                 "burst_score": meta.get("burst_score", 0),
                 "fund_flow_direction": flow_data.get("direction", "neutral"),
                 "total_constituents": len(stocks_raw),
-                "high_relevance_count": len(filtered),
-                "stocks": filtered,
+                "high_relevance_count": len(legacy_filtered),
+                "active_constituent_count": len(active_stocks),
+                "legacy_relevance_filter_applied": not direction_primary,
+                "stocks": active_stocks,
             }
-            if label == "direction_shadow":
+            if direction_primary:
                 sector_entry.update(
                     {
                         "candidate_tier": meta.get("candidate_tier"),
@@ -2221,14 +2239,28 @@ def run_bridge(
                     "sector_type": meta.get("sector_type", "industry"),
                     "constituent_source": sec_data.get("source", "unavailable"),
                     "raw_constituent_count": len(stocks_raw),
-                    "legacy_relevance_pass_count": len(filtered),
-                    "legacy_relevance_reject_count": len(stocks_raw) - len(filtered),
+                    "active_constituent_count": len(active_stocks),
+                    "legacy_relevance_pass_count": len(legacy_filtered),
+                    "legacy_relevance_reject_count": len(stocks_raw)
+                    - len(legacy_filtered),
+                    "legacy_relevance_filter_applied": not direction_primary,
+                    "legacy_relevance_role": "historical_comparison_only",
                     "minimum_relevance": min_relevance,
                 }
             )
 
-            status_emoji = "✅" if filtered else "⚠️"
-            print(f"    {status_emoji} [{label}] {name}: {len(filtered)}/{len(stocks_raw)} 只高关联度")
+            status_emoji = "✅" if active_stocks else "⚠️"
+            if direction_primary:
+                print(
+                    f"    {status_emoji} [{label}] {name}: "
+                    f"{len(active_stocks)}/{len(stocks_raw)} 只完整成分股 "
+                    "(旧关联度仅对照)"
+                )
+            else:
+                print(
+                    f"    {status_emoji} [{label}] {name}: "
+                    f"{len(active_stocks)}/{len(stocks_raw)} 只高关联度"
+                )
 
         return sector_results
 

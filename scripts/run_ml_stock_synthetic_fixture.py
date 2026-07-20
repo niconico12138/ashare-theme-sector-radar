@@ -176,8 +176,8 @@ def main() -> int:
     _feature_doc, feature_sha = load_strict_json_with_sha256(feature_path)
     _label_doc, label_sha = load_strict_json_with_sha256(label_path)
 
-    feature_rows = build_feature_rows_from_source(feature_source)
-    label_rows = build_label_rows_from_source(label_source)
+    feature_rows = build_feature_rows_from_source(feature_source, allow_fixture=True)
+    label_rows = build_label_rows_from_source(label_source, allow_fixture=True)
     dataset = build_training_dataset(
         feature_rows,
         label_rows,
@@ -230,6 +230,7 @@ def main() -> int:
             for row in walk_forward["predictions"]
         ],
         "promotion_allowed": False,
+        "live_trading_allowed": False,
         "generated_at": datetime.now().astimezone().isoformat(),
         "disclaimer": DISCLAIMER,
     }
@@ -256,7 +257,9 @@ def main() -> int:
         expected_registry_sha256=bundle["registry_sha256"],
     )
     latest_day = str(feature_source["snapshots"][-1]["as_of_date"])
-    latest_rows = build_feature_rows_from_source(feature_source, as_of_date=latest_day)
+    latest_rows = build_feature_rows_from_source(
+        feature_source, as_of_date=latest_day, allow_fixture=True
+    )
     current_prediction = predict_shadow(loaded, latest_rows, allow_fixture=True)
     current_prediction["fixture_only"] = True
     current_prediction_path = args.output_root / "current_prediction.json"
@@ -314,6 +317,7 @@ def main() -> int:
         "architecture_only_shadow": True,
         "eligible_for_oos_claim": False,
         "promotion_allowed": False,
+        "live_trading_allowed": False,
         "generated_at": datetime.now().astimezone().isoformat(),
         "disclaimer": DISCLAIMER,
     }
@@ -343,6 +347,7 @@ def main() -> int:
         "strict_pit_eligible": False,
         "eligible_for_oos_claim": False,
         "promotion_allowed": False,
+        "live_trading_allowed": False,
         "generated_at": datetime.now().astimezone().isoformat(),
         "disclaimer": DISCLAIMER,
     }

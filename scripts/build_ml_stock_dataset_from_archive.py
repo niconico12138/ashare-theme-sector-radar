@@ -34,6 +34,7 @@ def _write_blocked(args, readiness: dict) -> int:
         "strict_pit_eligible": False,
         "records": [],
         "promotion_allowed": False,
+        "live_trading_allowed": False,
         "generated_at": datetime.now().astimezone().isoformat(),
         "disclaimer": DISCLAIMER,
     }
@@ -46,6 +47,7 @@ def _write_blocked(args, readiness: dict) -> int:
         "pit_evidence_status": readiness.get("pit_evidence_status"),
         "records": [],
         "promotion_allowed": False,
+        "live_trading_allowed": False,
         "generated_at": datetime.now().astimezone().isoformat(),
         "disclaimer": DISCLAIMER,
     }
@@ -58,6 +60,7 @@ def _write_blocked(args, readiness: dict) -> int:
         "dataset_path": str(args.dataset_output),
         "baseline_path": str(args.baseline_output),
         "promotion_allowed": False,
+        "live_trading_allowed": False,
         "generated_at": datetime.now().astimezone().isoformat(),
         "disclaimer": DISCLAIMER,
     }
@@ -112,6 +115,7 @@ def main() -> int:
         },
         "records": loaded["baseline_rows"],
         "promotion_allowed": False,
+        "live_trading_allowed": False,
         "generated_at": datetime.now().astimezone().isoformat(),
         "disclaimer": DISCLAIMER,
     }
@@ -158,6 +162,7 @@ def main() -> int:
         },
         "pit_evidence_sha256": evidence["evidence_sha256"],
         "promotion_allowed": False,
+        "live_trading_allowed": False,
         "generated_at": datetime.now().astimezone().isoformat(),
         "disclaimer": DISCLAIMER,
     }

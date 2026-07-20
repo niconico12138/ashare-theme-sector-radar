@@ -1,0 +1,59 @@
+{
+  "schema_version": "ml-stock-experiment-config-v1",
+  "mode": "paper_shadow_research_only",
+  "experiment_id": "stock_ranker_lgbm_v1_direction_candidate_shadow",
+  "feature_contract": {
+    "schema_version": "ml-stock-features-v1",
+    "feature_schema_sha256": "24d28267cec2cdf16c33dc85a5bde6d797a97572d7c09df0d585bbde8460f7a3",
+    "legacy_relevance_included": false
+  },
+  "label_contract": {
+    "definition": "future_5d_stock_return_minus_same_sector_return",
+    "training_horizon": 5,
+    "maximum_horizon": 5
+  },
+  "split": {
+    "type": "expanding_date_grouped_walk_forward",
+    "min_train_dates": 60,
+    "test_dates": 20,
+    "purge_dates": 5
+  },
+  "model": {
+    "backend": "lightgbm_lambdarank",
+    "objective": "lambdarank",
+    "metric": [
+      "ndcg"
+    ],
+    "relevance_levels": 5,
+    "label_gain": [
+      0,
+      1,
+      3,
+      7,
+      15
+    ],
+    "n_estimators": 80,
+    "learning_rate": 0.05,
+    "num_leaves": 15,
+    "random_state": 20260718,
+    "min_child_samples": 2,
+    "subsample": 1.0,
+    "colsample_bytree": 1.0,
+    "reg_lambda": 1.0,
+    "deterministic": true,
+    "force_col_wise": true,
+    "n_jobs": 1,
+    "verbosity": -1
+  },
+  "baseline": {
+    "hybrid_quant_weight": 0.65,
+    "hybrid_linkage_weight": 0.35,
+    "hybrid_partial_linkage_weight": 0.2
+  },
+  "safety": {
+    "strict_pit_eligible": false,
+    "eligible_for_oos_claim": false,
+    "promotion_allowed": false,
+    "live_trading_allowed": false
+  }
+}
